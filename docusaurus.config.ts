@@ -41,7 +41,7 @@ const config: Config = {
   ],
 
   themeConfig: {
-    image: 'img/common-bond-logo.png',
+    image: 'img/common-bond-logo.svg',
     colorMode: {
       defaultMode: 'dark',
       respectPrefersColorScheme: true,
@@ -50,7 +50,7 @@ const config: Config = {
       title: 'Common Bond',
       logo: {
         alt: 'Common Bond Logo',
-        src: 'img/common-bond-logo.png',
+        src: 'img/common-bond-logo.svg',
       },
       items: [
         {
@@ -59,6 +59,7 @@ const config: Config = {
           position: 'left',
           label: 'Corporate',
         },
+        { to: '/knowledge-graph', label: '🧠 Map', position: 'left' },
         {
           href: 'https://github.com/dm-ra-01/doco-common-bond',
           label: 'GitHub',
@@ -70,14 +71,14 @@ const config: Config = {
       style: 'dark',
       links: [
         {
-          title: 'Links',
+          title: 'Documentation Ecosystem',
           items: [
             {
               label: 'Receptor Ecosystem',
               href: 'https://docs.commonbond.au/receptor',
             },
             {
-              label: 'Rotator Legacy',
+              label: 'Rotator Legacy Archive',
               href: 'https://docs.commonbond.au/rotator',
             },
           ],

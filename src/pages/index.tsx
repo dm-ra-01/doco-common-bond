@@ -43,10 +43,16 @@ const SECTIONS = [
     description: 'Revenue modelling, pricing strategy, and financial projections.',
     link: '/docs/business-planning/financial/',
   },
+  {
+    emoji: '🧠',
+    title: 'Knowledge Map',
+    description: 'Interactive graph of all corporate documentation and their relationships.',
+    link: '/knowledge-graph',
+  },
 ];
 
 const SIBLINGS = [
-  { label: 'Receptor Technical Docs', href: 'https://docs.commonbond.au/receptor/', emoji: '⚙️' },
+  { label: 'Receptor Ecosystem', href: 'https://docs.commonbond.au/receptor/', emoji: '⚙️' },
   { label: 'Rotator Legacy Archive', href: 'https://docs.commonbond.au/rotator/', emoji: '📜' },
 ];
 
@@ -63,8 +69,8 @@ function HeroSection() {
           <Link className={styles.heroPrimary} to="/docs/intro">
             Get Started
           </Link>
-          <Link className={styles.heroSecondary} to="/docs/business-planning/strategy-vision/vto">
-            📊 Strategy & Vision
+          <Link className={styles.heroSecondary} to="/knowledge-graph">
+            🧠 Knowledge Map
           </Link>
         </div>
       </div>
