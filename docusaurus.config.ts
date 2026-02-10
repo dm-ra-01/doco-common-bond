@@ -9,12 +9,9 @@ const config: Config = {
   tagline: 'Strategy, Governance, and Compliance for the Common Bond ecosystem.',
   favicon: 'img/favicon.png',
 
-  future: {
-    v4: true,
-  },
-
   url: 'https://docs.commonbond.au',
   baseUrl: '/corporate/',
+  trailingSlash: false,
 
   organizationName: 'dm-ra-01',
   projectName: 'doco-common-bond',
