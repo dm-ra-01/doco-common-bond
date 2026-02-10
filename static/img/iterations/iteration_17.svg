@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1000" height="300" viewBox="0 0 1000 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <style>
+    @import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;700&amp;display=swap");
+    .title { font-family: "DM Sans", sans-serif; font-weight: 700; font-size: 80px; fill: #1e293b; }
+    .tagline { font-family: "DM Sans", sans-serif; font-weight: 400; font-size: 24px; fill: #64748b; letter-spacing: 0.05em; }
+  </style>
+  <defs>
+    <clipPath id="link-bottom-over">
+      <rect x="50" y="150" width="100" height="100" />
+    </clipPath>
+  </defs>
+  <g transform="translate(0, 0)">
+    <path d="M230 180V220C230 247.6 207.6 270 180 270H120C92.4 270 70 247.6 70 220V180C70 152.4 92.4 130 120 130H180" stroke="#475569" stroke-width="40" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    <path d="M70 120V80C70 52.4 92.4 30 120 30H180C207.6 30 230 52.4 230 80V120C230 147.6 207.6 170 180 170H120" stroke="#0d9488" stroke-width="40" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    <path d="M230 180V220C230 247.6 207.6 270 180 270H120C92.4 270 70 247.6 70 220V180C70 152.4 92.4 130 120 130H180" stroke="#475569" stroke-width="40" stroke-linecap="round" clip-path="url(#link-bottom-over)" fill="none"/>
+  </g>
+  <text x="340" y="165" class="title">COMMON BOND</text>
+  <text x="344" y="215" class="tagline">INNOVATION IN HEALTHCARE AND EDUCATION</text>
+  <text x="20" y="280" font-family="monospace" font-size="14" fill="#94a3b8"># 17 - DM Sans (700/400)</text>
+</svg>

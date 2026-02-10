@@ -1,0 +1,98 @@
+import { themes as prismThemes } from 'prism-react-renderer';
+import type { Config } from '@docusaurus/types';
+import type * as Preset from '@docusaurus/preset-classic';
+
+// This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
+
+const config: Config = {
+  title: 'Common Bond Corporate',
+  tagline: 'Strategy, Governance, and Compliance for the Common Bond ecosystem.',
+  favicon: 'img/favicon.png',
+
+  future: {
+    v4: true,
+  },
+
+  url: 'https://docs.commonbond.au',
+  baseUrl: '/corporate/',
+
+  organizationName: 'dm-ra-01',
+  projectName: 'doco-common-bond',
+
+  onBrokenLinks: 'warn',
+  onBrokenMarkdownLinks: 'warn',
+
+  i18n: {
+    defaultLocale: 'en',
+    locales: ['en'],
+  },
+
+  presets: [
+    [
+      'classic',
+      {
+        docs: {
+          sidebarPath: './sidebars.ts',
+          editUrl: 'https://github.com/dm-ra-01/doco-common-bond/tree/main/',
+        },
+        blog: false,
+        theme: {
+          customCss: './src/css/custom.css',
+        },
+      } satisfies Preset.Options,
+    ],
+  ],
+
+  themeConfig: {
+    image: 'img/receptor-logo.png',
+    colorMode: {
+      defaultMode: 'dark',
+      respectPrefersColorScheme: true,
+    },
+    navbar: {
+      title: 'Common Bond',
+      logo: {
+        alt: 'Common Bond Logo',
+        src: 'img/receptor-logo-alt.png',
+      },
+      items: [
+        {
+          type: 'docSidebar',
+          sidebarId: 'corporateSidebar',
+          position: 'left',
+          label: 'Corporate',
+        },
+        {
+          href: 'https://github.com/dm-ra-01/doco-common-bond',
+          label: 'GitHub',
+          position: 'right',
+        },
+      ],
+    },
+    footer: {
+      style: 'dark',
+      links: [
+        {
+          title: 'Links',
+          items: [
+            {
+              label: 'Receptor Ecosystem',
+              href: 'https://docs.commonbond.au/receptor',
+            },
+            {
+              label: 'Rotator Legacy',
+              href: 'https://docs.commonbond.au/rotator',
+            },
+          ],
+        },
+      ],
+      copyright: `Copyright © ${new Date().getFullYear()} Common Bond. Built with Docusaurus.`,
+    },
+    prism: {
+      theme: prismThemes.github,
+      darkTheme: prismThemes.dracula,
+    },
+  } satisfies Preset.ThemeConfig,
+};
+
+export default config;
