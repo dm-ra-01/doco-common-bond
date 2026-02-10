@@ -44,7 +44,7 @@ const config: Config = {
   ],
 
   themeConfig: {
-    image: 'img/receptor-logo.png',
+    image: 'img/common-bond-logo.png',
     colorMode: {
       defaultMode: 'dark',
       respectPrefersColorScheme: true,
@@ -53,7 +53,7 @@ const config: Config = {
       title: 'Common Bond',
       logo: {
         alt: 'Common Bond Logo',
-        src: 'img/receptor-logo-alt.png',
+        src: 'img/common-bond-logo.png',
       },
       items: [
         {
