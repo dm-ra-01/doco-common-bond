@@ -7,7 +7,7 @@ import type * as Preset from '@docusaurus/preset-classic';
 const config: Config = {
   title: 'Common Bond Corporate',
   tagline: 'Strategy, Governance, and Compliance for the Common Bond ecosystem.',
-  favicon: 'img/favicon.png',
+  favicon: 'img/common-bond-mark.svg',
 
   url: 'https://docs.commonbond.au',
   baseUrl: '/corporate/',
@@ -41,7 +41,7 @@ const config: Config = {
   ],
 
   themeConfig: {
-    image: 'img/common-bond-logo.svg',
+    image: 'img/common-bond-mark.svg',
     colorMode: {
       defaultMode: 'dark',
       respectPrefersColorScheme: true,
@@ -50,7 +50,7 @@ const config: Config = {
       title: 'Common Bond',
       logo: {
         alt: 'Common Bond Logo',
-        src: 'img/common-bond-logo.svg',
+        src: 'img/common-bond-mark.svg',
       },
       items: [
         {
