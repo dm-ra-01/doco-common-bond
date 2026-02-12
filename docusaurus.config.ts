@@ -40,6 +40,11 @@ const config: Config = {
     ],
   ],
 
+  markdown: {
+    mermaid: true,
+  },
+  themes: ['@docusaurus/theme-mermaid'],
+
   themeConfig: {
     image: 'img/common-bond-mark.svg',
     colorMode: {
@@ -55,11 +60,29 @@ const config: Config = {
       items: [
         {
           type: 'docSidebar',
-          sidebarId: 'corporateSidebar',
+          sidebarId: 'strategySidebar',
           position: 'left',
-          label: 'Corporate',
+          label: 'Strategy',
         },
-        { to: '/knowledge-graph', label: '🧠 Map', position: 'left' },
+        {
+          type: 'docSidebar',
+          sidebarId: 'operationsSidebar',
+          position: 'left',
+          label: 'Operations',
+        },
+        {
+          type: 'docSidebar',
+          sidebarId: 'governanceSidebar',
+          position: 'left',
+          label: 'Governance',
+        },
+        {
+          type: 'docSidebar',
+          sidebarId: 'complianceSidebar',
+          position: 'left',
+          label: 'Compliance',
+        },
+        { to: '/knowledge-graph', label: '🧠 Map', position: 'right' },
         {
           href: 'https://github.com/dm-ra-01/doco-common-bond',
           label: 'GitHub',

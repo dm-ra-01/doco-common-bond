@@ -6,8 +6,8 @@ This site serves as the strategic nervous system for the Common Bond ecosystem, 
 
 ## 🏢 Corporate Framework
 
-- **[Business Planning](./business-planning/)**: Strategy, Vision, Product Roadmaps, and Finance Projections.
-- **[Governance & Legal](./governance-and-legal/)**: Decision rights, ASIC registration, and Ethics frameworks.
+- **[Business Planning](./strategy/)**: Strategy, Vision, Product Roadmaps, and Finance Projections.
+- **[Governance & Legal](./governance/)**: Decision rights, ASIC registration, and Ethics frameworks.
 - **[Compliance](./compliance/iso27001/)**: ISO/IEC 27001:2022 implementation and Annex A controls.
 
 ## 🧠 Knowledge Map

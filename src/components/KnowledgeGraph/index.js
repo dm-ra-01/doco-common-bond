@@ -5,15 +5,13 @@ import { useColorMode } from '@docusaurus/theme-common';
 import useBaseUrl from '@docusaurus/useBaseUrl';
 import styles from './styles.module.css';
 
-// ── Cluster color palette ──
+// ── Cluster color palette (Matched to current directory structure) ──
 const CLUSTERS = {
-    'business-planning': { label: 'Strategy', light: '#0d9488', dark: '#2dd4bf' },
-    'app-documentation': { label: 'Product', light: '#4f46e5', dark: '#818cf8' },
-    'infrastructure': { label: 'Infra', light: '#d97706', dark: '#fbbf24' },
-    'projects': { label: 'Projects', light: '#059669', dark: '#34d399' },
-    'governance-and-legal': { label: 'Governance', light: '#e11d48', dark: '#fb7185' },
-    'compliance': { label: 'Compliance', light: '#7c3aed', dark: '#a78bfa' },
-    'intro': { label: 'Intro', light: '#6366f1', dark: '#a5b4fc' },
+    'strategy': { label: 'Strategy', light: '#0d9488', dark: '#2dd4bf' },     // Teal
+    'operations': { label: 'Operations', light: '#4f46e5', dark: '#818cf8' },   // Indigo
+    'governance': { label: 'Governance', light: '#e11d48', dark: '#fb7185' },   // Crimson
+    'compliance': { label: 'Compliance', light: '#7c3aed', dark: '#a78bfa' },   // Purple
+    'intro': { label: 'Intro', light: '#64748b', dark: '#94a3b8' },            // Slate
 };
 
 function getCluster(id) {

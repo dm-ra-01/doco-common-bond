@@ -1,50 +1,45 @@
 ---
 title: ISO/IEC 27001:2022 Compliance
 sidebar_label: Overview
-slug: /compliance/iso27001
+
 ---
 
-# ISO/IEC 27001:2022 Compliance
+# ISO 27001:2022 Compliance
 
-This is the living Information Security Management System (ISMS) documentation for Receptor. It tracks our compliance status against the ISO/IEC 27001:2022 standard — honestly.
+## Overview
+This section serves as the Information Security Management System (ISMS) for **Common Bond (Receptor Platform)**. It identifies our policies, procedures, and controls to secure our information assets.
 
-:::caution Early Stage
-Receptor is a pre-revenue startup. Many controls are **documented as planned or in-progress**, not yet fully implemented. This documentation serves as both a compliance tracker and a roadmap to certification.
-:::
+> **Status:** Pre-Certification / Implementation Phase.
 
-## ISMS Scope (Draft)
+## ISMS Structure
+Our ISMS is structured to be lightweight and practical for a pre-revenue startup.
 
-The scope of our ISMS covers:
-- All software development activities for the Receptor platform
-- Cloud infrastructure (Supabase, Cloudflare, GitHub)
-- The Receptor SaaS platform and its data (worker preferences, allocation data)
-- Supporting business processes operated by Common Bond
+### 1. [Governance](/docs/compliance/iso27001/governance/scope)
+Defines **why** we do security and **who** is responsible.
+- [internal-scope](/docs/compliance/iso27001/governance/scope)
+- [objectives](/docs/compliance/iso27001/governance/objectives)
+- [roles-responsibilities](/docs/compliance/iso27001/governance/roles-responsibilities)
 
-**Exclusions:** Physical office security (fully remote, cloud-native team).
+### 2. [Policies](/docs/compliance/iso27001/policies/information-security-policy)
+Defines the **rules** we follow.
+- [InfoSec Policy](/docs/compliance/iso27001/policies/information-security-policy)
+- [Acceptable Use](/docs/compliance/iso27001/policies/acceptable-use)
+- [Access Control](/docs/compliance/iso27001/policies/access-control)
+- [Document Control](/docs/compliance/iso27001/policies/document-control)
 
-## Key Sections
+### 3. [Risk Management](/docs/compliance/iso27001/risk-management/methodology)
+Defines **how** we identify and treat risks.
+- [Methodology](/docs/compliance/iso27001/risk-management/methodology)
+- [Risk Register](/docs/compliance/iso27001/risk-management/risk-register)
+- [Treatment Plan](/docs/compliance/iso27001/risk-management/treatment-plan)
 
-- **[ISMS Clauses (4-10)](./clauses/index.md)**: Management system requirements with approach tables and TODOs.
-- **[Annex A Controls](./controls/index.md)**: The 93 security controls across 4 themes.
-- **[Statement of Applicability (SoA)](./soa.md)**: Which controls apply and why.
-- **[Compliance Tasks](./tasks.md)**: Phased task list for achieving certification.
+### 4. [Assurance](/docs/compliance/iso27001/assurance/internal-audit)
+Defines how we **check** that we are doing what we say.
+- [Internal Audit](/docs/compliance/iso27001/assurance/internal-audit)
+- [Non-Conformity Log](/docs/compliance/iso27001/assurance/nonconformity-log)
+- [Corrective Actions](/docs/compliance/iso27001/assurance/corrective-actions)
 
-## Current Status
-
-| Area | Status |
-|------|--------|
-| ISMS Clauses (4-10) | 🟡 Mostly partial/TODO — foundational documents needed |
-| Organizational Controls (5) | 🟡 Many policies not yet drafted |
-| People Controls (6) | 🔴 Most controls TODO |
-| Physical Controls (7) | 🟡 Largely inherited from cloud providers (needs documentation) |
-| Technological Controls (8) | 🟡 Technical foundations exist, formalisation needed |
-
-## Approach
-
-We treat this Docusaurus section as a **living compliance dashboard**. Each clause and control includes:
-1. **Status badge** — honest assessment of current state
-2. **Approach** — how we intend to address the requirement
-3. **Evidence links** — to existing documentation where applicable
-4. **TODOs** — specific actions needed
-
-This is a working document. Statuses will be updated as controls are implemented.
+### 5. [Operations](/docs/compliance/iso27001/operations/training-competency)
+Evidence of day-to-day security operations.
+- [Training & Competency](/docs/compliance/iso27001/operations/training-competency)
+- [Statement of Applicability (SoA)](/docs/compliance/iso27001/operations/soa)
