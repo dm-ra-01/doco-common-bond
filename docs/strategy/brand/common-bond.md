@@ -12,12 +12,12 @@ sidebar_position: 1
 Our corporate identity is designed to be calm, professional, and trustworthy.
 
 ### Color Palette
-We use the **Teal & Slate** palette, which evokes a sense of balanced clinical innovation and structural stability.
+We use the **Clinical Green & Indigo** palette, which evokes a sense of balanced clinical innovation and structural stability.
 
 | Element | Color | Token |
 |:---|-|:-|
-| **Primary (Teal)** | `#0d9488` | `brand-600` |
-| **Secondary (Slate)** | `#475569` | `neutral-600` |
+| **Primary (Clinical Green)** | `#6ea152` | `primary-green-400` |
+| **Secondary (Indigo)** | `#4f46e5` | `accent-indigo-600` |
 | **Title Text** | `#1e293b` | `neutral-800` |
 | **Subtext / Tagline** | `#64748b` | `neutral-500` |
 

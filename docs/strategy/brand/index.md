@@ -12,7 +12,7 @@ We maintain two distinct visual languages to serve different stakeholders and en
 
 | Identity | Focus | Primary Palette | Key Typeface |
 |:---|:---|:---|:---|
-| **[Common Bond](./common-bond.md)** | Corporate / Investor | Teal & Slate | Montserrat |
+| **[Common Bond](./common-bond.md)** | Corporate / Investor | Clinical Green & Indigo | Outfit |
 | **[Receptor Suite](./receptor-suite.md)** | Product / Clinical | Indigo & Slate | Inter |
 
 ---
@@ -22,7 +22,7 @@ We maintain two distinct visual languages to serve different stakeholders and en
 ```mermaid
 graph TD
     CB["Common Bond (Parent)"] --> R["Receptor Suite (Product)"]
-    CB_Identity["Teal / Montserrat / Trust"] -.-> CB
+    CB_Identity["Green / Outfit / Trust"] -.-> CB
     R_Identity["Indigo / Inter / Precision"] -.-> R
 ```
 
