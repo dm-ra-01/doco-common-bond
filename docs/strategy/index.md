@@ -63,11 +63,11 @@ This section contains all business planning documentation for **Common Bond** an
 
 ### The Opportunity
 
-Rotation allocation is a universal challenge across Australian Health Services:
+Workforce planning and rotation allocation are universal challenges across Australian Health Services:
 
-- **Manual processes** create inefficiency and administrative burden
-- **Opaque allocation** undermines trainee trust and workforce retention
-- **Fragmented systems** prevent data-driven workforce planning
+- **Manual restructuring** of rotation capacities into viable annual job lines creates significant administrative burden and risks AMC accreditation compliance.
+- **Opaque allocation** undermines trainee trust and workforce retention.
+- **Fragmented systems** prevent data-driven workforce planning.
 
 ### Our Position
 

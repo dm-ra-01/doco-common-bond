@@ -19,7 +19,7 @@ This strategy outlines the expansion of our medical rotation and allocation syst
 
 ### Western Australia
 - **Primary Body:** WA Health & WACHS (WA Country Health Service).
-- **Expansion Focus:** Optimization of rural rotations and interstate graduate intake. Integration with credentialing workflows (CredWA).
+- **Expansion Focus:** Optimisation of rural rotations and interstate graduate intake. Integration with credentialing workflows (CredWA).
 - **Key Regions:** Perth metropolitan (North/South/East Metro Health Services), WACHS (Regional WA).
 
 ---

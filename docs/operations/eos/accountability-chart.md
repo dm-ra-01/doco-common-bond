@@ -54,7 +54,7 @@ Each seat holder is evaluated on **GWC**:
     <strong>Seat Holder: Founder (Acting)</strong>
     <ul>
       <li>Software development & architecture</li>
-      <li>Algorithm optimization (OR-Tools)</li>
+      <li>Algorithm optimisation (OR-Tools)</li>
       <li>Platform security & uptime</li>
       <li>Technical debt management</li>
     </ul>
@@ -90,7 +90,7 @@ As we scale beyond the pilot phase, we will fill the acting seats identified in 
 <FrameworkCard title="Future Hiring Roadmap" icon="🚀">
   <strong>Upcoming Seats:</strong>
   <ul>
-    <li><strong>Seat 1 (Technical):</strong> Full-Stack Optimization Engineer</li>
+    <li><strong>Seat 1 (Technical):</strong> Full-Stack Optimisation Engineer</li>
     <li><strong>Seat 2 (Success):</strong> Customer Success (Medical Workforce)</li>
     <li><strong>Seat 3 (Security):</strong> Governance & Compliance Lead</li>
   </ul>

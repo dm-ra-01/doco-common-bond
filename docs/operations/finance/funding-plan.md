@@ -100,7 +100,7 @@ Customer acquisition and brand development.
 | Collateral & Branding | $200 | $2,400 | Brochures, pitch decks, merchandise |
 | Travel & Client Meetings | $400 | $4,800 | SA/WA expansion activities |
 | PR & Communications | $200 | $2,400 | Press releases, media relations |
-| Website Maintenance | $100 | $1,200 | Updates, SEO optimization |
+| Website Maintenance | $100 | $1,200 | Updates, SEO optimisation |
 | Referral & Partner Programs | $100 | $1,200 | Incentive programs |
 
 #### E. Accounting & Financial Services ($9,000)
@@ -177,7 +177,7 @@ xychart-beta
 | Q1 (Jul-Sep 2026) | $42,000 | $42,000 | Heavy legal setup, initial marketing push |
 | Q2 (Oct-Dec 2026) | $38,000 | $80,000 | Infrastructure scaling, conference season |
 | Q3 (Jan-Mar 2027) | $36,000 | $116,000 | Steady state operations |
-| Q4 (Apr-Jun 2027) | $34,000 | $150,000 | Optimization, preparing for FY28 |
+| Q4 (Apr-Jun 2027) | $34,000 | $150,000 | Optimisation, preparing for FY28 |
 
 ---
 

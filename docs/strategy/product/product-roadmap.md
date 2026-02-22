@@ -14,8 +14,9 @@ For a complete view of all current and planned services with value propositions,
 
 ## Phase 1: Core Excellence (Current — FY2026–27)
 
-- **Rotation Matching Engine:** Automated preference-based allocation for prevocational trainees (Interns, RMOs, HMOs), vocational trainees (Registrars), and unaccredited registrars.
-- **Local Hospital Network (LHN) Portal:** Dashboard for Medical Workforce Managers to track allocations across training cohorts.
+- **Job Line Generation Engine (Receptor Planner):** Automated optimisation using CP-SAT solving to generate structurally compliant, AMC-aligned, and affinity-optimised job lines from raw rotation capacities.
+- **Rotation Matching Engine (Receptor Allocator):** Automated, merit-and-preference-based allocation of doctors to the optimally generated job lines.
+- **Local Hospital Network (LHN) Portal:** Dashboard for Medical Workforce Managers to orchestrate planning, preferencing, and allocations across training cohorts.
 - **Self-Hosted Supabase:** Robust data infrastructure with Row Level Security (RLS).
 
 ## Phase 2: Intelligence & Integration (FY2027–28)

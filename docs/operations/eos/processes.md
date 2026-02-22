@@ -54,7 +54,7 @@ We use our high-ticket consulting engagements to fuel our software roadmap.
 |------|---------|----------------|
 | **Phase 1** | **Allocation Audit:** Independent review of a health service's current manual logic. | Proves the need for the SaaS tool by exposing risks. |
 | **Phase 2** | **Constraint Mapping:** Translating clinical SOPs into mathematical constraints. | Embeds Receptor into the core institutional workflow. |
-| **Phase 3** | **Matcher Run:** Collecting preferences and executing the optimization. | Delivers the "Receipt of Fairness" to the workforce. |
+| **Phase 3** | **Matcher Run:** Collecting preferences and executing the optimisation. | Delivers the "Receipt of Fairness" to the workforce. |
 
 ---
 

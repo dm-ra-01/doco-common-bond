@@ -29,7 +29,7 @@ We use the **Indigo & Slate** palette, which conveys depth, intelligence, and hi
 ---
 
 ## Logo Marks
-The Receptor brand mark is minimalist and iconic, optimized for interface recognition.
+The Receptor brand mark is minimalist and iconic, optimised for interface recognition.
 
 ### Primary Mark: The Algorithm
 A minimalist representation of "reception" and "response"—the core of our matching engine.
@@ -46,5 +46,5 @@ Designed specifically for clinical environments, this mark integrates the "R" le
 ## Brand Values
 - **Clinical First**: Built with the direct input of doctors.
 - **Fairness**: Algorithmic transparency that ensures equitable outcomes.
-- **Efficiency**: Eliminating manual barriers to medical workforce optimization.
+- **Efficiency**: Eliminating manual barriers to medical workforce optimisation.
 - **Precision**: High-fidelity data handling and matching.

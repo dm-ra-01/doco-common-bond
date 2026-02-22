@@ -22,7 +22,7 @@ To maintain our **"Doctor-Developer" agility** and prevent project bloat, we adh
 | **Job Line Planning** | Rotation configuration and timeline building | **In Scope** | End-to-end setup of allocation structures via Planner app. |
 | **AMC Compliance** | Training rule validation against AMC standards | **In Scope** | Automating accreditation requirements for clinical experience. |
 | **Preferencing** | Mobile-first preference submission | **In Scope** | 5-level system for transparent trainee input via Preferencer app. |
-| **Matching** | Preference-driven optimization engine | **In Scope** | Our core IP. Mathematical resolution of choices vs. constraints. |
+| **Matching** | Preference-driven optimisation engine | **In Scope** | Our core IP. Mathematical resolution of choices vs. constraints. |
 | **Modelling** | "Sandbox" scenario testing for managers | **In Scope** | Testing the impact of weighting changes before live allocation. |
 
 ### Rotation Lifecycle (In Scope — Phased)

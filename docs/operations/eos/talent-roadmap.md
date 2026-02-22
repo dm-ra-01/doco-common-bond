@@ -20,9 +20,9 @@ To transition from a founder-led startup to a national infrastructure provider, 
   <StrategicPillar title="Hire 3: Governance" outcome="Trust" icon="⚖️" />
 </MatrixGrid>
 
-### Hire 1: The Optimization Specialist
+### Hire 1: The Optimisation Specialist
 **Role:** Full-Stack Engineer / Data Scientist
-**GWC:** *Get it:* Optimization algorithms and distributed systems. *Want it:* To solve real-world healthcare friction. *Capacity:* 10+ years modern development (React/Supabase).
+**GWC:** *Get it:* Optimisation algorithms and distributed systems. *Want it:* To solve real-world healthcare friction. *Capacity:* 10+ years modern development (React/Supabase).
 **Impact:** Scaling the "Matcher" engine to handle nationwide multi-site networks.
 
 ### Hire 2: The Hospital Liaison

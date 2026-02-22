@@ -20,7 +20,7 @@ As Receptor introduces automated and AI-enhanced allocation logic, we must adher
 Annual reviews of the matching engine’s outcomes to identify and mitigate unintended consequences (e.g., disproportionate rural placement).
 
 ### B. Data Ethics
-- **Consent:** Clear communication to JMOs on how their preference data is used for both their own allocation and system-wide optimization.
+- **Consent:** Clear communication to JMOs on how their preference data is used for both their own allocation and system-wide optimisation.
 - **Security:** Strict adherence to RLS and data de-identification for any research-based AI training.
 
 ## 3. Compliance Alignment

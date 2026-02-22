@@ -9,7 +9,7 @@ sidebar_position: 1
 This document defines the scope of the Information Security Management System (ISMS) for **Common Bond (Receptor Platform)**. It specifies the boundaries of our security responsibilities, applicable to our context as a **pre-revenue, cloud-native startup**.
 
 ## 2. Organizational Context
-Receptor is a workforce management and optimization platform. We operate as a fully remote team, leveraging cloud infrastructure to deliver our services. 
+Receptor is a workforce management and optimisation platform. We operate as a fully remote team, leveraging cloud infrastructure to deliver our services. 
 
 ### Internal Issues
 - **Resource Constraints:** As a pre-revenue startup, we prioritize automated and scalable security controls over manual processes.

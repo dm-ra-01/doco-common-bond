@@ -22,9 +22,13 @@ Hospital medical rosters are built on a foundation of "rotations"—fixed blocks
 
 ## The Solution
 
-Receptor provides the **intelligent matching engine** that replaces manual placement with an auditable, preference-driven algorithm. 
+Receptor provides a **comprehensive optimisation suite** that replaces manual planning and placement with mathematically rigorous, algorithmic processes.
 
-We don't just build a roster; we architect the optimal workforce distribution for the entire clinical year. By resolving complex constraints (site parity, training requirements, leave cover) against doctor preferences, we deliver a "Win-Win" for both the administration and the clinician.
+We don't just build a roster; we architect the optimal workforce distribution for the entire clinical year through a two-step optimisation:
+1. **Intelligent Planning (Receptor Planner):** Automatically generating structurally flawless, compliant annual job lines that prioritize educational affinity and operational constraints.
+2. **Intelligent Matching (Receptor Allocator):** Assigning doctors to these optimal job lines using an auditable, preference-driven algorithm.
+
+By resolving complex constraints (site parity, training requirements, leave cover) against doctor preferences, we deliver a "Win-Win" for both the administration and the clinician.
 
 ### The Complete Rotation Lifecycle
 
