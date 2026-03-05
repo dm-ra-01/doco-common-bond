@@ -43,6 +43,14 @@ systems.
 - Install all critical OS and browser updates within 7 days.
 - Ensure full-disk encryption (FileVault/BitLocker) is enabled.
 - Use a screen lock with a short timeout (e.g., 5 minutes).
+- **Portable storage media (USB drives and external storage) is not permitted**
+  for storing or transferring Common Bond data. This prohibition applies to all
+  staff regardless of device ownership.
+- Common Bond operates a **Bring Your Own Device (BYOD) model** for Territory
+  Managers. Personal devices used to access Common Bond systems must comply with
+  all requirements in this policy (encryption, MFA, screen lock, USB
+  prohibition). Access to company systems from personal devices is governed by
+  Cloudflare Zero Trust access controls.
 
 ### 4.3 Data Handling
 
