@@ -5,6 +5,10 @@ sidebar_position: 4
 
 # Access Control Policy
 
+| Version | Effective Date | Approved By          | Next Review |
+| ------- | -------------- | -------------------- | ----------- |
+| 1.0     | ⚠️ Confirm     | Ryan Ammendolea, CEO | ⚠️ Confirm  |
+
 ## 1. Purpose
 
 To limit access to information and information processing facilities to

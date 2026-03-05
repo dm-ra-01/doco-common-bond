@@ -5,6 +5,10 @@ sidebar_position: 2
 
 # Risk Register
 
+| Version | Effective Date | Approved By          | Next Review |
+| ------- | -------------- | -------------------- | ----------- |
+| 1.0     | ⚠️ Confirm     | Ryan Ammendolea, CEO | ⚠️ Confirm  |
+
 This is the authoritative Risk Register for Common Bond's Information Security
 Management System (ISMS). It is maintained as a live record and reviewed
 annually or upon significant organisational or threat changes.

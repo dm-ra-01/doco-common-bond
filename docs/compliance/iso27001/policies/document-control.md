@@ -5,6 +5,10 @@ sidebar_position: 2
 
 # Document Control Policy
 
+| Version | Effective Date | Approved By          | Next Review |
+| ------- | -------------- | -------------------- | ----------- |
+| 1.0     | ⚠️ Confirm     | Ryan Ammendolea, CEO | ⚠️ Confirm  |
+
 ## 1. Purpose
 
 To ensure that all documents within the ISMS are adequately controlled,

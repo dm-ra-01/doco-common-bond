@@ -5,6 +5,10 @@ sidebar_position: 1
 
 # Risk Assessment & Treatment Methodology
 
+| Version | Effective Date | Approved By          | Next Review |
+| ------- | -------------- | -------------------- | ----------- |
+| 1.0     | ⚠️ Confirm     | Ryan Ammendolea, CEO | ⚠️ Confirm  |
+
 ## 1. Introduction
 
 This methodology outlines how Common Bond identifies, analyzes, evaluates, and

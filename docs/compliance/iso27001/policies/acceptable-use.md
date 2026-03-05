@@ -5,6 +5,10 @@ sidebar_position: 3
 
 # Acceptable Use Policy (AUP)
 
+| Version | Effective Date | Approved By          | Next Review |
+| ------- | -------------- | -------------------- | ----------- |
+| 1.0     | ⚠️ Confirm     | Ryan Ammendolea, CEO | ⚠️ Confirm  |
+
 ## 1. Purpose
 
 This policy outlines the acceptable use of Common Bond's information assets and

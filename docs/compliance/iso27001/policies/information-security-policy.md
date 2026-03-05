@@ -5,6 +5,10 @@ sidebar_position: 1
 
 # Information Security Policy
 
+| Version | Effective Date | Approved By          | Next Review |
+| ------- | -------------- | -------------------- | ----------- |
+| 1.0     | ⚠️ Confirm     | Ryan Ammendolea, CEO | ⚠️ Confirm  |
+
 ## 1. Purpose
 
 The purpose of this policy is to protect the information assets of Common Bond

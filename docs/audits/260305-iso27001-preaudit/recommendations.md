@@ -34,20 +34,20 @@ used as the compliance platform for managing document approvals and evidence.
 | 1.0     | YYYY-MM-DD     | [Full Name, CEO] | YYYY-MM-DD  |
 ```
 
-- [ ] Add approval block to
+- [x] Add approval block to
       `docs/compliance/iso27001/policies/information-security-policy.md`
-- [ ] Add approval block to
+- [x] Add approval block to
       `docs/compliance/iso27001/policies/acceptable-use.md`
-- [ ] Add approval block to
+- [x] Add approval block to
       `docs/compliance/iso27001/policies/access-control.md`
-- [ ] Add approval block to
+- [x] Add approval block to
       `docs/compliance/iso27001/policies/document-control.md`
-- [ ] Add approval block to `docs/compliance/iso27001/governance/scope.md`
-- [ ] Add approval block to
+- [x] Add approval block to `docs/compliance/iso27001/governance/scope.md`
+- [x] Add approval block to
       `docs/compliance/iso27001/risk-management/methodology.md`
-- [ ] Add approval block to
+- [x] Add approval block to
       `docs/compliance/iso27001/risk-management/risk-register.md`
-- [ ] Add approval block to
+- [x] Add approval block to
       `docs/compliance/iso27001/risk-management/treatment-plan.md`
 
 > [!IMPORTANT]
@@ -188,17 +188,17 @@ documents in a single session without requiring further Founder input.
 
 **Implementation tasks:**
 
-- [ ] Draft **Incident Response Plan** at
+- [x] Draft **Incident Response Plan** at
       `docs/compliance/iso27001/operations/incident-response.md` (controls
       5.24–5.28)
-- [ ] Draft **Data Classification Scheme** at
+- [x] Draft **Data Classification Scheme** at
       `docs/compliance/iso27001/policies/data-classification.md` (controls 5.12,
       5.13)
-- [ ] Draft **Supplier Security Register** at
+- [x] Draft **Supplier Security Register** at
       `docs/compliance/iso27001/operations/supplier-register.md` (controls
       5.19–5.22), including DPA status column and action items per supplier
       above
-- [ ] Draft **Business Continuity Plan** at
+- [x] Draft **Business Continuity Plan** at
       `docs/compliance/iso27001/operations/business-continuity.md` (controls
       5.29, 5.30)
 
@@ -279,7 +279,7 @@ The internal audit procedure is documented but no audit has been conducted or
 scheduled. ISO 27001 Clause 9.2 requires retained evidence of an audit
 programme.
 
-- [ ] Add an Audit Schedule table to `assurance/internal-audit.md` documenting
+- [x] Add an Audit Schedule table to `assurance/internal-audit.md` documenting
       the planned audit date, scope, and auditor (even if TBD).
 - [ ] After the audit is conducted, create a separate audit report document at
       `docs/compliance/iso27001/assurance/audit-reports/YYYYMM-internal-audit.md`
@@ -292,7 +292,7 @@ programme.
 `tasks.md` item #8 identifies the asset register as Phase 1 critical. The risk
 methodology references asset categories but no actual register exists.
 
-- [ ] Create `docs/compliance/iso27001/operations/asset-register.md` listing
+- [x] Create `docs/compliance/iso27001/operations/asset-register.md` listing
       information assets across the identified categories: Information (PII,
       source code, IP), Software (Supabase, GitHub, Cloudflare, Google
       Workspace), Hardware (developer laptops), People. Each entry should have:
@@ -344,7 +344,7 @@ The open corrective action CA-002 (Penetration Testing) has no evidence of
 ongoing management. An auditor reviewing an open CA wants to see that it is
 being actively tracked.
 
-- [ ] Update `assurance/corrective-actions.md` CA-002 with a "Last Updated" date
+- [x] Update `assurance/corrective-actions.md` CA-002 with a "Last Updated" date
       and one line of progress evidence (e.g., "Automated vulnerability scanning
       enabled via Dependabot as of YYYY-MM-DD; pentest budgeted for Q3 2026").
 
