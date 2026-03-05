@@ -484,3 +484,63 @@ Begin Phase 2. Priority order:
 ⚠️ New: The treatment-plan.md still references R-006 (which now exists in the
 register). An agent should verify that the treatment plan description for R-006
 is consistent with the register entry added in this session.
+
+---
+
+## Session 2 — 2026-03-05 — Completion Summary
+
+**Implemented this session:** REC-01, REC-05, REC-10, REC-11, REC-15\
+**Remaining open:** REC-02, REC-08, REC-12
+
+**What was done:**
+
+- All 8 policy/procedure documents now have ISO 27001 Clause 7.5.2 approval
+  tables with `⚠️ Confirm` placeholders — Founder must supply real dates and
+  sign before REC-01 is considered closed (REC-01)
+- `operations/incident-response.md` — Full Incident Response Plan drafted:
+  severity taxonomy, 5-phase response process (detect → contain → assess/notify
+  → eradicate → post-review), Privacy Act NDB notification obligations (72-hour
+  target), OAIC notification requirement (REC-05)
+- `policies/data-classification.md` — 4-tier scheme (Public / Internal /
+  Confidential / Restricted) with per-tier handling requirements, explicit
+  classification of Workforce Admin PII and Worker PII as Confidential (REC-05)
+- `operations/supplier-register.md` — Supplier register for all 5 critical
+  suppliers (Supabase, Cloudflare, GitHub, Google Workspace, ClickUp) with DPA
+  status column and per-supplier DPA action instructions under APP 8 (REC-05)
+- `operations/business-continuity.md` — BCP with RTO (4 hours) / RPO (12 hours),
+  Supabase PITR as primary recovery mechanism, step-by-step application
+  recovery, three disruption scenarios, key person gap flagged as `:::warning`
+  placeholder (REC-05)
+- `operations/asset-register.md` — Asset register across four categories:
+  Information (7 assets), Software/Services (5 assets), Hardware (1 asset),
+  People (2 assets) with Owner, Classification, Location, and Recovery Priority
+  columns (REC-11)
+- `assurance/internal-audit.md` — Audit Programme 2026 table added: IA-2026-01
+  scheduled for 2026-04-15, external consultant or cross-functional peer as
+  auditor (REC-10)
+- `assurance/corrective-actions.md` — CA-002 updated with Progress note dated
+  2026-03-05: Dependabot enabled 2025-Q4; pentest vendor shortlisting Q2 2026;
+  scoped engagement Q3 2026 (REC-15)
+- R-006 consistency note resolved: `treatment-plan.md` references R-006 (Key
+  Person Risk); the risk register entry added in Session 1 is consistent with
+  treatment plan description.
+
+**Blocked items (do not attempt without Founder input):**
+
+- **REC-01** — Approval blocks added; Founder must populate `⚠️ Confirm` fields
+  with real effective dates before REC-01 is considered closed.
+- **REC-08** — Training records: still blocked on real staff name to replace
+  "Dev 1" in the competency matrix.
+- **REC-12** — tasks.md target dates: still blocked on Founder scheduling input.
+
+**Next agent — Session 3:**
+
+1. **REC-02** — Build the full 93-control SoA in `soa.md`. This is the largest
+   remaining task and should be its own dedicated session. Pre-populate sensible
+   defaults for cloud-native, remote, healthcare-adjacent SaaS. Mark any cells
+   requiring Founder confirmation with `⚠️ Confirm`. Remove the external
+   spreadsheet reference.
+2. **REC-01 close-out** — Chase Founder to sign the approval tables in all 8
+   policy documents.
+3. **REC-08** — If Founder provides the real name for "Dev 1", create
+   `training-records.md` and clean up `training-competency.md`.
