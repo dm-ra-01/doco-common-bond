@@ -5,11 +5,21 @@ sidebar_position: 0
 
 # Policies
 
-Policies are the "laws" of our Information Security Management System (ISMS). They set the rules that all employees and contractors must follow.
+Policies are the rules that govern how Common Bond handles information assets,
+devices, and systems. They translate the high-level commitment in the
+Information Security Policy into specific, enforceable requirements for all
+staff, contractors, and third parties. ISO 27001:2022 Clauses 5.2 and 7.5.
 
-## Core Policies
+All policies carry a version number and must be approved by the CEO before
+taking effect. Staff are required to review and acknowledge applicable policies
+as part of onboarding.
 
-- **[Information Security Policy](./information-security-policy.md)**: The high-level mandate for security.
-- **[Acceptable Use Policy](./acceptable-use.md)**: Rules for using devices, passwords, and data.
-- **[Access Control Policy](./access-control.md)**: How we manage access to systems.
-- **[Document Control](./document-control.md)**: How we manage these documents.
+## Documents in This Section
+
+| Document                                                     | ISO Clause(s) | Purpose                                                                                      |
+| ------------------------------------------------------------ | ------------- | -------------------------------------------------------------------------------------------- |
+| [Information Security Policy](./information-security-policy) | 5.1, 5.2      | High-level mandate; CIA triad commitment; CEO accountability; annual review frequency        |
+| [Acceptable Use Policy](./acceptable-use)                    | 6.2, 8.1      | Device requirements (BYOD context); USB prohibition; MFA; password management; reporting     |
+| [Access Control Policy](./access-control)                    | 5.15–5.18     | Least privilege; Supabase RLS; GitHub Teams; annual key rotation                             |
+| [Document Control Policy](./document-control)                | 7.5           | Git/PR workflow as ISMS document management; approval requirements; retention                |
+| [Data Classification Scheme](./data-classification)          | 5.12, 5.13    | 4-tier classification (Public / Internal / Confidential / Restricted); PII handling guidance |
