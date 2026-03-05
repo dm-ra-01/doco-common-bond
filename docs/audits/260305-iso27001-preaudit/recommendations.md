@@ -54,6 +54,14 @@ used as the compliance platform for managing document approvals and evidence.
 > The approval block must be populated with real full names and real dates by
 > the Founder/CEO before this recommendation is considered closed.
 
+> [!NOTE]
+> **Post-audit action — document review before sign-off:** The Founder/CEO has
+> confirmed (2026-03-05) that each policy document must be personally reviewed
+> before the approval table is signed. The `⚠️ Confirm` placeholders will be
+> replaced by the Founder as part of an out-of-band review process. This
+> recommendation should remain open until that review is completed and dates are
+> populated. REC-01 close-out is a post-audit task for the Founder.
+
 ---
 
 ### REC-02: Build a complete inline Statement of Applicability (SoA) (DOC-12)
@@ -245,16 +253,20 @@ formally assigned and communicated. Named individuals are now confirmed.
 (Sections 1–3) and an evidence record (Section 4 Competency Matrix). These
 should be in separate documents.
 
-- [ ] Create `docs/compliance/iso27001/operations/training-records.md` as the
+- [x] Create `docs/compliance/iso27001/operations/training-records.md` as the
       live evidence record containing the Competency Matrix and completed
       onboarding checklists.
-- [ ] Retain `training-competency.md` as the policy/procedure, remove the live
+- [x] Retain `training-competency.md` as the policy/procedure, remove the live
       evidence/names from it, and link to `training-records.md` for the actual
       records.
-- [ ] Replace "Dev 1" in the competency matrix with the actual name of the team
-      member.
-- [ ] Complete the three onboarding checklist items for all current staff (mark
-      `[x]` with a date if completed).
+- [x] Replace "Dev 1" in the competency matrix with the actual names of all team
+      members (Amelia Jane Cameron — Territory Manager WA/NT/ADL; Emma Nyhof —
+      Territory Manager VIC/NSW/QLD/TAS/NZ).
+- [ ] Complete the onboarding checklist items for all current staff (mark `[x]`
+      with a date if completed).
+  - ⚠️ Blocked: Neither Amelia Jane Cameron nor Emma Nyhof has yet signed
+    policies, completed security onboarding, or attended awareness training. The
+    Founder/CEO must action this with both staff members.
 
 ---
 

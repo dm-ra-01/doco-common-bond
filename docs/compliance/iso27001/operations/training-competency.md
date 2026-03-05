@@ -3,24 +3,42 @@ title: Training & Competency
 sidebar_position: 1
 ---
 
-# Training & Competency
+# Training & Competency Policy
 
 ## 1. Requirement
-All personnel must be competent to perform their roles securely.
+
+All personnel must be competent to perform their roles securely. This policy
+defines the training and competency requirements for all staff. Completed
+training records and evidence are maintained separately in
+[Training Records](./training-records).
 
 ## 2. Onboarding Training
-New hires must complete:
-- [ ] Review of **Information Security Policy** & **Acceptable Use Policy**.
-- [ ] Review of **Role-Specific** security responsibilities.
-- [ ] Setup of **MFA** and **Password Manager**.
+
+All new staff must complete the following before being granted access to Common
+Bond systems:
+
+1. Review and sign the
+   [Information Security Policy](../policies/information-security-policy) and
+   [Acceptable Use Policy](../policies/acceptable-use).
+2. Receive a briefing on their role-specific security responsibilities.
+3. Enable Multi-Factor Authentication (MFA) on all assigned accounts.
+4. Set up a Password Manager.
+
+Completion of onboarding training is recorded in
+[Training Records](./training-records).
 
 ## 3. Ongoing Competency
-- **Security Awareness:** Regular (e.g., quarterly) updates on emerging threats (phishing, new vulnerabilities).
-- **Technical Training:** Developers encouraged to upskill in secure coding (OWASP Top 10).
 
-## 4. Competency Matrix (Example)
+- **Security Awareness:** All staff receive annual security awareness training
+  covering emerging threats (phishing, social engineering, account security).
+- **Technical Training:** Engineering staff are encouraged to maintain and build
+  skills in secure coding practices (OWASP Top 10, DevSecOps).
+- **Certifications:** Relevant certifications are recorded in the Competency
+  Matrix in [Training Records](./training-records).
 
-| Name | Role | Policy Signed? | Security Onboarding | Last Awareness Training | Skills/certs |
-|:---|:---|:---|:---|:---|:---|
-| Ryan A. | CTO | Yes | Completed | Q1 2026 | CISSP (Expired), DevSecOps lead |
-| Dev 1 | Developer | Yes | Completed | Q1 2026 | React Security |
+## 4. Responsibilities
+
+| Role      | Responsibility                                                                                                |
+| --------- | ------------------------------------------------------------------------------------------------------------- |
+| CEO/ISM   | Ensures all staff complete onboarding training and that the training records are kept current.                |
+| All Staff | Must complete onboarding training before system access is granted. Must complete annual awareness refreshers. |
