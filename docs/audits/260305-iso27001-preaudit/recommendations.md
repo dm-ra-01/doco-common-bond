@@ -72,13 +72,13 @@ reviewed document in any ISO 27001 audit. The current stub is insufficient.
 93 ISO 27001:2022 Annex A controls. An agent will convert it to `.xlsx` format
 at a later date when required.
 
-- [ ] Replace the stub `soa.md` with a full structured Markdown table covering
+- [x] Replace the stub `soa.md` with a full structured Markdown table covering
       all 93 Annex A controls. Each row must include: Control ID, Control Name,
       Applicable (Yes/No), Justification for inclusion/exclusion, Implementation
       Status (Implemented / Partial / Planned / Not Applicable).
-- [ ] Remove all references to the external spreadsheet
+- [x] Remove all references to the external spreadsheet
       `SA 1 - Statement of Applicability.xlsx`.
-- [ ] The implementing agent should pre-populate sensible defaults based on
+- [x] The implementing agent should pre-populate sensible defaults based on
       Common Bond's profile (cloud-native, fully remote, pre-revenue SaaS,
       healthcare-adjacent) and mark all decisions requiring Founder confirmation
       with `⚠️ Confirm`.
@@ -556,3 +556,67 @@ is consistent with the register entry added in this session.
    policy documents.
 3. **REC-08** — If Founder provides the real name for "Dev 1", create
    `training-records.md` and clean up `training-competency.md`.
+
+---
+
+## Session 3 — 2026-03-05 — Completion Summary
+
+**Implemented this session:** REC-02\
+**Remaining open:** REC-01 (Founder sign-off pending), REC-08 (blocked — Founder
+action required with staff), REC-12 (blocked — Founder scheduling input
+required)
+
+**What was done:**
+
+- `operations/soa.md` — Replaced the stub with a full 93-control ISO 27001:2022
+  Annex A Statement of Applicability (REC-02):
+  - All 93 Annex A controls assessed across 4 themes (Organisational, People,
+    Physical, Technological)
+  - 78 controls marked Applicable; 15 marked Not Applicable (all physical —
+    7.1–7.6, 7.11, 7.12, justified by cloud-only infrastructure)
+  - Sensible defaults pre-populated for Common Bond's profile (cloud-native,
+    remote, healthcare-adjacent SaaS)
+  - `⚠️ Confirm` markers applied to 8 cells requiring Founder decisions (6.1,
+    6.2, 6.6, 7.10, 8.23, 8.30, 8.33, 8.10)
+  - External spreadsheet reference removed
+  - Approval table and Review History added
+  - Version 1.0, effective date `⚠️ Confirm`
+
+**Blocked items (do not attempt without Founder input):**
+
+- **REC-01** — Approval tables are in all 8 policy/procedure documents with
+  `⚠️ Confirm` placeholders; Founder must supply real effective dates.
+- **REC-08** — Onboarding checklists for Amelia Jane Cameron and Emma Nyhof
+  remain incomplete; this is an operational Founder action, not a documentation
+  task.
+- **REC-12** — `tasks.md` target dates require Founder scheduling commitment.
+
+**SoA `⚠️ Confirm` items for Founder:**
+
+1. **6.1** — Background check policy for Territory Managers
+2. **6.2** — Whether employment contracts for Amelia and Emma include
+   information security terms
+3. **6.6** — Whether Territory Manager employment contracts include
+   confidentiality clauses
+4. **7.10** — Whether USB storage is permitted or restricted
+5. **8.23** — Whether Cloudflare Gateway web filtering is enabled for company
+   devices
+6. **8.30** — Whether any external development contractors are engaged (affects
+   applicability)
+7. **8.33** — Whether production data is ever copied to development environments
+8. **8.10** — Whether end-to-end data deletion requests can currently be
+   processed
+
+**Audit status after Session 3:**
+
+All agent-actionable recommendations are now complete. The remaining open items
+are:
+
+- REC-01 close-out (Founder signature on approval tables)
+- REC-08 (Founder action with staff on security onboarding)
+- REC-12 (Founder task scheduling)
+- SoA `⚠️ Confirm` items above
+
+The ISMS documentation set is now substantively complete for a pre-certification
+review. The remaining gaps are process and sign-off items, not documentation
+gaps.
