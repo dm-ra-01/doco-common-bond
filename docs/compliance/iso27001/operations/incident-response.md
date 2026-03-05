@@ -83,11 +83,14 @@ All suspected security incidents must be reported immediately to:
      Commissioner (OAIC) via the NDB submission form simultaneously with, or
      prior to, customer notification.
 
-:::warning Privacy Act Obligation Under Part IIIC of the Privacy Act 1988,
-Common Bond must notify the OAIC and affected individuals of an Eligible Data
-Breach. "Serious harm" includes identity theft, financial harm, and significant
-reputational damage. When in doubt, notify. The cost of under-notifying exceeds
-the cost of over-notifying. :::
+::: warning[Privacy Act Obligation]
+
+Under Part IIIC of the Privacy Act 1988, Common Bond must notify the OAIC and
+affected individuals of an Eligible Data Breach. "Serious harm" includes
+identity theft, financial harm, and significant reputational damage. When in
+doubt, notify. The cost of under-notifying exceeds the cost of over-notifying.
+
+:::
 
 ### Phase 4: Eradication and Recovery
 

@@ -28,10 +28,14 @@ multiple hats, but distinct accountability is crucial for ISO 27001 compliance.
 **Contact:** ryan@commonbond.au | Security incidents: alert@commonbond.au | +61
 403 551 813
 
-:::note At this stage of the business, the Founder/CEO and ISM/CTO roles are
-held by the same individual, Ryan Ammendolea. This dual-role arrangement is a
-documented and accepted consequence of the pre-revenue, founder-led stage of the
-organisation. It will be reviewed as the team grows. :::
+::: note[Dual-Role Arrangement]
+
+At this stage of the business, the Founder/CEO and ISM/CTO roles are held by the
+same individual, Ryan Ammendolea. This dual-role arrangement is a documented and
+accepted consequence of the pre-revenue, founder-led stage of the organisation.
+It will be reviewed as the team grows.
+
+:::
 
 **Responsibilities:**
 

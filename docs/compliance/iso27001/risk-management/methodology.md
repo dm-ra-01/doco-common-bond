@@ -80,9 +80,13 @@ further treatment and the required approval authority:
 | **Medium** | Accepted only where treatment is disproportionate to impact, or where no cost-effective control exists. Requires documented justification.                       | CEO (Ryan Ammendolea)        |
 | **High**   | Not accepted without active treatment. A treatment plan must be approved before the risk is retained. Residual risk acceptance requires documented CEO sign-off. | CEO (Ryan Ammendolea)        |
 
-:::warning Any risk rated High that cannot be immediately mitigated must be
-escalated to the CEO and formally logged in the Risk Register with a documented
-treatment plan and target resolution date. :::
+::: warning[High Risk Escalation Requirement]
+
+Any risk rated High that cannot be immediately mitigated must be escalated to
+the CEO and formally logged in the Risk Register with a documented treatment
+plan and target resolution date.
+
+:::
 
 ## 3. Risk Treatment
 

@@ -56,9 +56,13 @@ Hardware, and People.
 | ------ | ----------------- | --------------------------------------------------------------------------------------------------------------------------- | --------------------- | -------------- | ------------------------ | ----------------- |
 | HW-001 | Developer laptops | Personal computing devices used for development and business operations. Device count and model confirmed at annual review. | Ryan Ammendolea (CEO) | Internal       | Remote (staff locations) | Medium            |
 
-:::tip Full-disk encryption (FileVault for macOS, BitLocker for Windows) is
-required on all developer laptops per the Acceptable Use Policy. Device
-inventory is maintained by the Founder/CEO and reviewed annually. :::
+::: tip[Full-Disk Encryption Required]
+
+Full-disk encryption (FileVault for macOS, BitLocker for Windows) is required on
+all developer laptops per the Acceptable Use Policy. Device inventory is
+maintained by the Founder/CEO and reviewed annually.
+
+:::
 
 ---
 

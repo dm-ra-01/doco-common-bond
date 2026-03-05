@@ -26,12 +26,15 @@ platform.
 
 ## 3. DPA Requirements Note
 
-:::warning APP 8 Obligation Under Australian Privacy Principle 8 (APP 8), Common
-Bond must take reasonable steps to ensure overseas recipients of personal
-information protect that information to a standard equivalent to the Privacy
-Act 1988. All critical suppliers handling personal information must have an
-executed Data Processing Agreement (DPA) or equivalent contractual protection in
-place. :::
+::: warning[APP 8 Obligation]
+
+Under Australian Privacy Principle 8 (APP 8), Common Bond must take reasonable
+steps to ensure overseas recipients of personal information protect that
+information to a standard equivalent to the Privacy Act 1988. All critical
+suppliers handling personal information must have an executed Data Processing
+Agreement (DPA) or equivalent contractual protection in place.
+
+:::
 
 Current status: No bespoke DPAs are in place. All reliance is on supplier
 standard terms. **Executing DPAs with all critical suppliers is a Phase 1

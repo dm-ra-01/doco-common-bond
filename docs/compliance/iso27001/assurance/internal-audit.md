@@ -21,9 +21,13 @@ audits.
 | ---------- | ------------ | --------------------------------------------------------------------------------- | -------------------------------------------------- | --------- |
 | IA-2026-01 | 2026-04-15   | Full ISMS scope: governance, policies, risk management, operations, and assurance | External consultant (TBC) or cross-functional peer | Scheduled |
 
-:::note ISO 27001 Clause 9.2 requires that the audit programme consider the
-importance of the processes, previous audit results, and the risk to the
-organisation. This programme will be updated after each audit is conducted. :::
+::: note[ISO 27001 Clause 9.2]
+
+ISO 27001 Clause 9.2 requires that the audit programme consider the importance
+of the processes, previous audit results, and the risk to the organisation. This
+programme will be updated after each audit is conducted.
+
+:::
 
 After each audit is conducted, the findings are recorded in a dedicated audit
 report document at

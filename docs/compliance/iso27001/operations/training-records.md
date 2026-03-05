@@ -18,8 +18,9 @@ and requirements are defined in the
 | Amelia Jane Cameron | Territory Manager (WA, NT, ADL)            | No             | Not completed       | —                       | —                               |
 | Emma Nyhof          | Territory Manager (VIC, NSW, QLD, TAS, NZ) | No             | Not completed       | —                       | —                               |
 
-:::warning Outstanding onboarding actions The following are incomplete for
-**Amelia Jane Cameron** and **Emma Nyhof**:
+::: warning[Outstanding Onboarding Actions]
+
+The following are incomplete for **Amelia Jane Cameron** and **Emma Nyhof**:
 
 - [ ] Review and sign the
       [Information Security Policy](../policies/information-security-policy)
@@ -29,7 +30,9 @@ and requirements are defined in the
 - [ ] Attend security awareness training session
 
 These must be completed and this record updated before ISO 27001 certification
-can be claimed for the full team. :::
+can be claimed for the full team.
+
+:::
 
 ## Onboarding Checklist — Amelia Jane Cameron
 

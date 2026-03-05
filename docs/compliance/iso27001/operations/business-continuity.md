@@ -78,10 +78,14 @@ In the event of identity provider (Google Workspace) disruption:
 - GitHub access is available via personal access tokens stored securely offline.
 - Cloudflare access via API token if Zero Trust is unavailable.
 
-:::tip Key Person Note All recovery credentials and access methods are
-documented and stored securely by Ryan Ammendolea (Founder/CEO). A succession
-plan for access recovery in the event of key person unavailability is a Phase 2
-action (see Risk R-006 in the Risk Register). :::
+:::tip[Key Person Note]
+
+All recovery credentials and access methods are documented and stored securely
+by Ryan Ammendolea (Founder/CEO). A succession plan for access recovery in the
+event of key person unavailability is a Phase 2 action (see Risk R-006 in the
+Risk Register).
+
+:::
 
 ## 6. Disruption Scenarios
 
@@ -105,11 +109,14 @@ action (see Risk R-006 in the Risk Register). :::
 
 ### Scenario C: Key Person Unavailability (Founder/CEO)
 
-:::warning Action Required A documented succession plan for key person
-unavailability has not yet been formalised. The Founder/CEO must document
-recovery credential locations and designate a trusted contact with access
-authority. This is tracked as R-006 in the Risk Register and is a Phase 2
-priority. :::
+:::warning[Action Required]
+
+A documented succession plan for key person unavailability has not yet been
+formalised. The Founder/CEO must document recovery credential locations and
+designate a trusted contact with access authority. This is tracked as R-006 in
+the Risk Register and is a Phase 2 priority.
+
+:::
 
 ## 7. Testing
 

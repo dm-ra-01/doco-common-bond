@@ -76,10 +76,13 @@ information held by Common Bond falls in this tier.
 | Authentication credentials | API keys, service account secrets, database connection strings.                                                                 |
 | Commercial information     | Pricing, contracts, unreleased product roadmaps.                                                                                |
 
-:::warning Privacy Act Classification All personal information held by Common
-Bond (Workforce Admin PII and Worker PII) is classified as Confidential at
-minimum, consistent with Australian Privacy Principle 11 (APP 11) requirements
-for security of personal information. :::
+::: warning[Privacy Act Classification]
+
+All personal information held by Common Bond (Workforce Admin PII and Worker
+PII) is classified as Confidential at minimum, consistent with Australian
+Privacy Principle 11 (APP 11) requirements for security of personal information.
+
+:::
 
 **Handling requirements:**
 
