@@ -168,6 +168,9 @@ Walk each repository in scope. For each:
 > [!WARNING]
 > Never editorialize in `audit.md`. Record what the artefacts *actually show*,
 > not what they should show. Save all recommendations for `recommendations.md`.
+> **Token efficiency:** Finding descriptions are one sentence of evidence.
+> Use relative paths from the repo root. Target: `audit.md` ≤ 8,000 bytes.
+
 
 ---
 

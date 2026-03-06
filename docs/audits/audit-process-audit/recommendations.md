@@ -269,7 +269,42 @@ Remaining work is adding a pre-notify checklist to the `audit.md` (audit phase) 
 
 ---
 
+### PROC-15 [260306-audit-process]: Enforce token-efficient formatting in all audit files
+
+All five `audit.md` files exceed 12,000 bytes, with the worst offenders at
+22,109 bytes (`260305-iso27001-preaudit`) and 21,059 bytes
+(`260306-audit-process`). Every agent that reads these files during an
+implementation session pays this token cost in full. Common sources of bloat:
+verbose prose in findings, repeated contextual preamble, and over-specified
+templates in the workflow files themselves.
+
+**Size inventory (as of 2026-03-06):**
+
+| File | Size |
+| :--- | :--- |
+| `260305-iso27001-preaudit/audit.md` | 22,109 bytes |
+| `260306-audit-process/audit.md` | 21,059 bytes |
+| `260305-graphql-state/audit.md` | 14,692 bytes |
+| `260305-match-backend/audit.md` | 13,372 bytes |
+| `260304-acl/audit.md` | 12,746 bytes |
+
+- [ ] Add a **Token Efficiency** writing standard to the `/audit` and
+      `/global-audit` workflows:
+      - Finding descriptions: one sentence of evidence, not a paragraph
+      - Severity table: required; prose findings sections in `audit.md` are
+        optional for Low findings
+      - References to file paths: use relative paths from the repo root, not
+        absolute paths
+      - Avoid restating content from `audit.md` in `recommendations.md` — link
+        to the finding ID instead
+      - Target: `audit.md` ≤ 8,000 bytes; `recommendations.md` ≤ 10,000 bytes
+- [ ] Apply the standard prospectively to all new audits; do not retroactively
+      refactor existing files unless a given audit re-audit is being performed.
+
+---
+
 ## 🟢 Low
+
 
 ### PROC-09 [260306-audit-process]: Add working tree cleanliness check to all implement-audit.md workflows
 
@@ -344,6 +379,8 @@ workflows) → PROC-12 (skill path cleanup)
 **Phase 5 — Edge Function coverage:** PROC-13 (Deno audit scope + deno check
 gate in supabase-receptor)
 
+**Phase 6 — Token efficiency:** PROC-15 (audit file size standards + refactor bloated audit.md files)
+
 ---
 
 ## Session 0 — 2026-03-06 — Initial Handoff
@@ -356,7 +393,7 @@ all repositories. The re-audit Definition of Done step (Step 6) has also been
 added to all five `implement-audit.md` workflows (this partially addresses
 PROC-08).\
 **Remaining:** PROC-01, PROC-02, PROC-03, PROC-08 (partial), PROC-09, PROC-10,
-PROC-11, PROC-12, PROC-13, PROC-14
+PROC-11, PROC-12, PROC-13, PROC-14, PROC-15
 
 **Next agent:** Begin **Phase 2** — PROC-08 (add pre-notify validation
 checklist to all six `audit.md` workflows) then PROC-09, PROC-10, PROC-11 (git
@@ -364,3 +401,4 @@ verification steps in all six `implement-audit.md` workflows). Work within the
 `audit/260306-audit-process` branch. Changes span multiple repositories —
 check out or confirm the branch exists in each repo before making changes. Any
 new observations should be added inline with `⚠️ New:` markers above.
+

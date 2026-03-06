@@ -100,6 +100,18 @@ templates that could cause agent confusion.
   confirmed). An unpushed branch could be lost if the local machine is wiped
   before implementation begins.
 
+**Historical context:**
+
+Prior to the workflow formalisation undertaken in March 2026, all audit work —
+findings, recommendations, and implementation commits — was committed directly
+to `main`. Feature branch enforcement was introduced as part of this audit
+workflow standardisation and was made mandatory retroactively across all
+repositories. This audit (`260306-audit-process`) is the first to be conducted
+entirely under the new branch-enforced process. Earlier audits (e.g.
+`260304-acl`, `260305-match-backend`, `260305-graphql-state`) were implemented
+directly on `main`; their audit and implementation records are preserved in
+`docs/audits/archive/` but their branches cannot be retroactively reconstructed.
+
 ### 1.2 Branch Checkout (Implementation Phase)
 
 **Strengths:**
@@ -394,11 +406,12 @@ repos.
 | PROC-06    | Stale Step 5 heading — "Commit to Main"                            | common-bond/implement-audit.md                     | 🟡 Medium ✅ fixed |
 | PROC-07    | Stale frontmatter descriptions (said "commits to main")            | supabase-receptor, icu-survival implement-audit.md | 🟡 Medium ✅ fixed |
 | PROC-08    | No Audit Definition of Done checklist                              | All audit.md                                       | 🟡 Medium          |
-| PROC-14    | No audit workflows for workforce-frontend or preference-frontend    | (missing)                                          | � High           |
+| PROC-14    | No audit workflows for workforce-frontend or preference-frontend    | (missing)                                          |  High           |
 | PROC-09    | Working tree cleanliness not checked before implementation         | All implement-audit.md                             | 🟢 Low             |
 | PROC-10    | Branch remote tracking not verified after checkout                 | All implement-audit.md                             | 🟢 Low             |
 | PROC-11    | Branch push success not confirmed (audit phase)                    | All audit.md                                       | 🟢 Low             |
 | PROC-12    | Adversarial skill paths hardcoded as absolute filesystem paths     | All audit.md (Receptor repos)                      | 🟢 Low             |
+| PROC-15    | Audit files are token-inefficient — all five `audit.md` files exceed 12,000 bytes (largest: `260305-iso27001-preaudit/audit.md` at 22,109 bytes). Verbose prose, repeated headers, and redundant context bloat token cost for every agent that reads them during implementation sessions. | All audit.md files | 🟡 Medium |
 
 ---
 

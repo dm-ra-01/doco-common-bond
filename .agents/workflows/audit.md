@@ -203,6 +203,11 @@ metadata problems, etc.]
 > - Severity uses 🔴 Critical / 🟠 High / 🟡 Medium / 🟢 Low.
 > - The comparison table must include every audited section.
 > - Do not editorialize — state facts with evidence.
+> - **Token efficiency:** Finding descriptions must be one sentence of evidence,
+>   not a paragraph. Prose findings sections are optional for 🟢 Low items —
+>   the severity table row is sufficient. Use relative paths from the repo root.
+>   Target: `audit.md` ≤ 8,000 bytes.
+
 
 ---
 
