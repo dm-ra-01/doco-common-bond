@@ -8,22 +8,41 @@ sidebar_position: 1
 
 > **This is the authoritative source of truth for frontend development standards
 > across the Receptor ecosystem.** Applies to: `planner-frontend`,
-> `preference-frontend`, `workforce-frontend`, `website-frontend`.
+> `preference-frontend`, `workforce-frontend`.
+
+| Field             | Value                                                                  |
+| :---------------- | :--------------------------------------------------------------------- |
+| **Last Reviewed** | 2026-03-06                                                             |
+| **Reviewed By**   | Engineering Leadership (Antigravity audit `260306-frontend-standards`) |
+| **Next Review**   | 2026-09-06                                                             |
 
 ---
 
 ## 1. Technology Stack
 
-| Layer              | Standard                                      | Notes                                         |
-| :----------------- | :-------------------------------------------- | :-------------------------------------------- |
-| **Framework**      | Next.js 16+ (App Router)                      | TypeScript strict mode                        |
-| **Styling**        | Vanilla CSS (CSS Modules + CSS Variables)     | No Tailwind — design system via CSS variables |
-| **Data / GraphQL** | Urql 5.x + `pg_graphql`                       | See [State Management](./state-management.md) |
-| **State**          | Urql Graphcache (server) + React Context (UI) |                                               |
-| **Type Gen**       | `@graphql-codegen` (client preset)            | From live schema + `.graphql` operations      |
-| **Unit Tests**     | Vitest (Workspaces)                           | See [§5 Testing](#5-testing)                  |
-| **E2E Tests**      | Playwright                                    | See [§5 Testing](#5-testing)                  |
-| **Quality Gates**  | Husky pre-commit (`npm run lint`)             | ESLint + `next lint`                          |
+| Layer              | Standard                                             | Notes                                                                |
+| :----------------- | :--------------------------------------------------- | :------------------------------------------------------------------- |
+| **Framework**      | Next.js 16+ (App Router)                             | TypeScript strict mode                                               |
+| **Styling**        | Tailwind v4 + CSS Variables (design tokens)          | Use `@theme {}` for token registration; see [§7 Styling](#7-styling) |
+| **Data / GraphQL** | Urql 5.x + `pg_graphql`                              | See [GraphQL Standard](./graphql-standard.md)                        |
+| **State**          | Urql Graphcache (server) + React Context (UI)        | See [State Management](./state-management.md)                        |
+| **Type Gen**       | `@graphql-codegen` (client preset)                   | From live schema + `.graphql` operations                             |
+| **Unit Tests**     | Vitest (Workspaces)                                  | See [§5 Testing](#5-testing)                                         |
+| **E2E Tests**      | Playwright                                           | See [§5 Testing](#5-testing)                                         |
+| **Quality Gates**  | Husky pre-commit (`npm run lint` + `vitest related`) | ESLint + `next lint`; `lint-staged` scoped to `src/**/*.{ts,tsx}`    |
+
+### In-Scope Applications
+
+| App                   | Profile            | Tailwind Stack                                                            |
+| :-------------------- | :----------------- | :------------------------------------------------------------------------ |
+| `planner-frontend`    | Management desktop | Tailwind v4 + CSS Variables                                               |
+| `workforce-frontend`  | Management desktop | Tailwind v4 + CSS Variables                                               |
+| `preference-frontend` | Mobile / consumer  | Tailwind v4 + Radix UI (see [§7.2](#72-preference-frontend-mobile-stack)) |
+
+> [!NOTE]
+> `website-frontend` (Cloudflare Pages, Vite, Tailwind v3) is a separate product
+> outside the management frontend standard. It has its own architecture and is
+> not subject to this document.
 
 ---
 
@@ -367,21 +386,39 @@ useEffect(() => {
 ### 6.6 Transactional State for Drafting Workflows
 
 For high-frequency drafting (e.g., preference reordering, multi-step forms) use
-a **localised React Context** scoped to the workflow. This prevents global state
-bloat and protects in-flight edits from background refetches.
+a **localised React Context** scoped to the workflow, optionally backed by
+**Zustand** for complex local state. This prevents global state bloat and
+protects in-flight edits from background refetches.
 
 ---
 
-## 7. Styling — Vanilla CSS Design System
+## 7. Styling
 
-All management frontends (Planner, Workforce) use a Vanilla CSS design system:
+### 7.1 Management Apps (Planner, Workforce)
 
-- **CSS Variables** for theming (colours, spacing, typography tokens)
-- **CSS Modules** for component-scoped isolation
-- **No utility-class libraries** (Tailwind is not used in this ecosystem)
+All management frontends use **Tailwind v4** with CSS custom properties for
+design tokens:
 
-The Preferencer frontend uses a mobile-first approach for "on the ward" usage
-patterns.
+```css
+/* globals.css */
+@import "tailwindcss";
+
+@theme {
+    --font-sans: "Inter", system-ui, sans-serif;
+    --color-brand-primary: hsl(var(--brand-primary));
+    /* ... additional tokens */
+}
+
+:root {
+    --brand-primary: 271 76% 53%;
+    /* ... design system values */
+}
+```
+
+- **Design tokens** live in `:root` as CSS custom properties (HSL values)
+- **`@theme {}`** maps tokens into Tailwind's utility system
+- **CSS Modules** for component-specific overrides where needed
+- **No `@apply` in component files** — prefer Tailwind utilities directly in JSX
 
 **Typography:**
 
@@ -390,9 +427,44 @@ patterns.
 
 **Icons:** Lucide React (2px stroke weight, consistent action icons).
 
+### 7.2 Preference Frontend (Mobile Stack)
+
+`preference-frontend` is a **mobile-first consumer app** ("on the ward"). It
+uses an extended stack appropriate for its UX requirements:
+
+| Addition                       | Purpose                                 |
+| :----------------------------- | :-------------------------------------- |
+| **Radix UI primitives**        | Accessible dialogs, dropdowns, tooltips |
+| **`class-variance-authority`** | Typed component variant API             |
+| **`tailwind-merge`**           | Safe Tailwind class composition         |
+| **`framer-motion`**            | Gesture animations and transitions      |
+
+Tailwind design tokens must be aligned with the ecosystem colour palette to
+maintain visual consistency across apps.
+
 ---
 
-## 8. Production Readiness Checklist
+## 8. Permitted Libraries
+
+These libraries appear across the ecosystem and are approved for use:
+
+| Library                 | Purpose                      | Apps                              |
+| :---------------------- | :--------------------------- | :-------------------------------- |
+| `react-hook-form`       | Form state management        | workforce, preference             |
+| `zod`                   | Schema validation            | workforce, preference             |
+| `@tanstack/react-table` | Headless table (sort/filter) | preference                        |
+| `framer-motion`         | Animations                   | preference only                   |
+| `date-fns`              | Date utilities               | All                               |
+| `lucide-react`          | Icon system                  | All                               |
+| `zustand`               | Local/draft UI state only    | preference (transactional drafts) |
+
+> [!IMPORTANT]
+> `zustand` must only manage local UI and draft state — never GraphQL server
+> data. Server state lives in Urql Graphcache exclusively.
+
+---
+
+## 9. Production Readiness Checklist
 
 Before marking any frontend feature complete:
 
@@ -411,7 +483,7 @@ Before marking any frontend feature complete:
 
 ---
 
-## 9. Engineering Conventions
+## 10. Engineering Conventions
 
 ### Naming
 
@@ -444,7 +516,7 @@ English:
 
 ---
 
-## 10. Security
+## 11. Security
 
 ### Data Safety (PHI)
 

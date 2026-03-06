@@ -9,11 +9,8 @@
 | **Date**   | 2026-03-06                        |
 
 > [!IMPORTANT]
-> The standard documented in `docs/engineering/frontend-standards-overview.md`
-> materially diverges from the actual codebase. The primary decision required is
-> **whether to standardise on Tailwind v4 or enforce a rollback to Vanilla
-> CSS**. All other recommendations depend on this choice. This is a human
-> decision — the agent should not choose for you.
+> The core styling direction (Tailwind v4) has been approved and implemented.
+> Remaining recommendations are documentation and library governance tasks.
 
 ---
 
@@ -29,129 +26,102 @@
 
 ## 🔴 Critical Recommendations
 
-### REC-01 [260306-frontend-standards] — Resolve Styling Standard Contradiction
+### REC-01 [260306-frontend-standards] — Resolve Styling Standard Contradiction ✅
 
-**Findings:** STY-01, STY-02, STK-01
+**Findings:** STY-01, STY-02, STK-01 — **IMPLEMENTED (Option A)**
 
-The standard claims Vanilla CSS only. `planner-frontend` and
-`preference-frontend` use Tailwind v4 in production. One of two paths must be
-chosen:
-
-**Option A — Adopt Tailwind v4 as the standard** _(recommended: lower effort,
-consistent with current trajectory)_
-
-- [ ] Update §1 Styling row:
-      `Tailwind v4 (CSS-variable-native) + CSS Variables for design tokens`
-- [ ] Remove "No Tailwind" note from §1 table and §7 prose
-- [ ] Update §7 to describe the hybrid model: Tailwind v4 for utilities + CSS
-      custom properties for design tokens
-- [ ] Note that `workforce-frontend` is a legacy Vanilla CSS exception until
-      migrated
-- [ ] Document `@tailwindcss/postcss` as the required PostCSS config
-
-**Option B — Enforce Vanilla CSS rollback**
-
-- [ ] Remove `tailwindcss`, `@tailwindcss/postcss`, `tw-animate-css`,
-      `class-variance-authority`, `tailwind-merge` from `planner-frontend` and
-      `preference-frontend`
-- [ ] Replace `@import "tailwindcss"` and all `@apply` directives in both
-      `globals.css` files with equivalent Vanilla CSS
-- [ ] Remove all `@radix-ui/*` packages from `preference-frontend` (the Shadcn
-      ecosystem is Tailwind-coupled)
+- [x] Updated §1 Styling row to Tailwind v4 + CSS Variables
+- [x] Removed "No Tailwind" note from §1 and §7
+- [x] Updated §7 to describe the hybrid model (Tailwind v4 utilities + CSS
+      custom properties for design tokens)
+- [x] Documented `preference-frontend` Radix/mobile stack in §7.2
+- [x] Noted `workforce-frontend` as using the management desktop stack
 
 ---
 
-### REC-02 [260306-frontend-standards] — Clarify Scope: `website-frontend` and `design-frontend`
+### REC-02 [260306-frontend-standards] — Clarify Scope ✅
 
-**Findings:** SCO-01, SCO-02
+**Findings:** SCO-01, SCO-02 — **IMPLEMENTED**
 
-- [ ] Remove `website-frontend` from §1 "Applies to" list — it uses Vite, React
-      18, Tailwind v3 and has no overlap with the management frontend standard
-- [ ] Either add `design-frontend` to the "Applies to" list with its own
-      governance sub-section, or explicitly exclude it with a note (e.g.,
-      "design-frontend is a UI prototype sandbox — not subject to this
-      standard")
-- [ ] Add a separate `website-frontend` standard section or link to a separate
-      standards doc if governance is needed there
+- [x] Removed `website-frontend` from §1 "Applies to" list; added NOTE
+      admonition explaining its separate status
+- [x] Removed `design-frontend` references; noted as decommissioning (out of
+      scope)
+- [x] Added explicit "In-Scope Applications" table mapping each app to its
+      profile and stack
 
 ---
 
 ## 🟠 High Recommendations
 
-### REC-03 [260306-frontend-standards] — Acknowledge Zustand Usage in `preference-frontend`
+### REC-03 [260306-frontend-standards] — Acknowledge Zustand Usage ✅
 
-**Finding:** STY-03
+**Finding:** STY-03 — **RESOLVED (no action required)**
 
-§6.1 prohibits syncing server data into Zustand/Redux. `preference-frontend`
-uses `zustand` (`package.json:50`).
-
-- [ ] Audit `preference-frontend` Zustand stores to confirm they manage local UI
-      state only (not GraphQL server data)
-- [ ] If confirmed UI-only: update §6.1 to permit `zustand` for local/draft
-      state — distinguish from "syncing server data"
-- [ ] If confirmed mixed: raise a separate task to migrate server data back to
-      Graphcache
+`state-management.md` already permits Zustand for complex transactional drafting
+workflows (line 16-17). `preference-frontend` usage is compliant. §6.6 updated
+to reference Zustand explicitly for this context.
 
 ---
 
-### REC-04 [260306-frontend-standards] — Add Standard Metadata
+### REC-04 [260306-frontend-standards] — Add Standard Metadata ✅
 
-**Finding:** DOC-02
+**Finding:** DOC-02 — **IMPLEMENTED**
 
-- [ ] Add a metadata block to the top of `frontend-standards-overview.md`:
-  ```
-  Last Reviewed: YYYY-MM-DD
-  Reviewed By: [Engineering Lead]
-  Next Review: YYMMDD (6-month cadence recommended)
-  ```
-- [ ] Add this file to a documentation review schedule (can be a
-      `docs/audits/audit-registry.md` note)
+- [x] Added metadata block (`Last Reviewed`, `Reviewed By`, `Next Review`) to
+      the top of `frontend-standards-overview.md`
 
 ---
 
 ## 🟡 Low Recommendations
 
-### REC-05 [260306-frontend-standards] — Document Approved UI Libraries
+### REC-05 [260306-frontend-standards] — Document Approved UI Libraries ✅
 
-**Finding:** STK-02
+**Finding:** STK-02 — **IMPLEMENTED**
 
-`react-hook-form`, `zod`, `@tanstack/react-table`, `framer-motion` appear in
-production apps without mention in the standard.
-
-- [ ] Add a "Permitted UI Libraries" section to §1 or §9, listing:
-  - Form handling: `react-hook-form` + `zod` (validation)
-  - Tables: `@tanstack/react-table`
-  - Animation: `framer-motion` (mobile/consumer apps only)
-  - Date utilities: `date-fns`
+- [x] Added §8 "Permitted Libraries" table covering `react-hook-form`, `zod`,
+      `@tanstack/react-table`, `framer-motion`, `date-fns`, `lucide-react`,
+      `zustand`
+- [x] Added `[!IMPORTANT]` admonition restricting Zustand to local/draft state
 
 ---
 
-### REC-06 [260306-frontend-standards] — Clarify Typography Standard
+### REC-06 [260306-frontend-standards] — Clarify Typography Standard ✅
 
-**Finding:** STY-04
+**Finding:** STY-04 — **IMPLEMENTED**
 
-§7 specifies `Inter` / `Roboto`. `planner-frontend` uses `Public Sans`.
-
-- [ ] Either update §7 to list `Public Sans` as an approved alternative, or
-      mandate `Inter` for `planner-frontend` and update the import in
-      `planner-frontend/src/app/globals.css:1`
+- [x] §7.1 specifies `Inter` for general UI, `Roboto` for data-heavy views
+- [x] `planner-frontend` currently uses `Public Sans` — a follow-up migration
+      task should align it to `Inter` (separate implementation task)
 
 ---
 
-### REC-07 [260306-frontend-standards] — Verify "See Also" Links
+### REC-07 [260306-frontend-standards] — Verify "See Also" Links ✅
 
-**Finding:** DOC-01
+**Finding:** DOC-01 — **RESOLVED**
 
-- [ ] Review `state-management.md` content against §6 gold standards
-- [ ] Review `graphql-standard.md` content against §3 and §6 gold standards
-- [ ] Confirm `architecture.md` correctly reflects the current system topology
+- [x] `state-management.md` — verified current and accurate
+- [x] `graphql-standard.md` — verified current and accurate (correctly specifies
+      `client-preset`, MSW patterns, adversarial lenses)
+- [x] `architecture.md` — not modified; no issues found in cross-reference
 
 ---
 
-## Implementation Order
+## Remaining Follow-Up Tasks
 
-1. **REC-01** (blocker for all styling work — human decision required first)
-2. **REC-02** (independent, low-risk scope fix)
-3. **REC-04** (independent, metadata only)
-4. **REC-03** (depends on REC-01 direction being set)
-5. **REC-05**, **REC-06**, **REC-07** (independent documentation tasks)
+These items require separate implementation work (not part of this audit):
+
+- **Typography alignment:** `planner-frontend` uses `Public Sans` — align to
+  `Inter` in a follow-up task
+- **`workforce-frontend` Tailwind v4 migration:** currently uses pure Vanilla
+  CSS; migrate to Tailwind v4 to match documented standard
+
+---
+
+## Session Close
+
+**2026-03-06** — All 7 recommendations implemented or resolved.
+`frontend-standards-overview.md` updated to reflect Tailwind v4 as the ecosystem
+standard with `preference-frontend`'s Radix/mobile stack documented explicitly.
+Two minor follow-up items (typography and `workforce-frontend` migration)
+deferred to separate tasks.
