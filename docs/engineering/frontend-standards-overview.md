@@ -782,6 +782,240 @@ function FilterBar() {
 
 ---
 
+## 17. TypeScript Configuration Baseline
+
+Every in-scope frontend must include the following `tsconfig.json` baseline.
+Deviating from this configuration requires explicit Engineering Lead approval.
+
+```json
+{
+    "compilerOptions": {
+        "strict": true,
+        "target": "ES2017",
+        "lib": ["dom", "dom.iterable", "esnext"],
+        "allowJs": true,
+        "skipLibCheck": true,
+        "moduleResolution": "bundler",
+        "allowImportingTsExtensions": true,
+        "resolveJsonModule": true,
+        "isolatedModules": true,
+        "noEmit": true,
+        "jsx": "preserve",
+        "incremental": true,
+        "baseUrl": ".",
+        "paths": { "@/*": ["./src/*"] },
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "noFallthroughCasesInSwitch": true
+    },
+    "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+    "exclude": ["node_modules"]
+}
+```
+
+`strict: true` enables: `strictNullChecks`, `noImplicitAny`,
+`strictFunctionTypes`, `strictBindCallApply`, `strictPropertyInitialization`,
+`noImplicitThis`, `alwaysStrict`, and `useUnknownInCatchVariables`.
+
+> [!NOTE]
+> `noUncheckedIndexedAccess` and `exactOptionalPropertyTypes` are intentionally
+> excluded. If collection-access bugs emerge as a recurring pattern in future
+> audits, this decision should be revisited.
+
+**CI enforcement:** `npx tsc --noEmit` runs in CI on every PR (§14). Type errors
+block merge.
+
+---
+
+## 18. Dependency Version Governance
+
+### 18.1 Version Range Policy
+
+Use caret ranges (`^X.Y.Z`) for all dependencies. npm's caret range already
+prevents automatic major version jumps — `^4.0.0` will never auto-install `5.x`.
+Minor and patch updates are permitted to come in silently; the test suite is the
+safety net.
+
+| Scenario                | Action                                     |
+| :---------------------- | :----------------------------------------- |
+| Minor/patch update      | Permitted; absorbed automatically          |
+| Critical security patch | Update immediately via dedicated PR        |
+| Major version bump      | PR required; **Engineering Lead approval** |
+
+### 18.2 Major Version Upgrade Process
+
+A major version bump (e.g. `next: 16 → 17`, `tailwindcss: 4 → 5`) requires:
+
+1. A dedicated PR titled `chore(deps): upgrade [package] vX → vY`
+2. Migration notes summary in the PR description
+3. All CI checks passing (§14)
+4. Engineering Lead approval before merge
+
+### 18.3 Review Cadence
+
+- **Monthly:** Run `npm outdated` across all frontends; triage security
+  advisories.
+- **Quarterly:** Engineering Lead reviews major version opportunities.
+
+---
+
+## 19. Suspense, Streaming & Loading States
+
+### 19.1 Every Async Route Needs a `loading.tsx`
+
+Next.js streams Server Component output. Without a `loading.tsx`, users see a
+blank page until the full render completes.
+
+```
+src/app/
+├── (dashboard)/
+│   ├── layout.tsx
+│   ├── loading.tsx        ← Required at every route group
+│   ├── error.tsx          ← Required at every route group
+│   └── plans/
+│       ├── page.tsx
+│       └── loading.tsx    ← Override for specific slow routes
+```
+
+`loading.tsx` must render a **skeleton that matches the page structure** — not a
+spinner centred on screen. Skeletons preserve layout stability and communicate
+context to clinical users under time pressure.
+
+### 19.2 Client-Side Suspense Boundaries
+
+Wrap independently-fetching client subtrees in `<Suspense>` so they load in
+parallel rather than blocking each other:
+
+```tsx
+// ✅ Correct — table loads independently
+<Suspense fallback={<TableSkeleton rows={10} />}>
+    <WorkforceTable orgId={orgId} />
+</Suspense>;
+
+// ❌ Wrong — single Suspense at route root blocks everything
+```
+
+### 19.3 `useSearchParams()` Requires a Suspense Wrapper
+
+`useSearchParams()` in a Client Component forces Next.js to de-optimise the
+entire route (no streaming) unless the component is wrapped in `<Suspense>`:
+
+```tsx
+<Suspense fallback={<FilterBarSkeleton />}>
+    <FilterBar /> {/* contains useSearchParams() */}
+</Suspense>;
+```
+
+This is a Next.js requirement, not optional.
+
+---
+
+## 20. GraphQL Error Handling Contract
+
+All Urql hooks return a `CombinedError`. Three distinct error types require
+different handling:
+
+| Error type                    | Detection                                  | Required action                      |
+| :---------------------------- | :----------------------------------------- | :----------------------------------- |
+| **Network error**             | `error.networkError !== null`              | Show retry UI; do not redirect       |
+| **Application GraphQL error** | `graphQLErrors` present, code ≠ `PGRST301` | Toast to user + Sentry               |
+| **Auth error (PGRST301)**     | `extensions.code === "PGRST301"`           | Silent refresh → `/login` on failure |
+
+### 20.1 `authExchange` Handles PGRST301 Centrally
+
+PGRST301 (JWT expired) is intercepted by the Urql `authExchange` before any hook
+sees it. It silently refreshes the session and retries the operation — hooks
+never observe the error.
+
+```typescript
+authExchange(async (utils) => ({
+    didAuthError: (error) =>
+        error.graphQLErrors.some((e) => e.extensions?.code === "PGRST301"),
+    refreshAuth: async () => {
+        const { error } = await supabase.auth.refreshSession();
+        if (error) {
+            await supabase.auth.signOut();
+            router.push("/login");
+        }
+    },
+}));
+```
+
+**Rule:** Never handle PGRST301 inside individual hooks. The `authExchange` is
+the single, centralised handler.
+
+### 20.2 Standard Hook Error Pattern
+
+```typescript
+const { data, error, fetching } = useGetPlansQuery({ variables });
+
+if (fetching) return <LoadingSkeleton />;
+
+if (error?.networkError) {
+    return <ErrorBoundary type="network" onRetry={reExecuteQuery} />;
+}
+
+if (error?.graphQLErrors.length) {
+    Sentry.captureException(scrubPHI(error)); // §15
+    return <ErrorBoundary type="application" referenceId={generateId()} />;
+}
+```
+
+Network errors get a **retry button**. Application errors get a **reference ID**
+for support. Auth errors are invisible — handled upstream by `authExchange`.
+
+---
+
+## 21. Component Documentation Standard
+
+### 21.1 What Requires Documentation
+
+TypeScript types are self-documenting for simple components. A JSDoc comment
+(the `/** ... */` hover tooltip you see in VS Code) is only required where types
+alone don't explain the _why_:
+
+| Target                                   | Required?                                             |
+| :--------------------------------------- | :---------------------------------------------------- |
+| Exported hooks (`useX`)                  | ✅ Yes — one-liner above the function                 |
+| Service functions                        | ✅ Yes — one-liner above the function                 |
+| Shared UI components (used in 3+ places) | ✅ Yes — one-liner + prop notes for non-obvious props |
+| Page components                          | ❌ No — filename is sufficient                        |
+| Local one-off components                 | ❌ No                                                 |
+
+### 21.2 Format
+
+One sentence explaining _why_ the hook/service exists, not what the types say:
+
+```typescript
+/**
+ * Returns org-scoped permissions for the active session.
+ * Combines global_roles JWT claims with the per-org ACL from Supabase.
+ * Must be called inside PermissionProvider.
+ */
+export function usePermissions(): PermissionsContext { ... }
+
+/**
+ * Pauses the active plan query while the user is editing to prevent
+ * background refetches from clobbering unsaved input.
+ */
+export function usePlanEditor(planId: string): PlanEditorContext { ... }
+```
+
+### 21.3 Anti-Patterns
+
+```typescript
+// ❌ Redundant — types already say this
+/** @param planId The plan ID. @returns The plan. */
+
+// ❌ Implementation detail — use an inline comment instead
+/** Calls useGetPlansQuery with the org ID from context. */
+
+// ✅ Explains a non-obvious contract
+/** Must be called inside PlanProvider. Returns null outside of plan context. */
+```
+
+---
+
 ## See Also
 
 - [Ecosystem Architecture](./architecture.md) — System topology and service map
