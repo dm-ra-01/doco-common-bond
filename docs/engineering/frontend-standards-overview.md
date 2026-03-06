@@ -534,6 +534,254 @@ account.
 
 ---
 
+## 12. Server vs Client Components
+
+### 12.1 Decision Rule
+
+Next.js 16 App Router defaults to **Server Components**. Opt into `"use client"`
+explicitly and only when required.
+
+| Indicator                                                | Directive                  |
+| :------------------------------------------------------- | :------------------------- |
+| Uses Urql hooks (`useQuery`, `useMutation`)              | `"use client"`             |
+| Uses React state (`useState`, `useEffect`, `useReducer`) | `"use client"`             |
+| Renders only from props / fetched data                   | Server Component (default) |
+| Contains event handlers (`onClick`, `onChange`)          | `"use client"`             |
+| Uses Context or `usePermissions()`                       | `"use client"`             |
+
+### 12.2 IP Protection via Server Components
+
+> [!IMPORTANT]
+> Receptor is a first-to-market product. Core business logic — matching
+> algorithms, scoring functions, constraint rules — must **never** be shipped in
+> the client bundle where it can be read via browser DevTools.
+
+**Rule:** Any function that encodes proprietary logic must live in a Server
+Component, Server Action, or backend service. It must never be imported into a
+`"use client"` file.
+
+```tsx
+// ✅ Correct — algorithm runs server-side, result passed as props
+// app/allocations/page.tsx (Server Component)
+import { computeAllocationScore } from "@/services/scoring"; // never bundled
+
+export default async function AllocationsPage() {
+    const scores = await computeAllocationScore(params);
+    return <AllocationView scores={scores} />;
+}
+
+// ❌ Wrong — scoring logic is shipped to the browser
+// "use client"
+// import { computeAllocationScore } from "@/services/scoring";
+```
+
+### 12.3 Layout & Auth Boundary
+
+- Route group layouts (`layout.tsx`) that check auth must be Server Components
+  reading the Supabase session server-side — not client-side JWT checks.
+- The `middleware.ts` redirect is the **first** gate; the layout is the
+  **second** gate. Both must be present for protected routes.
+- `/` (root) is always accessible; redirects after auth are to the org
+  dashboard, never back to `/login`.
+
+---
+
+## 13. Accessibility
+
+### 13.1 Compliance Target
+
+All in-scope applications must meet **WCAG 2.1 Level AA** — the baseline
+required by Australian Government Digital Service Standards and appropriate for
+a clinical workforce product.
+
+### 13.2 Automated Testing
+
+`vitest-axe` (unit/component) and `@axe-core/playwright` (E2E) are installed
+across all frontends. Their use is **mandatory**, not optional:
+
+```typescript
+// Component test — vitest-axe
+import { axe } from "vitest-axe";
+
+it("has no accessibility violations", async () => {
+    const { container } = renderWithProviders(<JobLineCard {...props} />);
+    expect(await axe(container)).toHaveNoViolations();
+});
+```
+
+```typescript
+// E2E test — axe-core/playwright
+import { checkA11y } from "@axe-core/playwright";
+
+test("allocations page passes axe", async ({ page }) => {
+    await page.goto("/allocations");
+    await checkA11y(page);
+});
+```
+
+Axe checks must pass in CI. Violations block merge.
+
+### 13.3 Interaction Standards
+
+- **Keyboard navigation:** Every interactive element must be reachable via Tab
+  and operable via Enter/Space. Modals must trap focus and restore it on close.
+- **Focus management:** After async operations (saving, loading new data), focus
+  must be explicitly moved to a logical target — never left at `document.body`.
+- **Contrast:** Minimum 4.5:1 for normal text, 3:1 for large text (WCAG 1.4.3).
+  Verify token palette choices against this ratio before adding new colours.
+- **Mobile assertions in tests:** Use `toBeAttached()` over `toBeVisible()` —
+  CSS `display: none` fails `toBeVisible()` even for off-screen-but-valid
+  elements.
+
+---
+
+## 14. CI/CD Quality Gates
+
+Pre-commit hooks are a developer convenience; CI gates are the authoritative
+merge requirement. Both must be present.
+
+### 14.1 Required CI Checks (every PR)
+
+| Check                 | Command                      | Failure action |
+| :-------------------- | :--------------------------- | :------------- |
+| **Lint**              | `npm run lint`               | Block merge    |
+| **Type check**        | `npx tsc --noEmit`           | Block merge    |
+| **Unit tests**        | `npm test -- --project=unit` | Block merge    |
+| **Axe accessibility** | Included in Playwright suite | Block merge    |
+| **Build**             | `npm run build`              | Block merge    |
+
+### 14.2 Pre-commit (Developer Local)
+
+`husky` runs `lint-staged` on `src/**/*.{ts,tsx}`:
+
+```json
+"lint-staged": {
+    "src/**/*.{ts,tsx}": ["eslint --fix", "vitest related --run"]
+}
+```
+
+Pre-commit hooks **must not** be skipped (`--no-verify` is prohibited in team
+workflow). CI is the enforcement backstop.
+
+### 14.3 Branch Protection Rules
+
+The `main` branch requires:
+
+- All CI checks passing
+- At least one approved review
+- No force pushes
+
+---
+
+## 15. PHI Handling, Error Tracking & Observability
+
+### 15.1 Sentry Integration
+
+All in-scope frontends use **Sentry** for error tracking.
+
+```typescript
+// sentry.client.config.ts
+import * as Sentry from "@sentry/nextjs";
+
+Sentry.init({
+    dsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
+    environment: process.env.NEXT_PUBLIC_ENV,
+    // CRITICAL: never send PHI to Sentry
+    beforeSend(event) {
+        return scrubPHI(event);
+    },
+    // Do not send console breadcrumbs in production
+    integrations: (integrations) =>
+        integrations.filter((i) => i.name !== "Console"),
+});
+```
+
+### 15.2 PHI Scrubbing Rules
+
+All data leaving the browser — to Sentry, analytics, or any third party — must
+be scrubbed of PHI before transmission.
+
+| Data type            | Rule                       |
+| :------------------- | :------------------------- |
+| Worker names         | Replace with `[WORKER_ID]` |
+| UR numbers           | Strip entirely             |
+| DOB / dates of birth | Strip entirely             |
+| Org names            | Permitted (not PHI)        |
+| UUIDs                | Permitted (not reversible) |
+
+Implement a `scrubPHI(event: SentryEvent)` utility in `src/lib/sentry.ts`. This
+function must be unit-tested.
+
+### 15.3 Error Handling Layers
+
+| Layer                        | Mechanism                             | Sends to Sentry?                |
+| :--------------------------- | :------------------------------------ | :------------------------------ |
+| Route group                  | `error.tsx` with `useReportWebVitals` | Yes (auto)                      |
+| Async ops                    | `CombinedError` handler in hooks      | Yes (manual `captureException`) |
+| `console.log` in prod        | ESLint `no-console` rule              | Prevented                       |
+| Unhandled promise rejections | Sentry global handler                 | Yes (auto)                      |
+
+> [!CAUTION]
+> Never pass raw `Error` objects containing user-entered data directly to
+> `Sentry.captureException()`. Always wrap with the scrubbing utility first.
+
+---
+
+## 16. URL & Navigation State
+
+### 16.1 State Location Decision Tree
+
+| State type                            | Location                 | Rationale                        |
+| :------------------------------------ | :----------------------- | :------------------------------- |
+| Selected entity (e.g. org, plan, run) | React Context / Provider | Session-scoped; not bookmarkable |
+| Active filters, search, sort          | URL search params        | Deep-linkable; back-button safe  |
+| Pagination cursor                     | URL search params        | Shareable; reload-safe           |
+| Draft / in-progress form              | Local Context or Zustand | Must survive local navigation    |
+| Server data                           | Urql Graphcache          | Never in URL or local state      |
+
+### 16.2 Next.js App Router Patterns
+
+```tsx
+// Reading search params (Server Component — preferred)
+export default function PlansPage({
+    searchParams,
+}: {
+    searchParams: { filter?: string; page?: string };
+}) {
+    const filter = searchParams.filter ?? "all";
+    // ...
+}
+
+// Writing search params (Client Component — when user-driven)
+"use client";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+
+function FilterBar() {
+    const router = useRouter();
+    const searchParams = useSearchParams();
+    const pathname = usePathname();
+
+    const setFilter = (value: string) => {
+        const params = new URLSearchParams(searchParams.toString());
+        params.set("filter", value);
+        router.push(`${pathname}?${params.toString()}`);
+    };
+}
+```
+
+### 16.3 Rules
+
+- **Never** use `router.push` to encode server state — it should only encode UI
+  navigation intent.
+- **Pagination cursors** belong in URL params so that sharing a URL lands the
+  recipient on the same page.
+- **Selected entity IDs** (current org, current plan) belong in Provider context
+  — they are session state, not navigation state.
+- URL params must be sanitised before use. Never interpolate raw search param
+  values into GraphQL variables without validation.
+
+---
+
 ## See Also
 
 - [Ecosystem Architecture](./architecture.md) — System topology and service map
