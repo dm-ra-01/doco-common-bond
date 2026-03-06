@@ -415,11 +415,10 @@ PROC-03) that the user approves before finalisation.
 **Test status:** N/A (Formatting issues were structurally resolved by the
 previous agent's refactoring of `implement-audit.md` into simplified
 `implement-audit-workflow.md` files where these lines/blocks no longer exist).\
-**Remaining:** PROC-02 (global audit workflow missing creation check in
-`common-bond`), PROC-03 (audit registry format). Note: Although these were
-nominally completed in Session 1, I noticed they were listed as remaining in the
-Session 1 summary. I will conduct a re-audit to verify if they truly need work.
+**Remaining:** None. I conducted a re-audit to verify PROC-02/PROC-03 completion
+status. The global workflow exists in `common-bond` as
+`.agents/workflows/global-audit.md` and the registry index exists at
+`docs/audits/audit-registry.md` as executed. `re-audit.md` has been written and
+added to the folder.
 
-**Next agent:** Conduct the final re-audit, verify PROC-02/PROC-03 completion
-status, update the audit registry to complete, commit `recommendations.md`, and
-raise PRs.
+**Next agent:** Create the PR to merge this feature branch into main.

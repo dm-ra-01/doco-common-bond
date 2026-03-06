@@ -31,9 +31,9 @@ sidebar_position: 1
 
 ### 🗓️ 2026-03-06
 
-| Slug                   | Title                    | Scope                                         | Auditor     | Status         | NC Raised                                                                      | Report                                                                                                                      |
-| :--------------------- | :----------------------- | :-------------------------------------------- | :---------- | :------------- | :----------------------------------------------------------------------------- | :-------------------------------------------------------------------------------------------------------------------------- |
-| `260306-audit-process` | Audit Process Meta-Audit | All repositories — global engineering process | Antigravity | 🔄 In Progress | [NC-005](/docs/compliance/iso27001/assurance/nonconformity-log#nc-005--detail) | [audit.md](../audits/audit-process-audit/audit.md) · [recommendations.md](../audits/audit-process-audit/recommendations.md) |
+| Slug                   | Title                    | Scope                                         | Auditor     | Status      | NC Raised                                                                      | Report                                                                                                                      |
+| :--------------------- | :----------------------- | :-------------------------------------------- | :---------- | :---------- | :----------------------------------------------------------------------------- | :-------------------------------------------------------------------------------------------------------------------------- |
+| `260306-audit-process` | Audit Process Meta-Audit | All repositories — global engineering process | Antigravity | ✅ Complete | [NC-005](/docs/compliance/iso27001/assurance/nonconformity-log#nc-005--detail) | [audit.md](../audits/audit-process-audit/audit.md) · [recommendations.md](../audits/audit-process-audit/recommendations.md) |
 
 ### 🗓️ 2026-03-05
 
