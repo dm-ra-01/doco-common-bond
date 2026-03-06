@@ -84,6 +84,12 @@ const config: Config = {
           position: 'left',
           label: 'Compliance',
         },
+        {
+          type: 'docSidebar',
+          sidebarId: 'auditsSidebar',
+          position: 'left',
+          label: 'Audits',
+        },
         { to: '/knowledge-graph', label: '🧠 Map', position: 'right' },
         {
           href: 'https://github.com/dm-ra-01/doco-common-bond',
