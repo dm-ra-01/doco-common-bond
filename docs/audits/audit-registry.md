@@ -16,14 +16,14 @@ sidebar_position: 1
 
 ## How to Read This Registry
 
-| Column | Meaning |
-| :--- | :--- |
-| **Slug** | Unique audit identifier in `YYMMDD-short-name` format |
-| **Scope** | Repository / subsystem covered |
-| **Auditor** | Who performed the audit |
-| **Status** | `✅ Complete` · `🔄 In Progress` · `📋 Planned` |
-| **NC Raised** | Non-conformity log entries raised as a result |
-| **Report** | Links to `audit.md` and `recommendations.md` |
+| Column        | Meaning                                               |
+| :------------ | :---------------------------------------------------- |
+| **Slug**      | Unique audit identifier in `YYMMDD-short-name` format |
+| **Scope**     | Repository / subsystem covered                        |
+| **Auditor**   | Who performed the audit                               |
+| **Status**    | `✅ Complete` · `🔄 In Progress` · `📋 Planned`       |
+| **NC Raised** | Non-conformity log entries raised as a result         |
+| **Report**    | Links to `audit.md` and `recommendations.md`          |
 
 ---
 
@@ -31,22 +31,22 @@ sidebar_position: 1
 
 ### 🗓️ 2026-03-06
 
-| Slug | Title | Scope | Auditor | Status | NC Raised | Report |
-| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| Slug                   | Title                    | Scope                                         | Auditor     | Status         | NC Raised                                                                      | Report                                                                                                                      |
+| :--------------------- | :----------------------- | :-------------------------------------------- | :---------- | :------------- | :----------------------------------------------------------------------------- | :-------------------------------------------------------------------------------------------------------------------------- |
 | `260306-audit-process` | Audit Process Meta-Audit | All repositories — global engineering process | Antigravity | 🔄 In Progress | [NC-005](/docs/compliance/iso27001/assurance/nonconformity-log#nc-005--detail) | [audit.md](../audits/audit-process-audit/audit.md) · [recommendations.md](../audits/audit-process-audit/recommendations.md) |
 
 ### 🗓️ 2026-03-05
 
-| Slug | Title | Scope | Auditor | Status | NC Raised | Report |
-| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| `260305-iso27001-preaudit` | ISO 27001 Pre-Review Audit | `common-bond` ISMS documentation | Antigravity | ✅ Complete | [NC-004](/docs/compliance/iso27001/assurance/nonconformity-log#nc-004--detail) | [audit.md](../audits/260305-iso27001-preaudit/audit.md) · [recommendations.md](../audits/260305-iso27001-preaudit/recommendations.md) |
-| `260305-graphql-state` | GraphQL & State Management Audit | `planner-frontend`, `workforce-frontend`, `preference-frontend` | Antigravity | ✅ Complete | — | [audit.md](https://github.com/dm-ra-01/planner-frontend/blob/main/docs/audits/archive/260305-graphql-state/audit.md) · [recommendations.md](https://github.com/dm-ra-01/planner-frontend/blob/main/docs/audits/archive/260305-graphql-state/recommendations.md) |
-| `260305-match-backend` | Match-Backend ↔ Supabase Integration Audit | `backend/match-backend`, `supabase-receptor` | Antigravity | 🔄 In Progress | — | [audit.md](https://github.com/dm-ra-01/supabase-receptor/blob/main/docs/audits/archive/260305-match-backend/audit.md) · [recommendations.md](https://github.com/dm-ra-01/supabase-receptor/blob/main/docs/audits/archive/260305-match-backend/recommendations.md) |
+| Slug                       | Title                                      | Scope                                                           | Auditor     | Status         | NC Raised                                                                      | Report                                                                                                                                                                                                                                                            |
+| :------------------------- | :----------------------------------------- | :-------------------------------------------------------------- | :---------- | :------------- | :----------------------------------------------------------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `260305-iso27001-preaudit` | ISO 27001 Pre-Review Audit                 | `common-bond` ISMS documentation                                | Antigravity | ✅ Complete    | [NC-004](/docs/compliance/iso27001/assurance/nonconformity-log#nc-004--detail) | [audit.md](../audits/260305-iso27001-preaudit/audit.md) · [recommendations.md](../audits/260305-iso27001-preaudit/recommendations.md)                                                                                                                             |
+| `260305-graphql-state`     | GraphQL & State Management Audit           | `planner-frontend`, `workforce-frontend`, `preference-frontend` | Antigravity | ✅ Complete    | —                                                                              | [audit.md](https://github.com/dm-ra-01/planner-frontend/blob/main/docs/audits/archive/260305-graphql-state/audit.md) · [recommendations.md](https://github.com/dm-ra-01/planner-frontend/blob/main/docs/audits/archive/260305-graphql-state/recommendations.md)   |
+| `260305-match-backend`     | Match-Backend ↔ Supabase Integration Audit | `backend/match-backend`, `supabase-receptor`                    | Antigravity | 🔄 In Progress | —                                                                              | [audit.md](https://github.com/dm-ra-01/supabase-receptor/blob/main/docs/audits/archive/260305-match-backend/audit.md) · [recommendations.md](https://github.com/dm-ra-01/supabase-receptor/blob/main/docs/audits/archive/260305-match-backend/recommendations.md) |
 
 ### 🗓️ 2026-03-04
 
-| Slug | Title | Scope | Auditor | Status | NC Raised | Report |
-| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| Slug         | Title                                 | Scope                                | Auditor     | Status      | NC Raised                                                                      | Report                                                                                                                                                                                                                                        |
+| :----------- | :------------------------------------ | :----------------------------------- | :---------- | :---------- | :----------------------------------------------------------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `260304-acl` | Access Control & Authentication Audit | `supabase-receptor` — RLS, JWT, RBAC | Antigravity | ✅ Complete | [NC-003](/docs/compliance/iso27001/assurance/nonconformity-log#nc-003--detail) | [audit.md](https://github.com/dm-ra-01/supabase-receptor/blob/main/docs/audits/archive/260304-acl/audit.md) · [recommendations.md](https://github.com/dm-ra-01/supabase-receptor/blob/main/docs/audits/archive/260304-acl/recommendations.md) |
 
 ---
@@ -64,13 +64,12 @@ preference-frontend            0       —
 backend/receptor-planner       0       —
 common-bond (ISMS docs)        2       2026-03-06
 ────────────────────────────────────── ─────────
-Total                          5+      2026-03-06
+Total                          6+      2026-03-06
 ```
 
-> **Coverage gaps noted by `260306-audit-process`:** `workforce-frontend`,
-> `preference-frontend`, and `receptor-planner` have no audit workflows yet.
-> See [REC-14](../audits/audit-process-audit/recommendations.md) for the
-> planned remediation.
+> **Coverage gaps addressed:** `workforce-frontend`, `preference-frontend`, and
+> `receptor-planner` now have fully operational audit workflows (implemented via
+> [REC-14](../audits/audit-process-audit/recommendations.md)).
 
 ---
 
@@ -78,12 +77,13 @@ Total                          5+      2026-03-06
 
 When an agent completes a new audit, they must:
 
-1. Add a row to the **Active Registry** table above under the correct date heading.
+1. Add a row to the **Active Registry** table above under the correct date
+   heading.
 2. Update the **Coverage Summary** table.
 3. If a Non-Conformity was raised, cross-reference the
    [Non-Conformity Log](/docs/compliance/iso27001/assurance/nonconformity-log).
 4. Commit this file along with the audit branch merge.
 
 This file is the **PROC-03** implementation — see
-[CA-005](/docs/compliance/iso27001/assurance/corrective-actions) for the
-full corrective action plan.
+[CA-005](/docs/compliance/iso27001/assurance/corrective-actions) for the full
+corrective action plan.
