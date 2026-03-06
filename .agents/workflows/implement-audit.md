@@ -31,12 +31,16 @@ Locate the audit directory and read both files:
 
 - **Cross-ecosystem audits (common-bond repo):**
   `docs/audits/[YYMMDD-short-name]/audit.md`
-- **Repo-local technical audits:**
-  `docs/audits/archive/[YYMMDD-short-name]/audit.md` (in the target repo, e.g.
-  `supabase-receptor` or `planner-frontend`)
+- **Repo-local technical audits (active):**
+  `docs/audits/[YYMMDD-short-name]/audit.md` (in the target repo)
+- **Repo-local technical audits (completed/archived):**
+  `docs/audits/archive/[YYMMDD-short-name]/audit.md` (in the target repo)
+- **Exception — repos with a Docusaurus `docs/` site:**
+  `dev-docs/audits/[YYMMDD-short-name]/audit.md` (to avoid collision)
 
 The audit slug in `recommendations.md` and the feature branch name are the
 canonical pointers — use them to locate the correct directory.
+
 
 Verify the `<!-- audit-slug: YYMMDD-short-name -->` header at the top of
 `recommendations.md` matches the slug the user provided. If it does not match,

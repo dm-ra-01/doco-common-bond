@@ -134,10 +134,13 @@ Document any additional findings surfaced by this pass.
 
 Save to:
 
-- **Cross-ecosystem audits:** `docs/audits/[YYMMDD-short-name]/audit.md` (in `common-bond`)
-- **Repo-local technical audits:** `docs/audits/archive/[YYMMDD-short-name]/audit.md` (in the target repo)
+- **Cross-ecosystem audits:** `docs/audits/[YYMMDD-short-name]/audit.md` (in `documentation/common-bond/`)
+- **Repo-local technical audits:** `docs/audits/[YYMMDD-short-name]/audit.md` (in the target repo)
+  - When the audit is **complete**, the directory is moved to `docs/audits/archive/[YYMMDD-short-name]/`
+  - **Exception:** if the target repo has its own Docusaurus site under `docs/`, use `dev-docs/audits/[YYMMDD-short-name]/` instead to avoid collision
 
-The user will specify scope; if unsure, prefer the repo-local path for single-repo technical audits.
+The user will specify scope; if unsure, use `/global-audit` for multi-repo work and `/audit` for single-repo work.
+
 
 Structure:
 
