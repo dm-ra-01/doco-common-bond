@@ -175,13 +175,43 @@ metadata problems, etc.]
 
 Save to `./docs/audits/[YYMMDD]-[short-name]/recommendations.md`.
 
-Structure:
+**The file must begin with the audit slug** on the very first line as an HTML
+comment, so that any future agent referencing this audit can unambiguously
+identify it:
 
 ```markdown
+<!-- audit-slug: YYMMDD-short-name -->
+```
+
+Structure:
+
+**Create a feature branch** for all implementation work before finalising
+`recommendations.md`, so that implementation agents have a dedicated branch to
+commit to:
+
+```bash
+git checkout -b audit/YYMMDD-short-name
+git push -u origin audit/YYMMDD-short-name
+```
+
+Include the branch name in `recommendations.md` so that implementation agents
+know exactly where to commit their work. The template below shows the required
+format.
+
+```markdown
+<!-- audit-slug: YYMMDD-short-name -->
+
 # [Section] Documentation Recommendations
 
+**Audit slug:** `YYMMDD-short-name`\
+**Feature branch:** `audit/YYMMDD-short-name`\
 **Date:** YYYY-MM-DD\
 **Scope:** ...
+
+> [!IMPORTANT]
+> All implementation work for this audit MUST be committed to the
+> `audit/YYMMDD-short-name` branch, not to `main`. Only merge to `main` after
+> all tasks are complete and the user explicitly approves.
 
 ---
 
@@ -198,7 +228,7 @@ Structure:
 
 ## 🔴 Critical
 
-### DOC-01: [Short title] ([file or section])
+### DOC-01 [YYMMDD-short-name]: [Short title] ([file or section])
 
 [1–3 sentence problem description linking back to audit.md finding]
 
@@ -235,6 +265,9 @@ blocked. :::
 > [!NOTE]
 > Rules for `recommendations.md`:
 >
+> - **Every DOC identifier must include the audit slug** in the format
+>   `DOC-NN [YYMMDD-short-name]`. This ensures references in commit messages and
+>   future audit sessions are unambiguous across all audits in the repository.
 > - Every recommendation maps to one or more `- [ ]` task checkboxes.
 > - Tasks must be specific — a future agent or team member should be able to
 >   pick up and act without asking for clarification (include the target file
@@ -250,5 +283,7 @@ Use `notify_user` to present:
 
 - A summary of the top 3–5 findings by severity
 - Links to both files
+- The **audit slug** (`YYMMDD-short-name`) and **feature branch**
+  (`audit/YYMMDD-short-name`) for use in future `/implement-audit` sessions
 - Any open questions that require a human decision before implementation begins
   (e.g. policy positions that only the founding team can determine)

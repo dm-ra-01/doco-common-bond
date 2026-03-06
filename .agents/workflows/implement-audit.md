@@ -10,21 +10,43 @@ implements its tasks safely across one or more agent sessions. Each session:
 1. Reads the current state of `recommendations.md` (which tasks are `[ ]` vs
    `[x]`)
 2. Proposes a session-sized chunk of work to the user
-3. Implements the changes, previews them, and commits
+3. Implements the changes, previews them, and commits **to the feature branch**
 4. Updates `recommendations.md` to mark completed tasks and brief the next
    session
+
+> [!IMPORTANT]
+> All implementation work MUST be done on the feature branch created during the
+> audit (e.g. `audit/YYMMDD-short-name`). Do **not** commit directly to `main`
+> unless the user explicitly overrides this instruction.
 
 ---
 
 ## Step 1: Orient — Read the Audit Files
 
-Locate the relevant audit directory. The user will tell you the audit name (e.g.
-`260305-governance`). Read both files:
+The user will provide an **audit slug** in the form `YYMMDD-short-name` (e.g.
+`260305-governance`). This slug is the canonical identifier for the audit and is
+embedded in every DOC identifier (e.g. `DOC-01 [260305-governance]`).
+
+Locate the audit directory and read both files:
 
 ```
-docs/audits/[YYMMDD]-[short-name]/audit.md
-docs/audits/[YYMMDD]-[short-name]/recommendations.md
+docs/audits/[YYMMDD-short-name]/audit.md
+docs/audits/[YYMMDD-short-name]/recommendations.md
 ```
+
+Verify the `<!-- audit-slug: YYMMDD-short-name -->` header at the top of
+`recommendations.md` matches the slug the user provided. If it does not match,
+stop and ask the user to clarify which audit they intend.
+
+**Confirm the feature branch exists and check it out:**
+
+```bash
+git fetch origin
+git checkout audit/YYMMDD-short-name
+```
+
+If the branch does not exist, ask the user to confirm the correct branch name
+before proceeding. Do not create a new branch without confirming with the user.
 
 Identify:
 
@@ -59,11 +81,11 @@ When proposing scope, consider:
 Present the proposed scope to the user via `notify_user` before starting:
 
 ```
-[Session N of Audit YYMMDD-name]
+[Session N of Audit YYMMDD-short-name]
 Proposed tasks for this session:
-- DOC-03: Fix dead internal links in governance/ (5 files)
-- DOC-07: Add missing frontmatter to compliance/iso27001 stubs
-- DOC-09: Expand risk-management.md clinical risk table
+- DOC-03 [YYMMDD-short-name]: Fix dead internal links in governance/ (5 files)
+- DOC-07 [YYMMDD-short-name]: Add missing frontmatter to compliance/iso27001 stubs
+- DOC-09 [YYMMDD-short-name]: Expand risk-management.md clinical risk table
 
 Skipping until next session:
 - DOC-01 (requires Founder input on conflict of interest policy)
@@ -146,19 +168,90 @@ Check that:
 
 ---
 
-## Step 5: Commit to Main
+## Step 5: Commit to the Feature Branch
 
 ```bash
 git add .
-git commit -m "docs(audit/[short-name]): implement [DOC-XX, DOC-YY] — [brief description]"
-git push origin main
+git commit -m "docs(audit/[short-name]): implement [DOC-XX, DOC-YY] [YYMMDD-short-name] — [brief description]"
+git push origin audit/YYMMDD-short-name
 ```
 
-The commit message must reference the DOC IDs implemented in this session.
+> [!IMPORTANT]
+> Commit to **`audit/YYMMDD-short-name`**, not to `main`. The commit message
+> must reference the full DOC IDs with audit slug (e.g.
+> `DOC-03 [260305-governance]`) implemented in this session.
+
+Do **not** merge to `main` during implementation sessions. Merge only when:
+
+1. All tasks are `[x]` in `recommendations.md`
+2. The Docusaurus preview is clean (no MDX errors)
+3. **Re-audit complete** (see Step 6)
+4. The user explicitly instructs a merge
 
 ---
 
-## Step 6: Session Close — Brief the Next Agent
+## Step 6: Re-Audit — Definition of Done
+
+When **all tasks** in `recommendations.md` are marked `[x]` and the Docusaurus
+build is clean, offer the user a re-audit before considering the implementation
+done.
+
+> [!IMPORTANT]
+> The re-audit is **mandatory** as a Definition of Done. Do not proceed to the
+> session close or propose a merge without completing it, unless the user
+> explicitly waives it.
+
+### Trigger condition
+
+Offer the re-audit when:
+
+```
+All recommendations.md tasks are [x]
+AND Docusaurus build/preview is clean (no MDX errors, no broken links)
+```
+
+Use `notify_user` to offer:
+
+> All [N] recommendations are implemented and the Docusaurus preview is clean.
+> I can now perform a re-audit — reviewing the original `audit.md`, the
+> completed `recommendations.md`, and the current documentation — to verify all
+> findings are addressed, catch any regressions, and identify any improvements
+> that emerged during implementation. Shall I proceed?
+
+### Re-audit procedure
+
+If the user confirms:
+
+1. **Re-read** the original `audit.md` — every finding, every ⚠️.
+2. **Re-read** the completed `recommendations.md` — verify all `[x]` items are
+   actually implemented (spot-check at least one per recommendation in the
+   documentation site).
+3. **Re-examine** the documentation with fresh eyes — apply the same adversarial
+   lenses from the original audit (completeness, accuracy, MDX correctness,
+   governance compliance, readability). You have freedom to note improvements or
+   new patterns you discovered during implementation.
+4. **Write** `docs/audits/[slug]/re-audit.md` covering:
+   - Which findings from the original `audit.md` are now resolved.
+   - Any findings that are **partially addressed** or have **changed scope**.
+   - Any **new findings** discovered during implementation.
+   - Any **documentation improvements** introduced worth preserving as patterns.
+5. **Write** `docs/audits/[slug]/re-audit-recommendations.md` following the
+   same format as `recommendations.md` — severity-prioritised, with `[slug]`
+   qualified IDs (e.g. `DOC-16 [YYMMDD-short-name]`). If there are no new
+   findings, state this explicitly.
+6. **Commit** both files to the feature branch:
+   ```bash
+   git add docs/audits/[slug]/re-audit.md docs/audits/[slug]/re-audit-recommendations.md
+   git commit -m "audit([slug]): add re-audit and re-audit recommendations — DoD complete"
+   git push origin audit/YYMMDD-short-name
+   ```
+7. The re-audit-recommendations.md forms the **final gate** before merge. If
+   any new **High** or **Critical** findings are in re-audit-recommendations.md,
+   they must be addressed before the user instructs a merge.
+
+---
+
+## Step 7: Session Close — Brief the Next Agent
 
 Update `recommendations.md` with a session-close note at the bottom (append, do
 not modify existing content):
@@ -168,7 +261,9 @@ not modify existing content):
 
 ## Session [N] — [Date] — Completion Summary
 
-**Implemented this session:** DOC-03, DOC-07, DOC-09\
+**Audit slug:** `YYMMDD-short-name`\
+**Implemented this session:** DOC-03 [YYMMDD-short-name], DOC-07
+[YYMMDD-short-name], DOC-09 [YYMMDD-short-name]\
 **Remaining:** DOC-01 (blocked — human input required), DOC-02, DOC-04, DOC-05,
 DOC-06, DOC-08
 
@@ -180,7 +275,7 @@ markers above.
 
 Then `notify_user` with:
 
-- What was completed this session
+- What was completed this session (using full `DOC-NN [slug]` identifiers)
 - Which items remain blocked on human input (and why)
 - What the next session should tackle
 - Any new documentation gaps surfaced during implementation
