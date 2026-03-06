@@ -242,6 +242,42 @@ Priority execution phases for the implementation agent:
 
 ---
 
+---
+
+## Session Close — Finalisation (2026-03-06)
+
+**Re-Audit Status:** ✅ All 18 recommendations verified as implemented\
+**Re-Audit file:** [`re-audit.md`](./re-audit.md)\
+**Build verification:** `npm run build` passes in `documentation/common-bond`
+(`[SUCCESS] Generated static files in "build"`)
+
+### Verification Summary
+
+| REC    | Scope                        | Evidence                                                                      |
+| :----- | :--------------------------- | :---------------------------------------------------------------------------- |
+| REC-01 | Delete ecosystem-standards   | `documentation/receptor-ecosystem` fully decommissioned (dir gone)            |
+| REC-02 | Architecture → common-bond   | `common-bond/docs/engineering/architecture.md` ✅                             |
+| REC-03 | Gold standards → common-bond | `state-management.md`, `graphql-standard.md` ✅                               |
+| REC-04 | Allocator → match-backend    | 8 files in `match-backend/docs/allocator/` ✅                                 |
+| REC-05 | Planner → receptor-planner   | 7 files in `receptor-planner/docs/job-line-compliance/` ✅                    |
+| REC-06 | Delete security.md           | receptor-ecosystem deleted ✅                                                 |
+| REC-07 | Broken links resolved        | Build passes; no new broken links introduced ✅                               |
+| REC-08 | User stories → frontends     | `preference-frontend/docs/user-stories/` (3 files), `planner-frontend` (1) ✅ |
+| REC-09 | VM setup → supabase-receptor | `supabase-receptor/docs/operations/vm-setup.md` ✅                            |
+| REC-10 | CI/CD → rotator_worker       | `rotator_worker/docs/ci-cd.md` ✅                                             |
+| REC-11 | OR-Tools → match-backend     | `match-backend/docs/ortools-migration-report.md` ✅                           |
+| REC-12 | Product briefs → frontends   | product-brief.md in preference, planner, rotator_worker ✅                    |
+| REC-13 | Landing page → common-bond   | `common-bond/docs/product/landing-page.md` ✅                                 |
+| REC-14 | Archive dev journal          | `receptor-planner/docs/archive/` (6 planner-audit-*.md files) ✅              |
+| REC-15 | Delete internal-systems.md   | receptor-ecosystem deleted ✅                                                 |
+| REC-16 | Delete prompt.md             | receptor-ecosystem deleted ✅                                                 |
+| REC-17 | Archive projects/            | receptor-ecosystem deleted; ortools handled via REC-11 ✅                     |
+| REC-18 | Update root README.md        | Decommission notice on lines 47 & 146 of README.md ✅                         |
+
+This audit is **CLOSED**.
+
+---
+
 ## Out of Scope
 
 The following matters were observed but are out of scope for this decommission
