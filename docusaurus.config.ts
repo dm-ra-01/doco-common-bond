@@ -10,7 +10,7 @@ const config: Config = {
   favicon: 'img/common-bond-mark.svg',
 
   url: 'https://docs.commonbond.au',
-  baseUrl: '/corporate/',
+  baseUrl: '/',
   trailingSlash: false,
 
   organizationName: 'dm-ra-01',
