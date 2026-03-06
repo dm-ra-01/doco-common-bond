@@ -806,7 +806,8 @@ Deviating from this configuration requires explicit Engineering Lead approval.
         "paths": { "@/*": ["./src/*"] },
         "noUnusedLocals": true,
         "noUnusedParameters": true,
-        "noFallthroughCasesInSwitch": true
+        "noFallthroughCasesInSwitch": true,
+        "noUncheckedIndexedAccess": true
     },
     "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
     "exclude": ["node_modules"]
@@ -817,10 +818,15 @@ Deviating from this configuration requires explicit Engineering Lead approval.
 `strictFunctionTypes`, `strictBindCallApply`, `strictPropertyInitialization`,
 `noImplicitThis`, `alwaysStrict`, and `useUnknownInCatchVariables`.
 
+`noUncheckedIndexedAccess` (not part of `strict`) is additionally enforced. This
+means array index and object key access returns `T | undefined`, forcing
+explicit null checks on collection element access — critical for a clinical app
+where empty collections are a real and common data state.
+
 > [!NOTE]
-> `noUncheckedIndexedAccess` and `exactOptionalPropertyTypes` are intentionally
-> excluded. If collection-access bugs emerge as a recurring pattern in future
-> audits, this decision should be revisited.
+> `exactOptionalPropertyTypes` is intentionally excluded — it causes
+> disproportionate friction with React prop patterns and offers limited safety
+> benefit beyond what `strictNullChecks` already provides.
 
 **CI enforcement:** `npx tsc --noEmit` runs in CI on every PR (§14). Type errors
 block merge.
