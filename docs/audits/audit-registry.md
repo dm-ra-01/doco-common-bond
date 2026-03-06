@@ -31,11 +31,12 @@ sidebar_position: 1
 
 ### 🗓️ 2026-03-06
 
-| Slug                                     | Title                                      | Scope                                                                  | Auditor         | Status      | NC Raised                                                                      | Report                                                                                                                                                                            |
-| :--------------------------------------- | :----------------------------------------- | :--------------------------------------------------------------------- | :-------------- | :---------- | :----------------------------------------------------------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `260306-frontend-standards`              | Frontend Engineering Standards Audit       | `docs/engineering/frontend-standards-overview.md` + all frontend repos | Ryan Ammendolea | ✅ Complete | —                                                                              | [audit.md](../audits/archive/260306-frontend-standards/audit.md) · [recommendations.md](../audits/archive/260306-frontend-standards/recommendations.md)                           |
-| `260306-audit-process`                   | Audit Process Meta-Audit                   | All repositories — global engineering process                          | Antigravity     | ✅ Complete | [NC-005](/docs/compliance/iso27001/assurance/nonconformity-log#nc-005--detail) | [audit.md](../audits/archive/260306-audit-process/audit.md) · [recommendations.md](../audits/archive/260306-audit-process/recommendations.md)                                     |
-| `260306-receptor-ecosystem-decommission` | receptor-ecosystem Docusaurus Decommission | `documentation/receptor-ecosystem` (80 files)                          | Antigravity     | ✅ Complete | —                                                                              | [audit.md](../audits/archive/260306-receptor-ecosystem-decommission/audit.md) · [recommendations.md](../audits/archive/260306-receptor-ecosystem-decommission/recommendations.md) |
+| Slug                                     | Title                                      | Scope                                                                  | Auditor         | Status         | NC Raised                                                                      | Report                                                                                                                                                                            |
+| :--------------------------------------- | :----------------------------------------- | :--------------------------------------------------------------------- | :-------------- | :------------- | :----------------------------------------------------------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `260306-frontend-standards`              | Frontend Engineering Standards Audit       | `docs/engineering/frontend-standards-overview.md` + all frontend repos | Ryan Ammendolea | ✅ Complete    | —                                                                              | [audit.md](../audits/archive/260306-frontend-standards/audit.md) · [recommendations.md](../audits/archive/260306-frontend-standards/recommendations.md)                           |
+| `260306-frontend-compliance`             | Frontend App Compliance Audit              | `planner-frontend`, `workforce-frontend`, `preference-frontend`        | Antigravity     | 🔄 In Progress | —                                                                              | [audit.md](../audits/260306-frontend-compliance/audit.md) · [recommendations.md](../audits/260306-frontend-compliance/recommendations.md)                                         |
+| `260306-audit-process`                   | Audit Process Meta-Audit                   | All repositories — global engineering process                          | Antigravity     | ✅ Complete    | [NC-005](/docs/compliance/iso27001/assurance/nonconformity-log#nc-005--detail) | [audit.md](../audits/archive/260306-audit-process/audit.md) · [recommendations.md](../audits/archive/260306-audit-process/recommendations.md)                                     |
+| `260306-receptor-ecosystem-decommission` | receptor-ecosystem Docusaurus Decommission | `documentation/receptor-ecosystem` (80 files)                          | Antigravity     | ✅ Complete    | —                                                                              | [audit.md](../audits/archive/260306-receptor-ecosystem-decommission/audit.md) · [recommendations.md](../audits/archive/260306-receptor-ecosystem-decommission/recommendations.md) |
 
 ### 🗓️ 2026-03-05
 
@@ -59,13 +60,13 @@ Repository                   Audits   Last Audit
 ─────────────────────────────────────────────────
 supabase-receptor              2       2026-03-05
 backend/match-backend          1       2026-03-05
-planner-frontend               2       2026-03-06
-workforce-frontend             1       2026-03-06
-preference-frontend            1       2026-03-06
+planner-frontend               3       2026-03-06
+workforce-frontend             2       2026-03-06
+preference-frontend            2       2026-03-06
 backend/receptor-planner       0       —
 common-bond (ISMS docs + eng)  3       2026-03-06
 ────────────────────────────────────── ─────────
-Total                          9+      2026-03-06
+Total                          12+     2026-03-06
 ```
 
 > **Coverage gaps addressed:** `workforce-frontend`, `preference-frontend`, and
