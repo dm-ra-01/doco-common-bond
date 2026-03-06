@@ -51,15 +51,6 @@ sidebar_position: 1
 
 ---
 
-## Historical Registry
-
-| Slug | Title | Scope | Date | Status | NC Raised |
-| :--- | :--- | :--- | :--- | :--- | :--- |
-| `internal-mfa-001` | MFA Enforcement Check | GitHub organisation accounts | 2025-10-12 | ✅ Complete | [NC-001](/docs/compliance/iso27001/assurance/nonconformity-log) |
-| `customer-pentest-2025` | Annual Penetration Test | External customer audit | 2026-01-15 | 🔄 Open | [NC-002](/docs/compliance/iso27001/assurance/nonconformity-log) |
-
----
-
 ## Coverage Summary
 
 ```
