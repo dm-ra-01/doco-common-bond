@@ -88,7 +88,9 @@ If your session completes the **final remaining tasks** of an audit:
 1. Append a **Session Close** section to the bottom of `recommendations.md`
    noting what was done, what remains blocked/open, and a brief for the next
    agent.
-2. If the audit is now complete, update its status in
-   `documentation/common-bond/docs/audits/audit-registry.md` to `✅ Complete`.
+2. Update the status of this audit in
+   `documentation/common-bond/docs/audits/audit-registry.md`. If the audit is
+   now completely finished, set to `✅ Complete`. If work remains, ensure it is
+   set to `🔄 In Progress`.
 3. Use `notify_user` to report session completion, completed IDs, blockers, and
    next targets.

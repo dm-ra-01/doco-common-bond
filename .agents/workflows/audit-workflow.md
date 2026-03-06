@@ -104,7 +104,9 @@ Before calling `notify_user`, verify:
 - [ ] The feature branch has been successfully pushed to origin (confirm with
       `git log --oneline origin/audit/YYMMDD-slug -1`).
 
-1. Add row to `documentation/common-bond/docs/audits/audit-registry.md`
-2. Commit audit files + registry update to the feature branch
+1. Add a row to `documentation/common-bond/docs/audits/audit-registry.md` under
+   the active registry. Ensure the initial status is set correctly (e.g.,
+   `📋 Planned` or `🔄 In Progress`).
+2. Commit audit files + registry update to the feature branch.
 3. Use `notify_user`: top 3–5 findings, slug, branch name, any blocking human
-   decisions
+   decisions.
