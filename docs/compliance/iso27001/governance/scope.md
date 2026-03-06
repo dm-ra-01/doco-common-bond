@@ -5,9 +5,9 @@ sidebar_position: 1
 
 # Information Security Management System (ISMS) Scope
 
-| Version | Effective Date | Approved By          | Next Review |
-| ------- | -------------- | -------------------- | ----------- |
-| 1.0     | ⚠️ Confirm     | Ryan Ammendolea, CEO | ⚠️ Confirm  |
+| Version | Effective Date | Approved By          | Last Reviewed | Next Review |
+| ------- | -------------- | -------------------- | ------------- | ----------- |
+| 1.0     | 2026-03-05     | Ryan Ammendolea, CEO | 2026-03-06    | 2027-03-01  |
 
 ## 1. Introduction
 
@@ -28,7 +28,11 @@ fully remote team, leveraging cloud infrastructure to deliver our services.
 - **Remote Work:** All operations are conducted remotely; we have no physical
   offices.
 - **Speed of Change:** Rapid development cycles require security to be
-  integrated into the CI/CD pipeline (DevSecOps).
+  integrated into the CI/CD pipeline (DevSecOps). An adversarial code review
+  workflow is embedded in each repository via `.agents/workflows/audit.md`,
+  providing a repeatable internal audit mechanism for technical controls
+  (ISO 27001 Clause 9.2). All audit findings are tracked on feature branches
+  and in `docs/audits/` within each repository.
 
 ### External Issues
 
