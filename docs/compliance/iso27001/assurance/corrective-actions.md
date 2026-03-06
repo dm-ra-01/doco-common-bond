@@ -24,17 +24,18 @@ When a Non-Conformity is identified, we:
   prototype development, before a formal RBAC architecture was established. This
   approach had no credential rotation mechanism, no audit trail, and effectively
   granted cross-tenant read access.
-- **Action:** Replace the hardcoded email identity with a JWT-claim-based service
-  identity integrated into the `app_metadata` RBAC architecture. Implement
-  strict scope validation so the service account operates only within its
-  required access boundaries (ARCH-1B from ACL Modernisation Audit).
+- **Action:** Replace the hardcoded email identity with a JWT-claim-based
+  service identity integrated into the `app_metadata` RBAC architecture.
+  Implement strict scope validation so the service account operates only within
+  its required access boundaries (ARCH-1B from ACL Modernisation Audit).
 - **Implementation:** ACL Modernisation Audit (`260304-acl`) Phase 1–3 completed
   2026-03-05. Two-layer delegation constraint architecture (ARCH-2) implemented;
   `func_has_global_role` replaces all email-based checks. Re-audit
   (`260305-adversarial`) confirmed no hardcoded email references remain.
 - **Verification:** Adversarial re-audit 2026-03-05 — all RLS policies reviewed;
   all pytest tests passing; no `allocator_py_admin` references in active policy
-  SQL. Evidence: `supabase-receptor/docs/audits/archive/260305-adversarial/re-audit.md`.
+  SQL. Evidence:
+  `supabase-receptor/docs/audits/archive/260305-adversarial/re-audit.md`.
 - **Status:** ✅ Closed.
 
 ---
@@ -55,7 +56,8 @@ When a Non-Conformity is identified, we:
   Risk Register expanded from 5 to 12 risks with owner column.
 - **Progress (2026-03-06):** ISMS `internal-audit.md` updated with completed
   audit programme evidence (DOC-14 gap addressed). Non-conformity log and
-  corrective actions expanded. Treatment plan updated with verification evidence.
+  corrective actions expanded. Treatment plan updated with verification
+  evidence.
 - **Remaining:** SoA stub (DOC-12 — critical); Incident Response Plan (DOC-17);
   Data Classification Scheme (DOC-17); Supplier Security Register (DOC-17).
   Target: Q2 2026.
@@ -77,13 +79,19 @@ When a Non-Conformity is identified, we:
   (`260306-audit-process`) in five phases:
   - **Phase 1** (✅ Done): Fix agent-visible bugs — stale headings, frontmatter,
     session summary formatting.
-  - **Phase 2** (Open): Add Definition of Done checklists and git verification
-    steps to all audit workflows.
-  - **Phase 3** (Open): Add PR merge gate to all six implement-audit workflows.
-  - **Phase 4** (Open): Create global audit registry (`docs/audits/audit-registry.md`),
-    global cross-ecosystem audit workflow, and dedicated workflows for
-    workforce-frontend and preference-frontend.
-  - **Phase 5** (Open): Add Deno Edge Function audit scope and `deno check`
-    type-safety gate to supabase-receptor workflows.
-- **Target:** Phase 2–3: Q2 2026. Phase 4–5: Q3 2026.
-- **Status:** 🔄 Open — Phase 1 complete.
+  - **Phase 2** (✅ Done): Added Definition of Done checklists and git
+    verification steps to all active audit workflows.
+  - **Phase 3** (✅ Done): Added PR merge gate requirement to all
+    `implement-audit-workflow.md` files.
+  - **Phase 4** (✅ Done): Created global audit registry
+    (`docs/audits/audit-registry.md`), global cross-ecosystem audit workflow
+    (with `meta exec` PR script), and dedicated workflows for
+    `workforce-frontend` and `preference-frontend`.
+  - **Phase 5** (✅ Done): Added Deno Edge Function audit scope and `deno check`
+    type-safety gate to `supabase-receptor` workflows.
+- **Verification:** Re-audit completed 2026-03-06. Pull requests embodying all
+  process improvements raised across `common-bond` (PR #4),
+  `preference-frontend` (PR #12), `planner-frontend` (PR #13),
+  `workforce-frontend` (PR #7), `supabase-receptor` (PR #4), and
+  `receptor-planner` (PR #2).
+- **Status:** ✅ Closed.
