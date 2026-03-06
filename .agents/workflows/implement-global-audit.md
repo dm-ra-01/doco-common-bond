@@ -101,45 +101,11 @@ For each target repository in this session's scope:
 3. **Do not merge any branch to `main`** — this is left for manual review after
    the re-audit.
 
----
+## Step 5: Finalise Global Audit
 
-## Step 5: Re-Audit (Definition of Done)
-
-If this session completes the **final remaining tasks** of the global audit:
-
-1. Conduct a mini re-audit across **all repositories listed in `audit.md`'s
-   scope**, not just `common-bond`.
-2. For each repo, verify:
-   - All `- [x]` tasks are demonstrably implemented (cite file path + evidence).
-   - The relevant verification gate passes.
-3. Save findings to `re-audit.md` in the same directory as `audit.md`:
-   ```
-   documentation/common-bond/docs/audits/YYMMDD-slug/re-audit.md
-   ```
-4. Do not declare the audit complete until `re-audit.md` confirms all items are
-   resolved.
-
----
-
-## Step 6: Close Session & Raise PRs
-
-1. Append a **Session Close** section to `recommendations.md`:
-   - What was done in this session (IDs completed)
-   - What remains open or blocked
-   - Brief for the next agent (which repo to target next, any gotchas)
-2. If the audit is fully complete:
-   - Update `audit-registry.md` status to `✅ Complete`.
-   - **Raise Pull Requests** across all touched repositories. Since this is a
-     global audit, use the `meta` tool from the workspace root to execute this
-     efficiently across all Configured repos:
-     ```bash
-     meta exec "git rev-parse --verify origin/audit/YYMMDD-slug >/dev/null 2>&1 && gh pr create --base main --head audit/YYMMDD-slug --title 'audit(YYMMDD-slug): implement global recommendations' --body 'Closes global audit YYMMDD-slug' || echo 'Skip: No audit branch here'"
-     ```
-3. Use `notify_user` to report:
-   - Completed recommendation IDs
-   - Repos touched, their branches, and any PR links
-   - Any blockers or open items
-   - Next targets for the following session
+If this session completes the **final remaining tasks** of the global audit, do
+NOT close the session here. Instead, transition to the `/finalise-global-audit`
+workflow to perform the re-audit, raise PRs, merge, and archive the audit files.
 
 ---
 
