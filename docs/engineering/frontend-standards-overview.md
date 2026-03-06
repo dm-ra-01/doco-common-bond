@@ -10,11 +10,11 @@ sidebar_position: 1
 > across the Receptor ecosystem.** Applies to: `planner-frontend`,
 > `preference-frontend`, `workforce-frontend`.
 
-| Field             | Value                                                                  |
-| :---------------- | :--------------------------------------------------------------------- |
-| **Last Reviewed** | 2026-03-06                                                             |
-| **Reviewed By**   | Engineering Leadership (Antigravity audit `260306-frontend-standards`) |
-| **Next Review**   | 2026-09-06                                                             |
+| Field             | Value                                               |
+| :---------------- | :-------------------------------------------------- |
+| **Last Reviewed** | 2026-03-06                                          |
+| **Reviewed By**   | Ryan Ammendolea (audit `260306-frontend-standards`) |
+| **Next Review**   | 2026-09-06                                          |
 
 ---
 
@@ -420,10 +420,7 @@ design tokens:
 - **CSS Modules** for component-specific overrides where needed
 - **No `@apply` in component files** — prefer Tailwind utilities directly in JSX
 
-**Typography:**
-
-- General UI: `Inter`
-- Data-heavy views: `Roboto`
+**Typography:** `Inter` across all management apps.
 
 **Icons:** Lucide React (2px stroke weight, consistent action icons).
 
