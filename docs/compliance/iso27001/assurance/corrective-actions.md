@@ -16,30 +16,6 @@ When a Non-Conformity is identified, we:
 
 ## 2. Action Log
 
-### CA-001: MFA Enforcement
-
-- **Related NC:** [NC-001](./nonconformity-log.md)
-- **Root Cause:** GitHub organization policy was set to "optional" MFA.
-- **Action:** Changed GitHub organization setting to "Require MFA for all
-  members".
-- **Verification:** Verified all members have MFA enabled. (Date: 2025-10-13)
-- **Status:** ✅ Closed.
-
----
-
-### CA-002: Penetration Testing
-
-- **Related NC:** [NC-002](./nonconformity-log.md)
-- **Root Cause:** Cost of annual pentest prohibitive for pre-revenue stage.
-- **Action:** Schedule scoped pentest with budget allocation for Q3 2026;
-  Conduct automated vulnerability scanning in interim.
-- **Progress (2026-03-05):** Dependabot automated vulnerability scanning enabled
-  across all GitHub repositories as of 2025-Q4. Pentest vendor shortlisting
-  budgeted for Q2 2026; scoped engagement target Q3 2026.
-- **Status:** 🔄 In Progress.
-
----
-
 ### CA-003: Service Account RBAC Migration
 
 - **Related NC:** [NC-003](./nonconformity-log.md)
@@ -91,10 +67,12 @@ When a Non-Conformity is identified, we:
 
 - **Related NC:** [NC-005](./nonconformity-log.md)
 - **Root Cause:** The audit workflow was developed incrementally across multiple
-  repositories without a global governance layer. Feature branches, slugs, and
-  adversarial review were implemented, but no PR merge gate, no central registry,
-  and no dedicated workflows for workforce-frontend or preference-frontend were
-  created.
+  repositories without a global governance layer. Critically, prior to March
+  2026, **all audit work was committed directly to `main`** — the first four
+  audits (`260304-acl`, `260305-match-backend`, `260305-graphql-state`,
+  `260305-iso27001-preaudit`) have no separate audit branches. Feature branch
+  enforcement, PR gates, a global audit registry, and dedicated workflows for
+  all applications were retrofitted rather than designed-in from the start.
 - **Action:** Implement the 14 recommendations from the Audit Process Audit
   (`260306-audit-process`) in five phases:
   - **Phase 1** (✅ Done): Fix agent-visible bugs — stale headings, frontmatter,
@@ -102,7 +80,7 @@ When a Non-Conformity is identified, we:
   - **Phase 2** (Open): Add Definition of Done checklists and git verification
     steps to all audit workflows.
   - **Phase 3** (Open): Add PR merge gate to all six implement-audit workflows.
-  - **Phase 4** (Open): Create global audit registry (`docs/infrastructure/audits/index.md`),
+  - **Phase 4** (Open): Create global audit registry (`docs/audits/audit-registry.md`),
     global cross-ecosystem audit workflow, and dedicated workflows for
     workforce-frontend and preference-frontend.
   - **Phase 5** (Open): Add Deno Edge Function audit scope and `deno check`

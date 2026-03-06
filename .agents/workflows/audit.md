@@ -1,26 +1,39 @@
 ---
-description: Generate a structured documentation audit report for a given section or topic area, then save audit.md and recommendations.md to ./docs/audits/[YYMMDD]-[short-name]/
+description: Generate a structured audit report for a given feature, section, or technical area, then save audit.md and recommendations.md to ./docs/audits/[YYMMDD]-[short-name]/ (or docs/audits/archive/ for repo-local audits)
 ---
 
 ## Overview
 
-The user will describe a **section or topic** to audit (e.g. "governance",
-"compliance/ISO 27001", "strategy", or the entire docs site). Your job is to
-read the actual documentation deeply, apply critical thinking, and produce two
+The user will describe a **section, topic, or technical area** to audit (e.g.
+"governance", "compliance/ISO 27001", "strategy", the entire docs site, a Python
+backend service, a Supabase schema, or a frontend application). Your job is to
+read the actual artefacts deeply, apply critical thinking, and produce two
 documents:
 
 - `audit.md` — factual findings with evidence
 - `recommendations.md` — prioritized, actionable improvements
 
-This audit is focused on **corporate governance quality and documentation
-readability** — not technical code. Key concerns include: accuracy and
-completeness of governance statements, consistency of tone and style, internal
-link health, metadata hygiene, and whether the content meets the standards
-expected for a regulated healthcare company.
+This workflow covers **two audit modes**:
+
+- **Documentation audits** — corporate governance quality and documentation
+  readability. Key concerns: accuracy and completeness of governance statements,
+  consistency of tone and style, internal link health, metadata hygiene, and
+  whether the content meets the standards expected for a regulated healthcare
+  company.
+- **Technical audits** — code, database schema, infrastructure, or API surface.
+  Key concerns: security (RLS, auth, input validation), architectural integrity,
+  test coverage, deviation from ecosystem standards, and contract stability.
 
 > [!TIP]
-> Check `docs/audits/` for any previous related audits and read them first —
-> avoid re-documenting findings that are already tracked.
+> **Before starting:** Check the Knowledge Items (KI) system for any existing
+> architecture documentation on the area you are auditing. Reading relevant KIs
+> first prevents re-documenting already-known patterns and ensures findings are
+> evaluated against the correct design intent, not a superficial reading of the
+> code.
+>
+> Also check `docs/audits/` (or `docs/audits/archive/` for repo-local audits)
+> for any previous related audits and read them first — avoid re-documenting
+> findings that are already tracked.
 
 ---
 
@@ -70,6 +83,8 @@ For each finding, record:
 
 ### Finding Categories
 
+**Documentation audits:**
+
 | Category                    | What to look for                                                                              |
 | --------------------------- | --------------------------------------------------------------------------------------------- |
 | **Coverage Gap**            | Promised content that doesn't exist; stubs or "TBD" entries                                   |
@@ -80,6 +95,18 @@ For each finding, record:
 | **Internal Links**          | Dead links, links to non-existent anchors or docs pages                                       |
 | **Structural Integrity**    | Orphaned pages, duplicate content, illogical section ordering                                 |
 | **Governance Completeness** | Missing required governance artefacts (e.g. no conflict of interest policy, no board charter) |
+
+**Technical audits:**
+
+| Category                  | What to look for                                                                                         |
+| ------------------------- | -------------------------------------------------------------------------------------------------------- |
+| **Security**              | RLS gaps, hardcoded credentials, missing auth checks, injection vulnerabilities, unrotated secrets       |
+| **Architectural Drift**   | Deviation from ecosystem standards (KI patterns), inconsistent abstractions, ad-hoc workarounds          |
+| **Test Coverage**         | Missing unit/integration/pgTAP tests for critical paths; tests that don't assert the right behaviour     |
+| **Contract Stability**    | API surfaces, DB column renames, or type changes that break downstream consumers without a migration     |
+| **Performance**           | N+1 queries, missing indexes on foreign keys, unbounded queries, unoptimised RLS policies                |
+| **Observability**         | Missing logging, no audit trail for privileged operations, silent error swallowing                       |
+| **Dead Code / Tech Debt** | Unused functions, commented-out logic, TODO markers, stale feature flags                                 |
 
 ---
 
@@ -105,7 +132,12 @@ Document any additional findings surfaced by this pass.
 
 ## Step 4: Write `audit.md`
 
-Save to `./docs/audits/[YYMMDD]-[short-name]/audit.md`.
+Save to:
+
+- **Cross-ecosystem audits:** `docs/audits/[YYMMDD-short-name]/audit.md` (in `common-bond`)
+- **Repo-local technical audits:** `docs/audits/archive/[YYMMDD-short-name]/audit.md` (in the target repo)
+
+The user will specify scope; if unsure, prefer the repo-local path for single-repo technical audits.
 
 Structure:
 
@@ -277,9 +309,15 @@ blocked. :::
 
 ---
 
-## Step 6: Notify the User
+## Step 6: Notify the User and Update the Audit Registry
 
-Use `notify_user` to present:
+**Update the global audit registry** at
+`documentation/common-bond/docs/audits/audit-registry.md` — add a row for this
+audit under the correct date heading before notifying the user. If Common Bond
+is not your current repo, open the file from its absolute path. This step is
+**mandatory** — the registry is the PROC-03 compliance record.
+
+Then use `notify_user` to present:
 
 - A summary of the top 3–5 findings by severity
 - Links to both files

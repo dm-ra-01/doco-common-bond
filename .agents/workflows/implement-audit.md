@@ -1,5 +1,5 @@
 ---
-description: Implement tasks from a documentation audit recommendations.md in focused, context-safe sessions. Proposes a chunk of work, implements it, commits to main, then briefs the next agent.
+description: Implement tasks from an audit recommendations.md in focused, context-safe sessions. Proposes a chunk of work, implements it, commits to the feature branch, then briefs the next agent.
 ---
 
 ## Overview
@@ -29,10 +29,14 @@ embedded in every DOC identifier (e.g. `DOC-01 [260305-governance]`).
 
 Locate the audit directory and read both files:
 
-```
-docs/audits/[YYMMDD-short-name]/audit.md
-docs/audits/[YYMMDD-short-name]/recommendations.md
-```
+- **Cross-ecosystem audits (common-bond repo):**
+  `docs/audits/[YYMMDD-short-name]/audit.md`
+- **Repo-local technical audits:**
+  `docs/audits/archive/[YYMMDD-short-name]/audit.md` (in the target repo, e.g.
+  `supabase-receptor` or `planner-frontend`)
+
+The audit slug in `recommendations.md` and the feature branch name are the
+canonical pointers — use them to locate the correct directory.
 
 Verify the `<!-- audit-slug: YYMMDD-short-name -->` header at the top of
 `recommendations.md` matches the slug the user provided. If it does not match,
@@ -272,6 +276,11 @@ Founder input on conflict of interest policy — do not attempt to draft this
 without explicit guidance. Any new observations are noted inline with `⚠️ New:`
 markers above.
 ```
+
+**Update the global audit registry** at
+`documentation/common-bond/docs/audits/audit-registry.md` — update the row for
+this audit slug to reflect the current status (e.g. `🔄 In Progress` →
+`✅ Complete`). This step is **mandatory** even for repo-local audits.
 
 Then `notify_user` with:
 
