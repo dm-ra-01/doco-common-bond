@@ -61,34 +61,53 @@ const config: Config = {
       },
       items: [
         {
-          type: 'docSidebar',
-          sidebarId: 'strategySidebar',
+          type: 'dropdown',
+          label: 'Business',
           position: 'left',
-          label: 'Strategy',
+          items: [
+            {
+              type: 'docSidebar',
+              sidebarId: 'strategySidebar',
+              label: 'Strategy',
+            },
+            {
+              type: 'docSidebar',
+              sidebarId: 'operationsSidebar',
+              label: 'Operations',
+            },
+            {
+              type: 'docSidebar',
+              sidebarId: 'governanceSidebar',
+              label: 'Governance',
+            },
+            {
+              type: 'docSidebar',
+              sidebarId: 'complianceSidebar',
+              label: 'Compliance',
+            },
+          ],
         },
         {
-          type: 'docSidebar',
-          sidebarId: 'operationsSidebar',
+          type: 'dropdown',
+          label: 'Engineering',
           position: 'left',
-          label: 'Operations',
-        },
-        {
-          type: 'docSidebar',
-          sidebarId: 'governanceSidebar',
-          position: 'left',
-          label: 'Governance',
-        },
-        {
-          type: 'docSidebar',
-          sidebarId: 'complianceSidebar',
-          position: 'left',
-          label: 'Compliance',
-        },
-        {
-          type: 'docSidebar',
-          sidebarId: 'auditsSidebar',
-          position: 'left',
-          label: 'Audits',
+          items: [
+            {
+              type: 'docSidebar',
+              sidebarId: 'engineeringSidebar',
+              label: 'Standards',
+            },
+            {
+              type: 'docSidebar',
+              sidebarId: 'productSidebar',
+              label: 'Product',
+            },
+            {
+              type: 'docSidebar',
+              sidebarId: 'auditsSidebar',
+              label: 'Audits',
+            },
+          ],
         },
         { to: '/knowledge-graph', label: '🧠 Map', position: 'right' },
         {
