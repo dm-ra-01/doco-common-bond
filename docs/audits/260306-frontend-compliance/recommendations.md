@@ -415,21 +415,19 @@ become silent `undefined` at runtime.
 `@graphql-codegen` runs manually. Schema changes in `supabase-receptor` silently
 stale generated types across all three frontends.
 
-> **Deferred (Session 7):** `codegen.ts` points to `http://127.0.0.1:54321`
-> (local Supabase). The `--check` flag introspects the live schema, which
-> requires Supabase to be running in CI — contradicting the decision to use
-> mocked Supabase in unit tests. A dedicated session with a CI strategy
-> (separate integration job or schema registry approach) is recommended before
-> implementing.
+> **Resolved (Session 9):** Added a dedicated `codegen-check` job in `ci.yml`
+> (renamed from `codecov.yml`) across all three repos. The job uses
+> `supabase/setup-cli@v1` to start a local Supabase instance from the
+> checked-out `supabase-receptor` schema, then runs `graphql-codegen --check` to
+> fail CI if generated types drift from the live schema.
 
-- [ ] `planner-frontend` — Add CI step that runs `npx graphql-codegen --check`;
-      fails the pipeline if committed generated types differ from the current
-      schema introspection result
-      `/Users/ryan/development/common_bond/antigravity-environment/frontend/planner-frontend/.github/workflows/codecov.yml`
-- [ ] `workforce-frontend` — Same
-      `/Users/ryan/development/common_bond/antigravity-environment/frontend/workforce-frontend/.github/workflows/codecov.yml`
-- [ ] `preference-frontend` — Same
-      `/Users/ryan/development/common_bond/antigravity-environment/frontend/preference-frontend/.github/workflows/codecov.yml`
+- [x] `planner-frontend` — Added `codegen-check` job to `ci.yml` using
+      `supabase/setup-cli@v1` + `supabase start` — commit `dd4e422`
+      `/Users/ryan/development/common_bond/antigravity-environment/frontend/planner-frontend/.github/workflows/ci.yml`
+- [x] `workforce-frontend` — Same — commit `b9c2fb0`
+      `/Users/ryan/development/common_bond/antigravity-environment/frontend/workforce-frontend/.github/workflows/ci.yml`
+- [x] `preference-frontend` — Same — commit `7171a0c`
+      `/Users/ryan/development/common_bond/antigravity-environment/frontend/preference-frontend/.github/workflows/ci.yml`
 
 ### CROSS-12 — Playwright Global Auth Setup Missing (Workforce, Preference)
 
@@ -1113,5 +1111,57 @@ and `preference-frontend` root layouts)
 - All other findings in this audit are complete.
 - If you are implementing CROSS-03 or CROSS-11, consider whether this audit is
   complete enough to transition to `/finalise-global-audit`.
+- Always use `GIT_TERMINAL_PROMPT=0` before every `git push`. Always run push as
+  a separate `run_command` call, never chained with `&&` after `git commit`.
+
+---
+
+## Session Close — 2026-03-07 (Session 9)
+
+**Completed:** CROSS-11 (GraphQL codegen CI gate — all three repos), plus
+renamed `codecov.yml` → `ci.yml` across all three repos.
+
+**Remaining:** CROSS-03 (Playwright/Axe E2E CI step — deferred)
+
+**Blocked:** None — audit is now down to one deferred finding.
+
+**Implementation notes this session:**
+
+- **CROSS-11:** Added a dedicated `codegen-check` CI job to
+  `.github/workflows/ci.yml` in all three frontend repos. The job uses
+  `supabase/setup-cli@v1` to install the Supabase CLI, then runs
+  `supabase start --ignore-health-check` from the checked-out
+  `supabase-backend/` directory (the `supabase-receptor` repo). The local anon
+  key is obtained from `steps.supabase.outputs.anon_key` and passed as
+  `NEXT_PUBLIC_SUPABASE_ANON_KEY`. `graphql-codegen --check` then introspects
+  the live schema and fails if committed generated types differ.
+- **`ci.yml` rename:** `codecov.yml` was renamed to `ci.yml` across all three
+  repos as the file now covers linting, type checking, unit tests (with Codecov
+  upload), production build validation, and codegen schema drift checking — not
+  just coverage. Git detected the rename (73-74% similarity).
+
+**Key decisions:**
+
+- The `codegen-check` job runs in parallel with `unit-tests` and `build` (all
+  depend on `lint-and-type`) — it does not add to the critical path.
+- `workforce-frontend`'s `codegen.ts` already uses `$NEXT_PUBLIC_SUPABASE_URL`,
+  so no changes to its codegen config were needed.
+
+**Branches (all pushed):**
+
+| Repo                  | Branch                             | Last commit |
+| :-------------------- | :--------------------------------- | :---------- |
+| `planner-frontend`    | `audit/260306-frontend-compliance` | `dd4e422`   |
+| `workforce-frontend`  | `audit/260306-frontend-compliance` | `b9c2fb0`   |
+| `preference-frontend` | `audit/260306-frontend-compliance` | `7171a0c`   |
+
+**Brief for next agent:**
+
+- **CROSS-03** is the only remaining open finding. It requires adding a
+  Playwright/Axe E2E accessibility job to `ci.yml` for all three repos. Deferred
+  because it needs a decision on whether to run against a dev server or a
+  staging URL in CI, and whether accessibility failures block merge.
+- All other findings are complete. After implementing CROSS-03 (or deciding to
+  defer it indefinitely), consider transitioning to `/finalise-global-audit`.
 - Always use `GIT_TERMINAL_PROMPT=0` before every `git push`. Always run push as
   a separate `run_command` call, never chained with `&&` after `git commit`.
