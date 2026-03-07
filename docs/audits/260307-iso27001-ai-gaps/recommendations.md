@@ -12,15 +12,16 @@ Rise of AI Risk" (Medium, 2026-03-06, stored as `medium-article.html`)
 
 ## Agent Clarifications (Human-Approved)
 
-| Item                   | Decision                                                                                                                                      |
-| :--------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------- |
-| AI tools in scope      | **Google Antigravity** (via Google Workspace Business Standard) is the confirmed AI tool in use                                               |
-| GitHub Copilot         | **Not in use** — no GitHub Copilot licence; remove from supplier register scope                                                               |
-| Google Workspace plan  | Business Standard — data protection is governed by Google's standard DPA included in Workspace terms; no separate DPA execution required      |
-| Antigravity data terms | Google Workspace Business Standard terms govern data use; confirm whether Antigravity inputs are excluded from model training under DWS terms |
-| Scope boundary         | This audit extends `260305-iso27001-preaudit` — do not re-implement DOC-series recommendations                                                |
-| Finding ID series      | AI-002 through AI-008 (AI-001 reserved for source article reference)                                                                          |
-| Severity authority     | Human (Ryan Ammendolea) approves any escalation to 🔴 Critical                                                                                |
+| Item                   | Decision                                                                                                                 |
+| :--------------------- | :----------------------------------------------------------------------------------------------------------------------- |
+| AI tools in scope      | **Google Antigravity** (via Google Workspace Business Standard) is the confirmed AI tool in use                          |
+| GitHub Copilot         | **Not in use** — no GitHub Copilot licence; no supplier register entry required                                          |
+| Google Workspace plan  | Business Standard — Google standard DPA included in terms; no separate DPA execution required                            |
+| Antigravity data terms | Confirm in Admin Console (Account > Legal > DPA) whether Antigravity context data is excluded from model training        |
+| AI-003 severity        | Confirmed 🟠 High (not 🔴 Critical) — no live PII/customers yet; **production blocker** before first customer onboarding |
+| Scope boundary         | This audit extends `260305-iso27001-preaudit` — do not re-implement DOC-series recommendations                           |
+| Finding ID series      | AI-002 through AI-009 (AI-001 reserved for source article reference)                                                     |
+| Severity authority     | Human (Ryan Ammendolea) approves any escalation to 🔴 Critical                                                           |
 
 ---
 
@@ -129,20 +130,24 @@ processing company code and potentially sensitive data. ISO 27001 Annex A
 
 ## 🟡 Medium
 
-### REC-AI-05: Add AI tool change management clause to Document Control Policy (AI-005)
+### REC-AI-05: Add AI tool and prompt-template change management clause (AI-005)
 
-**Finding:** `policies/document-control.md` — no change management for AI
-model/tool changes. ISO 27001 Annex A 8.32 (Change management) applies.
+**Finding:** `policies/document-control.md` / `.agents/` directory — no change
+management policy for AI model updates or prompt-template changes. ISO 27001
+Annex A 8.32 (Change management) applies.
 
-- [ ] Add a **Note** section to
-      `docs/compliance/iso27001/policies/document-control.md` titled **"4. AI
-      Tool Change Management"**:
-  - Model version changes (e.g., Anthropic API version upgrades) must be
-    evaluated for behavioural impact before adopting in production workflows.
-  - Significant prompt-template changes used in engineering workflows should be
-    reviewed by the ISM before deployment.
+- [ ] Add a section **"4. AI Tool Change Management"** to
+      `docs/compliance/iso27001/policies/document-control.md`:
+  - Google Antigravity model version changes must be evaluated for behavioural
+    impact before adoption in production engineering workflows.
+  - **Prompt-template changes** in `.agents/` (workflow files, skill files) that
+    govern Antigravity's actions on production work require a PR review by the
+    ISM before merge, using the same approval process as ISMS document changes.
   - AI tool deprecations or service migrations must follow the standard change
     management process.
+  - Changes that alter agent behaviour materially (e.g., changing a workflow
+    step that affects compliance outputs) should be logged as a ISMS change
+    event.
 
 ---
 
@@ -184,6 +189,50 @@ applies.
 
 ---
 
+---
+
+### REC-AI-08: Document OAIC AI regulatory posture (AI-009)
+
+**Finding:** `risk-management/risk-register.md` / `governance/scope.md` — no
+documented position on OAIC AI guidance and APP 3 / APP 11 obligations. ISO
+27001 Clause 4.2 (Interested parties) applies.
+
+- [ ] Add R-015 to `docs/compliance/iso27001/risk-management/risk-register.md`:
+
+  | ID    | Description                                                                                                                                | Threat                                                                        | Impact                             | Risk Level | Treatment                                                                 | Owner           | Status  |
+  | :---- | :----------------------------------------------------------------------------------------------------------------------------------------- | :---------------------------------------------------------------------------- | :--------------------------------- | :--------- | :------------------------------------------------------------------------ | :-------------- | :------ |
+  | R-015 | OAIC AI guidance non-compliance — using Antigravity to process personal information may implicate APP 3 (collection) and APP 11 (security) | Regulatory review or complaint triggered before documented APP posture exists | Regulatory risk; reputational harm | Low        | Reduce — document APP position before production; review OAIC AI guidance | Ryan Ammendolea | Planned |
+
+- [ ] Add a note to `docs/compliance/iso27001/governance/scope.md` under
+      "Regulatory Framework" acknowledging OAIC's 2024 AI guidance as a relevant
+      interested-party document, and stating that Common Bond's documented
+      position will be recorded prior to production launch.
+
+---
+
+### REC-AI-09: Raise NC-006 (Observation) in the Nonconformity Log (Suggestion 4)
+
+**Rationale:** `operations/supplier-register.md` and
+`policies/acceptable-use.md` both currently fail to cover an actively-used data
+processor (Google Antigravity). Raising this as a formal Observation (not Major
+NC) gives an external auditor evidence of proactive ISMS posture rather than a
+gap found during review.
+
+- [ ] Add NC-006 to `docs/compliance/iso27001/assurance/nonconformity-log.md`:
+  - **ID:** NC-006
+  - **Date:** 2026-03-07
+  - **Source:** Internal audit — `260307-iso27001-ai-gaps`
+  - **Category:** Observation
+  - **Description:** Google Antigravity (active AI tool used by engineering) is
+    not yet listed in the Supplier Security Register or referenced in the
+    Acceptable Use Policy. This represents an undocumented data processor.
+  - **Corrective Action:** Implement REC-AI-01 through REC-AI-04 from the
+    `260307-iso27001-ai-gaps` recommendations.
+  - **Status:** Open
+  - **Target Close:** Linked to audit close-out of `260307-iso27001-ai-gaps`.
+
+---
+
 ## Deferred to Next Audit Cycle
 
 | Item                                           | Reason Deferred                                                                                                                        |
@@ -196,18 +245,19 @@ applies.
 
 ## Implementation Order
 
-| Priority | Finding ID | Recommendation                                                     | Effort |
-| :------- | :--------- | :----------------------------------------------------------------- | :----- |
-| 1        | AI-003     | REC-AI-02 — AUP AI usage section + data classification annotations | Low    |
-| 2        | AI-002     | REC-AI-01 — Access control policy AI section                       | Low    |
-| 3        | AI-004     | REC-AI-03 — 4 new risk register entries                            | Low    |
-| 4        | AI-006     | REC-AI-04 — AI vendors in supplier register                        | Low    |
-| 5        | AI-005     | REC-AI-05 — AI change management clause                            | Low    |
-| 6        | AI-007     | REC-AI-06 — AI incident types in IRP                               | Low    |
-| 7        | AI-008     | REC-AI-07 — AI awareness training module                           | Low    |
+| Priority | Finding ID  | Recommendation                                                                   | Effort |
+| :------- | :---------- | :------------------------------------------------------------------------------- | :----- |
+| 1        | AI-003      | REC-AI-02 — AUP AI usage section + data classification annotations               | Low    |
+| 2        | AI-002      | REC-AI-01 — Access control policy AI section                                     | Low    |
+| 3        | AI-004      | REC-AI-03 — 4 new risk register entries (R-011–R-014)                            | Low    |
+| 4        | AI-009      | REC-AI-08 — R-015 risk entry + OAIC note in scope.md                             | Low    |
+| 5        | AI-006      | REC-AI-04 — Antigravity entry in supplier register + Admin Console DPA confirm   | Low    |
+| 6        | (assurance) | REC-AI-09 — Raise NC-006 observation in nonconformity log                        | Low    |
+| 7        | AI-005      | REC-AI-05 — AI + prompt-template change management clause in document-control.md | Low    |
+| 8        | AI-007      | REC-AI-06 — AI incident types in IRP + internal audit scope note                 | Low    |
+| 9        | AI-008      | REC-AI-07 — AI awareness training module                                         | Low    |
 
-> All 7 tasks are low-effort documentation additions. A single implementation
-> session should complete all items. No founder sign-off gate is required for
-> the agent-actionable items (REC-AI-01 through REC-AI-07), though the **DPA
-> confirmations in REC-AI-04 are human actions** that require the Founder to
-> verify enterprise account terms with Anthropic/GitHub.
+> All tasks are low-effort documentation additions achievable in a single
+> implementation session. **Human actions required before close-out:** (a) Admin
+> Console DPA confirmation for Antigravity (REC-AI-04); (b) Founder review of
+> OAIC AI guidance scope note (REC-AI-08).
