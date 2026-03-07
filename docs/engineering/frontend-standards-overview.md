@@ -436,6 +436,16 @@ uses an extended stack appropriate for its UX requirements:
 | **`tailwind-merge`**           | Safe Tailwind class composition         |
 | **`framer-motion`**            | Gesture animations and transitions      |
 
+**Typography exemption (approved 2026-03-07):** `preference-frontend` is
+approved to use **Geist Sans** and **Geist Mono** in place of Inter. Rationale:
+it is a bespoke dark-mode mobile interface distinct from the management apps.
+Changing to Inter would require a full design rework with no functional benefit
+— workers never use this app alongside the management interfaces.
+
+:::note Font Exemption Condition This exemption applies **only** to
+`preference-frontend`. All other in-scope frontends (planner-frontend,
+workforce-frontend) must use Inter as per §7.1. :::
+
 Tailwind design tokens must be aligned with the ecosystem colour palette to
 maintain visual consistency across apps.
 
