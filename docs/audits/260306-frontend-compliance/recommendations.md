@@ -344,13 +344,97 @@ tool with its access scope declared.
 
 ## Implementation Order
 
-| Phase | Priority | Finding IDs                             | Note                                         |
-| :---- | :------- | :-------------------------------------- | :------------------------------------------- |
-| 1     | 🔴 Crit  | WF-01, WF-04                            | Tailwind v4 + auth fix — critical blockers   |
-| 2     | 🟠 High  | PL-01, PR-01 (exemption first)          | Typography — finalise Inter migration        |
-| 3     | 🟠 High  | WF-02, WF-03                            | Workforce quality gates & error boundaries   |
-| 4     | 🟠 High  | CROSS-01, CROSS-02, CROSS-04            | tsconfig, CI build, Sentry (all repos)       |
-| 5     | 🟠 High  | CROSS-05, CROSS-06                      | Parallel CI pipeline; GraphQL error contract |
-| 6     | 🟡 Med   | PL-03, PR-02, PR-03, CROSS-03, CROSS-07 | Boundaries; dir cleanup; E2E CI; JSDoc lint  |
-| 7     | 🟡 Med   | CROSS-08                                | Renovate Bot setup (all repos)               |
-| 8     | 🟢 Low   | PR-04, ISO-01, ISO-02                   | lint-staged; ISMS registrations              |
+| Phase | Priority | Finding IDs                             | Note                                        |
+| :---- | :------- | :-------------------------------------- | :------------------------------------------ |
+| 1     | 🔴 Crit  | WF-01, WF-04                            | Tailwind v4 + auth fix — critical blockers  |
+| 2     | 🟠 High  | PL-01, PR-01 (exemption first)          | Typography — finalise Inter migration       |
+| 3     | 🟠 High  | WF-02, WF-03                            | Workforce quality gates & error boundaries  |
+| 4     | 🟠 High  | CROSS-01, CROSS-02, CROSS-04            | tsconfig, CI build, Sentry (all repos)      |
+| 5     | 🟠 High  | CROSS-05, CROSS-06, CROSS-10, CROSS-13  | Parallel CI; GQL errors; CSP; server auth   |
+| 6     | 🟡 Med   | PL-03, PR-02, PR-03, CROSS-03, CROSS-07 | Boundaries; dir cleanup; E2E CI; JSDoc lint |
+| 7     | 🟡 Med   | CROSS-08, CROSS-09, CROSS-11, CROSS-12  | Renovate; env safety; codegen CI; PW auth   |
+| 8     | 🟢 Low   | PR-04, ISO-01, ISO-02                   | lint-staged; ISMS registrations             |
+
+---
+
+## 🟠 High (Round 2)
+
+### CROSS-10 — No Security Headers in next.config.ts (All Three)
+
+No CSP, `X-Frame-Options`, `X-Content-Type-Options`,
+`Strict-Transport-Security`, or `Referrer-Policy` headers configured. A CSP is
+the primary XSS defence for Next.js apps; the others are standard browser
+security hygiene. ISO 27001 A.14.2.
+
+- [ ] `planner-frontend` — Add `headers()` async function to `next.config.ts`
+      with `Content-Security-Policy` (allow `self`, Supabase URL, Sentry
+      ingest), `X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`,
+      `Strict-Transport-Security: max-age=63072000; includeSubDomains`,
+      `Referrer-Policy: strict-origin-when-cross-origin`
+      `/Users/ryan/development/common_bond/antigravity-environment/frontend/planner-frontend/next.config.ts`
+- [ ] `workforce-frontend` — Same; adapt CSP to include workforce Supabase URL
+      `/Users/ryan/development/common_bond/antigravity-environment/frontend/workforce-frontend/next.config.ts`
+- [ ] `preference-frontend` — Same
+      `/Users/ryan/development/common_bond/antigravity-environment/frontend/preference-frontend/next.config.ts`
+
+### CROSS-13 — Client-Only Auth in Authenticated Layouts (Workforce, Preference)
+
+`planner-frontend` is the reference: `layout.tsx` is an `async` Server Component
+calling `supabase.auth.getUser()` before render. `workforce-frontend` and
+`preference-frontend` use client-side `AuthProvider` only, creating a potential
+flash-of-unauthenticated-content before hydration.
+
+- [ ] `workforce-frontend` — Convert `src/app/layout.tsx` to an `async` Server
+      Component; call `supabase.auth.getUser()` and redirect unauthenticated
+      users server-side before render. Use `planner-frontend/src/app/layout.tsx`
+      as the reference implementation.
+      `/Users/ryan/development/common_bond/antigravity-environment/frontend/workforce-frontend/src/app/layout.tsx`
+- [ ] `preference-frontend` — Same
+      `/Users/ryan/development/common_bond/antigravity-environment/frontend/preference-frontend/src/app/layout.tsx`
+
+---
+
+## 🟡 Medium (Round 2)
+
+### CROSS-09 — No Type-Safe Environment Variable Validation (All Three)
+
+`process.env.NEXT_PUBLIC_*` strings are unvalidated at build time. Missing vars
+become silent `undefined` at runtime.
+
+- [ ] `planner-frontend` — Install `@t3-oss/env-nextjs`; create `src/env.ts`
+      with a Zod schema validating all required `NEXT_PUBLIC_*` vars; replace
+      all raw `process.env.*` references with `env.*` imports
+      `/Users/ryan/development/common_bond/antigravity-environment/frontend/planner-frontend/src/env.ts`
+- [ ] `workforce-frontend` — Same
+      `/Users/ryan/development/common_bond/antigravity-environment/frontend/workforce-frontend/src/env.ts`
+- [ ] `preference-frontend` — Same
+      `/Users/ryan/development/common_bond/antigravity-environment/frontend/preference-frontend/src/env.ts`
+
+### CROSS-11 — GraphQL Codegen Drift Not Gated in CI (All Three)
+
+`@graphql-codegen` runs manually. Schema changes in `supabase-receptor` silently
+stale generated types across all three frontends.
+
+- [ ] `planner-frontend` — Add CI step that runs `npx graphql-codegen --check`;
+      fails the pipeline if committed generated types differ from the current
+      schema introspection result
+      `/Users/ryan/development/common_bond/antigravity-environment/frontend/planner-frontend/.github/workflows/codecov.yml`
+- [ ] `workforce-frontend` — Same
+      `/Users/ryan/development/common_bond/antigravity-environment/frontend/workforce-frontend/.github/workflows/codecov.yml`
+- [ ] `preference-frontend` — Same
+      `/Users/ryan/development/common_bond/antigravity-environment/frontend/preference-frontend/.github/workflows/codecov.yml`
+
+### CROSS-12 — Playwright Global Auth Setup Missing (Workforce, Preference)
+
+`planner-frontend` is the reference: explicit
+`globalSetup: './e2e/global-setup.ts'` plus `storageState` on each project.
+`workforce-frontend` and `preference-frontend` use setup project + storageState
+but lack a dedicated `globalSetup` file, making multi-role auth extension
+harder.
+
+- [ ] `workforce-frontend` — Add `globalSetup: './e2e/global-setup.ts'` to
+      `playwright.config.ts`; create `e2e/global-setup.ts` writing
+      `playwright/.auth/user.json` (mirror planner implementation)
+      `/Users/ryan/development/common_bond/antigravity-environment/frontend/workforce-frontend/playwright.config.ts`
+- [ ] `preference-frontend` — Same; adapt to preference auth flow (worker login)
+      `/Users/ryan/development/common_bond/antigravity-environment/frontend/preference-frontend/playwright.config.ts`

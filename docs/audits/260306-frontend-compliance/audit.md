@@ -297,27 +297,78 @@ security patches are discovered reactively. Under ISO 27001 A.12.6.1 (Management
 of technical vulnerabilities), automated patch tracking is a recommended
 control.
 
+### 4.9 No Type-Safe Environment Variable Validation (All Three)
+
+All three apps access env vars via raw `process.env.NEXT_PUBLIC_*` strings. A
+missing or misnamed variable silently becomes `undefined` at runtime. There is
+no Zod-validated env schema to fail the build on misconfiguration.
+
+### 4.10 No Content-Security-Policy or Security Headers (All Three)
+
+No `next.config.ts` in any of the three repos sets a `Content-Security-Policy`
+or other security headers (`X-Frame-Options`, `X-Content-Type-Options`,
+`Strict-Transport-Security`, `Referrer-Policy`). Under ISO 27001 A.14.2,
+technical security controls must be built into the software development process.
+A CSP is the primary defence against XSS for Next.js SPAs.
+
+### 4.11 GraphQL Codegen Drift — No CI Gate (All Three)
+
+`@graphql-codegen` is run manually. A schema change in `supabase-receptor`
+(e.g., new column, renamed type) silently renders the frontend's generated types
+stale until a developer runs `codegen` locally. No CI step verifies that
+committed generated types match the current schema.
+
+### 4.12 Playwright Global Auth Setup (Workforce, Preference)
+
+**`planner-frontend`** has a fully compliant §5.6 implementation:
+`globalSetup: './e2e/global-setup.ts'` + `storageState: '.auth/user.json'` in
+both project definitions. This is the **reference implementation** for the other
+two apps.
+
+**`workforce-frontend`** and **`preference-frontend`** both have `storageState`
+set on their Playwright projects and a `setup` project dependency — but neither
+has an explicit `globalSetup:` key in `playwright.config.ts`. Authentication is
+handled via the setup project but without a dedicated global setup file, making
+the auth lifecycle less explicit and harder to extend (e.g., for multiple
+roles).
+
+### 4.13 No Server-Side Session Check in Authenticated Layouts (Workforce, Preference)
+
+**`planner-frontend`** correctly implements §12.3: `layout.tsx` is an `async`
+Server Component that calls `supabase.auth.getUser()` before rendering. This
+prevents flash-of-unauthenticated-content and ensures middleware-level redirect
+is backed by a server check.
+
+**`workforce-frontend`** and **`preference-frontend`** use client-side
+`AuthProvider` context only. Users may briefly see protected content before the
+client hydrates and discovers the session is absent.
+
 ---
 
 ## Severity Summary
 
-| Finding ID | Repository | File                                 | Category            | Severity    |
-| :--------- | :--------- | :----------------------------------- | :------------------ | :---------- |
-| CROSS-01   | all        | `tsconfig.json`                      | Architectural Drift | 🟠 High     |
-| CROSS-02   | all        | `.github/workflows/codecov.yml`      | Process Gap         | 🟠 High     |
-| CROSS-03   | all        | `.github/workflows/codecov.yml`      | Process Gap         | 🟡 Medium   |
-| CROSS-04   | all        | `package.json` / `sentry`            | Security            | 🟠 High     |
-| CROSS-05   | all        | `.github/workflows/codecov.yml`      | Process Gap         | 🟠 High     |
-| CROSS-06   | all        | `src/**/hooks/`, `src/**/providers/` | Architectural Drift | 🟠 High     |
-| CROSS-07   | all        | `eslint.config.mjs`                  | Process Gap         | 🟡 Medium   |
-| CROSS-08   | all        | `.github/` (missing)                 | Process Gap         | 🟡 Medium   |
-| WF-01      | workforce  | `src/app/globals.css`                | Tech Debt           | 🔴 Critical |
-| WF-02      | workforce  | `.husky/pre-commit`, `package.json`  | Process Gap         | 🟠 High     |
-| WF-03      | workforce  | `src/app/`                           | Architectural Drift | 🟠 High     |
-| WF-04      | workforce  | `src/lib/graphql/client.ts`          | Security            | 🔴 Critical |
-| PL-01      | planner    | `src/app/globals.css`                | Tech Debt           | 🟠 High     |
-| PL-02      | planner    | `src/app/globals.css:36`             | Tech Debt           | 🟡 Medium   |
-| PL-03      | planner    | `src/app/(authenticated)/`           | Process Gap         | 🟡 Medium   |
-| PR-01      | preference | `src/app/globals.css`, `layout.tsx`  | Tech Debt           | 🟠 High     |
-| PR-02      | preference | `src/`                               | Architectural Drift | 🟡 Medium   |
-| PR-03      | preference | `src/app/`                           | Process Gap         | 🟡 Medium   |
+| Finding ID | Repository            | File                                 | Category            | Severity    |
+| :--------- | :-------------------- | :----------------------------------- | :------------------ | :---------- |
+| CROSS-01   | all                   | `tsconfig.json`                      | Architectural Drift | 🟠 High     |
+| CROSS-02   | all                   | `.github/workflows/codecov.yml`      | Process Gap         | 🟠 High     |
+| CROSS-03   | all                   | `.github/workflows/codecov.yml`      | Process Gap         | 🟡 Medium   |
+| CROSS-04   | all                   | `package.json` / `sentry`            | Security            | 🟠 High     |
+| CROSS-05   | all                   | `.github/workflows/codecov.yml`      | Process Gap         | 🟠 High     |
+| CROSS-06   | all                   | `src/**/hooks/`, `src/**/providers/` | Architectural Drift | 🟠 High     |
+| CROSS-07   | all                   | `eslint.config.mjs`                  | Process Gap         | 🟡 Medium   |
+| CROSS-08   | all                   | `.github/` (missing)                 | Process Gap         | 🟡 Medium   |
+| CROSS-09   | all                   | `src/env.ts` (missing)               | Security            | 🟡 Medium   |
+| CROSS-10   | all                   | `next.config.ts`                     | Security            | 🟠 High     |
+| CROSS-11   | all                   | `.github/workflows/`                 | Process Gap         | 🟡 Medium   |
+| CROSS-12   | workforce, preference | `playwright.config.ts`               | Process Gap         | 🟡 Medium   |
+| CROSS-13   | workforce, preference | `src/app/layout.tsx`                 | Security            | 🟠 High     |
+| WF-01      | workforce             | `src/app/globals.css`                | Tech Debt           | 🔴 Critical |
+| WF-02      | workforce             | `.husky/pre-commit`, `package.json`  | Process Gap         | 🟠 High     |
+| WF-03      | workforce             | `src/app/`                           | Architectural Drift | 🟠 High     |
+| WF-04      | workforce             | `src/lib/graphql/client.ts`          | Security            | 🔴 Critical |
+| PL-01      | planner               | `src/app/globals.css`                | Tech Debt           | 🟠 High     |
+| PL-02      | planner               | `src/app/globals.css:36`             | Tech Debt           | 🟡 Medium   |
+| PL-03      | planner               | `src/app/(authenticated)/`           | Process Gap         | 🟡 Medium   |
+| PR-01      | preference            | `src/app/globals.css`, `layout.tsx`  | Tech Debt           | 🟠 High     |
+| PR-02      | preference            | `src/`                               | Architectural Drift | 🟡 Medium   |
+| PR-03      | preference            | `src/app/`                           | Process Gap         | 🟡 Medium   |
