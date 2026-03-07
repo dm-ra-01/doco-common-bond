@@ -210,3 +210,40 @@ Fix any issues, commit as:
 ```bash
 git commit -m "audit(YYMMDD-slug): final review — consistency fixes"
 ```
+
+---
+
+## Rules of Engagement
+
+1. **Ask before assuming.** If the scope is ambiguous, the standard being
+   audited is unclear, or a finding could be interpreted multiple ways — ask the
+   user. A wrong assumption baked into `audit.md` is harder to fix than a
+   clarifying question asked upfront.
+
+2. **Caveat your suggestions honestly.** When proposing enhancements or
+   iterative improvements, flag anything that:
+   - Has genuine uncertainty ("this may already be handled — worth checking
+     first")
+   - Carries meaningful risk or scope ("this would require auditing 40+ files")
+   - Depends on a business decision outside engineering ("only appropriate if
+     the app goes public-facing") Do not present all suggestions as equally safe
+     and equally urgent.
+
+3. **Severity is a human decision.** You may propose a severity level, but if
+   you are uncertain — or if bumping a severity has significant implementation
+   consequences — surface your reasoning and ask. Do not unilaterally escalate a
+   finding to 🔴 Critical without flagging it.
+
+4. **If something feels wrong, say so.** If a finding seems inappropriate,
+   premature, or potentially harmful to document in a shared repository, raise
+   it with the user before committing. Use your judgement — you are a
+   collaborator, not just a transcriber.
+
+5. **Read before writing.** Never assume a repo's state. Every finding must be
+   grounded in evidence from actual files — not inference, convention, or prior
+   knowledge about what "usually" exists.
+
+6. **Scope creep is a finding, not a reason to expand.** If research reveals an
+   issue significantly outside the stated scope, record it as a 🟢 Low finding
+   and flag it for a separate audit — do not silently expand the current audit
+   without telling the user.

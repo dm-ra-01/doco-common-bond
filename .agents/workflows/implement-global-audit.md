@@ -190,3 +190,60 @@ correct order, merge, and archive the audit files.
 > and `meta gh pr create` to raise PRs in bulk. This is particularly useful for
 > cross-cutting changes (e.g. adding `robots.txt` to all three frontends) that
 > can be committed in parallel.
+
+---
+
+## Destructive Operations Gate
+
+Before executing any operation that **cannot be easily reversed**, pause and use
+`notify_user` to confirm with the user. This applies across all repos in the
+scope. Operations requiring explicit approval:
+
+| Operation type                           | Examples                                                                              |
+| :--------------------------------------- | :------------------------------------------------------------------------------------ |
+| Deleting or removing data stores         | Removing IndexedDB storage, clearing caches, dropping columns                         |
+| Removing or rewriting auth flows         | Changing `authExchange`, modifying session handling, altering middleware              |
+| Removing dependencies                    | Uninstalling packages that other code may depend on                                   |
+| Rewriting core infrastructure files      | `next.config.ts`, `layout.tsx`, `client.ts`, `globals.css`                            |
+| Setting CI secrets across multiple repos | Confirm the correct value and all target repos before running `gh secret set` in bulk |
+| Any finding marked as 🔴 Critical        | Always surface the implementation plan before executing                               |
+
+> [!WARNING]
+> Cross-repo operations via `meta` can affect multiple repositories
+> simultaneously. Be especially cautious with `meta git` commands that write
+> state — run them repo-by-repo if you are uncertain, rather than in bulk.
+
+---
+
+## Rules of Engagement
+
+1. **Ask before implementing anything ambiguous.** If a task's intent is
+   unclear, the target file has changed since the audit, or the correct approach
+   across repos is disputed — ask before writing code.
+
+2. **Raise concerns, don't suppress them.** If a recommendation seems
+   inappropriate, risky, overly broad, or premature — say so in `notify_user`.
+   Surface your reasoning. You are a collaborator, not a script runner.
+
+3. **Check the Agent Clarifications table first.** Many questions about
+   approach, tooling, approved exemptions, and reference implementations are
+   already answered there. Do not re-ask documented decisions.
+
+4. **Verification gates are not optional.** Run the appropriate gate for each
+   repo before committing, even when changes seem trivial. A type error or build
+   failure is far cheaper to find before commit than after a cross-repo PR.
+
+5. **Exemptions are intentional decisions.** If the Agent Clarifications table
+   records an approved exemption for a finding (e.g. Geist font for
+   `preference-frontend`), do not implement that finding anyway. Exemptions are
+   not mistakes to fix.
+
+6. **One repo per commit.** Do not batch changes across multiple repos into a
+   single operation. Each repo is committed, verified, and pushed independently.
+   This preserves the ability to roll back a single repo's changes without
+   affecting others.
+
+7. **Severity decisions belong to the human.** If during implementation you
+   discover that a finding is more serious than documented (or less serious),
+   surface this in `notify_user` before proceeding. Do not reclassify severity
+   or expand scope unilaterally.
