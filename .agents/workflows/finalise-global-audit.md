@@ -31,8 +31,10 @@ properly archive the audit record.
 
 1. Append a **Session Close** section to `recommendations.md` detailing the
    re-audit and completion.
-2. Update `docs/audits/audit-registry.md` status to `✅ Complete` for this
-   audit.
+2. Update `docs/audits/audit-registry.md` status to `✅ Closed` for this audit.
+   This is the only step in the entire audit lifecycle where `Closed` is set —
+   it means the re-audit has confirmed all recommendations are implemented or
+   formally deferred.
 3. Commit and push these final changes to the `common-bond` audit branch:
    ```bash
    cd /Users/ryan/.../documentation/common-bond

@@ -175,7 +175,22 @@ Before calling `notify_user`, verify:
 - [ ] `Auditor:` field is `Ryan Ammendolea`
 - [ ] Executive summary issue counts match the severity table row count
 
-1. Add a row to `documentation/common-bond/docs/audits/audit-registry.md`.
+1. Add a row to `documentation/common-bond/docs/audits/audit-registry.md`. Use
+   the following status values — **do not use any other values**:
+
+   | Stage                                | Status to set      |
+   | :----------------------------------- | :----------------- |
+   | Audit branch open, docs in draft     | 🔄 Drafting        |
+   | Audit merged, implementation pending | 📋 Findings Issued |
+   | Implementation actively underway     | 🔧 Implementing    |
+   | All recommendations actioned         | ✅ Closed          |
+
+   > [!IMPORTANT]
+   > Set the status to `🔄 Drafting` when first adding the row. Transition to
+   > `📋 Findings Issued` when the audit branch is merged. **Never set
+   > `✅ Closed` simply because the audit documents are finalized** — only when
+   > the recommendations have been implemented or formally deferred.
+
 2. Commit audit files + registry update to the feature branch.
 3. Use `notify_user`: top 3–5 findings, slug, branch name, blocking decisions.
 

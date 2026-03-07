@@ -116,15 +116,27 @@ For each target repository in this session's scope:
 
 1. **Cross off completed tasks** in `recommendations.md` (in `common-bond`) with
    an `x`.
-2. Commit the updated `recommendations.md` to `common-bond`'s
-   `audit/YYMMDD-slug` branch:
+2. **Update the registry status** in
+   `documentation/common-bond/docs/audits/audit-registry.md`:
+
+   | Situation                                  | Status to set                                                     |
+   | :----------------------------------------- | :---------------------------------------------------------------- |
+   | At least one task implemented this session | 🔧 Implementing                                                   |
+   | All tasks complete or formally deferred    | ✅ Closed (only after `/finalise-global-audit` re-audit confirms) |
+
+   > [!IMPORTANT]
+   > Only `/finalise-global-audit` should set `✅ Closed`. Implementation agents
+   > set `🔧 Implementing` and leave the final close to the re-audit step.
+
+3. Commit the updated `recommendations.md` and `audit-registry.md` to
+   `common-bond`'s `audit/YYMMDD-slug` branch:
    ```bash
    cd /path/to/documentation/common-bond
-   git add docs/audits/YYMMDD-slug/recommendations.md
+   git add docs/audits/YYMMDD-slug/recommendations.md docs/audits/audit-registry.md
    git commit -m "audit(YYMMDD-slug): mark CROSS-NN complete; session close"
    git push origin audit/YYMMDD-slug
    ```
-3. **Do not merge any branch to `main`** — this is left for
+4. **Do not merge any branch to `main`** — this is left for
    `/finalise-global-audit`.
 
 ---

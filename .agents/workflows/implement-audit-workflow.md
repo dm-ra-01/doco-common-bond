@@ -128,9 +128,18 @@ If your session completes the **final remaining tasks** of an audit:
    ```
 
 2. Update the status of this audit in
-   `documentation/common-bond/docs/audits/audit-registry.md`. If the audit is
-   now completely finished, set to `✅ Complete`. If work remains, ensure it is
-   set to `🔄 In Progress`.
+   `documentation/common-bond/docs/audits/audit-registry.md` using the canonical
+   four-status convention:
+
+   | Situation                             | Status to set   |
+   | :------------------------------------ | :-------------- |
+   | Implementation begun this session     | 🔧 Implementing |
+   | All recommendations actioned/deferred | ✅ Closed       |
+
+   > [!IMPORTANT]
+   > **`✅ Closed` means all recommendations are actioned or formally deferred**
+   > — not that the audit documents are merged. Do not set `Closed` if any
+   > `- [ ]` tasks remain open and undeferred.
 3. Use `notify_user` to report session completion, completed IDs, blockers, and
    next targets.
 
