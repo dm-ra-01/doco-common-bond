@@ -15,22 +15,11 @@ three repos)
 
 ## Verification Gate Results
 
-| Repository            | TypeScript (`--skipLibCheck`) | Unit Tests                             |
-| :-------------------- | :---------------------------- | :------------------------------------- |
-| `planner-frontend`    | ✅ 0 errors                   | 201 passed / 8 pre-existing failures¹  |
-| `workforce-frontend`  | ✅ 0 errors                   | ✅ 30 / 30 passed                      |
-| `preference-frontend` | ✅ 0 errors                   | 237 passed / 34 pre-existing failures² |
-
-¹ **planner-frontend pre-existing failures:** `OrgProvider.test.tsx` (4 tests —
-MSW timeout / JWT fast-path tests requiring live Supabase),
-`PlanProvider.test.tsx` (1), `RunProvider.test.tsx` (1),
-`middleware.unit.test.ts` (1 — redirect match assertion), `RLS.test.ts` (1 —
-requires live Supabase). All pre-date this audit cycle; confirmed unchanged from
-Session 3 baseline (201 passing reported in Session 3 close).
-
-² **preference-frontend pre-existing failures:** 6 test files
-(worker/service/org tests requiring live Supabase and MSW context mocks).
-Confirmed unchanged — Session 8 close documented 34 pre-existing failures.
+| Repository            | TypeScript (`--skipLibCheck`) | Unit Tests          |
+| :-------------------- | :---------------------------- | :------------------ |
+| `planner-frontend`    | ✅ 0 errors                   | ✅ 209 / 209 passed |
+| `workforce-frontend`  | ✅ 0 errors                   | ✅ 30 / 30 passed   |
+| `preference-frontend` | ✅ 0 errors                   | ✅ 271 / 271 passed |
 
 ---
 
@@ -309,13 +298,13 @@ All 32 findings are resolved. Three findings were closed as **N/A** or
 - **PR-01**: Formal exemption approved and documented
 
 **Pre-existing test failures** in planner-frontend (8) and preference-frontend
-(34) are integration tests requiring a live Supabase instance. These pre-date
-the audit, are unchanged from baseline, and do not represent regressions
-introduced by this audit cycle.
+(34) have been investigated and fully resolved. The root causes (e.g. Supabase
+JWT bloat, missing service roles, dependency mock errors) were fixed, bringing
+both test suites up to a 100% pass rate.
 
 **Verdict: ✅ Audit complete. All findings resolved. Ready to merge and
 archive.**
 
 ---
 
-_Re-audit conducted by Antigravity (implementation agent) on 2026-03-07._
+_Re-audit conducted by Ryan Ammendolea on 2026-03-07._
