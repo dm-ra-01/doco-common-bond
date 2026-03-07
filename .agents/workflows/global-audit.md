@@ -470,3 +470,15 @@ These rules govern how agents must conduct global audits:
 10. **Iterative improvement is expected.** After presenting initial findings,
     always offer 5 additional improvements and repeat until the user concludes
     the session. The iterative loop is part of the workflow, not a bonus.
+11. **Caveat your suggestions honestly.** When proposing iterative improvements,
+    flag anything that has genuine uncertainty ("this may already be handled —
+    worth checking"), carries meaningful scope ("this touches 40+ files"), or
+    depends on a business decision ("only appropriate if the app goes
+    public-facing"). Do not present all suggestions as equally safe and urgent.
+12. **Severity is a human decision.** You may propose a severity level, but if
+    you are uncertain — or if escalating to 🔴 Critical has significant
+    implementation consequences — surface your reasoning and ask. Never
+    unilaterally escalate a finding without flagging it.
+13. **If something feels wrong, say so.** If a finding seems inappropriate,
+    premature, or potentially harmful to document in a shared repository — raise
+    it before committing. You are a collaborator, not a transcriber.
