@@ -5,8 +5,9 @@
 **Date:** 2026-03-07\
 **Scope:** `docs/compliance/iso27001/` — assessed against AI tool usage\
 **Branch:** `audit/260307-iso27001-ai-gaps`\
-**Source:** [Audit Report](./audit.md) · informed by "SOC 2, ISO 27001, and the
-Rise of AI Risk" (Medium, 2026-03-06, stored as `medium-article.html`)
+**Source:** [Audit Report](./audit.md) · primary references: OAIC guidance on
+privacy and commercially available AI (October 2024); ASD/ACSC "Engaging with
+Artificial Intelligence" (January 2024). See audit.md Credible Sources section.
 
 ---
 
@@ -20,7 +21,7 @@ Rise of AI Risk" (Medium, 2026-03-06, stored as `medium-article.html`)
 | Antigravity data terms | Confirm in Admin Console (Account > Legal > DPA) whether Antigravity context data is excluded from model training        |
 | AI-003 severity        | Confirmed 🟠 High (not 🔴 Critical) — no live PII/customers yet; **production blocker** before first customer onboarding |
 | Scope boundary         | This audit extends `260305-iso27001-preaudit` — do not re-implement DOC-series recommendations                           |
-| Finding ID series      | AI-002 through AI-009 (AI-001 reserved for source article reference)                                                     |
+| Finding ID series      | AI-002 through AI-011 (AI-001 reserved for source article reference)                                                     |
 | Severity authority     | Human (Ryan Ammendolea) approves any escalation to 🔴 Critical                                                           |
 
 ---
@@ -68,17 +69,25 @@ assistants creates an uncontrolled data export pathway. ISO 27001 Annex A 5.12
 - [ ] Add a section **"5. AI Tool Usage"** to
       `docs/compliance/iso27001/policies/acceptable-use.md`:
   - **Permitted:** Inputting Public and Internal-tier data into approved AI
-    tools (list tools).
+    tools (Antigravity, Claude, Gemini subject to safe-use conditions).
   - **Prohibited:** Inputting Confidential or Restricted data (e.g., PII,
     credentials, financial records) into any AI tool without explicit ISM
     approval.
-  - **Prohibited:** Using personal AI accounts (e.g., personal ChatGPT) for work
-    data.
+  - **Prohibited:** Using personal AI accounts (e.g., personal ChatGPT, personal
+    Claude) for work data.
   - Required: Report any unintentional disclosure of Confidential data via AI
     prompt to `alert@commonbond.au` as a potential security incident.
-- [ ] Add a note to `docs/compliance/iso27001/policies/data-classification.md`
-      in each tier's "Handling Requirements" row clarifying whether that
-      classification may be used with AI tools.
+  - **Local/offline models** (e.g., locally running LLMs): require written
+    approval from the ISM before use with any company data.
+- [ ] Add an **"AI Input Permitted?"** column to the data classification table
+      in `docs/compliance/iso27001/policies/data-classification.md`:
+
+  | Tier         | AI Input Permitted?                                                                                        |
+  | :----------- | :--------------------------------------------------------------------------------------------------------- |
+  | Public       | ✅ Yes — freely permitted with approved tools                                                              |
+  | Internal     | ✅ Yes — permitted with approved tools; note: do not use personal AI accounts                              |
+  | Confidential | ⚠️ No — prohibited unless explicit ISM written approval obtained; report accidental disclosure immediately |
+  | Restricted   | ❌ No — prohibited under all circumstances; treat any accidental disclosure as a data breach               |
 
 ---
 
@@ -121,6 +130,8 @@ processing company code and potentially sensitive data. ISO 27001 Annex A
     processing amendment to verify the DPA is accepted for your org.
   - Trust page:
     [Google Cloud Privacy](https://cloud.google.com/terms/cloud-privacy-notice)
+  - **Target date for DPA confirmation: 2026-04-30** (ISO 27001 Stage 1 audit
+    readiness target — this action must be closed before that date)
 
 - [ ] Confirm **GitHub Copilot is not in use** and note that exclusion in the
       supplier register review log (no entry required since it is not an active
@@ -233,6 +244,62 @@ gap found during review.
 
 ---
 
+### REC-AI-10: Publish an Approved AI Tools List in the AUP (AI-010)
+
+**Finding:** `policies/acceptable-use.md` — AI tools are prohibited unless
+"approved" but no approved list exists anywhere. ISO 27001 Annex A 5.1 (Policies
+for information security) requires policies to be actionable. OAIC (2024)
+requires governance policies specifying which tools are approved for AI use.
+
+- [ ] Add an **Approved AI Tools** table to
+      `docs/compliance/iso27001/policies/acceptable-use.md` as an annex or
+      inline in section 5 (AI Tool Usage):
+
+  | Tool               | Provider                                 | Safe-Use Conditions                                                                                                                                 |  Local/Offline?   | Status                                  |
+  | :----------------- | :--------------------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------- | :---------------: | :-------------------------------------- |
+  | Google Antigravity | Google (via Workspace Business Standard) | Input only Public/Internal data; no Confidential without ISM approval; DPA active via Workspace terms                                               | No — cloud-hosted | ✅ Approved                             |
+  | Claude (any plan)  | Anthropic                                | Input only Public/Internal data; use organisation account, not personal; do not enable Claude to store conversation history for training if offered | No — cloud-hosted | ✅ Approved (safe-use conditions apply) |
+  | Gemini (any plan)  | Google                                   | Input only Public/Internal data; use Google Workspace account, not personal; subject to Workspace terms                                             | No — cloud-hosted | ✅ Approved (safe-use conditions apply) |
+  | Local/offline LLMs | Any                                      | Requires written ISM approval before use with company data; security review of model source required                                                |        Yes        | ⚠️ Requires ISM approval                |
+  | Any other AI tool  | Any                                      | Not approved; must seek ISM approval before use                                                                                                     |         —         | ❌ Not approved                         |
+
+  **"Safe use" is defined as:**
+  - Only Public or Internal-tier data is input into the tool
+  - An organisational account (not a personal account) is used
+  - Conversation history / model training on inputs is disabled where the option
+    exists
+  - Outputs are reviewed by a human before being acted upon or shared
+  - Any suspected misuse or accidental disclosure is reported immediately
+
+---
+
+### REC-AI-11: Add APP 12/13 Data Subject Request Procedure for AI-Processed Data (AI-011)
+
+**Finding:** No document defines how to respond to a data subject access or
+correction request (APP 12 / APP 13) where the personal information in question
+was also processed by an AI tool. OAIC (2024) confirms APP 6 applies to personal
+information input to AI: use must not extend beyond the primary collection
+purpose.
+
+- [ ] Add a subsection to
+      `docs/compliance/iso27001/operations/incident-response.md` or a new
+      lightweight procedure in `docs/compliance/iso27001/operations/` titled
+      **"Data Subject Rights and AI-Processed Information"**:
+  - When a data subject submits an APP 12 (access) request: check whether the
+    requested personal information was also submitted to an AI tool. If yes,
+    note in the response whether that information may be retained by the AI
+    provider under their DPA terms and provide Google's privacy URL.
+  - When a data subject submits an APP 13 (correction/deletion) request: confirm
+    whether deletion from Google Workspace also removes the data from
+    Antigravity context storage. Document the outcome.
+  - If any uncertainty exists about the AI vendor's retention of the personal
+    information, escalate to ISM and treat as potential data breach for NDB
+    assessment.
+- [ ] Flag this procedure as a production-launch gate: must be confirmed before
+      any customer PII enters company systems.
+
+---
+
 ## Deferred to Next Audit Cycle
 
 | Item                                           | Reason Deferred                                                                                                                        |
@@ -240,6 +307,7 @@ gap found during review.
 | Full AI model card / system card documentation | Requires clarification of which AI integrations are production-facing (vs. internal tooling); deferred until AI strategy is formalised |
 | AI red-teaming / adversarial testing programme | Out of scope at pre-revenue stage; revisit when engineering team grows beyond founder                                                  |
 | NIST AI RMF alignment                          | Separate framework; recommended for next ISO 27001 review cycle when AI usage matures                                                  |
+| ISO/IEC 42001:2023 AI management system        | Future roadmap; consider as AI governance extension once engineering team scales                                                       |
 
 ---
 
@@ -247,17 +315,19 @@ gap found during review.
 
 | Priority | Finding ID  | Recommendation                                                                   | Effort |
 | :------- | :---------- | :------------------------------------------------------------------------------- | :----- |
-| 1        | AI-003      | REC-AI-02 — AUP AI usage section + data classification annotations               | Low    |
-| 2        | AI-002      | REC-AI-01 — Access control policy AI section                                     | Low    |
-| 3        | AI-004      | REC-AI-03 — 4 new risk register entries (R-011–R-014)                            | Low    |
-| 4        | AI-009      | REC-AI-08 — R-015 risk entry + OAIC note in scope.md                             | Low    |
-| 5        | AI-006      | REC-AI-04 — Antigravity entry in supplier register + Admin Console DPA confirm   | Low    |
-| 6        | (assurance) | REC-AI-09 — Raise NC-006 observation in nonconformity log                        | Low    |
-| 7        | AI-005      | REC-AI-05 — AI + prompt-template change management clause in document-control.md | Low    |
-| 8        | AI-007      | REC-AI-06 — AI incident types in IRP + internal audit scope note                 | Low    |
-| 9        | AI-008      | REC-AI-07 — AI awareness training module                                         | Low    |
+| 1        | AI-003      | REC-AI-02 — AUP AI usage + AI Input column in data classification                | Low    |
+| 2        | AI-010      | REC-AI-10 — Approved AI tools list with safe-use definition                      | Low    |
+| 3        | AI-002      | REC-AI-01 — Access control policy AI section                                     | Low    |
+| 4        | AI-004      | REC-AI-03 — 4 new risk register entries (R-011–R-014)                            | Low    |
+| 5        | AI-009      | REC-AI-08 — R-015 risk entry + OAIC note in scope.md                             | Low    |
+| 6        | AI-006      | REC-AI-04 — Antigravity in supplier register + DPA confirm by 2026-04-30         | Low    |
+| 7        | (assurance) | REC-AI-09 — Raise NC-006 observation in nonconformity log                        | Low    |
+| 8        | AI-005      | REC-AI-05 — AI + prompt-template change management clause in document-control.md | Low    |
+| 9        | AI-007      | REC-AI-06 — AI incident types in IRP + internal audit scope note                 | Low    |
+| 10       | AI-008      | REC-AI-07 — AI awareness training module                                         | Low    |
+| 11       | AI-011      | REC-AI-11 — APP 12/13 data subject request procedure for AI-processed data       | Low    |
 
 > All tasks are low-effort documentation additions achievable in a single
 > implementation session. **Human actions required before close-out:** (a) Admin
-> Console DPA confirmation for Antigravity (REC-AI-04); (b) Founder review of
-> OAIC AI guidance scope note (REC-AI-08).
+> Console DPA confirmation for Antigravity by 2026-04-30 (REC-AI-04); (b)
+> Founder review of OAIC AI guidance scope note (REC-AI-08).
