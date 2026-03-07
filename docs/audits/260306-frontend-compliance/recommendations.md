@@ -194,7 +194,17 @@ visual regression in a deliberately differentiated app.
 
 Axe accessibility checks are required merge gates (§14.1) but run only locally.
 
-- [ ] `planner-frontend` — Add Playwright/axe E2E job to `codecov.yml`
+> **Approved design decisions (Session 9):**
+>
+> - **Server:** Spin up the dev server in-job using `webServer` / `next dev`
+>   (same pattern as local Playwright runs). No staging URL dependency.
+> - **Failure mode:** Axe failures are **informational only** — job should
+>   report findings but not block merge (`continue-on-error: true` on the axe
+>   step or soft-fail pattern).
+> - **File:** Add to `.github/workflows/ci.yml` (already renamed from
+>   `codecov.yml`).
+
+- [ ] `planner-frontend` — Add Playwright/axe E2E job to `ci.yml`
 - [ ] `workforce-frontend` — Same
 - [ ] `preference-frontend` — Same
 
