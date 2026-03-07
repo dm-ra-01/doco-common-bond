@@ -7,6 +7,17 @@
 
 ---
 
+## Agent Clarifications (Human-Approved)
+
+| Item                       | Decision                                                                                                                        |
+| :------------------------- | :------------------------------------------------------------------------------------------------------------------------------ |
+| Sentry DSNs                | Provided — see CROSS-04. Values go in `.env.local` and CI secrets as `NEXT_PUBLIC_SENTRY_DSN`. Do not hardcode in source files. |
+| `noUncheckedIndexedAccess` | Add the flag **and fix all resulting type errors in the same PR** — do not leave CI broken.                                     |
+| Geist font exemption       | **Approved** for `preference-frontend` only. Management apps retain Inter. Update §7.2 of the standards doc.                    |
+| Sentry data residency      | EU (Germany) — ingest host is `.ingest.de.sentry.io`. Must be registered in ISMS data processing records. See ISO-01 below.     |
+
+---
+
 ## 🔴 Critical
 
 ### WF-01 — Tailwind v4 Setup in workforce-frontend (Carryover)
@@ -33,14 +44,17 @@ token values also use raw hex rather than HSL custom properties.
 
 ### CROSS-01 — tsconfig Baseline Drift (All Three)
 
-All three repos are missing required flags from the §17 baseline.
+All three repos are missing required flags from the §17 baseline. **All type
+errors introduced by the new flags must be resolved in the same PR** — do not
+leave CI in a broken state.
 
-- [ ] `planner-frontend` — Add to `tsconfig.json` compilerOptions:
+- [ ] `planner-frontend` — Add flags to `tsconfig.json` compilerOptions, then
+      fix all resulting type errors:
       `"noUnusedLocals": true, "noUnusedParameters": true, "noFallthroughCasesInSwitch": true, "noUncheckedIndexedAccess": true, "allowImportingTsExtensions": true`
       `/Users/ryan/development/common_bond/antigravity-environment/frontend/planner-frontend/tsconfig.json`
-- [ ] `workforce-frontend` — Same additions to `tsconfig.json`
+- [ ] `workforce-frontend` — Same; fix all resulting type errors
       `/Users/ryan/development/common_bond/antigravity-environment/frontend/workforce-frontend/tsconfig.json`
-- [ ] `preference-frontend` — Same additions to `tsconfig.json`
+- [ ] `preference-frontend` — Same; fix all resulting type errors
       `/Users/ryan/development/common_bond/antigravity-environment/frontend/preference-frontend/tsconfig.json`
 
 ### CROSS-02 — Build Step Missing from CI (All Three)
@@ -62,11 +76,27 @@ None of the three apps have `@sentry/nextjs` installed. The `workforce-frontend`
 `client.ts` has an explicit `// TODO: Send to Sentry` comment. Standard §15
 mandates Sentry with PHI scrubbing across all in-scope frontends.
 
-- [ ] `planner-frontend` — Install `@sentry/nextjs`, create
-      `sentry.client.config.ts` with `scrubPHI` filter, add `src/lib/sentry.ts`
-      utility with unit test
+**Sentry project DSNs** (set as `NEXT_PUBLIC_SENTRY_DSN` in `.env.local` and CI
+secrets — never hardcode in source):
+
+| App                   | DSN                                                                                               |
+| :-------------------- | :------------------------------------------------------------------------------------------------ |
+| `planner-frontend`    | `https://6e22456bfab237ec2bae4f2394aa4f7e@o4511001020923904.ingest.de.sentry.io/4511001027280976` |
+| `workforce-frontend`  | `https://364bc1b74593f5e8a64fc91f10ff77a0@o4511001020923904.ingest.de.sentry.io/4511001033769040` |
+| `preference-frontend` | `https://4ac538c19b314289827ba5340904dff1@o4511001020923904.ingest.de.sentry.io/4511001032458320` |
+
+> **EU residency:** All DSNs ingest via `.ingest.de.sentry.io` (Germany). Data
+> does not leave the EU. See ISO-01 for the required ISMS documentation.
+
+- [ ] `planner-frontend` — Install `@sentry/nextjs`; create
+      `sentry.client.config.ts` per §15.1 (`scrubPHI` in `beforeSend`, Console
+      integration filtered); create `src/lib/sentry.ts` with `scrubPHI` utility
+      and unit test; add `NEXT_PUBLIC_SENTRY_DSN` to `.env.local.example` and CI
+      secrets
       `/Users/ryan/development/common_bond/antigravity-environment/frontend/planner-frontend/`
-- [ ] `workforce-frontend` — Same; remove `TODO` comment from `client.ts`
+- [ ] `workforce-frontend` — Same; remove `TODO` comment from
+      `src/lib/graphql/client.ts`; replace `console.error` in `errorExchange`
+      with `Sentry.captureException(scrubPHI(error))`
       `/Users/ryan/development/common_bond/antigravity-environment/frontend/workforce-frontend/`
 - [ ] `preference-frontend` — Same
       `/Users/ryan/development/common_bond/antigravity-environment/frontend/preference-frontend/`
@@ -203,6 +233,19 @@ No error boundary or loading skeleton at any route level.
 
 - [ ] `preference-frontend` — Add `lint-staged` block to `package.json`:
       `"lint-staged": { "src/**/*.{ts,tsx}": ["eslint --fix", "vitest related --run"] }`
+
+### ISO-01 — Sentry Not Registered as Data Processor in ISMS
+
+Sentry is a third-party error-tracking service that receives error telemetry
+from all three frontends. It stores data in Germany (`de.sentry.io`). Under ISO
+27001 Annex A control A.15.1 (Supplier Relationships) and GDPR Article 28
+(Processor contracts), Sentry must be registered in the data processing register
+with its storage location and PHI scrubbing confirmation documented.
+
+- [ ] `common-bond` — Add Sentry to the ISMS data processing register (supplier
+      name, data categories received, storage region: EU/Germany, PHI scrubbing:
+      confirmed via `beforeSend`)
+      `/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/compliance/iso27001/`
 
 ---
 
