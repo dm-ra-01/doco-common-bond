@@ -31,9 +31,10 @@ sidebar_position: 1
 
 ### 🗓️ 2026-03-07
 
-| Slug                      | Title                              | Scope                                                             | Auditor         | Status         | NC Raised | Report                                                                                                                              |
-| :------------------------ | :--------------------------------- | :---------------------------------------------------------------- | :-------------- | :------------- | :-------- | :---------------------------------------------------------------------------------------------------------------------------------- |
-| `260307-iso27001-ai-gaps` | ISO 27001 AI-Specific Gap Analysis | `docs/compliance/iso27001/` — all sections, against AI tool usage | Ryan Ammendolea | 🔄 In Progress | —         | [audit.md](../audits/260307-iso27001-ai-gaps/audit.md) · [recommendations.md](../audits/260307-iso27001-ai-gaps/recommendations.md) |
+| Slug                      | Title                              | Scope                                                             | Auditor         | Status         | NC Raised | Report                                                                                                                                      |
+| :------------------------ | :--------------------------------- | :---------------------------------------------------------------- | :-------------- | :------------- | :-------- | :------------------------------------------------------------------------------------------------------------------------------------------ |
+| `260307-iso27001-ai-gaps` | ISO 27001 AI-Specific Gap Analysis | `docs/compliance/iso27001/` — all sections, against AI tool usage | Ryan Ammendolea | 🔄 In Progress | —         | [audit.md](../audits/260307-iso27001-ai-gaps/audit.md) · [recommendations.md](../audits/260307-iso27001-ai-gaps/recommendations.md)         |
+| `260307-ip-licensing`     | IP Ownership & Licensing Audit     | All repositories — ecosystem-wide IP attribution and licensing    | Ryan Ammendolea | ✅ Complete    | —         | [audit.md](../audits/archive/260307-ip-licensing/audit.md) · [recommendations.md](../audits/archive/260307-ip-licensing/recommendations.md) |
 
 ### 🗓️ 2026-03-06
 
