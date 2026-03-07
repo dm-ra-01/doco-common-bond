@@ -212,10 +212,13 @@ anti-pattern.
 `src/app/(authenticated)/` sub-route group has no dedicated `error.tsx` or
 `loading.tsx`.
 
-- [ ] `planner-frontend` — Add `src/app/(authenticated)/error.tsx`
+- [x] `planner-frontend` — Add `src/app/(authenticated)/error.tsx`
       `/Users/ryan/development/common_bond/antigravity-environment/frontend/planner-frontend/src/app/(authenticated)/error.tsx`
-- [ ] `planner-frontend` — Add `src/app/(authenticated)/loading.tsx` (skeleton)
+- [x] `planner-frontend` — Add `src/app/(authenticated)/loading.tsx` (skeleton)
       `/Users/ryan/development/common_bond/antigravity-environment/frontend/planner-frontend/src/app/(authenticated)/loading.tsx`
+
+> **Note (Session 7):** Files confirmed present on disk in a prior session. No
+> code change required.
 
 ### PR-02 — Dual GraphQL/Context Directories (preference-frontend)
 
@@ -398,19 +401,24 @@ flash-of-unauthenticated-content before hydration.
 `process.env.NEXT_PUBLIC_*` strings are unvalidated at build time. Missing vars
 become silent `undefined` at runtime.
 
-- [ ] `planner-frontend` — Install `@t3-oss/env-nextjs`; create `src/env.ts`
-      with a Zod schema validating all required `NEXT_PUBLIC_*` vars; replace
-      all raw `process.env.*` references with `env.*` imports
-      `/Users/ryan/development/common_bond/antigravity-environment/frontend/planner-frontend/src/env.ts`
-- [ ] `workforce-frontend` — Same
-      `/Users/ryan/development/common_bond/antigravity-environment/frontend/workforce-frontend/src/env.ts`
-- [ ] `preference-frontend` — Same
-      `/Users/ryan/development/common_bond/antigravity-environment/frontend/preference-frontend/src/env.ts`
+- [x] `planner-frontend` — Installed `@t3-oss/env-nextjs`; created `src/env.ts`
+      with Zod schema; all `process.env.*` refs in supabase + graphql clients
+      replaced with `env.*` — commit `65c9e03`
+- [x] `workforce-frontend` — Same — commit `e41ad73`
+- [x] `preference-frontend` — Same (also updated SSR `createClient` factory) —
+      commit `d49ec6b`
 
 ### CROSS-11 — GraphQL Codegen Drift Not Gated in CI (All Three)
 
 `@graphql-codegen` runs manually. Schema changes in `supabase-receptor` silently
 stale generated types across all three frontends.
+
+> **Deferred (Session 7):** `codegen.ts` points to `http://127.0.0.1:54321`
+> (local Supabase). The `--check` flag introspects the live schema, which
+> requires Supabase to be running in CI — contradicting the decision to use
+> mocked Supabase in unit tests. A dedicated session with a CI strategy
+> (separate integration job or schema registry approach) is recommended before
+> implementing.
 
 - [ ] `planner-frontend` — Add CI step that runs `npx graphql-codegen --check`;
       fails the pipeline if committed generated types differ from the current
@@ -429,12 +437,12 @@ stale generated types across all three frontends.
 but lack a dedicated `globalSetup` file, making multi-role auth extension
 harder.
 
-- [ ] `workforce-frontend` — Add `globalSetup: './e2e/global-setup.ts'` to
-      `playwright.config.ts`; create `e2e/global-setup.ts` writing
-      `playwright/.auth/user.json` (mirror planner implementation)
-      `/Users/ryan/development/common_bond/antigravity-environment/frontend/workforce-frontend/playwright.config.ts`
-- [ ] `preference-frontend` — Same; adapt to preference auth flow (worker login)
-      `/Users/ryan/development/common_bond/antigravity-environment/frontend/preference-frontend/playwright.config.ts`
+- [x] `workforce-frontend` — Added `globalSetup: './e2e/global-setup.ts'` to
+      `playwright.config.ts`; created `e2e/global-setup.ts` (validates required
+      env vars, ensures `playwright/.auth/` dir exists before browser context is
+      created) — commit `ad62c7e`
+- [x] `preference-frontend` — Same; adapted to preference auth dir path — commit
+      `5c060d9`
 
 ---
 
@@ -601,14 +609,11 @@ store uses the `persist` middleware, duration must be bounded. **Decision:
 24-hour persistence approved for own-preference draft state only.** Must use
 `partialize` to whitelist allowed fields.
 
-- [ ] `preference-frontend` — Audit all Zustand stores for `persist` middleware;
-      for any that persist, add `storage: createJSONStorage(() => localStorage)`
-      with
-      `partialize: (state) => ({ /* whitelist own-preference fields only */
-      draftPreferences: state.draftPreferences })`
-      and set store expiry logic (e.g., check
-      `Date.now() - lastUpdated > 86400000` and reset on mount)
-      `/Users/ryan/development/common_bond/antigravity-environment/frontend/preference-frontend/src/store/`
+> **N/A (Session 7):** Audited all Zustand stores in `preference-frontend`. No
+> `persist` middleware is in use anywhere. No code change required.
+
+- [x] `preference-frontend` — Audited: no `persist` middleware exists across any
+      Zustand stores. Finding closed as N/A.
 
 ---
 
@@ -977,11 +982,11 @@ across repos.
 - CROSS-16: planner-frontend already had a comprehensive 6-test axe suite.
   preference-frontend already had an Accessibility unit test. Only
   workforce-frontend needed a new test. The axe test caught a real bug:
-  `src/app/loading.tsx` had `aria-label` on a plain `div` without a role —
-  fixed by adding `role="status"`.
+  `src/app/loading.tsx` had `aria-label` on a plain `div` without a role — fixed
+  by adding `role="status"`.
 - CROSS-17: All bare `<img>` references across all 3 repos are in test files
-  with proper `eslint-disable-next-line @next/next/no-img-element` comments.
-  No changes needed.
+  with proper `eslint-disable-next-line @next/next/no-img-element` comments. No
+  changes needed.
 - PR-02 preference-frontend: `src/gql/` (codegen files) merged into
   `src/graphql/`; `src/context/PreferenceContext.tsx` moved to
   `src/providers/PreferenceContext.tsx`. All 8 import sites updated. New barrel
@@ -991,5 +996,52 @@ across repos.
   validation across all 3 repos.
 - CROSS-13 (deferred per Session 3): Server-side auth in workforce + preference
   layouts. Non-trivial — plan carefully.
-- Always use `GIT_TERMINAL_PROMPT=0` before every `git push`. Always run push
-  as a separate `run_command` call.
+- Always use `GIT_TERMINAL_PROMPT=0` before every `git push`. Always run push as
+  a separate `run_command` call.
+
+---
+
+## Session Close — 2026-03-07 (Session 7)
+
+**Completed:** CROSS-09 (env var validation via `@t3-oss/env-nextjs` in all 3
+repos), CROSS-12 (Playwright `globalSetup` for workforce and preference), PL-03
+(confirmed present on disk — no change needed), PR-05 (N/A — no Zustand
+`persist` middleware exists in preference-frontend)
+
+**Deferred:** CROSS-11 (GraphQL codegen CI gate — `codegen.ts` uses local
+Supabase URL, contraindicating `--check` in CI), CROSS-03 (Playwright/Axe E2E CI
+step — cross-cutting, non-trivial), CROSS-13 (server-side auth in layouts —
+deferred since Session 3, unchanged)
+
+**Remaining open:** CROSS-03, CROSS-11, CROSS-13
+
+**Brief for next agent:**
+
+- CROSS-09: `src/env.ts` created in all 3 repos (planner: `65c9e03`, workforce:
+  `e41ad73`, preference: `d49ec6b`). Validates `NEXT_PUBLIC_SUPABASE_URL`,
+  `NEXT_PUBLIC_SUPABASE_ANON_KEY` (required), `NEXT_PUBLIC_SENTRY_DSN`
+  (optional). All `process.env.*` refs in Supabase client + GraphQL client files
+  replaced with `env.*`. Test files and `seedingService.ts` retain
+  `process.env.*` — correct, no validation overhead in non-runtime paths. Note:
+  planner-frontend `npm install @t3-oss/env-nextjs` silently no-ops in some
+  shell contexts — if you see TS2307, re-run install explicitly from the repo
+  root.
+- CROSS-12: `e2e/global-setup.ts` added to workforce (commit `ad62c7e`) and
+  `src/__tests__/e2e/global-setup.ts` added to preference (commit `5c060d9`).
+  These are minimal — they ensure `playwright/.auth/` exists and validate env
+  vars. Full DB seeding remains in `auth.setup.ts` for each repo (runs in
+  browser context). `playwright.config.ts` updated with `globalSetup` in both.
+  Config validated with `playwright test --list` — lists tests cleanly.
+- CROSS-11 (deferred): `codegen.ts` in all repos points to
+  `http://127.0.0.1:54321`. The `--check` flag performs live schema
+  introspection, requiring Supabase to be up in CI. Contradicts the mocked
+  Supabase approach for unit tests. Recommended path: either (a) a separate CI
+  job that brings up local Supabase before codegen, or (b) a schema registry
+  (e.g., schema snapshot diffing). Tackle in a dedicated session.
+- CROSS-03 (deferred): Adding Playwright/axe E2E to CI workflows. Requires
+  decision on whether to run against dev server in CI or use separate staging
+  URL. Non-trivial infrastructure changes.
+- CROSS-13 (deferred): Server-side auth in layouts — workforce + preference.
+  Flagged in Session 3. Requires careful design to avoid breaking SSR pattern.
+- Always use `GIT_TERMINAL_PROMPT=0` before every `git push`. Always run push as
+  a separate `run_command` call, never chained with `&&` after `git commit`.
