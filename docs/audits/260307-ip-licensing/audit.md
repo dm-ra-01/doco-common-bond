@@ -21,8 +21,8 @@ entire Receptor platform is **MyJMO Pty Ltd (ABN 50 648 051 852)**. Common Bond
 Pty Ltd (ACN 694 840 394) operates as the exclusive commercial licensee. At the
 time of audit, **no formal licensing agreement exists** between the two
 entities, no project-level `LICENSE` files exist in any repository, and IP
-attribution in existing documentation is incomplete or absent. 11 findings are
-documented across 5 categories.
+attribution in existing documentation is incomplete or absent. 14 findings are
+documented across 7 categories.
 
 | Repository / Area                               | Coverage | Issues Found | Overall            |
 | :---------------------------------------------- | :------- | :----------- | :----------------- |
@@ -33,7 +33,10 @@ documented across 5 categories.
 | Non-exclusive/prior licence arrangement         | ❌       | 1            | ❌ Not documented  |
 | Repository headers / copyright notices          | ❌       | 2            | ❌ Absent          |
 | Data processing agreement between entities      | ❌       | 1            | ❌ Not documented  |
-| Trade mark registration for "Common Bond" brand | ⚠️       | 1            | ⚠️ Requires review |
+| Trade mark registration for "Common Bond" brand | ⚠️       | 1            | ⚠️ Not registered  |
+| GitHub repositories on personal account         | ❌       | 1            | ❌ Governance risk |
+| No End-User Licence Agreement for hospitals     | ❌       | 1            | ❌ Product blocker |
+| IP risks absent from risk register              | ❌       | 1            | ❌ Not documented  |
 
 ---
 
@@ -174,18 +177,71 @@ documented across 5 categories.
 
 ---
 
+## 8. Repository Governance
+
+### 8.1 GitHub Repositories Hosted on Personal Account
+
+**Gaps:**
+
+- All 9 ecosystem repositories are hosted under `dm-ra-01`, a personal GitHub
+  account. A personal account creates an organisational governance risk: if
+  access to the account is compromised or the account holder changes roles,
+  repository access and administrative rights over MyJMO's IP assets would be at
+  risk.
+- There is no GitHub Organisation registered to either MyJMO Pty Ltd or Common
+  Bond Pty Ltd that would provide centralised access management, billing, and
+  audit logging independent of any individual.
+- The decision is approved to migrate to a GitHub Organisation under **Common
+  Bond Pty Ltd** (which holds and manages the source code), while **MyJMO Pty
+  Ltd retains IP ownership** as documented in the licence agreement.
+
+---
+
+## 9. Product Release Blockers
+
+### 9.1 No End-User Licence Agreement for Hospital Customers
+
+**Gaps:**
+
+- The MyJMO–Common Bond licence agreement authorises Common Bond Pty Ltd to
+  sub-license the Software to hospital End Users, but no End-User Licence
+  Agreement (EULA) or Terms of Service (ToS) has been drafted for those hospital
+  customers. This means hospitals currently have no documented licence from
+  Common Bond and are operating without the IP protections the licence agreement
+  requires to be passed downstream.
+- Absence of a EULA/ToS is a **product release blocker** — the platform cannot
+  be commercially released to new hospital customers without it.
+
+---
+
+## 10. Governance Risk Register
+
+### 10.1 IP Risks Absent from Risk Register
+
+**Gaps:**
+
+- `docs/governance/risk-management.md` covers data privacy and clinical risk but
+  contains no IP-specific risk category. IP risks such as trade mark squatting,
+  open source licence violations, GitHub account loss, and AI authorship
+  uncertainty are not documented as managed risks.
+
+---
+
 ## Severity Summary
 
-| Finding ID | Area             | File                       | Category          | Severity    |
-| :--------- | :--------------- | :------------------------- | :---------------- | :---------- |
-| IP-001     | All repositories | —                          | Process Gap       | 🔴 Critical |
-| IP-002     | Governance       | `docs/governance/legal/`   | Process Gap       | 🔴 Critical |
-| IP-003     | Root README      | `README.md`                | Compliance        | 🟠 High     |
-| IP-004     | Governance       | `asic-registration.md`     | Compliance        | 🟠 High     |
-| IP-005     | Governance       | `docs/governance/index.md` | Documentation Gap | 🟡 Medium   |
-| IP-006     | Governance       | `docs/governance/`         | Process Gap       | 🟡 Medium   |
-| IP-007     | All repositories | Source files               | Compliance        | 🟡 Medium   |
-| IP-008     | All repositories | —                          | Documentation Gap | 🟢 Low      |
-| IP-009     | Governance       | —                          | Process Gap       | 🟡 Medium   |
-| IP-010     | Governance       | —                          | Compliance        | 🟡 Medium   |
-| IP-011     | Governance       | —                          | Process Gap       | 🟡 Medium   |
+| Finding ID | Area             | File                                 | Category          | Severity    |
+| :--------- | :--------------- | :----------------------------------- | :---------------- | :---------- |
+| IP-001     | All repositories | —                                    | Process Gap       | 🔴 Critical |
+| IP-002     | Governance       | `docs/governance/legal/`             | Process Gap       | 🔴 Critical |
+| IP-012     | GitHub / Hosting | `dm-ra-01` personal account          | Process Gap       | 🔴 Critical |
+| IP-013     | Product          | —                                    | Compliance        | 🟠 High     |
+| IP-003     | Root README      | `README.md`                          | Compliance        | 🟠 High     |
+| IP-004     | Governance       | `asic-registration.md`               | Compliance        | 🟠 High     |
+| IP-005     | Governance       | `docs/governance/index.md`           | Documentation Gap | 🟡 Medium   |
+| IP-006     | Governance       | `docs/governance/`                   | Process Gap       | 🟡 Medium   |
+| IP-007     | All repositories | Source files                         | Compliance        | 🟡 Medium   |
+| IP-009     | Governance       | —                                    | Process Gap       | 🟡 Medium   |
+| IP-010     | Governance       | —                                    | Compliance        | 🟡 Medium   |
+| IP-011     | Governance       | —                                    | Process Gap       | 🟡 Medium   |
+| IP-014     | Governance       | `docs/governance/risk-management.md` | Documentation Gap | 🟡 Medium   |
+| IP-008     | All repositories | —                                    | Documentation Gap | 🟢 Low      |

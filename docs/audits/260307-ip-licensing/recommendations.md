@@ -10,18 +10,21 @@
 
 ## Agent Clarifications (Human-Approved)
 
-| Item                           | Decision                                                                                                                                         |
-| :----------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------- |
-| IP Owner                       | MyJMO Pty Ltd (ABN 50 648 051 852) owns all Intellectual Property in the Software                                                                |
-| Exclusive Licensee             | Common Bond Pty Ltd (ACN 694 840 394) holds an exclusive licence                                                                                 |
-| Prior non-exclusive licence    | A prior non-exclusive license was issued to a third party under invoice-based terms; to be documented but that entity is not named in this audit |
-| Licence agreement format       | Produced as a Markdown governance document; a wet-ink/digital signature counterpart is required                                                  |
-| ACN in `asic-registration.md`  | Transposed digit — correct ACN is 694 840 394 (not 674 840 394) — corrected in this audit                                                        |
-| Trade mark — "Receptor"        | "Receptor" is a codename and may change; no trade mark registration needed at this stage                                                         |
-| Trade mark — "Common Bond"     | ASIC registration ≠ trade mark. Recommend engaging a trade mark attorney to register "Common Bond" in class 42 (SaaS/software)                   |
-| Sub-repo README IP attribution | Each repo README should add a one-line IP attribution pointing back to the MyJMO–Common Bond licence                                             |
-| Licence agreement versioning   | Agreement now has a version history table; any amendment requires a new version row and signed counterpart                                       |
-| Deferred items                 | Signed counterpart execution, third-party licensee identity, source file copyright headers (full rollout) — out of scope for this audit          |
+| Item                           | Decision                                                                                                                                                        |
+| :----------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| IP Owner                       | MyJMO Pty Ltd (ABN 50 648 051 852) owns all Intellectual Property in the Software                                                                               |
+| Exclusive Licensee             | Common Bond Pty Ltd (ACN 694 840 394) holds an exclusive licence                                                                                                |
+| Prior non-exclusive licence    | A prior non-exclusive license was issued to a third party under invoice-based terms; to be documented but that entity is not named in this audit                |
+| Licence agreement format       | Produced as a Markdown governance document; a wet-ink/digital signature counterpart is required                                                                 |
+| ACN in `asic-registration.md`  | Transposed digit — correct ACN is 694 840 394 (not 674 840 394) — corrected in this audit                                                                       |
+| Trade mark — "Receptor"        | "Receptor" is a codename and may change; no trade mark registration needed at this stage                                                                        |
+| Trade mark — "Common Bond"     | No registered TM exists. ASIC registration ≠ TM. Engage a trade mark attorney to register in Class 42 (SaaS/software)                                           |
+| Sub-repo README IP attribution | Each repo README should add a one-line IP attribution pointing back to the MyJMO–Common Bond licence                                                            |
+| Licence agreement versioning   | Agreement has a version history table; any amendment requires a new version row and signed counterpart                                                          |
+| AI-generated code copyright    | Settled under s 35(6) _Copyright Act 1968_ (Cth) — MyJMO Pty Ltd owns all AI-assisted code via Ryan Ammendolea as lead engineer; AI is the tool, not the author |
+| GitHub Organisation            | Common Bond Pty Ltd to create and own the GitHub Organisation; manage repos. MyJMO Pty Ltd retains IP ownership under the licence agreement                     |
+| Open source SCA audit          | Denied by user — out of scope for this audit                                                                                                                    |
+| Deferred items                 | Signed counterpart, third-party licensee identity, source file copyright header rollout, DPA, trade mark registration — all deferred                            |
 
 ---
 
@@ -247,63 +250,72 @@ environment that records development history and attribution to MyJMO Pty Ltd.
 
 ---
 
-## 🟡 Medium (continued)
+### IP-012 — GitHub Repositories Hosted on Personal Account (`dm-ra-01`)
 
-### IP-010 — No Data Processing Agreement Between MyJMO Pty Ltd and Common Bond Pty Ltd
+**Finding:** All 9 ecosystem repositories are hosted under `dm-ra-01`, a
+personal GitHub account. If the account holder loses access or changes roles,
+Common Bond and MyJMO would lose administrative control over their IP assets.
+There is no GitHub Organisation providing centralised access management.
 
-**Finding:** The licence agreement covers IP rights but does not address
-inter-entity data handling. If MyJMO Pty Ltd processes healthcare Personal
-Information on behalf of Common Bond Pty Ltd (or vice versa), the _Privacy Act
-1988_ (Cth) and the APPs may require a Data Processing Agreement (DPA).
+**Decision (Human-Approved):** Common Bond Pty Ltd will create and own the
+GitHub Organisation account and manage repositories. MyJMO Pty Ltd retains IP
+ownership as documented in the licence agreement. These are separate concerns.
 
-**Recommendation:** Review the data flows between the two entities with a
-privacy lawyer. If any Personal Information is shared or processed across entity
-lines, a DPA should be prepared.
+**Recommendation:** Create a GitHub Organisation under Common Bond Pty Ltd (e.g.
+`common-bond-au`) and migrate all 9 repositories. Update access controls so the
+organisation is not dependent on any single personal login.
 
 **Tasks:**
 
-- [ ] `common-bond` — Add IP-010 DPA gap to `docs/governance/risk-management.md`
-      as a privacy risk item
-- [ ] Engage legal advice on whether a DPA is required given the healthcare data
-      context
+- [ ] Create a GitHub Organisation account registered to Common Bond Pty Ltd
+- [ ] Transfer the following repositories from `dm-ra-01` to the new
+      organisation:
+  - `supabase-receptor`, `match-backend`, `receptor-planner`
+  - `planner-frontend`, `preference-frontend`, `workforce-frontend`,
+    `website-frontend`, `rotator_worker`
+  - `doco-common-bond`
+- [ ] Update all submodule remote URLs in the monorepo after transfer
+- [ ] Update `README.md` and `.llm-context.md` to reference the new organisation
+- [ ] Add at least one additional admin user to the organisation for resilience
 
 ---
 
-### IP-011 — "Common Bond" Brand Not Protected by Registered Trade Mark
+### IP-013 — No End-User Licence Agreement (EULA) for Hospital Customers
 
-**Finding:** ASIC company registration for "Common Bond Pty Ltd" does not
-constitute a registered trade mark under the _Trade Marks Act 1995_ (Cth).
-Without a registered trade mark, a third party could register "Common Bond" as a
-trade mark for software or healthcare services, potentially requiring a rebrand.
+**Finding:** The MyJMO–Common Bond licence agreement authorises Common Bond to
+sub-license the Software to hospitals, but no EULA or Terms of Service has been
+drafted. This is a **product release blocker** — the platform cannot be
+commercially released to new hospital customers without it.
 
-**Advice on ASIC registration vs trade mark:**
-
-- **ASIC company name registration** gives you the right to operate under the
-  name as a corporate entity in Australia. It prevents another company from
-  registering the same company name with ASIC.
-- **Trade mark registration** (via IP Australia) gives you exclusive rights to
-  use a name or logo as a _brand identifier_ for specific goods/services
-  (classes). It is a separate, stronger right.
-- These are independent systems — ASIC registration does **not** automatically
-  protect the name as a trade mark, and vice versa.
-- For a SaaS healthcare platform, the relevant class is likely **Class 42**
-  (software, SaaS, technology services) and possibly **Class 44**
-  (medical/healthcare services).
-- "Receptor" is noted as a codename that may change — no trade mark registration
-  is recommended for it at this stage.
-
-**Recommendation:** Engage a registered trade mark attorney to conduct a
-clearance search and, if clear, register "Common Bond" in Class 42 (and consider
-Class 44) with IP Australia. Cost is typically AUD $250–$400 per class for
-online filing.
+**Recommendation:** Draft a hospital-facing EULA/ToS before commercial release.
+It must pass MyJMO's IP protections downstream (per clause 3.1(d) of the licence
+agreement) and include at minimum: scope of use, data handling obligations,
+prohibition on reverse engineering, and termination rights.
 
 **Tasks:**
 
-- [ ] `common-bond` — Add trade mark status to IP Ownership Register
-      (`docs/governance/legal/ip-ownership-register.md`)
-- [ ] Engage a trade mark attorney or use IP Australia's self-service portal for
-      a clearance search
-- [ ] File trade mark application if clearance search is clean
+- [ ] `common-bond` — Create `docs/governance/legal/hospital-eula.md` as a draft
+      EULA for hospital End Users
+- [ ] Ensure the EULA is reviewed by a lawyer before first commercial hospital
+      sign-up
+- [ ] Reference the EULA in the IP Ownership Register as the downstream licence
+      instrument
+- [ ] Add EULA execution as a gate in the product release checklist
+
+---
+
+### IP-014 — IP Risks Absent from Risk Register
+
+**Finding:** `docs/governance/risk-management.md` does not include an IP risk
+category. Risks such as trade mark squatting, GitHub account loss, open source
+licence violations, and AI authorship uncertainty are not documented.
+
+**Tasks:**
+
+- [ ] `common-bond` — Add an "Intellectual Property Risks" section to
+      `docs/governance/risk-management.md` covering: trade mark registration
+      gap, GitHub account single point of failure, EULA absence, and open source
+      licence exposure
 
 ---
 
@@ -331,12 +343,15 @@ environment that records development history and attribution to MyJMO Pty Ltd.
 | **1** | IP-002      | 🔴 Critical | Low    | Execute the licence agreement (review and sign)       |
 | **1** | IP-004      | 🟠 High     | Low    | Fix ACN typo in `asic-registration.md` ✅ Done        |
 | **1** | IP-003      | 🟠 High     | Medium | Update root + all sub-repo README IP attribution      |
+| **1** | IP-013      | 🟠 High     | Medium | Draft hospital EULA (product release blocker)         |
 | **2** | IP-001      | 🔴 Critical | Medium | Add LICENSE file to all repositories                  |
+| **2** | IP-012      | 🔴 Critical | Medium | Migrate repos to GitHub Organisation (Common Bond)    |
 | **2** | IP-006      | 🟡 Medium   | Low    | Create IP Ownership Register ✅ Done                  |
 | **2** | IP-005      | 🟡 Medium   | Low    | Update governance index page ✅ Done                  |
 | **3** | IP-009      | 🟡 Medium   | Low    | Document prior non-exclusive licence (in IP Register) |
 | **3** | IP-011      | 🟡 Medium   | Low    | Trade mark clearance search and registration          |
 | **3** | IP-010      | 🟡 Medium   | Low    | Add DPA risk item; seek legal advice                  |
+| **3** | IP-014      | 🟡 Medium   | Low    | Add IP risks to risk-management.md                    |
 | **3** | IP-007      | 🟡 Medium   | High   | Add copyright headers to source files                 |
 | **4** | IP-008      | 🟢 Low      | Low    | Add AUTHORS/NOTICE file                               |
 
@@ -348,6 +363,7 @@ environment that records development history and attribution to MyJMO Pty Ltd.
 | :-------------------------------------------------- | :--------------------------------------------------------------------------------------------------------- |
 | Identity and status of prior non-exclusive licensee | Business decision; not appropriate to name in a shared repository without legal advice                     |
 | Execution of signed licence counterpart             | Requires human action outside the scope of an agent audit                                                  |
+| Open source SCA dependency audit                    | Denied by user — out of scope for this audit                                                               |
 | Source file copyright header rollout (IP-007)       | High volume; deserves a dedicated implementation session to avoid widespread diffs                         |
-| DPA between entities (IP-010)                       | Requires legal advice on data flows; may not be needed depending on how the entities interact              |
-| trade mark registration (IP-011)                    | Requires human engagement with a trade mark attorney; agent can only document the gap and provide guidance |
+| DPA between entities (IP-010)                       | Requires legal advice on data flows; may not be needed depending on entity interaction                     |
+| Trade mark registration (IP-011)                    | Requires human engagement with a trade mark attorney; agent can only document the gap and provide guidance |
