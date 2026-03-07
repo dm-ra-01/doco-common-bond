@@ -21,17 +21,19 @@ entire Receptor platform is **MyJMO Pty Ltd (ABN 50 648 051 852)**. Common Bond
 Pty Ltd (ACN 694 840 394) operates as the exclusive commercial licensee. At the
 time of audit, **no formal licensing agreement exists** between the two
 entities, no project-level `LICENSE` files exist in any repository, and IP
-attribution in existing documentation is incomplete or absent. 9 findings are
-documented across 4 categories.
+attribution in existing documentation is incomplete or absent. 11 findings are
+documented across 5 categories.
 
-| Repository / Area                              | Coverage | Issues Found | Overall           |
-| :--------------------------------------------- | :------- | :----------- | :---------------- |
-| All repositories — project-level LICENSE files | ❌       | 1            | ❌ Missing        |
-| Root `README.md`                               | ⚠️       | 1            | ⚠️ Incomplete     |
-| `documentation/common-bond/docs/governance/`   | ⚠️       | 3            | ⚠️ Incomplete     |
-| `asic-registration.md`                         | ❌       | 1            | ❌ Incorrect ACN  |
-| Non-exclusive/prior licence arrangement        | ❌       | 1            | ❌ Not documented |
-| Repository headers / copyright notices         | ❌       | 2            | ❌ Absent         |
+| Repository / Area                               | Coverage | Issues Found | Overall            |
+| :---------------------------------------------- | :------- | :----------- | :----------------- |
+| All repositories — project-level LICENSE files  | ❌       | 1            | ❌ Missing         |
+| Root `README.md` and sub-repo READMEs           | ⚠️       | 2            | ⚠️ Incomplete      |
+| `documentation/common-bond/docs/governance/`    | ⚠️       | 3            | ⚠️ Incomplete      |
+| `asic-registration.md`                          | ❌       | 1            | ❌ Incorrect ACN   |
+| Non-exclusive/prior licence arrangement         | ❌       | 1            | ❌ Not documented  |
+| Repository headers / copyright notices          | ❌       | 2            | ❌ Absent          |
+| Data processing agreement between entities      | ❌       | 1            | ❌ Not documented  |
+| Trade mark registration for "Common Bond" brand | ⚠️       | 1            | ⚠️ Requires review |
 
 ---
 
@@ -141,6 +143,37 @@ documented across 4 categories.
 
 ---
 
+## 6. Trade Mark and Branding
+
+### 6.1 Common Bond Trade Mark Not Registered
+
+**Gaps:**
+
+- ASIC company name registration for "Common Bond Pty Ltd" does not constitute a
+  registered trade mark. IP Australia records confirm no trade mark has been
+  searched or applied for under the _Trade Marks Act 1995_ (Cth) for "Common
+  Bond" or the Receptor platform name. Any party could potentially register
+  "Common Bond" as a trade mark for competing services without restriction.
+- "Receptor" is currently used as a codename and may change. No trade mark
+  protection is required for "Receptor" at this stage per the user's direction.
+
+---
+
+## 7. Data Processing and Inter-Entity Obligations
+
+### 7.1 No Data Processing Agreement Between MyJMO and Common Bond
+
+**Gaps:**
+
+- The licence agreement covers IP rights but does not address data handling
+  obligations between MyJMO Pty Ltd and Common Bond Pty Ltd. Where one entity
+  processes Personal Information on behalf of the other (e.g. in a
+  sub-processing capacity for healthcare workforce data), the _Privacy Act 1988_
+  (Cth) and the Australian Privacy Principles may require a Data Processing
+  Agreement (DPA) or equivalent contractual protections.
+
+---
+
 ## Severity Summary
 
 | Finding ID | Area             | File                       | Category          | Severity    |
@@ -154,3 +187,5 @@ documented across 4 categories.
 | IP-007     | All repositories | Source files               | Compliance        | 🟡 Medium   |
 | IP-008     | All repositories | —                          | Documentation Gap | 🟢 Low      |
 | IP-009     | Governance       | —                          | Process Gap       | 🟡 Medium   |
+| IP-010     | Governance       | —                          | Compliance        | 🟡 Medium   |
+| IP-011     | Governance       | —                          | Process Gap       | 🟡 Medium   |

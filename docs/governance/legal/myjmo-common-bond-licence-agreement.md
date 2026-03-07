@@ -2,11 +2,13 @@
 title: MyJMO–Common Bond Exclusive Licence Agreement
 sidebar_label: IP Licence Agreement
 sidebar_position: 1
+version: "1.0"
 ---
 
 # Software Intellectual Property Licence Agreement
 
 **Agreement Date:** 7 March 2026\
+**Version:** 1.0\
 **Licensor:** MyJMO Pty Ltd (ABN 50 648 051 852)\
 **Licensee:** Common Bond Pty Ltd (ACN 694 840 394)\
 **Subject Matter:** Receptor Workforce Management Platform and all associated
@@ -20,6 +22,18 @@ software, services, and derivative works (collectively, the **"Software"**)
 > arrangements with respect to the Software in favour of Common Bond Pty Ltd. A
 > wet-ink or digitally signed counterpart of this Agreement shall be obtained
 > and retained by both parties.
+
+---
+
+## Document History
+
+| Version | Date       | Author                          | Change Summary                      |
+| :------ | :--------- | :------------------------------ | :---------------------------------- |
+| 1.0     | 2026-03-07 | Ryan Ammendolea (MyJMO Pty Ltd) | Initial exclusive licence agreement |
+
+> [!NOTE]
+> Any amendment to this document requires a new version row above and a signed
+> counterpart from both parties before it takes effect (see clause 14).
 
 ---
 
