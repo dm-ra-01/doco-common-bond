@@ -343,6 +343,42 @@ is backed by a server check.
 `AuthProvider` context only. Users may briefly see protected content before the
 client hydrates and discovers the session is absent.
 
+### 4.14 `no-console` Not Enforced by ESLint (All Three)
+
+No ESLint `no-console` rule exists. `console.log` and `console.error` calls
+throughout the codebase risk exposing PHI — patient-adjacent data, worker IDs,
+or session artefacts — in browser DevTools on shared or kiosk machines.
+
+### 4.15 Server Actions Not Validated with Zod (planner-frontend)
+
+`planner-frontend` has `src/app/actions/` containing Server Actions that accept
+raw `FormData` or object arguments from the client. No Zod `parse()` call gates
+the entry point of any action. An invalid or malicious payload shape can cause
+unhandled exceptions or corrupt state.
+
+### 4.16 `vitest-axe` Installed but Usage Unverified (All Three)
+
+`vitest-axe` is listed as a dev dependency across all three repos, but the audit
+did not find any test files containing `axe()` calls or `toHaveNoViolations()`
+assertions. Installed-but-unused accessibility tooling creates false compliance
+confidence.
+
+### 4.17 Graphcache IndexedDB PHI Retention — 7-Day maxAge (workforce-frontend)
+
+`src/lib/graphql/client.ts:16-21` configures `makeDefaultStorage` with
+`maxAge: 7` (7 days). Clinical workforce data (org hierarchy, positions, worker
+assignments) persists in the browser's IndexedDB for 7 days after the session
+ends. On shared or borrowed devices this constitutes an uncontrolled PHI
+retention window. **Decision: reduce to session-lifetime; update ISO 27001.**
+
+### 4.18 `@next/next/no-img-element` Suppression Risk (All Three)
+
+The Next.js ESLint plugin includes `@next/next/no-img-element` to catch bare
+`<img>` elements that bypass `next/image`'s lazy loading, WebP optimisation, and
+— critically — the `images.remotePatterns` whitelist in `next.config.ts`. The
+rule exists but may be locally suppressed or bypassed. No audit of current
+suppression comments has been performed.
+
 ---
 
 ## Severity Summary
@@ -362,10 +398,15 @@ client hydrates and discovers the session is absent.
 | CROSS-11   | all                   | `.github/workflows/`                 | Process Gap         | 🟡 Medium   |
 | CROSS-12   | workforce, preference | `playwright.config.ts`               | Process Gap         | 🟡 Medium   |
 | CROSS-13   | workforce, preference | `src/app/layout.tsx`                 | Security            | 🟠 High     |
+| CROSS-14   | all                   | `eslint.config.mjs`                  | Security            | 🟡 Medium   |
+| CROSS-15   | planner               | `src/app/actions/`                   | Security            | 🟠 High     |
+| CROSS-16   | all                   | `src/**/*.test.tsx`                  | Process Gap         | 🟡 Medium   |
+| CROSS-17   | all                   | `eslint.config.mjs` / `src/**/*.tsx` | Security            | 🟡 Medium   |
 | WF-01      | workforce             | `src/app/globals.css`                | Tech Debt           | 🔴 Critical |
 | WF-02      | workforce             | `.husky/pre-commit`, `package.json`  | Process Gap         | 🟠 High     |
 | WF-03      | workforce             | `src/app/`                           | Architectural Drift | 🟠 High     |
 | WF-04      | workforce             | `src/lib/graphql/client.ts`          | Security            | 🔴 Critical |
+| WF-05      | workforce             | `src/lib/graphql/client.ts:16-21`    | Security / Privacy  | 🔴 Critical |
 | PL-01      | planner               | `src/app/globals.css`                | Tech Debt           | 🟠 High     |
 | PL-02      | planner               | `src/app/globals.css:36`             | Tech Debt           | 🟡 Medium   |
 | PL-03      | planner               | `src/app/(authenticated)/`           | Process Gap         | 🟡 Medium   |

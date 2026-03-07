@@ -438,3 +438,119 @@ harder.
       `/Users/ryan/development/common_bond/antigravity-environment/frontend/workforce-frontend/playwright.config.ts`
 - [ ] `preference-frontend` — Same; adapt to preference auth flow (worker login)
       `/Users/ryan/development/common_bond/antigravity-environment/frontend/preference-frontend/playwright.config.ts`
+
+---
+
+## 🔴 Critical (Round 3)
+
+### WF-05 — Graphcache IndexedDB 7-Day PHI Retention (workforce-frontend)
+
+`makeDefaultStorage({ idbName: 'workforce-cache-v1', maxAge: 7 })` persists
+clinical workforce data in IndexedDB for 7 days post-session. On shared or
+borrowed devices, this is an uncontrolled PHI retention window. **Decision:
+reduce to session-lifetime (`maxAge: 0` or remove `makeDefaultStorage`
+entirely).** Requires ISO 27001 documentation update. See ISO-03.
+
+- [ ] `workforce-frontend` — Change `maxAge: 7` to `maxAge: 0` in
+      `src/lib/graphql/client.ts:16-21` **or** remove `makeDefaultStorage` and
+      rely on in-memory Graphcache only (recommended — session-scoped by
+      default)
+      `/Users/ryan/development/common_bond/antigravity-environment/frontend/workforce-frontend/src/lib/graphql/client.ts`
+- [ ] `workforce-frontend` — Delete the `workforce-cache-v1` IndexedDB entry
+      from any existing browser stores by incrementing the IDB name (e.g.,
+      `workforce-cache-v2`) so legacy 7-day data is orphaned and expires
+      naturally — or add a one-time migration in `global-setup.ts`
+
+---
+
+## 🟠 High (Round 3)
+
+### CROSS-15 — Server Actions Not Validated with Zod (planner-frontend)
+
+Server Actions in `src/app/actions/` accept raw client payloads with no Zod
+`parse()` gate. An invalid or crafted payload can cause unhandled exceptions or
+state corruption.
+
+- [ ] `planner-frontend` — Add `z.parse()` or `z.safeParse()` with early return
+      at the top of every exported Server Action in `src/app/actions/`; define
+      schemas adjacent to each action file
+      `/Users/ryan/development/common_bond/antigravity-environment/frontend/planner-frontend/src/app/actions/`
+
+---
+
+## 🟡 Medium (Round 3)
+
+### CROSS-14 — `no-console` Not Enforced by ESLint (All Three)
+
+`console.log` / `console.error` throughout the codebase risks PHI exposure in
+browser DevTools on shared machines. `no-console: 'warn'` with an allow-list for
+`['error']` in error boundary files is the standard control.
+
+- [ ] `planner-frontend` — Add `'no-console': ['warn', { allow: ['error'] }]` to
+      `eslint.config.mjs`; fix or suppress all resulting violations
+      `/Users/ryan/development/common_bond/antigravity-environment/frontend/planner-frontend/eslint.config.mjs`
+- [ ] `workforce-frontend` — Same
+      `/Users/ryan/development/common_bond/antigravity-environment/frontend/workforce-frontend/eslint.config.mjs`
+- [ ] `preference-frontend` — Same
+      `/Users/ryan/development/common_bond/antigravity-environment/frontend/preference-frontend/eslint.config.mjs`
+
+### CROSS-16 — `vitest-axe` Installed but Uncalled (All Three)
+
+`vitest-axe` is in devDependencies across all three repos but no `axe()` /
+`toHaveNoViolations()` calls exist in test files. Write at least one baseline
+axe assertion per repo to create an accessibility regression gate.
+
+- [ ] `planner-frontend` — Create `src/test/unit/a11y.test.tsx` that renders the
+      root `layout.tsx` with `@vitest/browser` and asserts
+      `expect(await axe(document.body)).toHaveNoViolations()`
+      `/Users/ryan/development/common_bond/antigravity-environment/frontend/planner-frontend/src/test/unit/`
+- [ ] `workforce-frontend` — Same
+      `/Users/ryan/development/common_bond/antigravity-environment/frontend/workforce-frontend/src/test/unit/`
+- [ ] `preference-frontend` — Same
+      `/Users/ryan/development/common_bond/antigravity-environment/frontend/preference-frontend/src/test/unit/`
+
+### CROSS-17 — `@next/next/no-img-element` Suppression Audit (All Three)
+
+Bare `<img>` elements bypass `next/image` lazy loading and the
+`images.remotePatterns` whitelist. The ESLint rule exists via
+`eslint-config-next` but may be suppressed with `// eslint-disable` comments.
+
+- [ ] `planner-frontend` — Grep for `eslint-disable.*no-img-element` and `<img`
+      in all `src/**/*.tsx`; replace bare `<img>` with `<Image>` from
+      `next/image`; ensure `images.remotePatterns` whitelist in `next.config.ts`
+      covers all sources
+      `/Users/ryan/development/common_bond/antigravity-environment/frontend/planner-frontend/src/`
+- [ ] `workforce-frontend` — Same
+      `/Users/ryan/development/common_bond/antigravity-environment/frontend/workforce-frontend/src/`
+- [ ] `preference-frontend` — Same
+      `/Users/ryan/development/common_bond/antigravity-environment/frontend/preference-frontend/src/`
+
+### ISO-03 — IndexedDB Cache Retention Policy Not Documented in ISMS
+
+`workforce-frontend` previously retained clinical data in IndexedDB for 7 days.
+The decision to reduce to session-lifetime must be recorded in the ISMS as a
+privacy control — confirming that client-side persistence of workforce/position
+data is now scoped to the authenticated session only.
+
+- [ ] `common-bond` — Add a note to the ISMS data lifecycle / retention register
+      documenting that `workforce-frontend` Graphcache is in-memory only
+      (session-scoped); reference ISO 27001 A.18.1.3 and WF-05
+      `/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/compliance/iso27001/`
+- [ ] `common-bond` — Update the agent clarifications table in this
+      `recommendations.md` to add WF-05 decision row
+
+---
+
+## Implementation Order (Updated)
+
+| Phase | Priority | Finding IDs                                      | Note                                           |
+| :---- | :------- | :----------------------------------------------- | :--------------------------------------------- |
+| 1     | 🔴 Crit  | WF-01, WF-04, WF-05                              | Tailwind v4; auth fix; IndexedDB PHI purge     |
+| 2     | 🟠 High  | PL-01, PR-01 (exemption first)                   | Typography — finalise Inter migration          |
+| 3     | 🟠 High  | WF-02, WF-03                                     | Workforce quality gates & error boundaries     |
+| 4     | 🟠 High  | CROSS-01, CROSS-02, CROSS-04                     | tsconfig, CI build, Sentry (all repos)         |
+| 5     | 🟠 High  | CROSS-05, CROSS-06, CROSS-10, CROSS-13, CROSS-15 | Parallel CI; GQL errors; CSP; server auth; Zod |
+| 6     | 🟡 Med   | PL-03, PR-02, PR-03, CROSS-03, CROSS-07          | Boundaries; dir cleanup; E2E CI; JSDoc lint    |
+| 7     | 🟡 Med   | CROSS-08, CROSS-09, CROSS-11, CROSS-12           | Renovate; env safety; codegen CI; PW auth      |
+| 8     | 🟡 Med   | CROSS-14, CROSS-16, CROSS-17                     | no-console; axe baseline; img audit            |
+| 9     | 🟢 Low   | PR-04, ISO-01, ISO-02, ISO-03                    | lint-staged; ISMS registrations                |
