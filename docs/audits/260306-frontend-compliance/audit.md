@@ -25,9 +25,9 @@ boundaries in `workforce-frontend` and `preference-frontend`.
 
 | Repository            | Coverage | Issues Found | Overall |
 | :-------------------- | :------- | :----------- | :------ |
-| `planner-frontend`    | ✅ Good  | 4            | 🟠 High |
-| `workforce-frontend`  | ⚠️ Fair  | 9            | 🔴 Crit |
-| `preference-frontend` | ⚠️ Fair  | 6            | 🟠 High |
+| `planner-frontend`    | ✅ Good  | 6            | 🟠 High |
+| `workforce-frontend`  | ⚠️ Fair  | 11           | 🔴 Crit |
+| `preference-frontend` | ⚠️ Fair  | 8            | 🟠 High |
 
 ---
 
@@ -169,8 +169,9 @@ boundaries in `workforce-frontend` and `preference-frontend`.
 
 - `src/lib/graphql/client.ts` uses a non-standard `addAuthToOperationWithToken`
   method. The standard Urql `authExchange` API uses `addAuthToOperation`. The
-  implemented pattern may silently fail to attach auth headers if the Urql
-  version does not support the variant function name.
+  implemented pattern may silently fail to attach auth headers — unauthenticated
+  API calls in a clinical app are a data exposure risk. **Severity: 🔴
+  Critical.**
 
 ---
 
@@ -261,29 +262,62 @@ Standard §14.1 lists build as a required CI check that blocks merge.
 Playwright E2E and axe accessibility checks exist as local scripts but are
 absent from CI. Standard §14.1 lists axe accessibility as a required merge gate.
 
-### 4.4 Sentry Missing (Workforce, Preference)
+### 4.4 Sentry Missing (All Three)
 
 `workforce-frontend` and `preference-frontend` have no `@sentry/nextjs` in
 `package.json`. `planner-frontend` references Sentry in `client.ts` comments but
 also has no `@sentry/nextjs` in deps.
 
+### 4.5 No Parallel Multi-Job CI Pipeline (All Three)
+
+All three `codecov.yml` workflows run as a single sequential job: install → lint
+→ tsc → Supabase boot → test. A lint failure stalls until after the Supabase
+boot completes (~60–90s). There is no parallel job matrix. Splitting into
+parallel jobs (`lint-and-type`, `unit-tests`, `build`, `e2e`) would give faster,
+more specific failure signals and is the standard for production CI pipelines.
+
+### 4.6 GraphQL Error Handling Contract Not Verified (All Three)
+
+§20 defines an explicit CombinedError handling contract (network error → retry
+UI; graphQL error → Sentry + toast; PGRST301 → silent authExchange). The audit
+did not inspect hook implementations against this contract. Hooks across all
+three frontends may be inconsistently handling or swallowing errors.
+
+### 4.7 JSDoc Enforcement Not Automated (All Three)
+
+§21 mandates JSDoc one-liners on all exported hooks and service functions. No
+ESLint rule enforces this — compliance is entirely on developer discipline.
+There is no automated check that a new exported hook lacks a doc comment.
+
+### 4.8 No Automated Dependency Governance (All Three)
+
+§18 specifies a monthly manual `npm outdated` cadence. No Renovate Bot or
+Dependabot configuration exists in any of the three repos. Without automation,
+security patches are discovered reactively. Under ISO 27001 A.12.6.1 (Management
+of technical vulnerabilities), automated patch tracking is a recommended
+control.
+
 ---
 
 ## Severity Summary
 
-| Finding ID | Repository | File                                | Category            | Severity    |
-| :--------- | :--------- | :---------------------------------- | :------------------ | :---------- |
-| CROSS-01   | all        | `tsconfig.json`                     | Architectural Drift | 🟠 High     |
-| CROSS-02   | all        | `.github/workflows/codecov.yml`     | Process Gap         | 🟠 High     |
-| CROSS-03   | all        | `.github/workflows/codecov.yml`     | Process Gap         | 🟡 Medium   |
-| CROSS-04   | all        | `package.json` / `sentry`           | Security            | 🟠 High     |
-| WF-01      | workforce  | `src/app/globals.css`               | Tech Debt           | 🔴 Critical |
-| WF-02      | workforce  | `.husky/pre-commit`, `package.json` | Process Gap         | 🟠 High     |
-| WF-03      | workforce  | `src/app/`                          | Architectural Drift | 🟠 High     |
-| WF-04      | workforce  | `src/lib/graphql/client.ts`         | Architectural Drift | 🟠 High     |
-| PL-01      | planner    | `src/app/globals.css`               | Tech Debt           | 🟠 High     |
-| PL-02      | planner    | `src/app/globals.css:36`            | Tech Debt           | 🟡 Medium   |
-| PL-03      | planner    | `src/app/(authenticated)/`          | Process Gap         | 🟡 Medium   |
-| PR-01      | preference | `src/app/globals.css`, `layout.tsx` | Tech Debt           | 🟠 High     |
-| PR-02      | preference | `src/`                              | Architectural Drift | 🟡 Medium   |
-| PR-03      | preference | `src/app/`                          | Process Gap         | 🟡 Medium   |
+| Finding ID | Repository | File                                 | Category            | Severity    |
+| :--------- | :--------- | :----------------------------------- | :------------------ | :---------- |
+| CROSS-01   | all        | `tsconfig.json`                      | Architectural Drift | 🟠 High     |
+| CROSS-02   | all        | `.github/workflows/codecov.yml`      | Process Gap         | 🟠 High     |
+| CROSS-03   | all        | `.github/workflows/codecov.yml`      | Process Gap         | 🟡 Medium   |
+| CROSS-04   | all        | `package.json` / `sentry`            | Security            | 🟠 High     |
+| CROSS-05   | all        | `.github/workflows/codecov.yml`      | Process Gap         | 🟠 High     |
+| CROSS-06   | all        | `src/**/hooks/`, `src/**/providers/` | Architectural Drift | 🟠 High     |
+| CROSS-07   | all        | `eslint.config.mjs`                  | Process Gap         | 🟡 Medium   |
+| CROSS-08   | all        | `.github/` (missing)                 | Process Gap         | 🟡 Medium   |
+| WF-01      | workforce  | `src/app/globals.css`                | Tech Debt           | 🔴 Critical |
+| WF-02      | workforce  | `.husky/pre-commit`, `package.json`  | Process Gap         | 🟠 High     |
+| WF-03      | workforce  | `src/app/`                           | Architectural Drift | 🟠 High     |
+| WF-04      | workforce  | `src/lib/graphql/client.ts`          | Security            | 🔴 Critical |
+| PL-01      | planner    | `src/app/globals.css`                | Tech Debt           | 🟠 High     |
+| PL-02      | planner    | `src/app/globals.css:36`             | Tech Debt           | 🟡 Medium   |
+| PL-03      | planner    | `src/app/(authenticated)/`           | Process Gap         | 🟡 Medium   |
+| PR-01      | preference | `src/app/globals.css`, `layout.tsx`  | Tech Debt           | 🟠 High     |
+| PR-02      | preference | `src/`                               | Architectural Drift | 🟡 Medium   |
+| PR-03      | preference | `src/app/`                           | Process Gap         | 🟡 Medium   |

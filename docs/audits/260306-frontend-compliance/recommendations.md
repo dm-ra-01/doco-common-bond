@@ -9,12 +9,17 @@
 
 ## Agent Clarifications (Human-Approved)
 
-| Item                       | Decision                                                                                                                        |
-| :------------------------- | :------------------------------------------------------------------------------------------------------------------------------ |
-| Sentry DSNs                | Provided — see CROSS-04. Values go in `.env.local` and CI secrets as `NEXT_PUBLIC_SENTRY_DSN`. Do not hardcode in source files. |
-| `noUncheckedIndexedAccess` | Add the flag **and fix all resulting type errors in the same PR** — do not leave CI broken.                                     |
-| Geist font exemption       | **Approved** for `preference-frontend` only. Management apps retain Inter. Update §7.2 of the standards doc.                    |
-| Sentry data residency      | EU (Germany) — ingest host is `.ingest.de.sentry.io`. Must be registered in ISMS data processing records. See ISO-01 below.     |
+| Item                       | Decision                                                                                                                                  |
+| :------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------- |
+| Sentry DSNs                | Provided — see CROSS-04. Values go in `.env.local` and CI secrets as `NEXT_PUBLIC_SENTRY_DSN`. Do not hardcode in source files.           |
+| `noUncheckedIndexedAccess` | Add the flag **and fix all resulting type errors in the same PR** — do not leave CI broken.                                               |
+| Geist font exemption       | **Approved** for `preference-frontend` only. Management apps retain Inter. Update §7.2 of the standards doc.                              |
+| Sentry data residency      | EU (Germany) — ingest host is `.ingest.de.sentry.io`. Must be registered in ISMS data processing records. See ISO-01 below.               |
+| WF-04 severity             | **Bumped to 🔴 Critical.** Silent auth header omission = potential data exposure in a clinical app. Fix with live auth verification test. |
+| Parallel CI                | **Approved (CROSS-05).** Replace single-job `codecov.yml` with parallel multi-job matrix in all three repos.                              |
+| GraphQL error contract     | **Approved (CROSS-06).** Audit and normalise `CombinedError` handling across all hook files in all three apps.                            |
+| JSDoc enforcement          | **Approved (CROSS-07).** Add `eslint-plugin-jsdoc` rule to all three repos' `eslint.config.mjs`.                                          |
+| Renovate Bot               | **Approved (CROSS-08).** Add `renovate.json` config; register Renovate as an ISMS tool in ISO 27001 A.12.6.1. See ISO-02.                 |
 
 ---
 
@@ -126,15 +131,19 @@ No `error.tsx` or `loading.tsx` exists at any route level in workforce-frontend.
 - [ ] `workforce-frontend` — Add per-route `loading.tsx` to each of
       `locations/`, `team-categories/`, `teams/`, `positions/`
 
-### WF-04 — Non-standard authExchange Pattern (workforce-frontend)
+### WF-04 — Non-standard authExchange Pattern (workforce-frontend) 🔴 Critical
 
 `src/lib/graphql/client.ts` uses `addAuthToOperationWithToken` which is not the
-standard Urql `@urql/exchange-auth` API; the standard uses `addAuthToOperation`.
-Auth headers may silently fail to attach.
+standard Urql `@urql/exchange-auth` API. This may silently omit auth headers,
+leaving API calls unauthenticated — a data exposure risk in a clinical app.
 
 - [ ] `workforce-frontend` — Rewrite `authExchange` in `client.ts` to use the
-      standard pattern from §6.2 (`addAuthToOperation` with `appendHeaders`)
+      standard `addAuthToOperation` pattern from §6.2 (`appendHeaders`)
       `/Users/ryan/development/common_bond/antigravity-environment/frontend/workforce-frontend/src/lib/graphql/client.ts`
+- [ ] `workforce-frontend` — Add a Vitest integration test that instantiates
+      `createUrqlClient()`, fires a mock query, and asserts the `Authorization`
+      and `apikey` headers are present on the outgoing request
+      `/Users/ryan/development/common_bond/antigravity-environment/frontend/workforce-frontend/src/test/`
 
 ### PL-01 — Public Sans Typography (planner-frontend, Carryover)
 
@@ -225,7 +234,70 @@ No error boundary or loading skeleton at any route level.
 
 ---
 
-## 🟢 Low
+## 🟠 High (Additional)
+
+### CROSS-05 — No Parallel Multi-Job CI Pipeline (All Three)
+
+All CI runs as one sequential job. A lint failure waits ~90s for Supabase to
+boot. Replace with a parallel matrix: `lint-and-type` (no Supabase needed),
+`unit-tests`, `build`, and `e2e` (depends on `build`).
+
+- [ ] `planner-frontend` — Rewrite `.github/workflows/codecov.yml` as a
+      multi-job workflow with `needs:` dependencies between jobs
+      `/Users/ryan/development/common_bond/antigravity-environment/frontend/planner-frontend/.github/workflows/codecov.yml`
+- [ ] `workforce-frontend` — Same
+      `/Users/ryan/development/common_bond/antigravity-environment/frontend/workforce-frontend/.github/workflows/codecov.yml`
+- [ ] `preference-frontend` — Same
+      `/Users/ryan/development/common_bond/antigravity-environment/frontend/preference-frontend/.github/workflows/codecov.yml`
+
+### CROSS-06 — GraphQL Error Handling Contract Not Verified (All Three)
+
+§20 defines a strict `CombinedError` handling contract. Hook files have not been
+audited against it. Inconsistent handling risks silently swallowed errors or
+duplicate Sentry noise.
+
+- [ ] `planner-frontend` — Grep all `useQuery`/`useMutation` hooks for
+      `CombinedError` handling; normalise to the §20 pattern (network error →
+      retry UI, graphQL error → `Sentry.captureException` + toast, PGRST301 →
+      silent authExchange)
+      `/Users/ryan/development/common_bond/antigravity-environment/frontend/planner-frontend/src/`
+- [ ] `workforce-frontend` — Same
+      `/Users/ryan/development/common_bond/antigravity-environment/frontend/workforce-frontend/src/`
+- [ ] `preference-frontend` — Same
+      `/Users/ryan/development/common_bond/antigravity-environment/frontend/preference-frontend/src/`
+
+---
+
+## 🟡 Medium (Additional)
+
+### CROSS-07 — JSDoc Not Enforced by ESLint (All Three)
+
+§21 mandates JSDoc on exported hooks and service functions. No ESLint rule
+enforces this — pre-production is when this habit must be established.
+
+- [ ] `planner-frontend` — Install `eslint-plugin-jsdoc`; add rule
+      `jsdoc/require-jsdoc` scoped to exported functions in `src/hooks/` and
+      `src/services/` in `eslint.config.mjs`
+      `/Users/ryan/development/common_bond/antigravity-environment/frontend/planner-frontend/eslint.config.mjs`
+- [ ] `workforce-frontend` — Same
+      `/Users/ryan/development/common_bond/antigravity-environment/frontend/workforce-frontend/eslint.config.mjs`
+- [ ] `preference-frontend` — Same
+      `/Users/ryan/development/common_bond/antigravity-environment/frontend/preference-frontend/eslint.config.mjs`
+
+### CROSS-08 — No Automated Dependency Governance (All Three)
+
+§18 relies on a manual monthly `npm outdated` cadence. Renovate Bot provides
+automated grouped PRs for minor/patch updates and security patches. Aligns with
+ISO 27001 A.12.6.1. See ISO-02.
+
+- [ ] `planner-frontend` — Add `renovate.json` to repo root with grouped
+      minor/patch updates and major-version hold (requires Engineering Lead
+      approval per §18)
+      `/Users/ryan/development/common_bond/antigravity-environment/frontend/planner-frontend/renovate.json`
+- [ ] `workforce-frontend` — Same
+      `/Users/ryan/development/common_bond/antigravity-environment/frontend/workforce-frontend/renovate.json`
+- [ ] `preference-frontend` — Same
+      `/Users/ryan/development/common_bond/antigravity-environment/frontend/preference-frontend/renovate.json`
 
 ### PR-04 — preference-frontend: lint-staged Missing
 
@@ -236,15 +308,24 @@ No error boundary or loading skeleton at any route level.
 
 ### ISO-01 — Sentry Not Registered as Data Processor in ISMS
 
-Sentry is a third-party error-tracking service that receives error telemetry
-from all three frontends. It stores data in Germany (`de.sentry.io`). Under ISO
-27001 Annex A control A.15.1 (Supplier Relationships) and GDPR Article 28
-(Processor contracts), Sentry must be registered in the data processing register
-with its storage location and PHI scrubbing confirmation documented.
+Sentry is a third-party service receiving error telemetry from all three
+frontends, storing data in Germany. Requires ISMS registration.
 
 - [ ] `common-bond` — Add Sentry to the ISMS data processing register (supplier
-      name, data categories received, storage region: EU/Germany, PHI scrubbing:
+      name, data categories, storage region: EU/Germany, PHI scrubbing:
       confirmed via `beforeSend`)
+      `/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/compliance/iso27001/`
+
+### ISO-02 — Renovate Bot Not Registered as Development Tooling in ISMS
+
+Renovate Bot will have read access to dependency files and write access to raise
+PRs on all three frontend repos. Under ISO 27001 A.12.6.1 (Technical
+Vulnerability Management) it should be documented as an approved development
+tool with its access scope declared.
+
+- [ ] `common-bond` — Add Renovate Bot to ISMS operations documentation; note
+      access scope (read package.json, raise PRs) and approval by Engineering
+      Lead
       `/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/compliance/iso27001/`
 
 ---
@@ -263,11 +344,13 @@ with its storage location and PHI scrubbing confirmation documented.
 
 ## Implementation Order
 
-| Phase | Priority | Finding IDs                    | Note                                     |
-| :---- | :------- | :----------------------------- | :--------------------------------------- |
-| 1     | 🔴 Crit  | WF-01                          | Tailwind v4 setup — unblocks styling     |
-| 2     | 🟠 High  | PL-01, PR-01 (exemption first) | Typography — finalise Inter migration    |
-| 3     | 🟠 High  | WF-02, WF-03, WF-04            | Workforce-frontend quality gates & auth  |
-| 4     | 🟠 High  | CROSS-01, CROSS-02, CROSS-04   | tsconfig, CI build, Sentry (all repos)   |
-| 5     | 🟡 Med   | PL-03, PR-02, PR-03, CROSS-03  | Error boundaries; directory cleanup; E2E |
-| 6     | 🟢 Low   | PR-04                          | lint-staged for preference-frontend      |
+| Phase | Priority | Finding IDs                             | Note                                         |
+| :---- | :------- | :-------------------------------------- | :------------------------------------------- |
+| 1     | 🔴 Crit  | WF-01, WF-04                            | Tailwind v4 + auth fix — critical blockers   |
+| 2     | 🟠 High  | PL-01, PR-01 (exemption first)          | Typography — finalise Inter migration        |
+| 3     | 🟠 High  | WF-02, WF-03                            | Workforce quality gates & error boundaries   |
+| 4     | 🟠 High  | CROSS-01, CROSS-02, CROSS-04            | tsconfig, CI build, Sentry (all repos)       |
+| 5     | 🟠 High  | CROSS-05, CROSS-06                      | Parallel CI pipeline; GraphQL error contract |
+| 6     | 🟡 Med   | PL-03, PR-02, PR-03, CROSS-03, CROSS-07 | Boundaries; dir cleanup; E2E CI; JSDoc lint  |
+| 7     | 🟡 Med   | CROSS-08                                | Renovate Bot setup (all repos)               |
+| 8     | 🟢 Low   | PR-04, ISO-01, ISO-02                   | lint-staged; ISMS registrations              |
