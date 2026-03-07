@@ -384,12 +384,14 @@ calling `supabase.auth.getUser()` before render. `workforce-frontend` and
 `preference-frontend` use client-side `AuthProvider` only, creating a potential
 flash-of-unauthenticated-content before hydration.
 
-- [ ] `workforce-frontend` — Convert `src/app/layout.tsx` to an `async` Server
+- [x] `workforce-frontend` — Convert `src/app/layout.tsx` to an `async` Server
       Component; call `supabase.auth.getUser()` and redirect unauthenticated
       users server-side before render. Use `planner-frontend/src/app/layout.tsx`
-      as the reference implementation.
+      as the reference implementation. Also updated `AuthProvider` to accept
+      `initialUser`/`initialSession` props and use stable `useRef` for supabase
+      and router — commit `6d0716a`
       `/Users/ryan/development/common_bond/antigravity-environment/frontend/workforce-frontend/src/app/layout.tsx`
-- [ ] `preference-frontend` — Same
+- [x] `preference-frontend` — Same — commit `c2295ae`
       `/Users/ryan/development/common_bond/antigravity-environment/frontend/preference-frontend/src/app/layout.tsx`
 
 ---
@@ -1043,5 +1045,73 @@ deferred since Session 3, unchanged)
   URL. Non-trivial infrastructure changes.
 - CROSS-13 (deferred): Server-side auth in layouts — workforce + preference.
   Flagged in Session 3. Requires careful design to avoid breaking SSR pattern.
+- Always use `GIT_TERMINAL_PROMPT=0` before every `git push`. Always run push as
+  a separate `run_command` call, never chained with `&&` after `git commit`.
+
+---
+
+## Session Close — 2026-03-07 (Session 8)
+
+**Completed:** CROSS-13 (server-side auth pre-seeding in `workforce-frontend`
+and `preference-frontend` root layouts)
+
+**Remaining:** CROSS-03 (Playwright/Axe E2E CI step — deferred), CROSS-11
+(GraphQL codegen CI gate — deferred)
+
+**Blocked:** None
+
+**Implementation notes this session:**
+
+- **CROSS-13:** Both `workforce-frontend` and `preference-frontend`
+  `AuthProvider` components were updated to accept `initialUser?: User | null`
+  and `initialSession?: Session | null` props. When these are provided, the
+  client-side `getSession()` fetch is skipped and `isLoading` initialises to
+  `false` — eliminating the flash-of-unauthenticated-content that previously
+  occurred before hydration.
+- **Auth state shape:** Consolidated from three independent `useState` calls
+  (`user`, `session`, `isLoading`) into a single `useState<AuthState>` object.
+  This matches the planner-frontend reference implementation.
+- **`useRef` for stable deps:** Both `supabase` (from `createClient()`) and
+  `router` (from `useRouter()`) are stored in refs rather than being used
+  directly as `useEffect` dependencies. This prevents the auth subscription from
+  being re-registered on every render — which was causing a test timeout in the
+  workforce `AuthProvider.test.tsx` because the test mock's `useRouter` returns
+  a new object identity on every call.
+- **`mounted` guard:** Added to both `onAuthStateChange` callback and the
+  `getSession().then()` callback to prevent state updates on unmounted
+  components.
+- **Test fix (workforce):** `AuthProvider.test.tsx` test
+  `calls refreshSession when refreshClaims is invoked` now uses
+  `await waitFor(() => screen.getByTestId('global-roles'))` + simplified trigger
+  (direct click without `capturedCallback`) — compatible with the new
+  `setState`-based implementation.
+- **preference-frontend failures:** 34 pre-existing test failures (6 files — MSW
+  context mocks) are unchanged by this session. Confirmed via stash baseline.
+
+**Key decisions:**
+
+- The `layout.tsx` changes do **not** add server-side redirect logic —
+  middleware already handles unauthenticated redirects. The layout only
+  pre-seeds the auth state to eliminate FOAC.
+- Preference-frontend `AuthProvider` was fully rewritten to match the
+  workforce/planner pattern (previously it had scattered single-state refs).
+
+**Branches (all pushed):**
+
+| Repo                  | Branch                             | Last commit |
+| :-------------------- | :--------------------------------- | :---------- |
+| `workforce-frontend`  | `audit/260306-frontend-compliance` | `6d0716a`   |
+| `preference-frontend` | `audit/260306-frontend-compliance` | `c2295ae`   |
+
+**Brief for next agent:**
+
+- CROSS-03 (Playwright/Axe E2E in CI) and CROSS-11 (codegen CI gate) are the
+  only remaining open findings. Both are non-trivial infrastructure tasks — plan
+  carefully before implementing. CROSS-11 requires a strategy for running
+  Supabase in CI for schema introspection. CROSS-03 requires a decision on
+  whether to run against a dev server or staging URL.
+- All other findings in this audit are complete.
+- If you are implementing CROSS-03 or CROSS-11, consider whether this audit is
+  complete enough to transition to `/finalise-global-audit`.
 - Always use `GIT_TERMINAL_PROMPT=0` before every `git push`. Always run push as
   a separate `run_command` call, never chained with `&&` after `git commit`.
