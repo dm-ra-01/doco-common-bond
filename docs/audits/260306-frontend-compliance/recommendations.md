@@ -222,10 +222,10 @@ anti-pattern.
 `src/gql/` and `src/graphql/` coexist; `src/context/` and `src/providers/`
 coexist. Standard §2 defines single directories for each.
 
-- [ ] `preference-frontend` — Consolidate `src/gql/` into `src/graphql/`; update
+- [x] `preference-frontend` — Consolidate `src/gql/` into `src/graphql/`; update
       import paths
       `/Users/ryan/development/common_bond/antigravity-environment/frontend/preference-frontend/src/`
-- [ ] `preference-frontend` — Migrate `src/context/` contents into
+- [x] `preference-frontend` — Migrate `src/context/` contents into
       `src/providers/`; update import paths
 
 ### PR-03 — Missing error.tsx and loading.tsx (preference-frontend)
@@ -299,15 +299,15 @@ enforces this — pre-production is when this habit must be established.
 automated grouped PRs for minor/patch updates and security patches. Aligns with
 ISO 27001 A.12.6.1. See ISO-02.
 
-- [ ] `planner-frontend` — Add `renovate.json` to repo root; add
+- [x] `planner-frontend` — Add `renovate.json` to repo root; add
       `.github/workflows/renovate.yml` using `renovatebot/github-action`
       (self-hosted, no GitHub App install required) with a weekly schedule and
       grouped minor/patch updates; major-version bumps require Engineering Lead
       approval per §18
       `/Users/ryan/development/common_bond/antigravity-environment/frontend/planner-frontend/renovate.json`
-- [ ] `workforce-frontend` — Same
+- [x] `workforce-frontend` — Same
       `/Users/ryan/development/common_bond/antigravity-environment/frontend/workforce-frontend/renovate.json`
-- [ ] `preference-frontend` — Same
+- [x] `preference-frontend` — Same
       `/Users/ryan/development/common_bond/antigravity-environment/frontend/preference-frontend/renovate.json`
 
 ### PR-04 — preference-frontend: lint-staged Missing
@@ -468,7 +468,7 @@ Server Actions in `src/app/actions/` accept raw client payloads with no Zod
 `parse()` gate. An invalid or crafted payload can cause unhandled exceptions or
 state corruption.
 
-- [ ] `planner-frontend` — Add `z.parse()` or `z.safeParse()` with early return
+- [x] `planner-frontend` — Add `z.parse()` or `z.safeParse()` with early return
       at the top of every exported Server Action in `src/app/actions/`; define
       schemas adjacent to each action file
       `/Users/ryan/development/common_bond/antigravity-environment/frontend/planner-frontend/src/app/actions/`
@@ -503,13 +503,13 @@ browser DevTools on shared machines. `no-console: 'warn'` with an allow-list for
 `toHaveNoViolations()` calls exist in test files. Write at least one baseline
 axe assertion per repo to create an accessibility regression gate.
 
-- [ ] `planner-frontend` — Create `src/test/unit/a11y.test.tsx` that renders the
+- [x] `planner-frontend` — Create `src/test/unit/a11y.test.tsx` that renders the
       root `layout.tsx` with `@vitest/browser` and asserts
       `expect(await axe(document.body)).toHaveNoViolations()`
       `/Users/ryan/development/common_bond/antigravity-environment/frontend/planner-frontend/src/test/unit/`
-- [ ] `workforce-frontend` — Same
+- [x] `workforce-frontend` — Same
       `/Users/ryan/development/common_bond/antigravity-environment/frontend/workforce-frontend/src/test/unit/`
-- [ ] `preference-frontend` — Same
+- [x] `preference-frontend` — Same
       `/Users/ryan/development/common_bond/antigravity-environment/frontend/preference-frontend/src/test/unit/`
 
 ### CROSS-17 — `@next/next/no-img-element` Suppression Audit (All Three)
@@ -518,14 +518,14 @@ Bare `<img>` elements bypass `next/image` lazy loading and the
 `images.remotePatterns` whitelist. The ESLint rule exists via
 `eslint-config-next` but may be suppressed with `// eslint-disable` comments.
 
-- [ ] `planner-frontend` — Grep for `eslint-disable.*no-img-element` and `<img`
+- [x] `planner-frontend` — Grep for `eslint-disable.*no-img-element` and `<img`
       in all `src/**/*.tsx`; replace bare `<img>` with `<Image>` from
       `next/image`; ensure `images.remotePatterns` whitelist in `next.config.ts`
       covers all sources
       `/Users/ryan/development/common_bond/antigravity-environment/frontend/planner-frontend/src/`
-- [ ] `workforce-frontend` — Same
+- [x] `workforce-frontend` — Same
       `/Users/ryan/development/common_bond/antigravity-environment/frontend/workforce-frontend/src/`
-- [ ] `preference-frontend` — Same
+- [x] `preference-frontend` — Same
       `/Users/ryan/development/common_bond/antigravity-environment/frontend/preference-frontend/src/`
 
 ### ISO-03 — IndexedDB Cache Retention Policy Not Documented in ISMS
@@ -946,3 +946,50 @@ CROSS-19 (confirmed done), PR-04 (lint-staged in preference-frontend), ISO-01
   — plan carefully before executing.
 - Always use `GIT_TERMINAL_PROMPT=0` before every `git push`. Always run push as
   a separate `run_command` call, never chained with `&&` after `git commit`.
+
+---
+
+## Session Close — 2026-03-07 (Session 6)
+
+**Completed:** CROSS-08 (Renovate Bot all 3 repos), CROSS-15 (Zod server action
+validation, planner-frontend), CROSS-16 (vitest-axe a11y baseline all 3 repos),
+CROSS-17 (no-img-element audit — clean, no changes needed), PR-02 (src/gql/ →
+src/graphql/ + src/context/ → src/providers/ consolidation in
+preference-frontend)
+
+**Remaining:** CROSS-03, CROSS-09, CROSS-11, CROSS-12, CROSS-13 (deferred),
+PR-05
+
+**Blocked:** None
+
+**PR order note:** No inter-repo dependencies in remaining findings. CROSS-09
+(env validation) and CROSS-11 (codegen CI gate) can be tackled in parallel
+across repos.
+
+**Brief for next agent:**
+
+- CROSS-08: Uses `EXTERNAL_REPO_TOKEN` (the existing cross-repo PAT) as
+  `RENOVATE_TOKEN` in the workflow env — no new secret needed. Pinned to
+  `renovatebot/github-action@v46.1.3`.
+- CROSS-15: Installed `zod` as a normal dependency in planner-frontend. Schema
+  is in `src/app/actions/plans.schema.ts` adjacent to the action. `fieldErrors`
+  added to `CreatePlanState` type for UI consumption.
+- CROSS-16: planner-frontend already had a comprehensive 6-test axe suite.
+  preference-frontend already had an Accessibility unit test. Only
+  workforce-frontend needed a new test. The axe test caught a real bug:
+  `src/app/loading.tsx` had `aria-label` on a plain `div` without a role —
+  fixed by adding `role="status"`.
+- CROSS-17: All bare `<img>` references across all 3 repos are in test files
+  with proper `eslint-disable-next-line @next/next/no-img-element` comments.
+  No changes needed.
+- PR-02 preference-frontend: `src/gql/` (codegen files) merged into
+  `src/graphql/`; `src/context/PreferenceContext.tsx` moved to
+  `src/providers/PreferenceContext.tsx`. All 8 import sites updated. New barrel
+  `src/graphql/index.ts` created. 267 pass / 4 pre-existing failures (context
+  test MSW network mocks — pre-existing, unrelated to PR-02).
+- CROSS-09: Highest-value remaining item. `@t3-oss/env-nextjs` + Zod env
+  validation across all 3 repos.
+- CROSS-13 (deferred per Session 3): Server-side auth in workforce + preference
+  layouts. Non-trivial — plan carefully.
+- Always use `GIT_TERMINAL_PROMPT=0` before every `git push`. Always run push
+  as a separate `run_command` call.
