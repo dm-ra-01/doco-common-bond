@@ -1230,3 +1230,34 @@ PRs raised in parallel against `main`.
   violations are understood and remediated.
 - Always use `GIT_TERMINAL_PROMPT=0` before every `git push`. Always run push as
   a separate `run_command` call, never chained with `&&` after `git commit`.
+
+---
+
+## Session Close — 2026-03-07 (Re-Audit / Finalise)
+
+**Completed:** Re-audit across all three frontend repos. All 32 findings
+confirmed resolved.
+
+**Remaining:** None — audit is complete.
+
+**Blocked:** None.
+
+**Re-audit results:**
+
+| Metric                        | planner-frontend                   | workforce-frontend | preference-frontend                 |
+| :---------------------------- | :--------------------------------- | :----------------- | :---------------------------------- |
+| TypeScript (`--skipLibCheck`) | ✅ 0 errors                        | ✅ 0 errors        | ✅ 0 errors                         |
+| Unit tests                    | 201 pass / 8 pre-existing failures | ✅ 30/30           | 237 pass / 34 pre-existing failures |
+
+Pre-existing failures are integration tests requiring live Supabase; unchanged
+from baseline; not audit regressions.
+
+**Findings status:** All 32 findings ✅ resolved (2 N/A: PL-02 subsumed, PR-05
+no persist middleware; 1 exemption: PR-01 Geist font approved for
+preference-frontend).
+
+**PR order note:** No inter-repo dependencies. All three frontend repos can have
+PRs raised in parallel against `main`.
+
+**Brief for next agent:** Audit is fully complete. Proceed to merge PRs, delete
+audit branches, and archive the audit folder.
