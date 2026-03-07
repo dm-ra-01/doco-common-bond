@@ -9,17 +9,22 @@
 
 ## Agent Clarifications (Human-Approved)
 
-| Item                       | Decision                                                                                                                                  |
-| :------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------- |
-| Sentry DSNs                | Provided — see CROSS-04. Values go in `.env.local` and CI secrets as `NEXT_PUBLIC_SENTRY_DSN`. Do not hardcode in source files.           |
-| `noUncheckedIndexedAccess` | Add the flag **and fix all resulting type errors in the same PR** — do not leave CI broken.                                               |
-| Geist font exemption       | **Approved** for `preference-frontend` only. Management apps retain Inter. Update §7.2 of the standards doc.                              |
-| Sentry data residency      | EU (Germany) — ingest host is `.ingest.de.sentry.io`. Must be registered in ISMS data processing records. See ISO-01 below.               |
-| WF-04 severity             | **Bumped to 🔴 Critical.** Silent auth header omission = potential data exposure in a clinical app. Fix with live auth verification test. |
-| Parallel CI                | **Approved (CROSS-05).** Replace single-job `codecov.yml` with parallel multi-job matrix in all three repos.                              |
-| GraphQL error contract     | **Approved (CROSS-06).** Audit and normalise `CombinedError` handling across all hook files in all three apps.                            |
-| JSDoc enforcement          | **Approved (CROSS-07).** Add `eslint-plugin-jsdoc` rule to all three repos' `eslint.config.mjs`.                                          |
-| Renovate Bot               | **Approved (CROSS-08).** Add `renovate.json` config; register Renovate as an ISMS tool in ISO 27001 A.12.6.1. See ISO-02.                 |
+| Item                                  | Decision                                                                                                                                                                                                       |
+| :------------------------------------ | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Sentry DSNs                           | Provided — see CROSS-04. Values go in `.env.local` and CI secrets as `NEXT_PUBLIC_SENTRY_DSN`. Do not hardcode in source files.                                                                                |
+| `noUncheckedIndexedAccess`            | Add the flag **and fix all resulting type errors in the same PR** — do not leave CI broken.                                                                                                                    |
+| Geist font exemption                  | **Approved** for `preference-frontend` only. Management apps retain Inter. Update §7.2 of the standards doc.                                                                                                   |
+| Sentry data residency                 | EU (Germany) — ingest host is `.ingest.de.sentry.io`. Must be registered in ISMS data processing records. See ISO-01 below.                                                                                    |
+| WF-04 severity                        | **Bumped to 🔴 Critical.** Silent auth header omission = potential data exposure in a clinical app. Fix with live auth verification test.                                                                      |
+| Parallel CI                           | **Approved (CROSS-05).** Replace single-job `codecov.yml` with parallel multi-job matrix in all three repos.                                                                                                   |
+| GraphQL error contract                | **Approved (CROSS-06).** Audit and normalise `CombinedError` handling across all hook files in all three apps.                                                                                                 |
+| JSDoc enforcement                     | **Approved (CROSS-07).** Add `eslint-plugin-jsdoc` rule to all three repos' `eslint.config.mjs`.                                                                                                               |
+| Renovate Bot                          | **Approved (CROSS-08).** Add `renovate.json` config; register Renovate as an ISMS tool in ISO 27001 A.12.6.1. See ISO-02.                                                                                      |
+| WF-05 IndexedDB                       | Remove `makeDefaultStorage` entirely — rely on in-memory Graphcache (session-scoped). See WF-05 + ISO-03.                                                                                                      |
+| Zustand persist (PR-05)               | **24-hour** persistence approved for `preference-frontend` worker draft state **only**. Must use `partialize` to whitelist own-preference fields; must not persist org structure, position, or colleague data. |
+| CROSS-18 metadata                     | **Approved.** All three apps need an `export const metadata` in root layout; management apps should set `robots: { index: false }`.                                                                            |
+| CROSS-19 robots.txt                   | **Approved.** All three apps need `public/robots.txt` with `Disallow: /`.                                                                                                                                      |
+| Deferred (middleware + Zod resolvers) | **Not in this audit.** Middleware matcher coverage and react-hook-form Zod resolver audits deferred to next frontend compliance audit cycle.                                                                   |
 
 ---
 
@@ -541,16 +546,81 @@ data is now scoped to the authenticated session only.
 
 ---
 
-## Implementation Order (Updated)
+## Implementation Order (Final)
 
-| Phase | Priority | Finding IDs                                      | Note                                           |
-| :---- | :------- | :----------------------------------------------- | :--------------------------------------------- |
-| 1     | 🔴 Crit  | WF-01, WF-04, WF-05                              | Tailwind v4; auth fix; IndexedDB PHI purge     |
-| 2     | 🟠 High  | PL-01, PR-01 (exemption first)                   | Typography — finalise Inter migration          |
-| 3     | 🟠 High  | WF-02, WF-03                                     | Workforce quality gates & error boundaries     |
-| 4     | 🟠 High  | CROSS-01, CROSS-02, CROSS-04                     | tsconfig, CI build, Sentry (all repos)         |
-| 5     | 🟠 High  | CROSS-05, CROSS-06, CROSS-10, CROSS-13, CROSS-15 | Parallel CI; GQL errors; CSP; server auth; Zod |
-| 6     | 🟡 Med   | PL-03, PR-02, PR-03, CROSS-03, CROSS-07          | Boundaries; dir cleanup; E2E CI; JSDoc lint    |
-| 7     | 🟡 Med   | CROSS-08, CROSS-09, CROSS-11, CROSS-12           | Renovate; env safety; codegen CI; PW auth      |
-| 8     | 🟡 Med   | CROSS-14, CROSS-16, CROSS-17                     | no-console; axe baseline; img audit            |
-| 9     | 🟢 Low   | PR-04, ISO-01, ISO-02, ISO-03                    | lint-staged; ISMS registrations                |
+| Phase | Priority | Finding IDs                                      | Note                                             |
+| :---- | :------- | :----------------------------------------------- | :----------------------------------------------- |
+| 1     | 🔴 Crit  | WF-01, WF-04, WF-05                              | Tailwind v4; auth fix; IndexedDB PHI purge       |
+| 2     | 🟠 High  | PL-01, PR-01 (exemption first)                   | Typography — finalise Inter migration            |
+| 3     | 🟠 High  | WF-02, WF-03                                     | Workforce quality gates & error boundaries       |
+| 4     | 🟠 High  | CROSS-01, CROSS-02, CROSS-04                     | tsconfig, CI build, Sentry (all repos)           |
+| 5     | 🟠 High  | CROSS-05, CROSS-06, CROSS-10, CROSS-13, CROSS-15 | Parallel CI; GQL errors; CSP; server auth; Zod   |
+| 6     | 🟡 Med   | PL-03, PR-02, PR-03, CROSS-03, CROSS-07          | Boundaries; dir cleanup; E2E CI; JSDoc lint      |
+| 7     | 🟡 Med   | CROSS-08, CROSS-09, CROSS-11, CROSS-12           | Renovate; env safety; codegen CI; PW auth        |
+| 8     | 🟡 Med   | CROSS-14, CROSS-16, CROSS-17, CROSS-18, CROSS-19 | no-console; axe; img audit; metadata; robots.txt |
+| 9     | 🟡 Med   | PR-05                                            | Zustand persist 24hr (preference-frontend)       |
+| 10    | 🟢 Low   | PR-04, ISO-01, ISO-02, ISO-03                    | lint-staged; ISMS registrations                  |
+
+---
+
+## 🟡 Medium (Round 4)
+
+### CROSS-18 — Missing `metadata` Export in Root Layouts (All Three)
+
+None of the root `layout.tsx` files export a Next.js `metadata` object. Without
+it the apps render generic or empty `<title>` / `<meta description>` tags and
+are not explicitly protected from search engine indexing.
+
+- [ ] `planner-frontend` — Add
+      `export const metadata: Metadata = { title:
+      'Receptor Planner', description: '...', robots: { index: false } }`
+      to `src/app/layout.tsx`
+      `/Users/ryan/development/common_bond/antigravity-environment/frontend/planner-frontend/src/app/layout.tsx`
+- [ ] `workforce-frontend` — Same (`title: 'Receptor Workforce'`)
+      `/Users/ryan/development/common_bond/antigravity-environment/frontend/workforce-frontend/src/app/layout.tsx`
+- [ ] `preference-frontend` — Same (`title: 'My Preferences'`; worker-facing
+      branding)
+      `/Users/ryan/development/common_bond/antigravity-environment/frontend/preference-frontend/src/app/layout.tsx`
+
+### CROSS-19 — Missing `robots.txt` / `noindex` Directive (All Three)
+
+All three apps are authenticated management/clinical tools. Without
+`public/robots.txt` explicitly blocking crawlers, a misconfigured production
+deployment could index protected routes. ISO 27001 A.9.4.
+
+- [ ] `planner-frontend` — Create `public/robots.txt`:
+      `User-agent: *\nDisallow: /`
+      `/Users/ryan/development/common_bond/antigravity-environment/frontend/planner-frontend/public/robots.txt`
+- [ ] `workforce-frontend` — Same
+      `/Users/ryan/development/common_bond/antigravity-environment/frontend/workforce-frontend/public/robots.txt`
+- [ ] `preference-frontend` — Same
+      `/Users/ryan/development/common_bond/antigravity-environment/frontend/preference-frontend/public/robots.txt`
+
+### PR-05 — Zustand Persist Duration (preference-frontend)
+
+`preference-frontend` uses Zustand for worker draft preference state. If any
+store uses the `persist` middleware, duration must be bounded. **Decision:
+24-hour persistence approved for own-preference draft state only.** Must use
+`partialize` to whitelist allowed fields.
+
+- [ ] `preference-frontend` — Audit all Zustand stores for `persist` middleware;
+      for any that persist, add `storage: createJSONStorage(() => localStorage)`
+      with
+      `partialize: (state) => ({ /* whitelist own-preference fields only */
+      draftPreferences: state.draftPreferences })`
+      and set store expiry logic (e.g., check
+      `Date.now() - lastUpdated > 86400000` and reset on mount)
+      `/Users/ryan/development/common_bond/antigravity-environment/frontend/preference-frontend/src/store/`
+
+---
+
+## Deferred to Next Audit Cycle
+
+The following items were identified but are **out of scope** for this audit.
+They should be picked up in the next `260306-frontend-compliance` follow-up or a
+dedicated audit:
+
+| Item                                                   | Reason Deferred                                                                                    |
+| :----------------------------------------------------- | :------------------------------------------------------------------------------------------------- |
+| `middleware.ts` matcher coverage audit                 | Requires route-tree enumeration and matcher pattern testing — distinct scope from current findings |
+| `react-hook-form` + Zod `resolver` pattern consistency | Requires exhaustive form component audit — distinct scope from current findings                    |
