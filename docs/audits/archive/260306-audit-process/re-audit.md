@@ -2,7 +2,7 @@
 
 **Audit slug:** `260306-audit-process`\
 **Date:** 2026-03-06\
-**Re-Auditor:** Antigravity
+**Re-Auditor:** Ryan Ammendolea
 
 This document outlines the final verification of the `260306-audit-process`
 audit, acting as the ultimate Definition of Done (DoD) before completion. I have

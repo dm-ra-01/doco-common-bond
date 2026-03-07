@@ -8,7 +8,7 @@ sidebar_position: 1
 **Date:** 2026-03-06\
 **Scope:** `documentation/receptor-ecosystem/docs/` — 80 markdown files across 6
 top-level sections\
-**Auditor:** Antigravity\
+**Auditor:** Ryan Ammendolea\
 **Branch:** `audit/260306-receptor-ecosystem-decommission`
 
 ---

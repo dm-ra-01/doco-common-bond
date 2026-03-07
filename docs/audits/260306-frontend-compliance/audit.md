@@ -7,7 +7,7 @@ sidebar_label: Audit
 
 **Date:** 2026-03-06\
 **Scope:** `planner-frontend`, `workforce-frontend`, `preference-frontend`\
-**Auditor:** Antigravity\
+**Auditor:** Ryan Ammendolea\
 **Standard:**
 [Frontend Engineering Standards](../../engineering/frontend-standards-overview.md)
 (`260306-frontend-standards`)
