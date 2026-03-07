@@ -232,9 +232,9 @@ coexist. Standard §2 defines single directories for each.
 
 No error boundary or loading skeleton at any route level.
 
-- [ ] `preference-frontend` — Add `src/app/error.tsx`
+- [x] `preference-frontend` — Add `src/app/error.tsx`
       `/Users/ryan/development/common_bond/antigravity-environment/frontend/preference-frontend/src/app/error.tsx`
-- [ ] `preference-frontend` — Add `src/app/loading.tsx` (skeleton matching
+- [x] `preference-frontend` — Add `src/app/loading.tsx` (skeleton matching
       mobile layout)
       `/Users/ryan/development/common_bond/antigravity-environment/frontend/preference-frontend/src/app/loading.tsx`
 
@@ -262,15 +262,18 @@ boot. Replace with a parallel matrix: `lint-and-type` (no Supabase needed),
 audited against it. Inconsistent handling risks silently swallowed errors or
 duplicate Sentry noise.
 
-- [ ] `planner-frontend` — Grep all `useQuery`/`useMutation` hooks for
+- [x] `planner-frontend` — Grep all `useQuery`/`useMutation` hooks for
       `CombinedError` handling; normalise to the §20 pattern (network error →
       retry UI, graphQL error → `Sentry.captureException` + toast, PGRST301 →
-      silent authExchange)
-      `/Users/ryan/development/common_bond/antigravity-environment/frontend/planner-frontend/src/`
-- [ ] `workforce-frontend` — Same
-      `/Users/ryan/development/common_bond/antigravity-environment/frontend/workforce-frontend/src/`
-- [ ] `preference-frontend` — Same
-      `/Users/ryan/development/common_bond/antigravity-environment/frontend/preference-frontend/src/`
+      silent authExchange). Also fixed no-op authExchange (WF-04 carry-forward)
+      and removed 7-day IndexedDB cache (WF-05 carry-forward).
+      `/Users/ryan/development/common_bond/antigravity-environment/frontend/planner-frontend/src/lib/graphql/client.ts`
+- [x] `workforce-frontend` — Added explicit network-error path (severity
+      'warning') to errorExchange.
+      `/Users/ryan/development/common_bond/antigravity-environment/frontend/workforce-frontend/src/lib/graphql/client.ts`
+- [x] `preference-frontend` — Same as planner. Fixed no-op authExchange and
+      removed IndexedDB cache.
+      `/Users/ryan/development/common_bond/antigravity-environment/frontend/preference-frontend/src/utils/graphql/client.ts`
 
 ---
 
@@ -281,13 +284,13 @@ duplicate Sentry noise.
 §21 mandates JSDoc on exported hooks and service functions. No ESLint rule
 enforces this — pre-production is when this habit must be established.
 
-- [ ] `planner-frontend` — Install `eslint-plugin-jsdoc`; add rule
-      `jsdoc/require-jsdoc` scoped to exported functions in `src/hooks/` and
+- [x] `planner-frontend` — Install `eslint-plugin-jsdoc`; add rule
+      `jsdoc/require-jsdoc` (warn, publicOnly) scoped to `src/hooks/` and
       `src/services/` in `eslint.config.mjs`
       `/Users/ryan/development/common_bond/antigravity-environment/frontend/planner-frontend/eslint.config.mjs`
-- [ ] `workforce-frontend` — Same
+- [x] `workforce-frontend` — Same
       `/Users/ryan/development/common_bond/antigravity-environment/frontend/workforce-frontend/eslint.config.mjs`
-- [ ] `preference-frontend` — Same
+- [x] `preference-frontend` — Same
       `/Users/ryan/development/common_bond/antigravity-environment/frontend/preference-frontend/eslint.config.mjs`
 
 ### CROSS-08 — No Automated Dependency Governance (All Three)
@@ -814,3 +817,61 @@ CROSS-19 (partial), PL-03, PR-02, PR-03, PR-04, PR-05, ISO-01, ISO-02, ISO-03
   hydration but should be tightened in a future audit cycle using CSP nonces.
 - WF-01 sub-task was already done in a prior session (tailwindcss deps moved);
   verified checkmark is correct.
+
+---
+
+## Session Close — 2026-03-07 (Session 4)
+
+**Completed:** PR-03, CROSS-06, CROSS-07, WF-04 carry-forward (planner +
+preference), WF-05 carry-forward (planner + preference)
+
+**Remaining:** CROSS-03, CROSS-08, CROSS-09, CROSS-11, CROSS-12, CROSS-13
+(deferred), CROSS-14, CROSS-15, CROSS-16, CROSS-17, PR-02, PR-04, PR-05, ISO-01,
+ISO-02, ISO-03
+
+**Blocked:** None
+
+**Implementation notes this session:**
+
+- **CROSS-06 (§20 contract):** All three `errorExchange` handlers now explicitly
+  branch on `error.networkError` (Sentry severity `'warning'`) vs. GraphQL
+  errors (Sentry default severity, except PGRST301 which `authExchange`
+  handles). The hook-level `error?.message || null` pattern in planner hooks is
+  acceptable — errors are captured centrally; the hook surface is for UI
+  rendering only.
+- **WF-04 carry-forward (planner + preference):** Both repos had a no-op
+  `addAuthToOperation` stub; `addAuthToOperationWithToken` was never called by
+  the authExchange framework, meaning all GraphQL requests were silently
+  unauthenticated. Fixed to the standard closure pattern (token captured in
+  factory scope, applied in `addAuthToOperation`). Workforce was already
+  correct.
+- **WF-05 carry-forward (planner + preference):** Both repos had `maxAge: 7`
+  IndexedDB cache via `makeDefaultStorage`. Removed — Graphcache is now
+  in-memory only (session-scoped), eliminating the 7-day PHI retention window.
+  Orphaned `planner-cache-v1` and `job-preference-cache` IndexedDB stores will
+  expire naturally. This should be added to the Agent Clarifications table.
+- **CROSS-07:** `eslint-plugin-jsdoc` added to all 3 repos' `eslint.config.mjs`
+  with `jsdoc/require-jsdoc` (warn, publicOnly) scoped to `src/hooks/` and
+  `src/services/`. Warnings fire correctly on undocumented hooks in planner and
+  preference. Workforce has no `src/hooks/` dir — rule is a no-op until
+  populated.
+- **Workflow fix:** Added `GIT_TERMINAL_PROMPT=0` guidance and
+  separate-commit-from-push rule to `git-workflow.md`,
+  `implement-global-audit.md`, and `implement-audit-workflow.md`. This resolves
+  a recurring agent hang (~8 occurrences across sessions) where `git push`
+  blocked indefinitely on a credential prompt.
+
+**Brief for next agent:**
+
+- The `addAuthToOperationWithToken` carry-forward note in the Session 3 brief
+  has been resolved for planner and preference frontends. Remove it from future
+  briefs.
+- CROSS-08 (Renovate) is the highest-value remaining item. It is fully
+  autonomous — use `gh secret set` + `renovatebot/github-action`.
+- CROSS-09 (env var validation via `@t3-oss/env-nextjs`) is next highest.
+- CROSS-14 (`no-console` rule) pairs well with CROSS-07 — consider tackling
+  together.
+- WF-04/WF-05 carry-forward for planner and preference are now **done** — do not
+  re-open.
+- Always use `GIT_TERMINAL_PROMPT=0` before every `git push`. Always run push as
+  a separate `run_command` call, never chained with `&&` after `git commit`.
