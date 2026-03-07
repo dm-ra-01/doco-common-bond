@@ -37,12 +37,12 @@
 and no `@theme {}` block, so no Tailwind utilities are generated. The design
 token values also use raw hex rather than HSL custom properties.
 
-- [ ] `workforce-frontend` — Add `@import "tailwindcss";` as the first line of
+- [x] `workforce-frontend` — Add `@import "tailwindcss";` as the first line of
       `src/app/globals.css`
       `/Users/ryan/development/common_bond/antigravity-environment/frontend/workforce-frontend/src/app/globals.css`
-- [ ] `workforce-frontend` — Convert `:root` token values from raw hex to HSL
+- [x] `workforce-frontend` — Convert `:root` token values from raw hex to HSL
       custom properties (e.g. `--brand-primary: 239 84% 67%;`)
-- [ ] `workforce-frontend` — Add `@theme {}` block mapping tokens into Tailwind
+- [x] `workforce-frontend` — Add `@theme {}` block mapping tokens into Tailwind
       (e.g.
       `--font-sans: var(--font-sans); --color-brand-primary: hsl(var(--brand-primary));`)
 - [ ] `workforce-frontend` — Move `tailwindcss` and `@tailwindcss/postcss` from
@@ -117,10 +117,10 @@ secrets — never hardcode in source):
 `.husky/pre-commit` runs only `npm run lint`. `package.json` has no
 `lint-staged` block. Standard §14.2 requires both.
 
-- [ ] `workforce-frontend` — Update `.husky/pre-commit` to run `npx lint-staged`
+- [x] `workforce-frontend` — Update `.husky/pre-commit` to run `npx lint-staged`
       (not direct eslint)
       `/Users/ryan/development/common_bond/antigravity-environment/frontend/workforce-frontend/.husky/pre-commit`
-- [ ] `workforce-frontend` — Add `lint-staged` block to `package.json`:
+- [x] `workforce-frontend` — Add `lint-staged` block to `package.json`:
       `"lint-staged": { "src/**/*.{ts,tsx}": ["eslint --fix", "vitest related --run"] }`
       `/Users/ryan/development/common_bond/antigravity-environment/frontend/workforce-frontend/package.json`
 
@@ -128,13 +128,13 @@ secrets — never hardcode in source):
 
 No `error.tsx` or `loading.tsx` exists at any route level in workforce-frontend.
 
-- [ ] `workforce-frontend` — Add `src/app/error.tsx` (root route group error
+- [x] `workforce-frontend` — Add `src/app/error.tsx` (root route group error
       boundary with reset button and reference ID)
       `/Users/ryan/development/common_bond/antigravity-environment/frontend/workforce-frontend/src/app/error.tsx`
-- [ ] `workforce-frontend` — Add `src/app/loading.tsx` (skeleton matching page
+- [x] `workforce-frontend` — Add `src/app/loading.tsx` (skeleton matching page
       layout — not a spinner)
       `/Users/ryan/development/common_bond/antigravity-environment/frontend/workforce-frontend/src/app/loading.tsx`
-- [ ] `workforce-frontend` — Add per-route `loading.tsx` to each of
+- [x] `workforce-frontend` — Add per-route `loading.tsx` to each of
       `locations/`, `team-categories/`, `teams/`, `positions/`
 
 ### WF-04 — Non-standard authExchange Pattern (workforce-frontend) 🔴 Critical
@@ -143,10 +143,10 @@ No `error.tsx` or `loading.tsx` exists at any route level in workforce-frontend.
 standard Urql `@urql/exchange-auth` API. This may silently omit auth headers,
 leaving API calls unauthenticated — a data exposure risk in a clinical app.
 
-- [ ] `workforce-frontend` — Rewrite `authExchange` in `client.ts` to use the
+- [x] `workforce-frontend` — Rewrite `authExchange` in `client.ts` to use the
       standard `addAuthToOperation` pattern from §6.2 (`appendHeaders`)
       `/Users/ryan/development/common_bond/antigravity-environment/frontend/workforce-frontend/src/lib/graphql/client.ts`
-- [ ] `workforce-frontend` — Add a Vitest integration test that instantiates
+- [x] `workforce-frontend` — Add a Vitest integration test that instantiates
       `createUrqlClient()`, fires a mock query, and asserts the `Authorization`
       and `apikey` headers are present on the outgoing request
       `/Users/ryan/development/common_bond/antigravity-environment/frontend/workforce-frontend/src/test/`
@@ -157,14 +157,14 @@ leaving API calls unauthenticated — a data exposure risk in a clinical app.
 Inter for all management apps. This is a known carryover task from
 `260306-frontend-standards`.
 
-- [ ] `planner-frontend` — Remove Google Fonts `@import url(...)` for Public
+- [x] `planner-frontend` — Remove Google Fonts `@import url(...)` for Public
       Sans from `src/app/globals.css`
       `/Users/ryan/development/common_bond/antigravity-environment/frontend/planner-frontend/src/app/globals.css`
-- [ ] `planner-frontend` — Add `Inter` via `next/font/google` in `layout.tsx`
+- [x] `planner-frontend` — Add `Inter` via `next/font/google` in `layout.tsx`
       and bind it to `--font-sans` CSS variable (same pattern as
       workforce-frontend `layout.tsx:5-8`)
       `/Users/ryan/development/common_bond/antigravity-environment/frontend/planner-frontend/src/app/layout.tsx`
-- [ ] `planner-frontend` — Update `globals.css`
+- [x] `planner-frontend` — Update `globals.css`
       `@theme { --font-sans: "Inter", ... }` (literal font name, not
       `var(--font-sans)` — see PL-02)
 
@@ -182,7 +182,7 @@ in place of Inter, with the rationale documented in the standards doc under
 §7.2, and a note added to `preference-frontend/.agents/` context. This avoids
 visual regression in a deliberately differentiated app.
 
-- [ ] `common-bond` — Update `docs/engineering/frontend-standards-overview.md`
+- [x] `common-bond` — Update `docs/engineering/frontend-standards-overview.md`
       §7.2 to list Geist as the approved font for `preference-frontend`
       `/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/engineering/frontend-standards-overview.md`
 
@@ -205,7 +205,7 @@ to the CSS custom property itself, not the font name string. Tailwind can't
 process it. Fix is subsumed by PL-01 (switch to Inter), but note the
 anti-pattern.
 
-- [ ] Subsumed by PL-01. No separate action required once PL-01 is implemented.
+- [x] Subsumed by PL-01. No separate action required once PL-01 is implemented.
 
 ### PL-03 — Authenticated Route Group Needs error.tsx/loading.tsx (planner-frontend)
 
@@ -444,12 +444,12 @@ borrowed devices, this is an uncontrolled PHI retention window. **Decision:
 reduce to session-lifetime (`maxAge: 0` or remove `makeDefaultStorage`
 entirely).** Requires ISO 27001 documentation update. See ISO-03.
 
-- [ ] `workforce-frontend` — Change `maxAge: 7` to `maxAge: 0` in
+- [x] `workforce-frontend` — Change `maxAge: 7` to `maxAge: 0` in
       `src/lib/graphql/client.ts:16-21` **or** remove `makeDefaultStorage` and
       rely on in-memory Graphcache only (recommended — session-scoped by
       default)
       `/Users/ryan/development/common_bond/antigravity-environment/frontend/workforce-frontend/src/lib/graphql/client.ts`
-- [ ] `workforce-frontend` — Delete the `workforce-cache-v1` IndexedDB entry
+- [x] `workforce-frontend` — Delete the `workforce-cache-v1` IndexedDB entry
       from any existing browser stores by incrementing the IDB name (e.g.,
       `workforce-cache-v2`) so legacy 7-day data is orphaned and expires
       naturally — or add a one-time migration in `global-setup.ts`
