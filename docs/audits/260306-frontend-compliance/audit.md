@@ -18,16 +18,19 @@ sidebar_label: Audit
 
 All three in-scope frontends demonstrate strong foundational compliance with the
 ecosystem architecture: Next.js 16+, Urql 5 + Graphcache, `@graphql-codegen`,
-Vitest workspace, Playwright, and Husky are present across all repos. The
-primary gaps are (a) two known carryover typography and Tailwind v4 items, (b) a
-shared tsconfig baseline drift, and (c) missing route-level error/loading
-boundaries in `workforce-frontend` and `preference-frontend`.
+Vitest workspace, Playwright, and Husky are present across all repos. The audit
+identified 31 findings across 10 implementation phases, ranging from three 🔴
+Critical security/privacy issues to process quality improvements. Primary gap
+areas: (a) two carryover typography and Tailwind v4 items, (b) shared tsconfig
+baseline drift, (c) missing route-level error/loading boundaries, and (d) a
+significant unlayered security surface across all three apps (no CSP headers, no
+env variable validation, no server-side session gate in two apps).
 
 | Repository            | Coverage | Issues Found | Overall |
 | :-------------------- | :------- | :----------- | :------ |
-| `planner-frontend`    | ✅ Good  | 6            | 🟠 High |
-| `workforce-frontend`  | ⚠️ Fair  | 11           | 🔴 Crit |
-| `preference-frontend` | ⚠️ Fair  | 8            | 🟠 High |
+| `planner-frontend`    | ✅ Good  | 19           | 🟠 High |
+| `workforce-frontend`  | ⚠️ Fair  | 20           | 🔴 Crit |
+| `preference-frontend` | ⚠️ Fair  | 18           | 🟠 High |
 
 ---
 
@@ -392,7 +395,7 @@ suppression comments has been performed.
 | CROSS-05   | all                   | `.github/workflows/codecov.yml`      | Process Gap         | 🟠 High     |
 | CROSS-06   | all                   | `src/**/hooks/`, `src/**/providers/` | Architectural Drift | 🟠 High     |
 | CROSS-07   | all                   | `eslint.config.mjs`                  | Process Gap         | 🟡 Medium   |
-| CROSS-08   | all                   | `.github/` (missing)                 | Process Gap         | 🟡 Medium   |
+| CROSS-08   | all                   | `.github/workflows/` (missing)       | Process Gap         | 🟡 Medium   |
 | CROSS-09   | all                   | `src/env.ts` (missing)               | Security            | 🟡 Medium   |
 | CROSS-10   | all                   | `next.config.ts`                     | Security            | 🟠 High     |
 | CROSS-11   | all                   | `.github/workflows/`                 | Process Gap         | 🟡 Medium   |
@@ -402,6 +405,8 @@ suppression comments has been performed.
 | CROSS-15   | planner               | `src/app/actions/`                   | Security            | 🟠 High     |
 | CROSS-16   | all                   | `src/**/*.test.tsx`                  | Process Gap         | 🟡 Medium   |
 | CROSS-17   | all                   | `eslint.config.mjs` / `src/**/*.tsx` | Security            | 🟡 Medium   |
+| CROSS-18   | all                   | `src/app/layout.tsx`                 | Process Gap         | 🟡 Medium   |
+| CROSS-19   | all                   | `public/robots.txt` (missing)        | Security            | 🟡 Medium   |
 | WF-01      | workforce             | `src/app/globals.css`                | Tech Debt           | 🔴 Critical |
 | WF-02      | workforce             | `.husky/pre-commit`, `package.json`  | Process Gap         | 🟠 High     |
 | WF-03      | workforce             | `src/app/`                           | Architectural Drift | 🟠 High     |
@@ -413,3 +418,5 @@ suppression comments has been performed.
 | PR-01      | preference            | `src/app/globals.css`, `layout.tsx`  | Tech Debt           | 🟠 High     |
 | PR-02      | preference            | `src/`                               | Architectural Drift | 🟡 Medium   |
 | PR-03      | preference            | `src/app/`                           | Process Gap         | 🟡 Medium   |
+| PR-04      | preference            | `package.json`                       | Process Gap         | 🟢 Low      |
+| PR-05      | preference            | `src/store/`                         | Security / Privacy  | 🟡 Medium   |

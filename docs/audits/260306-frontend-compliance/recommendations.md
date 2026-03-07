@@ -296,9 +296,11 @@ enforces this — pre-production is when this habit must be established.
 automated grouped PRs for minor/patch updates and security patches. Aligns with
 ISO 27001 A.12.6.1. See ISO-02.
 
-- [ ] `planner-frontend` — Add `renovate.json` to repo root with grouped
-      minor/patch updates and major-version hold (requires Engineering Lead
-      approval per §18)
+- [ ] `planner-frontend` — Add `renovate.json` to repo root; add
+      `.github/workflows/renovate.yml` using `renovatebot/github-action`
+      (self-hosted, no GitHub App install required) with a weekly schedule and
+      grouped minor/patch updates; major-version bumps require Engineering Lead
+      approval per §18
       `/Users/ryan/development/common_bond/antigravity-environment/frontend/planner-frontend/renovate.json`
 - [ ] `workforce-frontend` — Same
       `/Users/ryan/development/common_bond/antigravity-environment/frontend/workforce-frontend/renovate.json`
@@ -348,22 +350,7 @@ tool with its access scope declared.
 
 ---
 
-## Implementation Order
-
-| Phase | Priority | Finding IDs                             | Note                                        |
-| :---- | :------- | :-------------------------------------- | :------------------------------------------ |
-| 1     | 🔴 Crit  | WF-01, WF-04                            | Tailwind v4 + auth fix — critical blockers  |
-| 2     | 🟠 High  | PL-01, PR-01 (exemption first)          | Typography — finalise Inter migration       |
-| 3     | 🟠 High  | WF-02, WF-03                            | Workforce quality gates & error boundaries  |
-| 4     | 🟠 High  | CROSS-01, CROSS-02, CROSS-04            | tsconfig, CI build, Sentry (all repos)      |
-| 5     | 🟠 High  | CROSS-05, CROSS-06, CROSS-10, CROSS-13  | Parallel CI; GQL errors; CSP; server auth   |
-| 6     | 🟡 Med   | PL-03, PR-02, PR-03, CROSS-03, CROSS-07 | Boundaries; dir cleanup; E2E CI; JSDoc lint |
-| 7     | 🟡 Med   | CROSS-08, CROSS-09, CROSS-11, CROSS-12  | Renovate; env safety; codegen CI; PW auth   |
-| 8     | 🟢 Low   | PR-04, ISO-01, ISO-02                   | lint-staged; ISMS registrations             |
-
----
-
-## 🟠 High (Round 2)
+## High (Round 2)
 
 ### CROSS-10 — No Security Headers in next.config.ts (All Three)
 
@@ -542,8 +529,6 @@ data is now scoped to the authenticated session only.
       documenting that `workforce-frontend` Graphcache is in-memory only
       (session-scoped); reference ISO 27001 A.18.1.3 and WF-05
       `/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/compliance/iso27001/`
-- [ ] `common-bond` — Update the agent clarifications table in this
-      `recommendations.md` to add WF-05 decision row
 
 ---
 
