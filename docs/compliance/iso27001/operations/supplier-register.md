@@ -120,6 +120,23 @@ priority action.** Status columns below track progress.
 | **DPA Action**          | Execute ClickUp's DPA at [clickup.com/dpa](https://clickup.com/dpa) if ClickUp stores any personal information or business-sensitive information. Confirm scope of data stored before executing. |
 | **Last Reviewed**       | 2026-03-05                                                                                                                                                                                       |
 
+---
+
+### Sentry (Error Monitoring & Observability)
+
+| Field                   | Detail                                                                                                                                                                                 |
+| ----------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Service**             | Application error monitoring, stack trace capture, performance tracing for planner-frontend, workforce-frontend, and preference-frontend                                               |
+| **Data Processed**      | Obfuscated error events, stack traces, breadcrumbs, request URLs. PHI scrubbing is enforced via `beforeSend` hooks — no PII or PHI is intentionally transmitted.                       |
+| **Classification**      | Internal (application diagnostics only)                                                                                                                                                |
+| **Hosting**             | Sentry.io (us-central GCP region)                                                                                                                                                      |
+| **Criticality**         | Low — production stability visibility; platform continues without this service                                                                                                         |
+| **Security Trust Page** | [sentry.io/security](https://sentry.io/security/)                                                                                                                                      |
+| **PHI Safeguard**       | `beforeSend` hooks in all three frontend apps strip PII/PHI before transmission. Sentry SDK `@sentry/nextjs` v10 is configured with `sendDefaultPii: false`. Reviewed 2026-03-06.      |
+| **DPA Status**          | ⚠️ Not executed — **Action required**                                                                                                                                                  |
+| **DPA Action**          | Execute Sentry's DPA at [sentry.io/legal/dpa](https://sentry.io/legal/dpa). Australian customers are covered under US-EU SCCs. Confirm PHI-scrubbing config is documented in ISMS ops. |
+| **Last Reviewed**       | 2026-03-06                                                                                                                                                                             |
+
 ## 5. Supplier Review Process
 
 Suppliers are reviewed annually or when a significant change occurs (e.g.,

@@ -36,17 +36,31 @@ Hardware, and People.
 | IA-006 | Internal business correspondence       | Emails, meeting notes, commercial agreements                                                                      | Ryan Ammendolea (CEO) | Internal–Confidential | Google Workspace                         | Medium            |
 | IA-007 | Intellectual property (product design) | Unreleased feature designs, roadmap, competitive strategy                                                         | Ryan Ammendolea (CEO) | Confidential          | Google Workspace / ClickUp               | High              |
 
+:::note[Graphcache Client-Side Retention Policy — ISO-03]
+
+The `@urql/exchange-graphcache` library used by all three Receptor frontend
+applications stores GraphQL query results **in-memory only**. No PII or PHI is
+written to IndexedDB, localStorage, or any other browser-persistent store by the
+Graphcache layer. This has been verified as part of the
+[260306 Frontend Compliance Audit](../../engineering/audits/260306-frontend-compliance/audit).
+
+**Decision recorded:** 2026-03-07 — Ryan Ammendolea (Founder/CEO).
+
+:::
+
 ---
 
 ## 4. Software and Services
 
-| ID     | Asset Name            | Description                                                                            | Owner                 | Classification     | Location             | Recovery Priority |
-| ------ | --------------------- | -------------------------------------------------------------------------------------- | --------------------- | ------------------ | -------------------- | ----------------- |
-| SA-001 | Supabase (production) | PostgreSQL database, authentication, storage, edge functions for the Receptor platform | Ryan Ammendolea (CEO) | — (infrastructure) | AWS (US/EU)          | Critical          |
-| SA-002 | GitHub                | Source code hosting, CI/CD, version control                                            | Ryan Ammendolea (CEO) | — (infrastructure) | Microsoft Azure (US) | Critical          |
-| SA-003 | Cloudflare            | DNS, CDN, Zero Trust access                                                            | Ryan Ammendolea (CEO) | — (infrastructure) | Cloudflare global    | High              |
-| SA-004 | Google Workspace      | Corporate email, document storage, calendar, identity provider                         | Ryan Ammendolea (CEO) | — (infrastructure) | Google LLC (US)      | High              |
-| SA-005 | ClickUp               | Project and task management                                                            | Ryan Ammendolea (CEO) | — (infrastructure) | AWS (US)             | Low               |
+| ID     | Asset Name            | Description                                                                                                                                      | Owner                 | Classification     | Location             | Recovery Priority |
+| ------ | --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------- | ------------------ | -------------------- | ----------------- |
+| SA-001 | Supabase (production) | PostgreSQL database, authentication, storage, edge functions for the Receptor platform                                                           | Ryan Ammendolea (CEO) | — (infrastructure) | AWS (US/EU)          | Critical          |
+| SA-002 | GitHub                | Source code hosting, CI/CD, version control                                                                                                      | Ryan Ammendolea (CEO) | — (infrastructure) | Microsoft Azure (US) | Critical          |
+| SA-003 | Cloudflare            | DNS, CDN, Zero Trust access                                                                                                                      | Ryan Ammendolea (CEO) | — (infrastructure) | Cloudflare global    | High              |
+| SA-004 | Google Workspace      | Corporate email, document storage, calendar, identity provider                                                                                   | Ryan Ammendolea (CEO) | — (infrastructure) | Google LLC (US)      | High              |
+| SA-005 | ClickUp               | Project and task management                                                                                                                      | Ryan Ammendolea (CEO) | — (infrastructure) | AWS (US)             | Low               |
+| SA-006 | Sentry                | Frontend error monitoring and performance tracing across all Receptor apps. PHI-scrubbing enforced via `beforeSend` hooks. Reviewed 2026-03-06.  | Ryan Ammendolea (CEO) | — (infrastructure) | Sentry.io (GCP US)   | Low               |
+| SA-007 | Renovate Bot (Mend)   | Automated dependency update PRs across all GitHub repositories. Runs as a GitHub App; no access to runtime data or secrets. Reviewed 2026-03-06. | Ryan Ammendolea (CEO) | — (infrastructure) | GitHub App (cloud)   | Low               |
 
 ---
 
