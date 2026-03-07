@@ -148,7 +148,7 @@ This software is the exclusive intellectual property of **MyJMO Pty Ltd** (ABN
 
 **Tasks:**
 
-- [ ] `common-bond` — Correct ACN from `674 840 394` to `694 840 394` in
+- [x] `common-bond` — Correct ACN from `674 840 394` to `694 840 394` in
       `docs/governance/asic-registration.md` (line 9 and the table)
 
 ---
@@ -162,7 +162,7 @@ ownership or licensing documentation.
 
 **Tasks:**
 
-- [ ] `common-bond` — Update `docs/governance/index.md` to add an "Intellectual
+- [x] `common-bond` — Update `docs/governance/index.md` to add an "Intellectual
       Property" section referencing the licence agreement and IP ownership
       register
 
@@ -178,7 +178,7 @@ it is licensed.
 
 **Tasks:**
 
-- [ ] `common-bond` — Create `docs/governance/legal/ip-ownership-register.md`
+- [x] `common-bond` — Create `docs/governance/legal/ip-ownership-register.md`
       (template provided below)
 
 **Template:**
@@ -316,23 +316,6 @@ licence violations, and AI authorship uncertainty are not documented.
       `docs/governance/risk-management.md` covering: trade mark registration
       gap, GitHub account single point of failure, EULA absence, and open source
       licence exposure
-
----
-
-## 🟢 Low
-
-### IP-008 — No NOTICE or AUTHORS File
-
-**Finding:** No repository contains a `NOTICE` or `AUTHORS` file documenting IP
-origin or development attribution.
-
-**Recommendation:** Consider adding a root-level `AUTHORS` file to the monorepo
-environment that records development history and attribution to MyJMO Pty Ltd.
-
-**Tasks:**
-
-- [ ] `antigravity-environment` root — Add `AUTHORS` or `NOTICE` file (optional,
-      low priority)
 
 ---
 
