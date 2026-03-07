@@ -352,12 +352,29 @@ When the user approves suggestions:
 
 ## Step 7: Update the Audit Registry and Notify
 
-**Always update the audit registry before notifying the user:**
+**Always update the audit registry before notifying the user.**
 
 Open `documentation/common-bond/docs/audits/audit-registry.md` and add a row for
-this audit under the correct date heading. For global audits, the Scope column
-should list the repos covered (or "All repositories" if ecosystem-wide). Set the
-initial status appropriately (e.g., `📋 Planned` or `🔄 In Progress`).
+this audit under the correct date heading. Use the **Status Legend** defined in
+that file:
+
+| Stage                            | Registry Status    |
+| :------------------------------- | :----------------- |
+| Audit branch open, docs in draft | 🔄 Drafting        |
+| Audit merged, implementation TBD | 📋 Findings Issued |
+| Implementation actively underway | 🔧 Implementing    |
+| All recommendations actioned     | ✅ Closed          |
+
+> [!IMPORTANT]
+> **Do not mark an audit `✅ Closed` simply because the audit documents have
+> been finalised.** `Closed` means the _recommendations have been implemented or
+> formally deferred_. The correct status after merging an audit branch is
+> `📋 Findings Issued`.
+
+Set the row status to `🔄 Drafting` when first adding the row. Transition to
+`📋 Findings Issued` when the audit branch is merged. Implementation agents
+update the status to `🔧 Implementing` when they begin work, and `✅ Closed`
+when all tasks are ticked off or formally deferred.
 
 Then commit the audit files and registry update:
 
