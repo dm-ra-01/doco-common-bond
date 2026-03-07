@@ -13,16 +13,17 @@ Artificial Intelligence" (January 2024). See audit.md Credible Sources section.
 
 ## Agent Clarifications (Human-Approved)
 
-| Item                   | Decision                                                                                                                 |
-| :--------------------- | :----------------------------------------------------------------------------------------------------------------------- |
-| AI tools in scope      | **Google Antigravity** (via Google Workspace Business Standard) is the confirmed AI tool in use                          |
-| GitHub Copilot         | **Not in use** — no GitHub Copilot licence; no supplier register entry required                                          |
-| Google Workspace plan  | Business Standard — Google standard DPA included in terms; no separate DPA execution required                            |
-| Antigravity data terms | Confirm in Admin Console (Account > Legal > DPA) whether Antigravity context data is excluded from model training        |
-| AI-003 severity        | Confirmed 🟠 High (not 🔴 Critical) — no live PII/customers yet; **production blocker** before first customer onboarding |
-| Scope boundary         | This audit extends `260305-iso27001-preaudit` — do not re-implement DOC-series recommendations                           |
-| Finding ID series      | AI-002 through AI-011 (AI-001 reserved for source article reference)                                                     |
-| Severity authority     | Human (Ryan Ammendolea) approves any escalation to 🔴 Critical                                                           |
+| Item                           | Decision                                                                                                                                                                                                                                                                                                                                 |
+| :----------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| AI tools in scope              | **Google Antigravity** (via Google Workspace Business Standard) is the confirmed AI tool in use                                                                                                                                                                                                                                          |
+| GitHub Copilot                 | **Not in use** — no GitHub Copilot licence; no supplier register entry required                                                                                                                                                                                                                                                          |
+| Google Workspace plan          | Business Standard — Google Cloud DPA confirmed at [cloud.google.com/terms/data-processing-addendum](https://cloud.google.com/terms/data-processing-addendum) (updated April 2024)                                                                                                                                                        |
+| Antigravity training exclusion | ✅ **Confirmed**: When Antigravity is accessed via Google Workspace or GCP, Google states it will **not** collect prompts, content, or model responses. ⚠️ **Caveat**: Antigravity is a no-cost public preview — paid-account exclusions may not fully apply until GA. **Action**: Disable Telemetry (Account → Enable Telemetry = OFF). |
+| AI-003 severity                | Confirmed 🟠 High (not 🔴 Critical) — no live PII/customers yet; **production blocker** before first customer onboarding                                                                                                                                                                                                                 |
+| OAIC posture (REC-AI-08)       | ✅ **Approved by Founder** (2026-03-07) — R-015 and `governance/scope.md` note authorised for implementation                                                                                                                                                                                                                             |
+| Scope boundary                 | This audit extends `260305-iso27001-preaudit` — do not re-implement DOC-series recommendations                                                                                                                                                                                                                                           |
+| Finding ID series              | AI-002 through AI-011 (AI-001 reserved for source article reference)                                                                                                                                                                                                                                                                     |
+| Severity authority             | Human (Ryan Ammendolea) approves any escalation to 🔴 Critical                                                                                                                                                                                                                                                                           |
 
 ---
 
@@ -121,17 +122,22 @@ processing company code and potentially sensitive data. ISO 27001 Annex A
   **Google Antigravity (via Google Workspace Business Standard)**
   - Data processed: Source code, configuration context, engineering
     instructions, repository content passed as agent context
-  - DPA Status: ✅ Covered — Google Workspace Business Standard includes
-    Google's standard Data Processing Amendment (DPA) in the terms of service;
-    no separate agreement required
-  - Action: ⚠️ Confirm whether Google Workspace Business Standard terms
-    explicitly exclude Antigravity prompt/context data from model training.
-    Check the Google Workspace Admin Console under Account > Legal > Data
-    processing amendment to verify the DPA is accepted for your org.
+  - DPA: ✅ Google Cloud Data Processing Addendum confirmed at
+    [cloud.google.com/terms/data-processing-addendum](https://cloud.google.com/terms/data-processing-addendum)
+    (updated April 2024)
+  - Training exclusion: ✅ When Antigravity is accessed via Google Workspace or
+    GCP, Google explicitly states it will **not** collect prompts, content, or
+    model responses
+  - Caveat: ⚠️ Antigravity is currently a **no-cost public preview**. Paid-
+    account training exclusions may not fully apply until it exits preview / GA.
+    Re-confirm at next annual supplier review or when Antigravity pricing
+    changes.
+  - Action: ⚠️ Verify that **Telemetry is OFF** (Account → Enable Telemetry =
+    OFF) to prevent interaction collection for model improvement. Log the
+    setting, the date confirmed, and the name of person who confirmed it.
   - Trust page:
     [Google Cloud Privacy](https://cloud.google.com/terms/cloud-privacy-notice)
-  - **Target date for DPA confirmation: 2026-04-30** (ISO 27001 Stage 1 audit
-    readiness target — this action must be closed before that date)
+  - **Telemetry confirmation and entry completion due: 2026-04-30**
 
 - [ ] Confirm **GitHub Copilot is not in use** and note that exclusion in the
       supplier register review log (no entry required since it is not an active
