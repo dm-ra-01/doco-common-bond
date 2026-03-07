@@ -671,7 +671,10 @@ Subsequent phases after PL-03:
 - **Phase 5**: CROSS-01 (Sentry setup in all 3 frontends + PHI scrubbing)
 - **Phase 6**: CROSS-02 (`noUncheckedIndexedAccess` tsconfig flag + type fixes)
 - **Phase 7**: PR-03 (Graphcache key registration audit in preference-frontend)
-- **Phase 8**: CROSS-04 (GraphQL error exchange → Sentry integration)
+- **Phase 8**: CROSS-04 (GraphQL error exchange → Sentry integration). Also add
+  a full `createUrqlClient()` auth header integration test once the Sentry/MSW
+  harness is properly configured — the Phase 1 test validates `appendHeaders`
+  directly as a stop-gap.
 
 Use `npx tsc --noEmit && npm run test` as the verification gate before
 committing each phase.
