@@ -2,6 +2,16 @@
 description: Implement tasks from an audit recommendations.md in focused, context-safe sessions. Proposes a chunk of work, implements it, commits to the feature branch, then briefs the next agent.
 ---
 
+> [!IMPORTANT]
+> **Hang-safe push rule.** In this agent environment, `git push` can hang
+> indefinitely when git attempts a credential prompt. **Always:**
+>
+> 1. Prefix every `git push` with `GIT_TERMINAL_PROMPT=0`
+> 2. Run `git push` as a **separate `run_command` call** — never chain it after
+>    `git commit` with `&&` If push fails fast (non-zero exit) instead of
+>    hanging, the SSH/credential config needs attention — do not retry in a
+>    loop.
+
 ## Overview
 
 Audit implementation is done in manageable chunks (1 phase or 2-4 related
@@ -86,7 +96,15 @@ for approval before writing code. Include:
 1. Cross off completed tasks in `recommendations.md` with an `x`.
 2. Ensure everything committed maps to the feature branch. Do not merge to
    `main`.
-3. Push to original branch: `git push origin HEAD`
+3. **Commit and push as separate operations** — never chain with `&&`:
+   ```bash
+   git add <files>
+   git commit -m "fix(YYMMDD-slug): implement CROSS-NN — <short description>"
+   ```
+   ```bash
+   # Separate tool call:
+   GIT_TERMINAL_PROMPT=0 git push origin HEAD
+   ```
 4. **Only raise a PR when all tasks are complete** (or when the user explicitly
    requests one mid-audit). Opening draft PRs after each session creates noise
    and stale review requests. If a PR is needed:
