@@ -610,3 +610,68 @@ dedicated audit:
 | :----------------------------------------------------- | :------------------------------------------------------------------------------------------------- |
 | `middleware.ts` matcher coverage audit                 | Requires route-tree enumeration and matcher pattern testing — distinct scope from current findings |
 | `react-hook-form` + Zod `resolver` pattern consistency | Requires exhaustive form component audit — distinct scope from current findings                    |
+
+---
+
+## Session Close — 2026-03-07
+
+**Session scope:** Phases 1, 2, and 3 (workforce-frontend critical +
+typography + quality gates)
+
+**Implemented this session:**
+
+| ID    | Finding                                                 | Status  |
+| :---- | :------------------------------------------------------ | :------ |
+| WF-01 | Tailwind v4 `@import` + HSL tokens + `@theme` block     | ✅ Done |
+| WF-02 | lint-staged pre-commit hook                             | ✅ Done |
+| WF-03 | error.tsx + loading.tsx (root + 4 routes)               | ✅ Done |
+| WF-04 | authExchange `addAuthToOperation` fix + test            | ✅ Done |
+| WF-05 | Remove `makeDefaultStorage` (session-scoped Graphcache) | ✅ Done |
+| PL-01 | Replace Public Sans with Inter in planner-frontend      | ✅ Done |
+| PL-02 | Fix circular `@theme { --font-sans: var(--font-sans) }` | ✅ Done |
+| PR-01 | Geist exemption documented in §7.2 of standards doc     | ✅ Done |
+
+**Key decisions:**
+
+- WF-05: `makeDefaultStorage` removed entirely (not just `maxAge: 0`) —
+  Graphcache is session-scoped. Legacy `workforce-cache-v1` IDB stores orphaned
+  rather than actively purged (pre-production, no live user data).
+- WF-04 integration test: Validates `appendHeaders` pattern directly, not via
+  full urql client machinery (MSW URL matching did not align with the test
+  environment's URL configuration).
+- PL-02: `@theme { --font-sans: var(--font-sans) }` was a circular
+  self-reference Tailwind cannot resolve — replaced with literal string.
+
+**Branches (all clean and pushed):**
+
+- `workforce-frontend`: `audit/260306-frontend-compliance`
+- `planner-frontend`: `audit/260306-frontend-compliance`
+- `common-bond`: `audit/260306-frontend-compliance`
+
+**Remaining ESLint warning (non-blocking):** `workforce-frontend` has one
+pre-existing lint warning (`no-console` disable directive unused in `client.ts`,
+and an unused `user` var in `seedingService.ts`). Both are warnings, not errors,
+and do not block CI.
+
+**Next agent brief — Phase 4 and beyond:**
+
+Pick up at **Phase 4: Error Boundary + Offline Persistence (planner-frontend)**.
+
+Finding: PL-03 — `planner-frontend` has no `error.tsx` or `loading.tsx` in its
+authenticated `(authenticated)/` route group.
+
+Files to create (pattern from WF-03):
+
+- `planner-frontend/src/app/(authenticated)/error.tsx`
+- `planner-frontend/src/app/(authenticated)/loading.tsx`
+- Per-route `loading.tsx` in each route group
+
+Subsequent phases after PL-03:
+
+- **Phase 5**: CROSS-01 (Sentry setup in all 3 frontends + PHI scrubbing)
+- **Phase 6**: CROSS-02 (`noUncheckedIndexedAccess` tsconfig flag + type fixes)
+- **Phase 7**: PR-03 (Graphcache key registration audit in preference-frontend)
+- **Phase 8**: CROSS-04 (GraphQL error exchange → Sentry integration)
+
+Use `npx tsc --noEmit && npm run test` as the verification gate before
+committing each phase.
