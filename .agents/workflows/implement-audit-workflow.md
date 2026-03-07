@@ -31,13 +31,27 @@ next agent.
    ```
 4. **Identify uncompleted tasks:** Look for open `- [ ]` checkboxes in
    `recommendations.md`.
+5. **Read the Agent Clarifications table** at the top of `recommendations.md`
+   before writing any code. Every human decision is recorded there — approved
+   exemptions, severity escalations, preferred approaches, and out-of-scope
+   deferrals. Do not re-implement, ask about, or second-guess decisions already
+   captured in that table.
+6. **Note any reference implementations** mentioned in `recommendations.md` or
+   `audit.md`. Before designing your own approach for a finding, check if
+   another file or repo already implements the pattern correctly — use it as the
+   template.
 
 ---
 
 ## Step 2: Propose Scope
 
 Use `notify_user` to state exactly what you will tackle in this session. Wait
-for approval before writing code.
+for approval before writing code. Include:
+
+- Which recommendation IDs you will implement (e.g. `CROSS-04`, `WF-02`)
+- What verification gate you will run
+- Any decisions you need from the user that aren't in the Agent Clarifications
+  table (keep these minimal — most should already be there)
 
 ---
 
@@ -47,11 +61,23 @@ for approval before writing code.
 2. Adhere to repo-specific KI patterns (e.g. `python_microservice_architecture`
    or `supabase_infrastructure_and_database_architecture`).
 3. Maintain frontmatter, lint rules, and type safety constraints.
-4. **Run strict verification gates:**
-   - Docusaurus: `npm run build`
-   - Python backends: `pytest`
-   - Frontends: `npx tsc --noEmit` and `npm run test`
-   - Supabase: `supabase db reset`, `supabase test db`, `deno check`
+4. **Check the Agent Clarifications table before implementing anything that
+   involves a third-party tool, CI secret, or external service** — the approved
+   approach (e.g. self-hosted Renovate, `gh secret set` for DSNs) will be
+   documented there.
+5. **For CI secrets:** use `gh secret set` via the gh CLI:
+   ```bash
+   gh secret set SECRET_NAME --body "value" --repo owner/repo-name
+   ```
+   No manual GitHub portal step is required.
+6. **Run strict verification gates before committing:**
+
+   | Repo type         | Verification command                                  |
+   | :---------------- | :---------------------------------------------------- |
+   | Docusaurus site   | `npm run build`                                       |
+   | Python backends   | `pytest`                                              |
+   | Next.js frontends | `npx tsc --noEmit` and `npm run test`                 |
+   | Supabase          | `supabase db reset`, `supabase test db`, `deno check` |
 
 ---
 
@@ -61,7 +87,9 @@ for approval before writing code.
 2. Ensure everything committed maps to the feature branch. Do not merge to
    `main`.
 3. Push to original branch: `git push origin HEAD`
-4. Open a pull request:
+4. **Only raise a PR when all tasks are complete** (or when the user explicitly
+   requests one mid-audit). Opening draft PRs after each session creates noise
+   and stale review requests. If a PR is needed:
    ```bash
    gh pr create --base main \
      --head audit/YYMMDD-slug \
@@ -85,12 +113,73 @@ If your session completes the **final remaining tasks** of an audit:
 
 ## Step 6: Update Registry & Close Session
 
-1. Append a **Session Close** section to the bottom of `recommendations.md`
-   noting what was done, what remains blocked/open, and a brief for the next
-   agent.
+1. Append a **Session Close** section to the bottom of `recommendations.md` with
+   the following structure:
+
+   ```markdown
+   ## Session Close — [YYYY-MM-DD]
+
+   **Completed:** [List of finding IDs marked done this session] **Remaining:**
+   [List of open finding IDs, or "None — audit complete"] **Blocked:** [Any finding
+   IDs blocked on external action, with reason] **Brief for next agent:** [What the
+   next agent needs to know upfront that isn't already in the Agent Clarifications
+   table — e.g. a file that was refactored mid-session, a verification that was
+   skipped with reason, or a decision that should be added to the table]
+   ```
+
 2. Update the status of this audit in
    `documentation/common-bond/docs/audits/audit-registry.md`. If the audit is
    now completely finished, set to `✅ Complete`. If work remains, ensure it is
    set to `🔄 In Progress`.
 3. Use `notify_user` to report session completion, completed IDs, blockers, and
    next targets.
+
+---
+
+## Destructive Operations Gate
+
+Before executing any operation that **cannot be easily reversed**, pause and use
+`notify_user` to confirm with the user. Operations requiring explicit approval:
+
+| Operation type                      | Examples                                                                 |
+| :---------------------------------- | :----------------------------------------------------------------------- |
+| Deleting or removing data stores    | Removing IndexedDB storage, clearing caches, dropping columns            |
+| Removing or rewriting auth flows    | Changing `authExchange`, modifying session handling, altering middleware |
+| Removing dependencies               | Uninstalling packages that other code may depend on                      |
+| Rewriting core infrastructure files | `next.config.ts`, `layout.tsx`, `client.ts`, `globals.css`               |
+| Setting CI secrets                  | Confirm the correct value and target repo before running `gh secret set` |
+| Any task marked as 🔴 Critical      | Always surface the implementation plan before executing                  |
+
+> [!WARNING]
+> "The recommendation says to do X" is not sufficient justification to proceed
+> without pausing. If you are uncertain whether an implementation is safe, ask.
+
+---
+
+## Rules of Engagement
+
+1. **Ask before implementing anything ambiguous.** If a task's intent is
+   unclear, the target file has changed since the audit, or the correct approach
+   is disputed — ask before writing code. A question costs seconds; a wrong
+   implementation costs a re-audit.
+
+2. **Raise concerns, don't suppress them.** If a recommendation seems
+   inappropriate, risky, overly broad, or premature in the current context — say
+   so explicitly in `notify_user`. You are a collaborator; surface your
+   reasoning rather than blindly following the task list.
+
+3. **Check the Agent Clarifications table first.** Many questions about
+   approach, tooling, and approved exemptions are already answered there.
+   Re-asking documented decisions wastes the user's time.
+
+4. **Verify gates are not optional.** Do not skip `tsc --noEmit`, `pytest`, or
+   `npm run build` to save time. A verification failure caught before commit is
+   far cheaper than one caught in a PR review.
+
+5. **One repo at a time.** Commit and push each repo before moving to the next.
+   Do not batch cross-repo changes into a single large commit absent explicit
+   instruction to do so — it makes rollback much harder.
+
+6. **Exemptions are not oversights.** If the Agent Clarifications table records
+   an approved exemption for a finding, do not implement that finding anyway.
+   Approved exemptions are intentional decisions, not mistakes to fix.

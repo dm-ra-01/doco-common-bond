@@ -7,7 +7,7 @@ Receptor ecosystem and ICU Survival Guide. Repositories covered:
 (also covering `workforce-frontend` and `preference-frontend` via shared
 workflow), `common-bond` (documentation), and `icu-survival` (external — note
 §9).\
-**Auditor:** Antigravity
+**Auditor:** Ryan Ammendolea
 
 ---
 

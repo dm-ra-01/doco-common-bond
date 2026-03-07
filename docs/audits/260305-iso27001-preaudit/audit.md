@@ -3,7 +3,7 @@
 **Date:** 2026-03-05\
 **Scope:** `docs/compliance/iso27001/` — all sections: governance, policies,
 risk-management, operations, assurance\
-**Auditor:** Antigravity\
+**Auditor:** Ryan Ammendolea\
 **Purpose:** Assess readiness for external pre-certification review. Identify
 gaps, incomplete content, and structural issues that an auditor would flag.
 
