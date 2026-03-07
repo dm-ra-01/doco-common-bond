@@ -12,12 +12,15 @@ Rise of AI Risk" (Medium, 2026-03-06, stored as `medium-article.html`)
 
 ## Agent Clarifications (Human-Approved)
 
-| Item               | Decision                                                                                       |
-| :----------------- | :--------------------------------------------------------------------------------------------- |
-| AI tools in scope  | Antigravity (Anthropic), GitHub Copilot (Microsoft) are confirmed in use by engineering team   |
-| Scope boundary     | This audit extends `260305-iso27001-preaudit` — do not re-implement DOC-series recommendations |
-| Finding ID series  | AI-002 through AI-008 (AI-001 reserved for source article reference)                           |
-| Severity authority | Human (Ryan Ammendolea) approves any escalation to 🔴 Critical                                 |
+| Item                   | Decision                                                                                                                                      |
+| :--------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------- |
+| AI tools in scope      | **Google Antigravity** (via Google Workspace Business Standard) is the confirmed AI tool in use                                               |
+| GitHub Copilot         | **Not in use** — no GitHub Copilot licence; remove from supplier register scope                                                               |
+| Google Workspace plan  | Business Standard — data protection is governed by Google's standard DPA included in Workspace terms; no separate DPA execution required      |
+| Antigravity data terms | Google Workspace Business Standard terms govern data use; confirm whether Antigravity inputs are excluded from model training under DWS terms |
+| Scope boundary         | This audit extends `260305-iso27001-preaudit` — do not re-implement DOC-series recommendations                                                |
+| Finding ID series      | AI-002 through AI-008 (AI-001 reserved for source article reference)                                                                          |
+| Severity authority     | Human (Ryan Ammendolea) approves any escalation to 🔴 Critical                                                                                |
 
 ---
 
@@ -102,21 +105,25 @@ assessed.
 processing company code and potentially sensitive data. ISO 27001 Annex A
 5.19–5.22 apply.
 
-- [ ] Add the following entries to
+- [ ] Add the following entry to
       `docs/compliance/iso27001/operations/supplier-register.md`:
 
-  **Anthropic / Antigravity (via Google DeepMind tooling)**
-  - Data processed: Source code, configuration context, engineering instructions
-  - DPA Status: ⚠️ Confirm — check enterprise agreement for data-use clauses
-  - Action: Confirm whether Anthropic's standard API terms prohibit training on
-    customer inputs; add to DPA status column
+  **Google Antigravity (via Google Workspace Business Standard)**
+  - Data processed: Source code, configuration context, engineering
+    instructions, repository content passed as agent context
+  - DPA Status: ✅ Covered — Google Workspace Business Standard includes
+    Google's standard Data Processing Amendment (DPA) in the terms of service;
+    no separate agreement required
+  - Action: ⚠️ Confirm whether Google Workspace Business Standard terms
+    explicitly exclude Antigravity prompt/context data from model training.
+    Check the Google Workspace Admin Console under Account > Legal > Data
+    processing amendment to verify the DPA is accepted for your org.
+  - Trust page:
+    [Google Cloud Privacy](https://cloud.google.com/terms/cloud-privacy-notice)
 
-  **GitHub Copilot (Microsoft)**
-  - Data processed: Source code, comments, repository context
-  - DPA Status: ⚠️ Confirm — Microsoft GitHub Copilot for Business includes data
-    protection provisions; verify these are active under the org plan
-  - Action: Confirm GitHub Copilot for Business (not Individual) is the plan in
-    use, as Business tier excludes code from model training
+- [ ] Confirm **GitHub Copilot is not in use** and note that exclusion in the
+      supplier register review log (no entry required since it is not an active
+      supplier).
 
 ---
 

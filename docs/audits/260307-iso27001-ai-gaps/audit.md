@@ -130,15 +130,17 @@ controls: 8.32 (Change management).
 
 ### Gaps
 
-**AI-006** — `operations/supplier-register.md`: AI vendors (Anthropic /
-Antigravity, GitHub Copilot / Microsoft, OpenAI if used) are absent from the
-Supplier Security Register. The article notes that AI vendors introduce opacity
-beyond traditional SaaS: training data practices, model update cadence, data
-retention, and safety testing methods may not be discoverable without proactive
-assessment. ISO 27001 Annex A controls 5.19–5.22 (supplier relationships)
-explicitly require all third parties accessing information assets to be
-assessed. AI APIs that receive code context, configuration data, or user data
-are in scope.
+**AI-006** — `operations/supplier-register.md`: **Google Antigravity** (accessed
+via Google Workspace Business Standard) is absent from the Supplier Security
+Register. Antigravity processes source code, repository context, and engineering
+instructions as agent context — making it a data processor under ISO 27001 Annex
+A 5.19–5.22. The Google Workspace Business Standard subscription includes
+Google's standard Data Processing Amendment (DPA), which partially covers this
+exposure. However, (a) no supplier register entry exists for Antigravity, (b) it
+is not documented what data classifications are permitted as AI input, and (c)
+it is not confirmed whether Workspace Business Standard terms explicitly exclude
+Antigravity context data from model training. GitHub Copilot is confirmed not in
+use and does not require an entry.
 
 ---
 
