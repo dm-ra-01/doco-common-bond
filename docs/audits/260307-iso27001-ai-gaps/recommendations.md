@@ -132,12 +132,14 @@ processing company code and potentially sensitive data. ISO 27001 Annex A
     account training exclusions may not fully apply until it exits preview / GA.
     Re-confirm at next annual supplier review or when Antigravity pricing
     changes.
-  - Action: ⚠️ Verify that **Telemetry is OFF** (Account → Enable Telemetry =
-    OFF) to prevent interaction collection for model improvement. Log the
-    setting, the date confirmed, and the name of person who confirmed it.
+  - Action: ⚠️ **Document the Telemetry decision** in the supplier register
+    entry. Note: training exclusion is guaranteed by Workspace access, not this
+    toggle — telemetry covers usage/performance analytics only (not prompt
+    content). ON or OFF is acceptable; the decision and rationale must simply be
+    recorded with the name of who decided.
   - Trust page:
     [Google Cloud Privacy](https://cloud.google.com/terms/cloud-privacy-notice)
-  - **Telemetry confirmation and entry completion due: 2026-04-30**
+  - **Supplier register entry completion due: 2026-04-30**
 
 - [ ] Confirm **GitHub Copilot is not in use** and note that exclusion in the
       supplier register review log (no entry required since it is not an active
