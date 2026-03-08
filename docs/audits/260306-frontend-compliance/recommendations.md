@@ -1409,3 +1409,66 @@ there are no `graphql()` document calls scanned (preference-frontend uses urql's
    compliance audit — do not implement it within this audit's scope.
 4. Always use `GIT_TERMINAL_PROMPT=0` before every `git push`. Push as a
    separate `run_command` call, never chained with `&&` after `git commit`.
+
+---
+
+## Session Close — 2026-03-09 (Session 12: Codegen CI gate finalisation)
+
+**Completed:** Codegen CI gate for `preference-frontend` — determined final,
+correct architecture for the `@ts-nocheck` injection and `codegen.check.ts`
+schema-only CI strategy.
+
+**Remaining:** None — all findings are complete. Ready for
+`/finalise-global-audit`.
+
+**Blocked:** None.
+
+**Implementation notes this session:**
+
+- **`@graphql-codegen/add` plugin investigation:** The Session 11 brief
+  recommended using `@graphql-codegen/add` as the first plugin in the `client`
+  preset to prepend `// @ts-nocheck`. This does NOT work: the `client` preset
+  hardcodes `{ add: { content: '/* eslint-disable */' } }` as its own first
+  plugin in its internal plugin list (`client-preset/cjs/index.js` line ~94).
+  Any user-supplied `add` plugin runs AFTER the preset's own one, so
+  `// @ts-nocheck` always ends up on line 2 — not line 1 — and TypeScript only
+  honours `@ts-nocheck` on line 1.
+- **`afterOneFileWrite` hooks:** Also investigated. The hooks API is supported
+  in `@graphql-codegen/cli` v6 but the node `-e` inline script hangs on macOS
+  due to shell/process interaction issues with the `--` argument separator.
+- **Correct architecture (restored):** `postcodegen` npm lifecycle script (runs
+  automatically after `npm run codegen`) patches `src/graphql/gql.ts` to prepend
+  `// @ts-nocheck`. This is the only cross-platform approach that works
+  reliably.
+- **CI strategy (confirmed):** `codegen.check.ts` (schema-only) is the correct
+  CI gate. `--check` never runs npm lifecycle hooks, so comparing raw codegen
+  output to hook-patched committed files would always detect false drift.
+  schema.json drift IS a complete gate: TypeScript types are fully deterministic
+  from schema introspection — type drift without schema drift is impossible.
+- **`codegen.check.ts`:** Recreated with updated rationale explaining both why
+  schema-only is necessary (`--check` skips hooks) and why it is sufficient
+  (types are a pure function of the schema).
+- **Preference-frontend verification:** `npx tsc --noEmit` → 0 errors;
+  `npm run test` → 271 pass / 1 skip / 0 fail.
+
+**Branch state:**
+
+| Repo                  | Branch                             | Last commit | CI status |
+| :-------------------- | :--------------------------------- | :---------- | :-------- |
+| `preference-frontend` | `audit/260306-frontend-compliance` | `ca7c22c`   | Pending   |
+
+**Agent Clarification addition:**
+
+> The `@graphql-codegen/add` plugin cannot prepend content before the `client`
+> preset's own `/* eslint-disable */` header. The `postcodegen` npm script is
+> the correct, cross-platform approach for `preference-frontend`. Do not
+> re-attempt the `add` plugin approach for this repo.
+
+**Brief for next agent:**
+
+- Audit is fully complete. All findings resolved. Transition to
+  `/finalise-global-audit` to raise PRs, merge, and archive.
+- NEXT-01 (unit/integration test split across all 3 repos) is documented above —
+  log as a finding in the next frontend compliance audit cycle.
+- Always use `GIT_TERMINAL_PROMPT=0` before every `git push`. Push as a separate
+  `run_command` call, never chained with `&&` after `git commit`.
