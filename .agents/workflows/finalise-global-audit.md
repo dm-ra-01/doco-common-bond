@@ -18,12 +18,30 @@ properly archive the audit record.
    - All `- [x]` tasks are demonstrably implemented (cite file path + evidence).
    - The relevant verification gate passes (e.g. `npm run test`, `pytest`,
      `npm run build`, `deno check`).
-3. Save findings to `re-audit.md` in the same directory as `audit.md`:
+3. **Review code coverage** for each repo's audit PR:
+   - Check `codecov/patch` on each open PR. Run `gh pr checks <number>` to
+     inspect all status check results.
+   - For any coverage gap, categorise each uncovered file:
+     - **Acceptable gap:** Config files (`next.config.ts`,
+       `sentry.client.config.ts`), infra scaffolding (`error.tsx`,
+       `loading.tsx`, `robots.txt`), generated files (`graphql/generated.ts`) —
+       no unit tests required.
+     - **Requires remediation:** New business logic (hooks, services, actions,
+       utilities) missing coverage. Write missing tests before merging.
+   - Document the coverage assessment in `re-audit.md` so the decision is on
+     record. Format:
+     ```
+     | File | Gap reason | Acceptable? |
+     |------|-----------|-------------|
+     | error.tsx | React error boundary — no unit test needed | ✅ Yes |
+     | useSomeHook.ts | New business logic, no test | ❌ Must fix |
+     ```
+4. Save findings to `re-audit.md` in the same directory as `audit.md`:
    ```text
    documentation/common-bond/docs/audits/YYMMDD-slug/re-audit.md
    ```
-4. Do not declare the audit complete until `re-audit.md` confirms all items are
-   resolved.
+5. Do not declare the audit complete until `re-audit.md` confirms all items are
+   resolved **and** the coverage assessment is documented.
 
 ---
 

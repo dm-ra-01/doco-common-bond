@@ -302,8 +302,27 @@ All 32 findings are resolved. Three findings were closed as **N/A** or
 JWT bloat, missing service roles, dependency mock errors) were fixed, bringing
 both test suites up to a 100% pass rate.
 
-**Verdict: ✅ Audit complete. All findings resolved. Ready to merge and
-archive.**
+**Code Coverage Assessment (`codecov/patch`):**
+
+`planner-frontend` PR #14 has a `codecov/patch` non-blocking status. The
+uncovered lines are all infrastructure/scaffolding — no new business logic is
+untested:
+
+| File                                         | Gap reason                                                               | Acceptable? |
+| :------------------------------------------- | :----------------------------------------------------------------------- | :---------- |
+| `error.tsx`, `loading.tsx` (×4 routes)       | React error/loading boundaries — behaviour tested via E2E not unit tests | ✅ Yes      |
+| `sentry.client.config.ts`                    | Infra config — no runnable logic                                         | ✅ Yes      |
+| `next.config.ts`                             | Next.js build config — not unit testable                                 | ✅ Yes      |
+| `env.ts`                                     | Zod env schema — validated at build time, not runtime                    | ✅ Yes      |
+| `plans.schema.ts`                            | Zod schema adjacent to action — covered implicitly by `plans.ts` tests   | ✅ Yes      |
+| `layout.tsx`                                 | Root server component bootstrapping — tested via E2E                     | ✅ Yes      |
+| `robots.txt`, `globals.css`, `renovate.json` | Static assets / config                                                   | ✅ Yes      |
+| `graphql/generated.ts`, `schema.json`        | Codegen output — not manually authored                                   | ✅ Yes      |
+
+`workforce-frontend` and `preference-frontend` `codecov/patch` are green.
+
+**Verdict: ✅ Audit complete. All findings resolved. Coverage gaps documented
+and accepted. Ready to merge and archive.**
 
 ---
 
