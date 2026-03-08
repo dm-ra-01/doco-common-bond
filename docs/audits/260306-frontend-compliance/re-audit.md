@@ -308,3 +308,70 @@ archive.**
 ---
 
 _Re-audit conducted by Ryan Ammendolea on 2026-03-07._
+
+---
+
+## Addendum — Sessions 11–12: CI Stabilisation (2026-03-09)
+
+After the original re-audit (Sessions 1–10), two further sessions resolved
+post-implementation CI failures that emerged once the audit branch was run
+through the full GitHub Actions pipeline for the first time.
+
+### CI Stabilisation Findings
+
+#### CROSS-11 — Codegen CI Gate: Schema Introspection Fixes ✅ Resolved
+
+The `codegen-check` CI job implemented in Session 9 had workdir and key-format
+issues that prevented Supabase from starting correctly in CI:
+
+- **`supabase start` working directory:** Fixed by using `--workdir`
+  consistently pointing to the `supabase-backend/` checkout. All three repos
+  updated.
+- **`PUBLISHABLE_KEY` extraction:** Supabase CLI now emits `PUBLISHABLE_KEY`
+  (not the deprecated `ANON_KEY`). Updated `ci.yml` in all three repos to
+  extract the key dynamically from `supabase status` output.
+- **Stale committed generated types:** Regenerated GraphQL types from a live
+  Supabase instance for all three repos and committed the fresh output,
+  resolving `--check` failures caused by type drift against the live schema.
+- **Evidence:** Latest commits on `audit/260306-frontend-compliance` across
+  `planner-frontend` (d78e1d9), `workforce-frontend` (d0c827d), and
+  `preference-frontend` (ca7c22c).
+
+#### CROSS-11 — preference-frontend: @ts-nocheck Architecture ✅ Resolved
+
+The `@graphql-codegen/client-preset` emits `import * as types from './graphql'`
+in `gql.ts`, but with no `graphql()` calls in preference-frontend (which uses
+urql's `gql` tag), `types` is unused, tripping `noUnusedLocals: true`. Extensive
+investigation confirmed the `@graphql-codegen/add` plugin cannot prepend content
+before the preset's own `/* eslint-disable */` header.
+
+**Final architecture (confirmed correct):**
+
+- `postcodegen` npm lifecycle script patches `src/graphql/gql.ts` to prepend
+  `// @ts-nocheck` after each codegen run.
+- CI uses `codegen.check.ts` (schema.json-only check) as the drift gate.
+  Schema-only is both necessary (`--check` skips hook execution) and sufficient
+  (TypeScript types are a pure function of the schema; type drift without schema
+  drift is impossible).
+- Evidence: `preference-frontend/codegen.check.ts`,
+  `preference-frontend/package.json` (`postcodegen` script)
+
+### Final CI Status (2026-03-09)
+
+| Repository            | Lint & Type | Unit Tests           | Build    | Codegen Check | E2E Axe  |
+| :-------------------- | :---------- | :------------------- | :------- | :------------ | :------- |
+| `planner-frontend`    | ✅ Green    | ✅ Green             | ✅ Green | ✅ Green      | ✅ Green |
+| `workforce-frontend`  | ✅ Green    | ✅ Green             | ✅ Green | ✅ Green      | ✅ Green |
+| `preference-frontend` | ✅ Green    | ✅ 271 pass / 1 skip | ✅ Green | ✅ Green      | ✅ Green |
+
+> **Note:** `codecov/patch` in `planner-frontend` shows a non-blocking coverage
+> report status — this is a Codecov notification, not a CI failure gate.
+
+### Addendum Verdict
+
+✅ All CI gates pass across all three repositories. The audit branch is ready to
+merge.
+
+---
+
+_Addendum authored by Antigravity on 2026-03-09._

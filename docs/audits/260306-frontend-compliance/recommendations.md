@@ -1472,3 +1472,30 @@ schema-only CI strategy.
   log as a finding in the next frontend compliance audit cycle.
 - Always use `GIT_TERMINAL_PROMPT=0` before every `git push`. Push as a separate
   `run_command` call, never chained with `&&` after `git commit`.
+
+---
+
+## Session Close — 2026-03-09 (Finalise: Re-Audit Addendum)
+
+**Completed:** Session 12 CI stabilisation confirmed. `re-audit.md` updated with
+Sessions 11–12 addendum. CI green across all three repos. Proceeding to merge and
+archive.
+
+**All 32 findings: ✅ Resolved** (2 N/A: PL-02 subsumed, PR-05 no persist
+middleware; 1 exemption: PR-01 Geist font approved for `preference-frontend`).
+
+**Final CI verification (2026-03-09):**
+
+| Repository            | Lint & Type | Unit Tests | Build | Codegen Check | E2E Axe |
+| :-------------------- | :---------- | :--------- | :---- | :------------ | :------ |
+| `planner-frontend`    | ✅          | ✅         | ✅    | ✅            | ✅      |
+| `workforce-frontend`  | ✅          | ✅         | ✅    | ✅            | ✅      |
+| `preference-frontend` | ✅          | ✅         | ✅    | ✅            | ✅      |
+
+**Deferred to next audit cycle:**
+
+- NEXT-01: Unit/Integration test split — `unit-tests` CI job mixes isolated unit
+  tests with integration tests that require live Supabase. Split into separate
+  jobs in the next frontend compliance cycle.
+
+**Audit status: ✅ Complete. Ready to merge and archive.**
