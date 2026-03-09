@@ -18,7 +18,7 @@ observability requirements
 
 This audit evaluates whether Docusaurus-based Markdown files are an adequate
 long-term substrate for Common Bond's governance registers. 10 registers across
-3 domains were reviewed. **28 findings** were identified: 3 critical, 10 high,
+3 domains were reviewed. **29 findings** were identified: 3 critical, 11 high,
 10 medium, 5 low. The audit demonstrates conclusively that static Markdown
 registers fail on queryability, cross-referencing integrity, review-date
 enforcement, consistent schema, automation integration, concurrent write safety,
@@ -470,7 +470,48 @@ entities.
 
 ---
 
-## Severity Summary
+## 20. Agent Infrastructure Compliance Check
+
+_Added 2026-03-09 as a GAP-1 addendum — this check was required by
+`audit-workflow.md` Step 1 but was not performed against the correct workflow
+file during the initial audit session._
+
+### 20.1 Orphaned local skill copies found in `.agents/skills/`
+
+**Strengths:**
+
+- All three required workflow stubs exist: `audit-workflow.md`,
+  `implement-audit-workflow.md`, `finalise-local-audit.md` ✅
+- `.agents/rules/` is empty — no rules that should be promoted to skills ✅
+- `supabase-postgres-best-practices` is a legitimately local skill
+  installation (not present in `dev-environment`) ✅
+
+**Gaps:**
+
+- INFRA-03 `.agents/skills/` — The agent infrastructure standard
+  (`docs/engineering/agent-infrastructure.md`) requires that `.agents/skills/`
+  be **absent or empty** in all repos except `dev-environment`. The
+  `documentation/common-bond` repo currently contains 5 orphaned local
+  copies of cross-cutting skills that are already canonical in
+  `dev-environment/.agents/skills/`:
+  - `act-local-ci`
+  - `adversarial-code-review`
+  - `audit-document-standards`
+  - `audit-registry`
+  - `audit-verification-gates`
+  These duplicates create a skill drift risk: if the canonical dev-environment
+  versions are updated, local copies will silently diverge. Any agent operating
+  in `documentation/common-bond` context may load the stale local copy instead
+  of the current canonical version. The `audit-workflow.md` Step 1 block
+  explicitly rates this as a 🟠 High finding.
+
+  **Note:** `debug-ci.md` line 12 uses a relative skill path
+  (`documentation/common-bond/.agents/skills/act-local-ci/SKILL.md`) pointing
+  to one of the orphaned copies — this cross-references INFRA-01.
+
+---
+
+
 
 | Finding ID | Area | File | Category | Severity |
 | :--- | :--- | :--- | :--- | :--- |
@@ -487,6 +528,7 @@ entities.
 | MONITOR-01 | All registers | multiple | ISMS Monitoring / ISO 9.1 | 🟠 High |
 | LIFECYCLE-01 | All registers | multiple | Retention / ISO 7.5.3 | 🟠 High |
 | PRIV-01 | Training + NC + CA | multiple | Privacy / Privacy Act 1988 | 🟠 High |
+| INFRA-03 | Agent skills | `.agents/skills/` | Agent Infrastructure / Skill Drift | 🟠 High |
 | SEC-01 | Supplier + NC registers | `supplier-register.md`, `nonconformity-log.md` | Access Control Granularity | 🟡 Medium |
 | QUERY-02 | Audit Registry | `audit-registry.md` | Queryability | 🟡 Medium |
 | QUERY-03 | Standards Register | `standards-register.md` | Queryability | 🟡 Medium |

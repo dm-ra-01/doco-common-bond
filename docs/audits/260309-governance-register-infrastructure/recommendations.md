@@ -473,6 +473,33 @@ No current mechanism archives, expires, or disposes of closed governance records
 
 ---
 
+### REC-28 [260309-governance-register-infrastructure] — Delete orphaned local skill copies from `.agents/skills/`
+
+**Finding:** INFRA-03
+
+_Added 2026-03-09 as GAP-1 addendum._
+
+The following 5 directories are orphaned copies of canonical dev-environment
+skills and must be deleted. They create a silent skill drift risk — local
+copies will diverge from canonical versions without any warning.
+
+- [ ] Verify each skill at its canonical dev-environment path first:
+  `/Users/ryan/development/common_bond/antigravity-environment/dev-environment/.agents/skills/`
+- [ ] Delete the following from `.agents/skills/`:
+  - `act-local-ci/`
+  - `adversarial-code-review/`
+  - `audit-document-standards/`
+  - `audit-registry/`
+  - `audit-verification-gates/`
+- [ ] Update `debug-ci.md` line 12 to reference the canonical dev-environment
+  path (resolves cross-reference with INFRA-01):
+  `documentation/common-bond/.agents/skills/act-local-ci/SKILL.md`
+  → `/Users/ryan/development/common_bond/antigravity-environment/dev-environment/.agents/skills/act-local-ci/SKILL.md`
+- [ ] Retain `supabase-postgres-best-practices/` — this is a legitimately local
+  skill not present in dev-environment
+
+---
+
 ## Deferred to Next Audit Cycle
 
 
@@ -493,4 +520,5 @@ No current mechanism archives, expires, or disposes of closed governance records
 | 4     | REC-08, REC-22                                 | Row-level audit log on all tables; verify trigger coverage                                                            |
 | 5     | REC-04, REC-17, REC-23, REC-27                 | Review-date alerting; DR documentation; ownership columns; record lifecycle/archival                                  |
 | 6     | REC-07, REC-09, REC-10, REC-11, REC-18, REC-24 | Migrate Standards, RoR, Risk Register, Training, SoA; filter components to all pages                                 |
-| 7     | REC-12, REC-13, REC-14, REC-15, REC-19, REC-20 | Housekeeping, schema guard, ISMS health dashboard                                                                     |
+| 7     | REC-12, REC-13, REC-14, REC-15, REC-19, REC-20, REC-28 | Housekeeping, schema guard, ISMS health dashboard, delete orphaned skill copies                            |
+
