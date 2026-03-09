@@ -28,6 +28,9 @@
 | TRAIL-02 severity                 | 🟡 Medium (approved Round 2 iterative improvement)                                                |
 | GOV-01 severity                   | 🟡 Medium (approved Round 2 iterative improvement)                                                |
 | UX-01 severity                    | 🟢 Low (approved Round 2 iterative improvement)                                                   |
+| EVID-01 severity                  | 🔴 Critical (approved Round 3 — ISO 27001 Clause 8.3 evidence gap)                                |
+| LIFECYCLE-01 severity             | 🟠 High (approved Round 3 — ISO 27001 Clause 7.5.3 retention gap)                                |
+| PRIV-01 severity                  | 🟠 High (approved Round 3 — Privacy Act 1988 APP 11/13 gap)                                      |
 
 ---
 
@@ -385,9 +388,66 @@ discoverability gap as a side effect of each migration.
 - [ ] Document the standard component interface in `docs/engineering/` so all
       future register MDX pages follow a consistent pattern
 
+### REC-25 [260309-governance-register-infrastructure] — Enforce evidence linkage for active risk treatments
+
+**Finding:** EVID-01
+
+ISO 27001 Clause 8.3 requires retaining evidence of risk treatment implementation.
+Currently treatment strategies are assertions without proof.
+
+- [ ] Add `evidence_url TEXT`, `evidence_description TEXT` columns to
+      `public.risks`
+- [ ] Apply DB constraint: `CHECK (status != 'Ongoing' OR evidence_url IS NOT NULL)`
+      — an evidence link becomes mandatory when a risk transitions to active
+      treatment
+- [ ] For existing 17 risks with treatment = "Mitigate" or "Transfer", populate
+      `evidence_url` with the relevant policy, audit log, or configuration URL
+      before marking as `Ongoing`
+- [ ] Update the Docusaurus risk register page to display evidence links inline
+
+### REC-26 [260309-governance-register-infrastructure] — Document privacy contact policy for named individuals in registers
+
+**Finding:** PRIV-01
+
+The irreconcilable conflict between Git immutability and Privacy Act APP 13
+correction rights must be acknowledged and addressed in policy before Supabase
+migration resolves the technical gap.
+
+- [ ] Add a "Personal Data in Governance Records" section to the Privacy Policy
+      (`docs/compliance/iso27001/policies/privacy-policy.md`) noting:
+  - Governance registers may contain named individuals' data
+  - Prior to Supabase migration: data correction requests cannot be applied
+    retroactively to Git history; the register entry will be updated in the
+    latest version only
+  - Post-migration (REC-01): row-level scrubbing will be performed; audit log
+    retains change event without the personal data
+- [ ] Add `data_subject_name` column only where functionally required
+      (training records, CA owners); replace all other free-text name references
+      with role-based references (e.g., "CEO" instead of "Ryan Ammendolea")
+
+### REC-27 [260309-governance-register-infrastructure] — Implement record lifecycle and retention controls
+
+**Finding:** LIFECYCLE-01
+
+ISO 27001 Clause 7.5.3 requires explicit retention and disposition controls.
+No current mechanism archives, expires, or disposes of closed governance records.
+
+- [ ] Add `archived_at TIMESTAMPTZ DEFAULT NULL` to all governance register tables
+- [ ] Create `v_active_<entity>` views filtering `WHERE archived_at IS NULL` —
+      all Docusaurus register pages query these views, not raw tables
+- [ ] Define minimum retention periods per record type in a new
+      `docs/compliance/iso27001/policies/record-retention.md`:
+  - Risk register entries: 3 years post-closure (ISO 27001 Clause 7.5.3)
+  - NC Log / CA entries: 3 years post-closure
+  - Audit registry: 5 years (supports certification renewal cycles)
+  - Training records: duration of employment + 3 years
+- [ ] Create pg_cron job `func_enforce_retention_policy()` that permanently
+      deletes rows where `archived_at < NOW() - retention_interval`
+
 ---
 
 ## Deferred to Next Audit Cycle
+
 
 | Item                                     | Reason Deferred                                                                                        |
 | :--------------------------------------- | :----------------------------------------------------------------------------------------------------- |
@@ -398,12 +458,12 @@ discoverability gap as a side effect of each migration.
 
 ## Implementation Order
 
-| Phase | Finding IDs                                    | Rationale                                                                                                          |
-| :---- | :--------------------------------------------- | :----------------------------------------------------------------------------------------------------------------- |
-| 1     | REC-01, REC-02                                 | Create `supabase-common-bond` project; migrate Audit Registry first (highest write-conflict risk)                  |
-| 2     | REC-05, REC-16, REC-21                         | Immediate compliance fixes: CEO date confirmation, workflow stub fix, RLS access tier design                       |
-| 3     | REC-03, REC-06                                 | Migrate NC/CA (with FK integrity), Asset and Supplier Registers; apply RLS tiers from REC-21                       |
-| 4     | REC-08, REC-22                                 | Add row-level audit log to all tables; verify trigger coverage across all tables                                   |
-| 5     | REC-04, REC-17, REC-23                         | Review-date alerting; DR documentation in BCP; add multi-role ownership columns                                    |
-| 6     | REC-07, REC-09, REC-10, REC-11, REC-18, REC-24 | Migrate Standards Register, RoR, Risk Register, Training Records, SoA; add filter components to all register pages |
-| 7     | REC-12, REC-13, REC-14, REC-15, REC-19, REC-20 | Housekeeping, schema guard, ISMS health dashboard (requires all register tables from Phase 6)                      |
+| Phase | Finding IDs                                    | Rationale                                                                                                             |
+| :---- | :--------------------------------------------- | :-------------------------------------------------------------------------------------------------------------------- |
+| 1     | REC-01, REC-02                                 | Create `supabase-common-bond` project; migrate Audit Registry first (highest write-conflict risk)                     |
+| 2     | REC-05, REC-16, REC-21, REC-26                 | Immediate compliance fixes: date confirmation, workflow stub, RLS design, privacy contact policy                      |
+| 3     | REC-03, REC-06, REC-25                         | Migrate NC/CA + Assets/Suppliers; enforce evidence_url constraint on risks table                                      |
+| 4     | REC-08, REC-22                                 | Row-level audit log on all tables; verify trigger coverage                                                            |
+| 5     | REC-04, REC-17, REC-23, REC-27                 | Review-date alerting; DR documentation; ownership columns; record lifecycle/archival                                  |
+| 6     | REC-07, REC-09, REC-10, REC-11, REC-18, REC-24 | Migrate Standards, RoR, Risk Register, Training, SoA; filter components to all pages                                 |
+| 7     | REC-12, REC-13, REC-14, REC-15, REC-19, REC-20 | Housekeeping, schema guard, ISMS health dashboard                                                                     |

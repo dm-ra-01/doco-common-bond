@@ -18,29 +18,33 @@ observability requirements
 
 This audit evaluates whether Docusaurus-based Markdown files are an adequate
 long-term substrate for Common Bond's governance registers. 10 registers across
-3 domains were reviewed. **25 findings** were identified: 2 critical, 9 high, 9
-medium, 5 low. The audit demonstrates conclusively that static Markdown
+3 domains were reviewed. **28 findings** were identified: 3 critical, 11 high,
+9 medium, 5 low. The audit demonstrates conclusively that static Markdown
 registers fail on queryability, cross-referencing integrity, review-date
 enforcement, consistent schema, automation integration, concurrent write safety,
-monitoring and measurement capability, and access control — all of which become
+monitoring and measurement capability, access control, evidence linkage, record
+lifecycle management, and privacy compliance — all of which become
 non-trivially painful at the current register scale of 10+ tracked entities.
 
-| Area                                 | Coverage | Issues Found | Overall               |
-| ------------------------------------ | -------- | ------------ | --------------------- |
-| Queryability & filtering             | ⚠️       | 3            | ❌ Insufficient       |
-| Cross-register referential integrity | ⚠️       | 3            | ❌ Insufficient       |
-| Schema consistency                   | ⚠️       | 4            | ⚠️ Weak               |
-| Review-date enforcement & alerting   | ❌       | 2            | ❌ None               |
-| Automation / agent write integration | ❌       | 2            | ❌ None               |
-| SoA observability                    | ❌       | 1            | ❌ Insufficient       |
-| Disaster recovery (governance data)  | ❌       | 1            | ❌ Undocumented       |
-| ISMS monitoring & measurement        | ❌       | 1            | ❌ None               |
-| Access control on register content   | ❌       | 1            | ❌ Absent             |
+| Area                                 | Coverage | Issues Found | Overall              |
+| ------------------------------------ | -------- | ------------ | -------------------- |
+| Queryability & filtering             | ⚠️       | 3            | ❌ Insufficient      |
+| Cross-register referential integrity | ⚠️       | 3            | ❌ Insufficient      |
+| Schema consistency                   | ⚠️       | 4            | ⚠️ Weak              |
+| Review-date enforcement & alerting   | ❌       | 2            | ❌ None              |
+| Automation / agent write integration | ❌       | 2            | ❌ None              |
+| SoA observability                    | ❌       | 1            | ❌ Insufficient      |
+| Disaster recovery (governance data)  | ❌       | 1            | ❌ Undocumented      |
+| ISMS monitoring & measurement        | ❌       | 1            | ❌ None              |
+| Access control on register content   | ❌       | 1            | ❌ Absent            |
 | Governance ownership model           | ⚠️       | 1            | ⚠️ Sole-operator only |
-| Audit trail & change provenance      | ✅       | 2            | ⚠️ Partial            |
-| Agent infrastructure                 | ⚠️       | 2            | ⚠️ Minor              |
-| Concurrent update safety             | ❌       | 1            | ❌ Insufficient       |
-| Search & discoverability (UX)        | ⚠️       | 1            | ⚠️ Weak               |
+| Risk treatment evidence linkage      | ❌       | 1            | ❌ Absent            |
+| Record lifecycle & retention         | ❌       | 1            | ❌ None              |
+| Privacy compliance (personal data)   | ❌       | 1            | ❌ Irreconcilable gap |
+| Audit trail & change provenance      | ✅       | 2            | ⚠️ Partial          |
+| Agent infrastructure                 | ⚠️       | 2            | ⚠️ Minor             |
+| Concurrent update safety             | ❌       | 1            | ❌ Insufficient      |
+| Search & discoverability (UX)        | ⚠️       | 1            | ⚠️ Weak              |
 
 ---
 
@@ -396,32 +400,98 @@ non-trivially painful at the current register scale of 10+ tracked entities.
 
 ---
 
+## 17. Risk Treatment Evidence Linkage
+
+### 17.1 Treatment records carry intent, not proof
+
+**Gaps:**
+
+- EVID-01 `docs/compliance/iso27001/risk-management/risk-register.md` — ISO
+  27001 Clause 8.3 requires organisations to *retain evidence* of risk treatment
+  implementation. The Risk Register records treatment strategies (e.g., R-002:
+  "Mitigate — MFA enforced") but includes no link to the evidence that treatment
+  has actually been applied: no link to the MFA audit log, Supabase auth
+  configuration, or policy document that proves the control is live. A Stage 1
+  external auditor will ask "show me the evidence that R-002's MFA control is
+  in effect" — the only current answer is a free-text cell in a Markdown table.
+  This is not evidence retention; it is assertion without proof. A Supabase
+  schema can enforce this with `evidence_url TEXT CHECK (status != 'Ongoing' OR
+  evidence_url IS NOT NULL)` — an evidence link is mandatory once a treatment
+  transitions to active.
+
+---
+
+## 18. Record Lifecycle and Retention
+
+### 18.1 No retention policy, archival mechanism, or lifecycle state for closed records
+
+**Gaps:**
+
+- LIFECYCLE-01 All registers — When a risk is closed, an NC is resolved, or a
+  CA is completed, the entry stays in the live register indefinitely with no
+  archival, no defined minimum retention period, and no lifecycle state machine.
+  ISO 27001 Clause 7.5.3 requires explicit control of documented information
+  including *retention and disposition*. An auditor requesting "what is your
+  ISMS record retention schedule?" has no defensible answer under the current
+  approach. The Docusaurus Markdown files have no expiry signal. A Supabase
+  schema resolves this structurally: `archived_at TIMESTAMPTZ`, a
+  `v_active_<entity>` view filtering `WHERE archived_at IS NULL`, and a pg_cron
+  job enforcing minimum retention periods before permanent deletion.
+
+---
+
+## 19. Privacy Compliance for Named Individuals
+
+### 19.1 Personal data committed to Git history cannot be erased
+
+**Gaps:**
+
+- PRIV-01 Multiple registers — The governance registers commit named
+  individuals directly into Git history: staff members in training records,
+  named corrective action owners, supplier contact persons. Under the Australian
+  Privacy Act 1988 APP 11 (security of personal information) and APP 13 (right
+  to correction), individuals have rights regarding their personal data.
+  Data committed to Git history cannot be erased without rewriting history via
+  `git filter-branch` or `git filter-repo` — which would destroy the very
+  document integrity trail that ISO 27001 Clause 7.5 mandates be preserved.
+  This is an irreconcilable conflict: maintaining data subject rights vs.
+  maintaining document integrity. No current policy acknowledges or addresses
+  this conflict. Supabase resolves it cleanly: the row can be updated to scrub
+  personal data, the audit log trigger records the change event with
+  `changed_by` and `changed_at`, and the full audit trail is preserved without
+  a force-push.
+
+---
+
 ## Severity Summary
 
-| Finding ID | Area                           | File                                            | Category                       | Severity    |
-| :--------- | :----------------------------- | :---------------------------------------------- | :----------------------------- | :---------- |
-| QUERY-01   | Risk Register                  | `risk-register.md`                              | Queryability                   | 🔴 Critical |
-| AUTO-01    | Audit Registry                 | `audit-registry.md`                             | Automation / Concurrency       | 🔴 Critical |
-| REF-02     | NC Log + CA Register           | `nonconformity-log.md`, `corrective-actions.md` | Referential Integrity          | 🟠 High     |
-| AUTO-02    | All registers                  | multiple                                        | Automation                     | 🟠 High     |
-| CONC-01    | All registers                  | multiple                                        | Concurrency                    | 🟠 High     |
-| ALERT-01   | All registers                  | multiple                                        | Review Enforcement             | 🟠 High     |
-| SCHEMA-02  | Asset + Supplier               | `asset-register.md`, `supplier-register.md`     | Compliance                     | 🟠 High     |
-| SOA-01     | Statement of Applicability     | `soa.md`                                        | Queryability / Audit Readiness | 🟠 High     |
-| INFRA-02   | Agent workflows                | `audit-workflow.md`                             | Agent Infrastructure           | 🟠 High     |
-| MONITOR-01 | All registers                  | multiple                                        | ISMS Monitoring / ISO 9.1      | 🟠 High     |
-| SEC-01     | Supplier + NC registers        | `supplier-register.md`, `nonconformity-log.md`  | Security / Access Control      | 🟠 High     |
-| QUERY-02   | Audit Registry                 | `audit-registry.md`                             | Queryability                   | 🟡 Medium   |
-| QUERY-03   | Standards Register             | `standards-register.md`                         | Queryability                   | 🟡 Medium   |
-| REF-01     | Risk Register                  | `risk-register.md`                              | Referential Integrity          | 🟡 Medium   |
-| REF-03     | Asset + Supplier               | `asset-register.md`, `supplier-register.md`     | Referential Integrity          | 🟡 Medium   |
-| ALERT-02   | Standards Register             | `standards-register.md`                         | Review Enforcement             | 🟡 Medium   |
-| TRAIL-01   | Audit Registry + Risk Register | multiple                                        | Audit Trail                    | 🟡 Medium   |
-| SCHEMA-03  | All registers                  | multiple                                        | Schema Drift                   | 🟡 Medium   |
-| DR-01      | BCP + all registers            | `business-continuity.md`, multiple              | Disaster Recovery              | 🟡 Medium   |
-| TRAIL-02   | All registers                  | multiple                                        | Audit Trail                    | 🟡 Medium   |
-| GOV-01     | All registers                  | multiple                                        | Governance Maturity            | 🟡 Medium   |
-| SCHEMA-01  | Supplier Register              | `supplier-register.md`                          | Schema Consistency             | 🟢 Low      |
-| INFRA-01   | Agent workflows                | `debug-ci.md`                                   | Agent Infrastructure           | 🟢 Low      |
-| SCHEMA-04  | Register of Registers          | `registers/index.md`                            | Schema Consistency             | 🟢 Low      |
-| UX-01      | All registers                  | multiple                                        | Search / Discoverability       | 🟢 Low      |
+| Finding ID | Area | File | Category | Severity |
+| :--- | :--- | :--- | :--- | :--- |
+| QUERY-01 | Risk Register | `risk-register.md` | Queryability | 🔴 Critical |
+| AUTO-01 | Audit Registry | `audit-registry.md` | Automation / Concurrency | 🔴 Critical |
+| EVID-01 | Risk Register | `risk-register.md` | Evidence / ISO 8.3 | � Critical |
+| REF-02 | NC Log + CA Register | `nonconformity-log.md`, `corrective-actions.md` | Referential Integrity | 🟠 High |
+| AUTO-02 | All registers | multiple | Automation | 🟠 High |
+| CONC-01 | All registers | multiple | Concurrency | 🟠 High |
+| ALERT-01 | All registers | multiple | Review Enforcement | 🟠 High |
+| SCHEMA-02 | Asset + Supplier | `asset-register.md`, `supplier-register.md` | Compliance | 🟠 High |
+| SOA-01 | Statement of Applicability | `soa.md` | Queryability / Audit Readiness | 🟠 High |
+| INFRA-02 | Agent workflows | `audit-workflow.md` | Agent Infrastructure | 🟠 High |
+| MONITOR-01 | All registers | multiple | ISMS Monitoring / ISO 9.1 | 🟠 High |
+| SEC-01 | Supplier + NC registers | `supplier-register.md`, `nonconformity-log.md` | Security / Access Control | 🟠 High |
+| LIFECYCLE-01 | All registers | multiple | Retention / ISO 7.5.3 | 🟠 High |
+| PRIV-01 | Training + NC + CA | multiple | Privacy / Privacy Act 1988 | 🟠 High |
+| QUERY-02 | Audit Registry | `audit-registry.md` | Queryability | 🟡 Medium |
+| QUERY-03 | Standards Register | `standards-register.md` | Queryability | 🟡 Medium |
+| REF-01 | Risk Register | `risk-register.md` | Referential Integrity | 🟡 Medium |
+| REF-03 | Asset + Supplier | `asset-register.md`, `supplier-register.md` | Referential Integrity | 🟡 Medium |
+| ALERT-02 | Standards Register | `standards-register.md` | Review Enforcement | 🟡 Medium |
+| TRAIL-01 | Audit Registry + Risk Register | multiple | Audit Trail | 🟡 Medium |
+| SCHEMA-03 | All registers | multiple | Schema Drift | 🟡 Medium |
+| DR-01 | BCP + all registers | `business-continuity.md`, multiple | Disaster Recovery | 🟡 Medium |
+| TRAIL-02 | All registers | multiple | Audit Trail | 🟡 Medium |
+| GOV-01 | All registers | multiple | Governance Maturity | 🟡 Medium |
+| SCHEMA-01 | Supplier Register | `supplier-register.md` | Schema Consistency | 🟢 Low |
+| INFRA-01 | Agent workflows | `debug-ci.md` | Agent Infrastructure | 🟢 Low |
+| SCHEMA-04 | Register of Registers | `registers/index.md` | Schema Consistency | 🟢 Low |
+| UX-01 | All registers | multiple | Search / Discoverability | 🟢 Low |
