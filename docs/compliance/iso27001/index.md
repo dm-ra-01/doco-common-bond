@@ -20,9 +20,9 @@ The ISMS covers both **Common Bond Pty Ltd** and **MyJMO Pty Ltd** and applies
 to all systems, staff, and third parties involved in operating the Receptor
 platform.
 
-:::info
-**Certification status:** Pre-certification — implementation phase. Target Stage 1 audit readiness: **2026-04-30**. External audit body not yet selected.
-:::
+:::info **Certification status:** Pre-certification — implementation phase.
+Target Stage 1 audit readiness: **2026-04-30**. External audit body not yet
+selected. :::
 
 ---
 
@@ -106,6 +106,10 @@ procedures.
   training; onboarding checklist structure
 - [Training Records](./operations/training-records) — Live evidence: competency
   matrix; onboarding completion per staff member
+
+:::tip[Registers] All formal registers (Risk Register, Asset Register, Supplier
+Register, etc.) are indexed in the [**Register of Registers**](/docs/registers),
+a top-level governance catalogue for the entire organisation. :::
 
 ---
 
