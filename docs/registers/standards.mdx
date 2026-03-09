@@ -1,0 +1,45 @@
+---
+title: Standards Register — Live Dashboard
+sidebar_label: Standards Register
+sidebar_position: 3
+description: Live queryable Standards Register sourced from the supabase-common-bond governance database. Filter by domain, status, and type. Review-due-soon highlighting for at-risk items.
+---
+
+import { StandardsDashboard } from '@site/src/components/governance/StandardsDashboard';
+import GovernanceAuthGate from '@site/src/components/governance/GovernanceAuthGate';
+
+# 📐 Standards Register — Live Dashboard
+
+Live view of all policies, procedures, and standards sourced from the
+[`supabase-common-bond`](https://github.com/dm-ra-01/supabase-common-bond) governance database.
+
+> **ISO 27001:2022 Clause 5.2** — _"Top management shall establish an information security policy..."_
+
+**Register ID:** `CORP-REG-002` | **Owner:** Ryan Ammendolea, CEO | **Review Cadence:** Annual / on policy change
+
+Use the filters below to explore standards by **status**, **domain**, and **type**.
+Items with a review date within 30 days are highlighted ⚠️.
+
+<GovernanceAuthGate>
+<StandardsDashboard />
+</GovernanceAuthGate>
+
+---
+
+## Standard Types
+
+| Type | Description |
+|:---|:---|
+| **Policy** | High-level mandatory intent statements (ISO 27001 Clause 5.2) |
+| **Procedure** | Step-by-step operational instructions for implementing policies |
+| **Standard** | Technical or engineering standards governing implementation |
+| **Framework** | External reference frameworks (e.g., ISO 27001, NIST, OWASP) |
+
+## Status Definitions
+
+| Status | Meaning |
+|:---|:---|
+| **Active** | Current and in force |
+| **Draft** | Under development — not yet approved |
+| **Under Review** | Scheduled for formal review — current version still in force |
+| **Retired** | Superseded or withdrawn — retained for historical reference |

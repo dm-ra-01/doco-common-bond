@@ -1,0 +1,46 @@
+---
+title: Risk Register — Live Dashboard
+sidebar_label: Risk Register
+sidebar_position: 5
+description: Live queryable Risk Register sourced from the supabase-common-bond governance database. Filter by risk level, treatment status, and category. Evidence links rendered inline for active treatments.
+---
+
+import { RiskRegisterDashboard } from '@site/src/components/governance/RiskRegisterDashboard';
+import GovernanceAuthGate from '@site/src/components/governance/GovernanceAuthGate';
+
+# ⚠️ Risk Register — Live Dashboard
+
+Live view of all active information security risks sourced from the
+[`supabase-common-bond`](https://github.com/dm-ra-01/supabase-common-bond) governance database.
+
+> **ISO 27001:2022 Clause 6.1** — _"The organisation shall plan actions to address these risks and opportunities..."_
+
+**Register ID:** `ISMS-REG-001` | **Owner:** Ryan Ammendolea, CEO | **Review Cadence:** Annual / on material change
+
+Use the filters below to explore risks by **level**, **treatment status**, and **category**.
+Evidence links (📎) are displayed inline for all risks where treatment evidence has been recorded (ISO 27001 Clause 8.3).
+
+<GovernanceAuthGate>
+<RiskRegisterDashboard />
+</GovernanceAuthGate>
+
+---
+
+## Risk Level Definitions
+
+| Level | Likelihood × Impact | Description |
+|:------|:---|:---|
+| **Critical** | 4–5 × 4–5 | Existential or regulatory breach risk — immediate treatment required |
+| **High** | 3–4 × 3–4 | Significant operational or compliance impact — active treatment plan required |
+| **Medium** | 2–3 × 2–3 | Moderate impact — treatment scheduled and monitored |
+| **Low** | 1–2 × 1–2 | Minimal impact — accepted or under routine monitoring |
+
+## Treatment Status Definitions
+
+| Status | Meaning |
+|:---|:---|
+| **Ongoing** | Active treatment in progress — evidence link required (ISO 27001 Clause 8.3) |
+| **Planned** | Treatment scheduled but not yet commenced |
+| **Accepted** | Risk formally accepted by management — residual risk within appetite |
+| **Transferred** | Risk transferred to a third party (e.g., insurance, contractual obligation) |
+| **Closed** | Risk resolved or no longer applicable |

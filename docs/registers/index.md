@@ -68,6 +68,32 @@ programme._
 
 ---
 
+## Ownership Model (ISO 27001 Clause 5.3)
+
+Per **ISO 27001:2022 Clause 5.3**, governance records require explicit ownership accountability across three distinct roles. All register tables in `supabase-common-bond` enforce these columns (`register_owner`, `information_owner`, `process_owner`).
+
+| Role | Responsibility | Example |
+|:-----|:--------------|:--------|
+| **Register Owner** | Accountable for the register's existence, scope, and review schedule. Answers _"Who is responsible for maintaining this register?"_ | CEO (Ryan Ammendolea) for all ISMS registers |
+| **Information Owner** | Responsible for the accuracy, completeness, and classification of the data within the register. Answers _"Who validates the content?"_ | Same as Register Owner during sole-operator phase; delegates to ISMS Manager as team grows |
+| **Process Owner** | Responsible for the operational process that generates or updates register entries. Answers _"Who runs the process that creates these records?"_ | Engineering Leadership for Audit Registry; CEO for Risk Register |
+
+> **Sole-operator note (2026):** During the current size of operations, all three roles are held by the CEO.
+> As the team grows, the distinction becomes operationally significant — particularly for certification audits.
+> The ownership columns are pre-populated in the database to ensure the structure is correct from day one.
+
+**Reference:** [Roles & Responsibilities](/docs/compliance/iso27001/governance/roles-responsibilities) (ISO 27001 Clause 5.3 RACI)
+
+---
+
+## Live Register Dashboard
+
+A queryable, Supabase-backed version of this index is available at
+[registers/registers](/docs/registers/registers). It provides real-time status,
+filtering by type and status, and review-due-date visibility across all registers.
+
+---
+
 ## Adding a New Register
 
 When a new register is created, the creating agent or team member **must**:
