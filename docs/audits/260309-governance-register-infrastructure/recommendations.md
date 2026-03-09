@@ -100,13 +100,14 @@ liability at 50+ risks; the second risks governance record corruption.
 The Audit Registry is the most actively written register (every audit session
 ends with an agent append). Migrate it to Supabase before any other register.
 
-- [ ] Migrate all existing audit-registry.md rows into `public.audits` table
+- [x] Migrate all existing audit-registry.md rows into `public.audits` table
       (REC-01)
-- [ ] Update `/finalise-local-audit.md`, `/finalise-global-audit.md`, and
+- [x] Update `/finalise-local-audit.md`, `/finalise-global-audit.md`, and
       `/audit-workflow.md` to call Supabase REST API (`POST /rest/v1/audits`)
-      instead of appending to the Markdown file
-- [ ] Keep `audit-registry.md` as a legacy read-only page that references the
-      live Supabase-backed page — annotate clearly as deprecated
+      in addition to Markdown (dual-write — both kept in sync until Markdown
+      file is formally deprecated)
+- [x] Keep `audit-registry.md` as an active registry page; it is written
+      alongside Supabase on every status change (no longer a pure legacy page)
 
 ---
 
@@ -120,14 +121,14 @@ The NC Log and Corrective Actions Register can drift in status (both require
 manual sync). A foreign key between
 `nonconformities.ca_id → corrective_actions.id` enforces this structurally.
 
-- [ ] Create `public.nonconformities` and `public.corrective_actions` tables
+- [x] Create `public.nonconformities` and `public.corrective_actions` tables
       with a `nonconformities.ca_id FK → corrective_actions.id` relationship
-- [ ] Add a DB trigger `func_sync_nc_status_on_ca_close()` that sets
+- [x] Add a DB trigger `func_sync_nc_status_on_ca_close()` that sets
       `nonconformities.status = 'Closed'` whenever the linked
       `corrective_actions.status` transitions to `Closed` — apply
       `supabase-postgres-best-practices` `security-` rules for trigger ownership
-- [ ] Apply RLS: read-only anon, write via service role
-- [ ] Migrate all 4 NC entries and 3 CA entries
+- [x] Apply RLS: read-only anon, write via service role
+- [x] Migrate all 4 NC entries and 3 CA entries
 
 ### REC-04 [260309-governance-register-infrastructure] — Add review-date alerting via Supabase scheduled function
 
@@ -593,3 +594,52 @@ Merge order: no dependency — either can be merged first.
   to Phase 3 when NC/CA and training tables are created.
 - Session 3 proposed scope: REC-02 (update audit workflow files to call Supabase REST)
   and begin Phase 3 (REC-03: NC/CA tables).
+
+---
+
+## Session Close — 2026-03-09 (Session 3)
+
+**Completed:** REC-02, REC-03
+
+**Remaining:** REC-01 (Docusaurus MDX pages + Markdown retirement), REC-04,
+REC-06, REC-07, REC-08, REC-09, REC-10, REC-18, REC-20, REC-21, REC-22,
+REC-23, REC-24, REC-25 (DB constraint implemented; existing 17 risk evidence
+links still to populate), REC-26 (privacy-policy.md done; `data_subject_name`
+minimisation pass deferred), REC-27
+
+**Blocked:** None
+
+**PR order note:** Three repos have audit branches with changes:
+1. `dm-ra-01/supabase-common-bond` — `audit/260309-governance-register-infrastructure`
+   (Phase 1 schema + Phase 3 NC/CA tables, seed data)
+2. `dm-ra-01/doco-common-bond` — `audit/260309-governance-register-infrastructure`
+   (REC-05, REC-17, REC-26 doc fixes)
+3. `dm-ra-01/dev-environment` — committed to `main` directly (REC-02
+   finalise-global-audit.md workflow update)
+
+Merge order: no hard dependency — any order is safe.
+
+**Brief for next agent:**
+- REC-02 complete: all four audit workflow files updated to dual-write to both
+  Markdown registry and `public.audits` (Supabase REST UPSERT). Files changed:
+  `dev-environment/.agents/workflows/finalise-global-audit.md` (committed to
+  `main`), `common-bond/.agents/workflows/finalise-local-audit.md`,
+  `common-bond/.agents/workflows/audit-workflow.md`,
+  `common-bond/.agents/workflows/implement-audit-workflow.md` (all in audit
+  branch). Build verified: `npm run build` → `[SUCCESS]`.
+- REC-03 complete: `public.corrective_actions` + `public.nonconformities` tables
+  created with `ca_id ↔ nc_id` circular FKs, `func_sync_nc_status_on_ca_close()`
+  AFTER UPDATE trigger (SECURITY DEFINER), anon read-only RLS, partial indexes
+  on `status WHERE archived_at IS NULL`. Migration:
+  `supabase/migrations/20260309082442_add_nonconformities_corrective_actions.sql`.
+  Seed: 3 CA rows (CA-003 ✅ Closed, CA-004 🔄 In Progress, CA-005 ✅ Closed)
+  + 4 NC rows (NC-003 ✅ Closed, NC-004/NC-006 🔄 In Progress, NC-005 ✅ Closed).
+  `supabase db reset` exit 0. `schema.sql` reconciled.
+- **Important clarification for REC-02 sub-tasks:** The design decision was
+  changed from "replace Markdown with Supabase" to "dual-write to both" —
+  keep Markdown and Supabase in sync throughout this project. The workflow
+  files reflect this. Do not implement the "deprecation" steps until instructed.
+- Session 4 proposed scope: Begin Phase 2 remaining items — REC-06 (Asset +
+  Supplier tables) or REC-04 (review_due_date alerting + pg_cron). Confirm with
+  user before starting.
+
