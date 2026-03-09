@@ -13,8 +13,8 @@ that everything (branch, PR, archive) stays in the **target repo**, not in
 > [!IMPORTANT]
 > **Before starting:** Read the two skills this workflow depends on:
 >
-> - `.agents/skills/audit-verification-gates/SKILL.md`
-> - `.agents/skills/audit-registry/SKILL.md`
+> - `/Users/ryan/development/common_bond/antigravity-environment/dev-environment/.agents/skills/audit-verification-gates/SKILL.md`
+> - `/Users/ryan/development/common_bond/antigravity-environment/dev-environment/.agents/skills/audit-registry/SKILL.md`
 
 ---
 
@@ -34,8 +34,8 @@ that everything (branch, PR, archive) stays in the **target repo**, not in
    implemented — cite file path + evidence. Mark any `- [ ]` that is still open.
 
 3. **Run the verification gate** for the target repo. See
-   `.agents/skills/audit-verification-gates/SKILL.md` for the canonical command
-   per repo type.
+   `/Users/ryan/development/common_bond/antigravity-environment/dev-environment/.agents/skills/audit-verification-gates/SKILL.md`
+   for the canonical command per repo type.
 
 4. **Assess code coverage** using the pattern in the same skill. For each
    uncovered file in the PR's `codecov/patch` check, classify it as acceptable
@@ -67,12 +67,13 @@ that everything (branch, PR, archive) stays in the **target repo**, not in
 ## Step 2: Update Registry & Raise PR
 
 1. Append a **Session Close** section to `recommendations.md` — see
-   `.agents/skills/audit-verification-gates/SKILL.md` for the required format.
+   `/Users/ryan/development/common_bond/antigravity-environment/dev-environment/.agents/skills/audit-verification-gates/SKILL.md`
+   for the required format.
 
 2. Update `documentation/common-bond/docs/audits/audit-registry.md` — set the
    status for this audit to `✅ Closed`. See
-   `.agents/skills/audit-registry/SKILL.md` for the canonical status values and
-   commit conventions.
+   `/Users/ryan/development/common_bond/antigravity-environment/dev-environment/.agents/skills/audit-registry/SKILL.md`
+   for the canonical status values and commit conventions.
 
 3. Commit the final `re-audit.md`, updated `recommendations.md`, and the
    checked-off `recommendations.md` to the **target repo's** `audit/YYMMDD-slug`
@@ -147,9 +148,10 @@ perform the move directly on `main`:
    `docs/audits/YYMMDD-slug/` on `main`.
 
 3. Update `documentation/common-bond/docs/audits/audit-registry.md` to point to
-   the new archive paths — see `.agents/skills/audit-registry/SKILL.md` for the
-   correct link format. Commit this registry update to `common-bond`'s `main`
-   branch via `mcp_github-mcp-server_push_files`.
+   the new archive paths — see
+   `/Users/ryan/development/common_bond/antigravity-environment/dev-environment/.agents/skills/audit-registry/SKILL.md`
+   for the correct link format. Commit this registry update to `common-bond`'s
+   `main` branch via `mcp_github-mcp-server_push_files`.
 
 4. Use `notify_user` to confirm the audit is fully archived and closed.
 
@@ -167,8 +169,9 @@ perform the move directly on `main`:
    documenting the coverage gaps (even if all gaps are acceptable).
 
 4. **Destructive operations require confirmation.** See the Destructive
-   Operations Gate in `.agents/skills/audit-verification-gates/SKILL.md` — it
-   applies during finalisation as much as during implementation.
+   Operations Gate in
+   `/Users/ryan/development/common_bond/antigravity-environment/dev-environment/.agents/skills/audit-verification-gates/SKILL.md`
+   — it applies during finalisation as much as during implementation.
 
 5. **Do not archive until merged.** The archive step (Step 4) runs on `main`
    after the PR is merged. Archiving from the feature branch creates a

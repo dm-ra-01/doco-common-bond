@@ -11,10 +11,11 @@ next agent.
 > [!IMPORTANT]
 > **Read these skills before starting any implementation session:**
 >
-> - `.agents/skills/audit-verification-gates/SKILL.md` — verification commands,
->   coverage assessment, Destructive Operations Gate, Session Close format
-> - `.agents/skills/audit-registry/SKILL.md` — registry status values and commit
->   conventions
+> - `/Users/ryan/development/common_bond/antigravity-environment/dev-environment/.agents/skills/audit-verification-gates/SKILL.md`
+>   — verification commands, coverage assessment, Destructive Operations Gate,
+>   Session Close format
+> - `/Users/ryan/development/common_bond/antigravity-environment/dev-environment/.agents/skills/audit-registry/SKILL.md`
+>   — registry status values and commit conventions
 
 ---
 
@@ -73,10 +74,10 @@ for approval before writing code. Include:
    involves a third-party tool, CI secret, or external service** — the approved
    approach will be documented there.
 5. **For CI secrets** and the **Destructive Operations Gate:** see
-   `.agents/skills/audit-verification-gates/SKILL.md`.
+   `/Users/ryan/development/common_bond/antigravity-environment/dev-environment/.agents/skills/audit-verification-gates/SKILL.md`.
 6. **Run the repo-specific verification gate before committing** — see
-   `.agents/skills/audit-verification-gates/SKILL.md` for the canonical command
-   per repo type.
+   `/Users/ryan/development/common_bond/antigravity-environment/dev-environment/.agents/skills/audit-verification-gates/SKILL.md`
+   for the canonical command per repo type.
 
 ---
 
@@ -117,11 +118,13 @@ PRs, merge, and archive.
 ## Step 6: Update Registry & Close Session
 
 1. Append a **Session Close** section to `recommendations.md` — see
-   `.agents/skills/audit-verification-gates/SKILL.md` for the required format.
+   `/Users/ryan/development/common_bond/antigravity-environment/dev-environment/.agents/skills/audit-verification-gates/SKILL.md`
+   for the required format.
 
 2. Update the audit status in
    `documentation/common-bond/docs/audits/audit-registry.md` — see
-   `.agents/skills/audit-registry/SKILL.md` for the canonical status values:
+   `/Users/ryan/development/common_bond/antigravity-environment/dev-environment/.agents/skills/audit-registry/SKILL.md`
+   for the canonical status values:
 
    | Situation                             | Status to set   |
    | :------------------------------------ | :-------------- |

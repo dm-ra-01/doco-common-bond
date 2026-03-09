@@ -18,10 +18,11 @@ Produce two documents for the stated scope:
 > [!IMPORTANT]
 > **Read these skills before starting any audit session:**
 >
-> - `.agents/skills/audit-document-standards/SKILL.md` — document structure,
->   field rules, DoD checklist, iterative improvement protocol
-> - `.agents/skills/audit-registry/SKILL.md` — registry location, status values,
->   commit conventions
+> - `/Users/ryan/development/common_bond/antigravity-environment/dev-environment/.agents/skills/audit-document-standards/SKILL.md`
+>   — document structure, field rules, DoD checklist, iterative improvement
+>   protocol
+> - `/Users/ryan/development/common_bond/antigravity-environment/dev-environment/.agents/skills/audit-registry/SKILL.md`
+>   — registry location, status values, commit conventions
 
 ---
 
@@ -30,7 +31,7 @@ Produce two documents for the stated scope:
 1. Read KIs related to the scope
 2. Check `docs/audits/` (or `archive/` for repo-local) for prior audits
 3. Read the adversarial-code-review skill:
-   `.agents/skills/adversarial-code-review/SKILL.md`
+   `/Users/ryan/development/common_bond/antigravity-environment/dev-environment/.agents/skills/adversarial-code-review/SKILL.md`
 4. **Identify any carryover tasks** explicitly stated by the user — these are
    first-class findings, not footnotes.
 5. **Batch all blocking questions into one `notify_user` call** before starting
@@ -80,17 +81,17 @@ git log --oneline origin/audit/YYMMDD-slug -1
 **For full document structure, field rules (including `Auditor:` field), finding
 ID format, Agent Clarifications table, Implementation Order, Deferred Items, and
 the Definition-of-Done checklist:** read
-`.agents/skills/audit-document-standards/SKILL.md`.
+`/Users/ryan/development/common_bond/antigravity-environment/dev-environment/.agents/skills/audit-document-standards/SKILL.md`.
 
 ---
 
 ## Step 4: Iterative Improvement
 
 The iterative improvement protocol is defined in
-`.agents/skills/audit-document-standards/SKILL.md` (see "Iterative Improvement
-Protocol"). After presenting the initial audit, offer 5 meaningful additions and
-repeat until the user concludes the session. Commit and push after each approved
-round.
+`/Users/ryan/development/common_bond/antigravity-environment/dev-environment/.agents/skills/audit-document-standards/SKILL.md`
+(see "Iterative Improvement Protocol"). After presenting the initial audit,
+offer 5 meaningful additions and repeat until the user concludes the session.
+Commit and push after each approved round.
 
 ---
 
@@ -98,7 +99,8 @@ round.
 
 1. Add a row to `documentation/common-bond/docs/audits/audit-registry.md` with
    status `🔄 Drafting`. For status values, transition rules, and commit
-   conventions, read `.agents/skills/audit-registry/SKILL.md`.
+   conventions, read
+   `/Users/ryan/development/common_bond/antigravity-environment/dev-environment/.agents/skills/audit-registry/SKILL.md`.
 
 2. Commit audit files + registry update to the feature branch.
 
