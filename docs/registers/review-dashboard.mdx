@@ -6,6 +6,7 @@ description: Live governance record review alerts — records due for review wit
 ---
 
 import { ReviewDashboard } from '@site/src/components/governance/ReviewDashboard';
+import GovernanceAuthGate from '@site/src/components/governance/GovernanceAuthGate';
 
 # 🔔 Governance Review Dashboard
 
@@ -13,7 +14,9 @@ Outstanding review alerts for all active governance records in the [`supabase-co
 
 Review alerts are generated daily at **08:00 AEST** by the `func_send_review_alert()` pg_cron job (REC-04 / ALERT-01). A record appears here when its `review_due_date` is within 30 days of today.
 
+<GovernanceAuthGate>
 <ReviewDashboard />
+</GovernanceAuthGate>
 
 ---
 
