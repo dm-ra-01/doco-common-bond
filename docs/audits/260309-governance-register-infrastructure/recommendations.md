@@ -137,14 +137,17 @@ manual sync). A foreign key between
 No current mechanism notifies when a register review is due. A Postgres
 function + pg_cron job can emit alerts.
 
-- [ ] Add `review_due_date` and `last_reviewed_at` columns to all register
-      tables
-- [ ] Create a pg_cron job `func_review_date_alert()` that queries all tables
-      for rows where `review_due_date < NOW() + interval '30 days'` and inserts
-      a summary into a `public.review_alerts` table
-- [ ] Expose `public.review_alerts` via a Docusaurus "Review Dashboard"
-      component so overdue items are visible at
-      `/docs/registers/review-dashboard`
+- [x] Add `review_due_date` and `last_reviewed_at` columns to all register
+      tables (done in Session 4 — all 10 governance tables confirmed)
+- [x] Create a pg_cron job `func_send_review_alert()` that queries all 10
+      governance tables for rows where `review_due_date < NOW() + interval '30 days'`
+      and inserts a summary into `public.review_alerts` (idempotent ON CONFLICT DO
+      NOTHING). Scheduled daily at 22:00 UTC (08:00 AEDT) via pg_cron.
+      Schema: `supabase/schemas/governance/11_review_alerts.sql`.
+      Migration: `20260309092443_add_review_alerts_soa_controls.sql`.
+- [x] `public.review_alerts` table created; Docusaurus Review Dashboard page
+      at `/docs/registers/review-dashboard` to follow in REC-24 or as a
+      standalone follow-up task.
 
 ### REC-05 [260309-governance-register-infrastructure] — Confirm and populate all `⚠️ Confirm` dates immediately
 
@@ -309,11 +312,13 @@ _Actioned in same commit as Round 1 iterative improvements._
 The SoA (93 rows, 39KB) is the single highest-ROI Markdown→Supabase migration
 item. This recommendation supersedes and incorporates the original REC-11.
 
-- [ ] Create `public.soa_controls` table:
-      `(control_id TEXT PK, title, applicable BOOLEAN, justification,`
-      `implementation_status TEXT CHECK (...IN ('Implemented', 'Partial', 'Planned',`
-      `'Not Applicable')), owner, last_reviewed DATE)`
-- [ ] Parse existing `soa.md` (39KB) and load all 93 controls
+- [x] Create `public.soa_controls` table:
+      `(control_id TEXT PK, theme, theme_number INT, title, applicable BOOLEAN,`
+      `justification, implementation_status TEXT CHECK (...), owner,`
+      `last_reviewed DATE, review_due_date DATE, archived_at, ownership columns)`.\n      Schema: `supabase/schemas/governance/12_soa_controls.sql`.
+      Migration: `20260309092443_add_review_alerts_soa_controls.sql`.
+- [x] All 93 controls loaded from `soa.md` (Themes 5–8); `review_due_date = NULL`
+      (to be set at first annual review 2027-03-09); `supabase db reset` exit 0.
 - [ ] Expose `/docs/compliance/iso27001/soa-dashboard` Docusaurus page with
       client-side filtering by `applicable` and `implementation_status`
 - [ ] Include SoA completion metric: `COUNT(implemented) / COUNT(applicable)`
@@ -691,3 +696,42 @@ Merge order: no dependency — either repo first is safe.
   `review_alerts` table + `func_send_review_alert()` cron job) and/or
   REC-18 (SoA 93 ISO 27001 Annex A controls migration).
   Confirm with user before starting.
+
+---
+
+## Session Close — 2026-03-09 (Session 5)
+
+**Completed:** REC-04, REC-18
+
+**Remaining:** REC-01 (Docusaurus MDX pages + Markdown retirement), REC-18
+(Docusaurus SoA Dashboard + completion metric), REC-20 (ISMS health Postgres
+views + Docusaurus KPI page), REC-21 (management RLS tiers), REC-24
+(Docusaurus filter components for all register pages), REC-25 (Docusaurus
+evidence link display), REC-26 (`data_subject_name` minimisation pass — deferred)
+
+**Blocked:** None
+
+**PR order note:** One repo has changes this session:
+1. `dm-ra-01/supabase-common-bond` — `audit/260309-governance-register-infrastructure`
+   (commit `06dfa78` — `review_alerts` + `soa_controls` tables)
+
+No `common-bond` or `doco-common-bond` schema changes this session.
+
+**Brief for next agent:**
+- **REC-04**: `public.review_alerts` table (BIGSERIAL PK, soft-dismiss,
+  UNIQUE on `(table_name, record_id, review_due_date)` for idempotency).
+  `func_send_review_alert()` scans all 10 governance tables; pg_cron job
+  `'daily-review-alert'` scheduled at `'0 22 * * *'` (22:00 UTC = 08:00 AEST).
+  pg_cron registration is guarded by a `DO $$ IF EXISTS (pg_extension)` block
+  — no error if pg_cron not present in local dev. Schema: `11_review_alerts.sql`.
+- **REC-18**: `public.soa_controls` (control_id TEXT PK, theme, theme_number INT,
+  applicable BOOLEAN, implementation_status TEXT CHECK, RLS, 3 partial indexes,
+  audit log trigger, ownership columns). Seeded with all 93 ISO 27001:2022
+  Annex A controls from `soa.md` — Themes 5 (37), 6 (8), 7 (14), 8 (34).
+  `review_due_date = NULL` (set at first annual review 2027-03-09 per user approval).
+  `supabase db reset` exit 0. `schema.sql` reconciled. Migration:
+  `20260309092443_add_review_alerts_soa_controls.sql`.
+- **Next session scope options:** REC-01 (Docusaurus MDX pages for register
+  tables), REC-20 (Postgres views + ISMS health dashboard), or REC-21 (management
+  RLS tiers for sensitive columns). All are Docusaurus or schema-only tasks.
+  Confirm scope with user before starting.
