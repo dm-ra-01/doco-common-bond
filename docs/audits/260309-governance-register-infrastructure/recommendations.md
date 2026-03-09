@@ -171,13 +171,11 @@ the horizontal table format used by all other registers. Migration to Supabase
 resolves both the format inconsistency and the cross-reference gap between
 assets and suppliers.
 
-- [ ] Create `public.assets` and `public.suppliers` tables
-- [ ] Add `public.assets.supplier_id FK → public.suppliers.id` — an asset that
-      is a software/service must link to its supplier record
-- [ ] Migrate all 11 assets and 6 supplier entries
-- [ ] Apply `supabase-postgres-best-practices` `schema-` rules: use `TEXT` for
-      all free-form fields, `DATE` for review dates, `TEXT CHECK (... IN (...))`
-      for status enumerations
+- [x] Create `public.suppliers` table with RLS, partial indexes, `updated_at` trigger
+- [x] Create `public.assets` table with `supplier_id FK → public.suppliers.id` and RLS
+- [x] Migrate all 6 supplier entries and 15 assets (7 IA, 5 SA, 1 HW, 2 PA)
+- [x] Apply TEXT, DATE, and CHECK constraints per supabase-postgres-best-practices
+- [x] Migration generated: `20260309085659_add_suppliers_assets_audit_log.sql`; `supabase db reset` exit 0
 
 ---
 
@@ -202,12 +200,10 @@ will grow continuously. Migrating early prevents technical debt accumulation.
 Git provides file-level history but not row-level history. A Supabase audit log
 trigger addresses this gap at the row level.
 
-- [ ] Create `public.register_audit_log` table:
-      `(id, table_name, row_id, changed_by, changed_at, old_row JSONB, new_row JSONB)`
-- [ ] Apply a generic `func_audit_log_trigger()` function to all governance
-      register tables
-- [ ] Reference `supabase-postgres-best-practices` `security-` prefix rules for
-      trigger security context
+- [x] Created `public.register_audit_log` with BIGSERIAL PK, JSONB old/new snapshots, compound index
+- [x] Created `func_audit_log_trigger()` — SECURITY DEFINER, extracts PK across all governance table naming conventions
+- [x] Applied to all 6 governance tables: `audits`, `risks`, `nonconformities`, `corrective_actions`, `suppliers`, `assets`
+- [x] `supabase db reset` exit 0 — all triggers verified
 
 ### REC-09 [260309-governance-register-infrastructure] — Update Risk Register with cross-links to supplier and asset tables
 
@@ -216,10 +212,9 @@ trigger addresses this gap at the row level.
 The Risk Register references `PROC-03`, `CA-005`, etc. as plain text. In
 Supabase these become foreign keys.
 
-- [ ] Create `public.risks` with optional FK columns: `related_asset_id`,
-      `related_ca_id`, `related_nc_id`
-- [ ] Migrate all 17 risk rows; populate FKs where applicable (R-008 links to
-      SA-001 Supabase supplier; R-012 links to CA-005)
+- [x] Added FK constraints to existing `public.risks`: `related_asset_id → assets`, `related_ca_id → corrective_actions`, `related_nc_id → nonconformities` (all ON DELETE SET NULL)
+- [x] Migrated all 17 risks with evidence_url for all Ongoing risks (required by REC-25 CHECK constraint); FK cross-links applied: R-001→HW-001, R-003→SA-001, R-004→SA-002, R-006→PA-001, R-008→SA-001, R-012→CA-005/NC-005
+- [x] `supabase db reset` exit 0 — seed data verified
 
 ### REC-10 [260309-governance-register-infrastructure] — Migrate Training Records to Supabase
 
