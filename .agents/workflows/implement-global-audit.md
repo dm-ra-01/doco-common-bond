@@ -10,6 +10,14 @@ repository block, then control returns to the agent to propose the next block.
 This keeps context safe and ensures each repo's verification gate is honoured
 before moving on.
 
+> [!IMPORTANT]
+> **Read these skills before starting any implementation session:**
+>
+> - `.agents/skills/audit-verification-gates/SKILL.md` — verification commands,
+>   coverage assessment, Destructive Operations Gate, Session Close format
+> - `.agents/skills/audit-registry/SKILL.md` — registry status values and commit
+>   conventions
+
 ---
 
 ## Step 1: Pre-Flight
@@ -39,7 +47,7 @@ before moving on.
 7. **Identify uncompleted tasks** — open `- [ ]` checkboxes in
    `recommendations.md`, grouped by target repository.
 8. **For each target repo that has open tasks**, check whether a branch already
-   exists. Use `meta` for cross-repo branch operations:
+   exists:
    ```bash
    # Using meta for cross-repo branch management:
    meta git fetch origin
@@ -79,35 +87,20 @@ For each target repository in this session's scope:
    `supabase_infrastructure_and_database_architecture`,
    `receptor_frontend_applications`).
 3. Maintain frontmatter, lint rules, and type safety constraints.
-4. **For CI secrets:** use `gh secret set` via the gh CLI — no manual GitHub
-   portal step is required:
-   ```bash
-   gh secret set SECRET_NAME --body "value" --repo owner/repo-name
-   ```
-   The DSNs and other credentials are in the Agent Clarifications table or in
-   the relevant finding section.
-5. **For new tooling (e.g. Renovate):** use the self-hosted GitHub Actions
-   approach (`renovatebot/github-action`) rather than installing a GitHub App.
-   Agents can set this up autonomously without any OAuth or organisation-level
-   permission grant.
-6. **Run the repo-specific verification gate before committing:**
-
-   | Repo type         | Verification command                                  |
-   | :---------------- | :---------------------------------------------------- |
-   | Docusaurus site   | `npm run build`                                       |
-   | Python backends   | `pytest`                                              |
-   | Next.js frontends | `npx tsc --noEmit` and `npm run test`                 |
-   | Supabase          | `supabase db reset`, `supabase test db`, `deno check` |
-
-7. **Commit to that repo's `audit/YYMMDD-slug` branch**, using `fix` or `chore`
+4. **For CI secrets and the Destructive Operations Gate** (especially important
+   when using `meta` for cross-repo bulk operations): see
+   `.agents/skills/audit-verification-gates/SKILL.md`.
+5. **Run the repo-specific verification gate before committing** — see
+   `.agents/skills/audit-verification-gates/SKILL.md` for the canonical command
+   per repo type.
+6. **Commit to that repo's `audit/YYMMDD-slug` branch**, using `fix` or `chore`
    prefix (not `feat` — these are compliance improvements, not new features):
    ```bash
    git add <files>
    git commit -m "fix(YYMMDD-slug): implement CROSS-NN — <short description>"
    git push origin audit/YYMMDD-slug
    ```
-
-8. Only move on to the next repository after the current one is committed and
+7. Only move on to the next repository after the current one is committed and
    pushed.
 
 ---
@@ -117,16 +110,13 @@ For each target repository in this session's scope:
 1. **Cross off completed tasks** in `recommendations.md` (in `common-bond`) with
    an `x`.
 2. **Update the registry status** in
-   `documentation/common-bond/docs/audits/audit-registry.md`:
+   `documentation/common-bond/docs/audits/audit-registry.md` — see
+   `.agents/skills/audit-registry/SKILL.md`:
 
    | Situation                                  | Status to set                                                     |
    | :----------------------------------------- | :---------------------------------------------------------------- |
    | At least one task implemented this session | 🔧 Implementing                                                   |
    | All tasks complete or formally deferred    | ✅ Closed (only after `/finalise-global-audit` re-audit confirms) |
-
-   > [!IMPORTANT]
-   > Only `/finalise-global-audit` should set `✅ Closed`. Implementation agents
-   > set `🔧 Implementing` and leave the final close to the re-audit step.
 
 3. Commit the updated `recommendations.md` and `audit-registry.md` to
    `common-bond`'s `audit/YYMMDD-slug` branch:
@@ -143,21 +133,9 @@ For each target repository in this session's scope:
 
 ## Step 5: Session Close Brief
 
-Append a **Session Close** section to `recommendations.md`:
-
-```markdown
-## Session Close — [YYYY-MM-DD]
-
-**Completed:** [Finding IDs marked done this session] **Remaining:** [Open
-finding IDs with target repo, or "None — audit complete"] **Blocked:** [Finding
-IDs blocked on external action with reason, or "None"] **PR order note:** [If
-multiple repos need PRs and one depends on another, note the merge order here —
-e.g. "Merge supabase-receptor first; planner-frontend schema imports depend on
-it"] **Brief for next agent:** [What the next agent needs upfront — new
-decisions made during implementation that should be added to the Agent
-Clarifications table, any skipped verification steps with reason, files
-refactored mid-session]
-```
+Append a **Session Close** section to `recommendations.md` — see
+`.agents/skills/audit-verification-gates/SKILL.md` for the required format
+(Completed / Remaining / Blocked / PR order note / Brief for next agent).
 
 ---
 
@@ -180,7 +158,7 @@ When the audit is complete and it is time to raise PRs across multiple repos,
 
 If the final session completes **all remaining tasks**, transition to the
 `/finalise-global-audit` workflow to perform the re-audit, raise PRs in the
-correct order, merge, and archive the audit files.
+correct order, merge, and archive.
 
 ---
 
@@ -199,31 +177,7 @@ correct order, merge, and archive the audit files.
 > [!NOTE]
 > `meta` is configured for global repository access across the ecosystem. Use
 > `meta git <command>` to run git operations across all repos simultaneously,
-> and `meta gh pr create` to raise PRs in bulk. This is particularly useful for
-> cross-cutting changes (e.g. adding `robots.txt` to all three frontends) that
-> can be committed in parallel.
-
----
-
-## Destructive Operations Gate
-
-Before executing any operation that **cannot be easily reversed**, pause and use
-`notify_user` to confirm with the user. This applies across all repos in the
-scope. Operations requiring explicit approval:
-
-| Operation type                           | Examples                                                                              |
-| :--------------------------------------- | :------------------------------------------------------------------------------------ |
-| Deleting or removing data stores         | Removing IndexedDB storage, clearing caches, dropping columns                         |
-| Removing or rewriting auth flows         | Changing `authExchange`, modifying session handling, altering middleware              |
-| Removing dependencies                    | Uninstalling packages that other code may depend on                                   |
-| Rewriting core infrastructure files      | `next.config.ts`, `layout.tsx`, `client.ts`, `globals.css`                            |
-| Setting CI secrets across multiple repos | Confirm the correct value and all target repos before running `gh secret set` in bulk |
-| Any finding marked as 🔴 Critical        | Always surface the implementation plan before executing                               |
-
-> [!WARNING]
-> Cross-repo operations via `meta` can affect multiple repositories
-> simultaneously. Be especially cautious with `meta git` commands that write
-> state — run them repo-by-repo if you are uncertain, rather than in bulk.
+> and `meta gh pr create` to raise PRs in bulk.
 
 ---
 
@@ -235,27 +189,21 @@ scope. Operations requiring explicit approval:
 
 2. **Raise concerns, don't suppress them.** If a recommendation seems
    inappropriate, risky, overly broad, or premature — say so in `notify_user`.
-   Surface your reasoning. You are a collaborator, not a script runner.
+   Surface your reasoning.
 
 3. **Check the Agent Clarifications table first.** Many questions about
    approach, tooling, approved exemptions, and reference implementations are
-   already answered there. Do not re-ask documented decisions.
+   already answered there.
 
 4. **Verification gates are not optional.** Run the appropriate gate for each
-   repo before committing, even when changes seem trivial. A type error or build
-   failure is far cheaper to find before commit than after a cross-repo PR.
+   repo before committing.
 
 5. **Exemptions are intentional decisions.** If the Agent Clarifications table
-   records an approved exemption for a finding (e.g. Geist font for
-   `preference-frontend`), do not implement that finding anyway. Exemptions are
-   not mistakes to fix.
+   records an approved exemption for a finding, do not implement that finding.
 
-6. **One repo per commit.** Do not batch changes across multiple repos into a
-   single operation. Each repo is committed, verified, and pushed independently.
-   This preserves the ability to roll back a single repo's changes without
-   affecting others.
+6. **One repo per commit.** Each repo is committed, verified, and pushed
+   independently.
 
 7. **Severity decisions belong to the human.** If during implementation you
-   discover that a finding is more serious than documented (or less serious),
-   surface this in `notify_user` before proceeding. Do not reclassify severity
-   or expand scope unilaterally.
+   discover that a finding is more or less serious than documented, surface this
+   in `notify_user` before proceeding.
