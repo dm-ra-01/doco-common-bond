@@ -28,7 +28,7 @@ const config: Config = {
   // environment variables (or .env.local for local dev).
   customFields: {
     supabaseUrl: process.env.SUPABASE_URL ?? 'https://wbpqompuqeauckdctemj.supabase.co',
-    supabasePublishableKey: process.env.SUPABASE_PUBLISHABLE_KEY ?? '',
+    supabasePublishableKey: process.env.SUPABASE_PUBLISHABLE_KEY ?? 'sb_publishable_qn-mf8pgZk0iMgkP5JbiuQ_M7Z5AYYR',
   },
 
   presets: [
