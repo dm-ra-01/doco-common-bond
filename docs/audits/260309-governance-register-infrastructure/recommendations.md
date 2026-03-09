@@ -61,6 +61,7 @@ are authoritative for all implementing agents — do not re-ask these questions.
 | Q18 | Docusaurus production URL | **`https://docs.commonbond.au`** — add to Supabase `supabase-common-bond` CORS allowed origins |
 | Q19 | DPA execution workflow | **Agent sets status to `⏳ Pending execution — action required`**, then raises a GitHub issue on `dm-ra-01/doco-common-bond` for each DPA requiring Ryan's out-of-band execution |
 | Q20 | CI/CD for `supabase-common-bond` | **Full mirror of `supabase-receptor` CI** — `supabase db diff` check on PR, `supabase db push` on merge, ephemeral local Supabase via `act`, pgTAP tests |
+| Q21 | `supabase-common-bond` project ref ID | **`wbpqompuqeauckdctemj`** — created 2026-03-09 by Ryan; Sydney `ap-southeast-2`, Pro tier. Use `supabase link --project-ref wbpqompuqeauckdctemj` to link the local CLI. |
 
 
 
