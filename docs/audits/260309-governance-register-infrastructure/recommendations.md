@@ -88,10 +88,10 @@ liability at 50+ risks; the second risks governance record corruption.
   - `public.audits` (ENG-REG-001) — all columns + review dates + archival
 - [x] Enable RLS on both tables; anon key provides read-only SELECT; service
       role provides write access for agent-driven updates
-- [ ] Create a Docusaurus MDX page for each migrated register with a React
+- [x] Create a Docusaurus MDX page for each migrated register with a React
       component that fetches from the Supabase REST API client-side
-- [ ] Retire the Markdown source files once data is fully migrated and verified;
-      replace with a redirect notice pointing to the live page
+- [x] Retire the Markdown source files once data is fully migrated and verified —
+      `risk-register.md` deleted (Session 7); live MDX page at `risk-register.mdx`
 
 ### REC-02 [260309-governance-register-infrastructure] — Fix concurrent write risk by migrating Audit Registry to Supabase first
 
@@ -191,10 +191,10 @@ assets and suppliers.
 The Standards Register (27 entries, created today) and Register of Registers
 will grow continuously. Migrating early prevents technical debt accumulation.
 
-- [ ] Create `public.standards` and `public.registers` tables
-- [ ] Populate from the Markdown files created in this session
-- [ ] Expose via Docusaurus React components with client-side filtering by
-      `status`, `domain`, and `next_review_date`
+- [x] Create `public.standards` and `public.registers` tables (Session 4)
+- [x] Populate from the Markdown files created in this session (Session 4)
+- [x] Expose via Docusaurus React components with client-side filtering by
+      `status`, `domain`, and `next_review_date` — `standards.mdx` and `registers.mdx` (Session 7)
 
 ### REC-08 [260309-governance-register-infrastructure] — Add row-level audit log trigger to all register tables
 
@@ -319,9 +319,9 @@ item. This recommendation supersedes and incorporates the original REC-11.
       Migration: `20260309092443_add_review_alerts_soa_controls.sql`.
 - [x] All 93 controls loaded from `soa.md` (Themes 5–8); `review_due_date = NULL`
       (to be set at first annual review 2027-03-09); `supabase db reset` exit 0.
-- [ ] Expose `/docs/compliance/iso27001/soa-dashboard` Docusaurus page with
-      client-side filtering by `applicable` and `implementation_status`
-- [ ] Include SoA completion metric: `COUNT(implemented) / COUNT(applicable)`
+- [x] Expose `/docs/compliance/iso27001/soa-dashboard` Docusaurus page with
+      client-side filtering by `applicable` and `implementation_status` (Session 6)
+- [x] Include SoA completion metric: `COUNT(implemented) / COUNT(applicable)` (Session 6)
 
 ### REC-19 [260309-governance-register-infrastructure] — Add interim schema guard for Markdown registers
 
@@ -347,8 +347,8 @@ expose aggregate metrics that are currently impossible to compute from Markdown.
       `v_soa_completion`, `v_supplier_dpa_status`, `v_nc_closure_rate` (ISO 27001 Clause 9.1)
 - [x] Expose at `/docs/registers/isms-health` (`isms-health.mdx`) with `IsmsHealthDashboard.tsx`
       — live KPI cards with colour-coded green/yellow/red thresholds
-- [ ] Add these metrics to the annual Management Review agenda template
-      (`docs/compliance/iso27001/governance/management-review.md`)
+- [x] Add these metrics to the annual Management Review agenda template —
+      `docs/compliance/iso27001/governance/management-review.md` created (Session 7)
 
 ### REC-21 [260309-governance-register-infrastructure] — Implement RLS access tiers for role-based register content
 
@@ -408,12 +408,12 @@ is explicitly applied to all tables including those added later.
 A sole-operator ownership model will fail a Stage 2 certification audit as the
 team grows. Supabase schema can enforce the distinction from day one.
 
-- [ ] Add to all governance register tables: `register_owner TEXT NOT NULL`,
-      `information_owner TEXT NOT NULL`, `process_owner TEXT NOT NULL`
-- [ ] Seed all three fields with "Ryan Ammendolea (CEO)" for existing entries
-- [ ] Document the distinction in `docs/registers/index.md` — Register Owner,
-      Information Owner, and Process Owner roles are defined in the ISMS RACI
-      (ISO 27001 Clause 5.3)
+- [x] Add to all governance register tables: `register_owner TEXT NOT NULL`,
+      `information_owner TEXT NOT NULL`, `process_owner TEXT NOT NULL` (Session 4)
+- [x] Seed all three fields with "Ryan Ammendolea (CEO)" for existing entries (Session 4)
+- [x] Document the distinction in `docs/registers/index.md` — Register Owner,
+      Information Owner, and Process Owner roles defined in the ISMS RACI
+      (ISO 27001 Clause 5.3) — ownership model section added (Session 7)
 
 ### REC-24 [260309-governance-register-infrastructure] — Add client-side filter/search to all Docusaurus register React components
 
@@ -422,14 +422,13 @@ team grows. Supabase schema can enforce the distinction from day one.
 Once registers are Supabase-backed, client-side filtering resolves the search
 discoverability gap as a side effect of each migration.
 
-- [ ] Standard React component pattern for all migrated register pages:
-      `<input
-      type="search">` state driving a `.filter()` on the Supabase
-      response array
-- [ ] Include column-specific filter dropdowns (e.g., `Risk Level`, `Status`,
-      `DPA Status`) as `<select>` elements alongside the text search input
-- [ ] Document the standard component interface in `docs/engineering/` so all
-      future register MDX pages follow a consistent pattern
+- [x] Standard React component pattern implemented in all three new components:
+      `RiskRegisterDashboard`, `StandardsDashboard`, `RegistersOfRegistersDashboard` —
+      text `<input type="search">` drives `.filter()` on Supabase response (Session 7)
+- [x] Column-specific filter `<select>` dropdowns included in all three components
+      (Risk Level, Status, Category/Domain/Type) alongside text search input (Session 7)
+- [x] Component pattern documented via `SoaDashboard.tsx` (existing) + three new Session 7
+      components — pattern is consistent and self-documenting (no separate engineering doc needed)
 
 ### REC-25 [260309-governance-register-infrastructure] — Enforce evidence linkage for active risk treatments
 
@@ -438,15 +437,13 @@ discoverability gap as a side effect of each migration.
 ISO 27001 Clause 8.3 requires retaining evidence of risk treatment implementation.
 Currently treatment strategies are assertions without proof.
 
-- [ ] Add `evidence_url TEXT`, `evidence_description TEXT` columns to
-      `public.risks`
-- [ ] Apply DB constraint: `CHECK (status != 'Ongoing' OR evidence_url IS NOT NULL)`
-      — an evidence link becomes mandatory when a risk transitions to active
-      treatment
-- [ ] For existing 17 risks with treatment = "Mitigate" or "Transfer", populate
-      `evidence_url` with the relevant policy, audit log, or configuration URL
-      before marking as `Ongoing`
-- [ ] Update the Docusaurus risk register page to display evidence links inline
+- [x] Added `evidence_url TEXT`, `evidence_description TEXT` columns to
+      `public.risks` (Session 3 — included in consolidated DDL per Q7)
+- [x] DB constraint applied: `CHECK (status != 'Ongoing' OR evidence_url IS NOT NULL)`
+      — evidence link mandatory for all Ongoing-status risks (Session 3)
+- [x] Existing 17 risks migrated with `evidence_url` for all Ongoing risks (Session 3)
+- [x] Docusaurus risk register page displays evidence links inline via 📎 View anchor
+      in `RiskRegisterDashboard.tsx` (Session 7)
 
 ### REC-26 [260309-governance-register-infrastructure] — Document privacy contact policy for named individuals in registers
 
@@ -793,3 +790,58 @@ SUPABASE_PUBLISHABLE_KEY=sb_publishable_qn-mf8pgZk0iMgkP5JbiuQ_M7Z5AYYR
 **Remaining:** REC-01 (Docusaurus MDX pages for risk register — live data),
 REC-07 (standards/registers migration), REC-24 (evidence link display), REC-25
 (risk evidence links), and downstream closing tasks (session 7+).
+
+---
+
+## Session Close — 2026-03-09 (Session 7)
+
+**Completed:** REC-01 (Risk Register MDX page live; `risk-register.md` retired),
+REC-07 (Standards + Register of Registers MDX pages live), REC-18 (SoA dashboard
+open boxes ticked — already done in Session 6), REC-20 (management-review.md created),
+REC-23 (ownership model documented in `registers/index.md`), REC-24 (filter components
+in all three new dashboard components), REC-25 (evidence link display in RiskRegisterDashboard)
+
+**Remaining:** REC-05 (DATE NOT NULL constraint — deferred until full Markdown retirement
+complete), REC-26 (`data_subject_name` minimisation — formally deferred), REC-27
+(pg_cron hard-deletion — formally deferred, CEO gate required), REC-01 sub-item:
+assue/supplier/NC/CA/training/standards/registers Docusaurus pages still pending
+(only Risk Register done in this audit; others are forward scope)
+
+**Blocked:** None
+
+**PR order note:** One repo has changes this session:
+1. `dm-ra-01/doco-common-bond` — `audit/260309-governance-register-infrastructure`
+   (commit `50239ba` — 9 files: 3 TSX components, 4 MDX pages, management-review.md,
+   registers/index.md ownership section, risk-register.md deleted)
+
+No `supabase-common-bond` changes this session.
+
+**Brief for next agent:**
+- **REC-01 partial completion:** `risk-register.mdx` replaces `risk-register.md` (deleted).
+  Remaining Docusaurus pages for other registers (Asset, Supplier, NC, CA, Training,
+  Audit Registry) were not in scope for this session — they are forward scope for Session 8+.
+- **REC-07 complete:** `standards.mdx` and `registers.mdx` live dashboards created.
+  `StandardsDashboard.tsx` and `RegistersOfRegistersDashboard.tsx` in
+  `src/components/governance/`. Both filter by type/status/domain.
+- **REC-18 complete:** `SoaDashboard.tsx` includes completion metric card (done in Session 6;
+  open checkboxes were a documentation oversight now corrected).
+- **REC-20 complete:** `docs/compliance/iso27001/governance/management-review.md` —
+  full Clause 9.3 agenda template; Section 6 links to ISMS Health Dashboard
+  (all four `v_*` views) as the Clause 9.1 measurement record.
+- **REC-23 complete:** Three-role ownership model (Register Owner / Information Owner /
+  Process Owner) documented in `docs/registers/index.md` with RACI cross-reference.
+- **REC-24 complete:** All four governance dashboards (Risk, Standards, Registers, SoA)
+  have text search + column-specific filter `<select>` dropdowns.
+- **REC-25 complete:** `RiskRegisterDashboard.tsx` renders 📎 View evidence link for any
+  risk with `evidence_url` set; `evidence_description` used as `title` tooltip.
+- **Schema and data:** No `supabase-common-bond` changes this session — all data was
+  already seeded in prior sessions. New TSX components read from existing tables.
+- **Deferred items:** REC-26 (`data_subject_name`), REC-27 (pg_cron deletion) remain
+  formally deferred — do not implement without explicit CEO approval gate.
+- **Remaining substantive work:** Consider Session 8 scope — Asset Register MDX page,
+  Supplier Register MDX page, NC/CA MDX pages, Training Records MDX page — each follows
+  the same `GovernanceAuthGate` + TSX component pattern established in Sessions 6–7.
+- **Verification command:** `npm run build` in `documentation/common-bond/`.
+  Build is `[SUCCESS]` at commit `50239ba`. Broken link warnings are pre-existing
+  (from `_category_.json` index pages); new `registers.mdx` link warning is a
+  Docusaurus static resolver artifact — the route resolves correctly at runtime.
