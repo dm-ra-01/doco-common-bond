@@ -865,3 +865,31 @@ No `supabase-common-bond` changes this session.
   Build is `[SUCCESS]` at commit `50239ba`. Broken link warnings are pre-existing
   (from `_category_.json` index pages); new `registers.mdx` link warning is a
   Docusaurus static resolver artifact — the route resolves correctly at runtime.
+
+---
+
+## Session Close — 2026-03-09 (Finalise)
+
+**Completed:** All 28 recommendations implemented or formally deferred. `re-audit.md`
+updated with full implementation re-audit (supersedes findings-issued re-audit).
+`audit-registry.md` updated to `✅ Closed`. `public.audits` row upserted in
+`supabase-common-bond` with status `Closed`.
+
+**Remaining:** None — audit is complete.
+
+**Blocked:** None.
+
+**PR order note:**
+1. `dm-ra-01/doco-common-bond` PR #11 — finalise commit (re-audit.md, recommendations.md session close, audit-registry.md) → merge first
+2. `dm-ra-01/supabase-common-bond` PR #1 — no new commits needed; all schema work previously pushed → merge independently
+
+**Deferred items formally closed:**
+- REC-05 sub-item (DATE NOT NULL constraint): deferred until full Markdown retirement — accepted
+- REC-10 seed data (no training history): no data to migrate — accepted
+- REC-26 data_subject_name minimisation: satisfactory as implemented per ISO 27001 Clause 5.3 and 7.2 — accepted
+- REC-27 pg_cron hard-deletion: cancelled by CEO directive — `archived_at` soft-archival IS the retention mechanism
+
+**Brief for next agent:** Audit fully closed. Archive step moves
+`docs/audits/260309-governance-register-infrastructure/` to
+`docs/audits/archive/260309-governance-register-infrastructure/` on `main` after
+PRs are merged.
