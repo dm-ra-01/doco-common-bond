@@ -2,6 +2,27 @@
 description: Audit a feature, section, or technical area; save audit.md and recommendations.md to ./docs/audits/[YYMMDD-slug]/ (or archive/ for repo-local)
 ---
 
+## Agent Infrastructure Compliance
+
+> [!IMPORTANT]
+> At the start of **every** audit (whether run on `common-bond` itself or on a
+> target repo), verify the target repo's agent infrastructure against the
+> standard defined in:
+> `documentation/common-bond/docs/engineering/agent-infrastructure.md`
+>
+> Check all four conditions. Any failure is a 🟠 finding in this audit:
+>
+> 1. **Three workflow stubs exist:** `audit-workflow.md`,
+>    `implement-audit-workflow.md`, `finalise-local-audit.md` in
+>    `.agents/workflows/`
+> 2. **Skills referenced by absolute dev-environment path** — no relative
+>    `.agents/skills/` references in any workflow file
+> 3. **No orphaned local skill copies** — `.agents/skills/` should be absent or
+>    empty
+> 4. **No rules that should be skills** — `.agents/rules/` should not contain
+>    cross-ecosystem standards (those belong in
+>    `dev-environment/.agents/skills/`)
+
 ## Overview
 
 Two modes:
@@ -23,6 +44,16 @@ Produce two documents for the stated scope:
 >   protocol
 > - `/Users/ryan/development/common_bond/antigravity-environment/dev-environment/.agents/skills/audit-registry/SKILL.md`
 >   — registry location, status values, commit conventions
+>
+> **For audits involving database schema, governance register migration, or
+> Supabase/Postgres configuration (primary focus of this repo):**
+>
+> - `/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/.agents/skills/supabase-postgres-best-practices/SKILL.md`
+>   — schema design, RLS, indexing, and query optimisation best practices
+>
+> **For cross-ecosystem audits spanning multiple repositories**, use the
+> `/global-audit` workflow instead of this one. This `audit-workflow.md` is
+> scoped to audits **within** the `common-bond` documentation repository.
 
 ---
 

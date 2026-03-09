@@ -85,6 +85,11 @@ const config: Config = {
               sidebarId: 'complianceSidebar',
               label: 'Compliance',
             },
+            {
+              type: 'docSidebar',
+              sidebarId: 'registersSidebar',
+              label: 'Registers',
+            },
           ],
         },
         {

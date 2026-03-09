@@ -44,17 +44,19 @@ priority action.** Status columns below track progress.
 
 ### Supabase (Database & Backend Infrastructure)
 
-| Field                   | Detail                                                                                                                                                                                    |
-| ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Service**             | PostgreSQL database, authentication, storage, edge functions                                                                                                                              |
-| **Data Processed**      | Workforce Admin PII, Worker PII, authentication credentials                                                                                                                               |
-| **Classification**      | Confidential                                                                                                                                                                              |
-| **Hosting**             | AWS (US, EU regions)                                                                                                                                                                      |
-| **Criticality**         | Critical — platform unavailability without this service                                                                                                                                   |
-| **Security Trust Page** | [supabase.com/security](https://supabase.com/security)                                                                                                                                    |
-| **DPA Status**          | ⚠️ Not executed — **Action required**                                                                                                                                                     |
-| **DPA Action**          | Execute Supabase's Data Processing Agreement at [supabase.com/legal/dpa](https://supabase.com/legal/dpa). Australian customers are covered under AWS Standard Contractual Clauses (SCCs). |
-| **Last Reviewed**       | 2026-03-05                                                                                                                                                                                |
+| Field                        | Detail                                                                                                                                                                                    |
+| ---------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Service**                  | PostgreSQL database, authentication, storage, edge functions                                                                                                                              |
+| **Data Processed**           | Workforce Admin PII, Worker PII, authentication credentials                                                                                                                               |
+| **Classification**           | Confidential                                                                                                                                                                              |
+| **Hosting**                  | AWS — Sydney (`ap-southeast-2`) region available for Australian data residency                                                                                                            |
+| **Criticality**              | Critical — platform unavailability without this service                                                                                                                                   |
+| **Security Trust Page**      | [supabase.com/security](https://supabase.com/security)                                                                                                                                    |
+| **Certifications**           | ✅ SOC 2 Type 2 (annual), ✅ HIPAA (with BAA on Team/Enterprise), ✅ PCI DSS, ✅ GDPR. ❌ **ISO 27001 not held** — see §4.1 ISO 27001 Compliance Assessment below.                         |
+| **DPA Status**               | ⚠️ Not executed — **Action required**                                                                                                                                                     |
+| **DPA Action**               | Execute Supabase's Data Processing Agreement at [supabase.com/legal/dpa](https://supabase.com/legal/dpa). Australian customers are covered under AWS Standard Contractual Clauses (SCCs). |
+| **ISO 27001 Risk Assessment**| Supabase does not hold ISO 27001. SOC 2 Type 2 provides equivalent control assurance for the governance register use case (internal operational metadata, not customer PII). If a Stage 2 auditor requires ISO 27001 certification for all sub-processors, see §4.1 for assessed alternatives. |
+| **Last Reviewed**            | 2026-03-09                                                                                                                                                                                |
 
 ---
 
@@ -146,6 +148,63 @@ _Added 2026-03-09 per audit `260307-iso27001-ai-gaps` REC-AI-04._
 > **GitHub Copilot — Exclusion Note:** GitHub Copilot is **not in use** at
 > Common Bond. No supplier register entry is required. Confirmed 2026-03-07.
 > Re-confirm at next annual review.
+
+### 4.1 ISO 27001 Compliance Assessment — Governance Database Alternatives
+
+::: info[Assessment Context]
+
+This assessment was performed on 2026-03-09 for the `supabase-common-bond`
+governance register migration (audit `260309-governance-register-infrastructure`).
+The governance database stores internal operational metadata (risks, NCs,
+corrective actions, SoA controls, audit entries, training records) — **not**
+customer PII or PHI.
+
+:::
+
+**The question:** Does Common Bond require an ISO 27001-certified database
+provider for governance registers?
+
+**Answer:** No — for internal operational metadata, SOC 2 Type 2 provides
+equivalent control assurance. ISO 27001 does not require sub-processors to
+*hold* ISO 27001; it requires the organisation to *assess* their security
+posture (Clause A.5.19–A.5.23). SOC 2 Type 2 satisfies this assessment
+requirement. However, if a Stage 2 certification auditor explicitly requires
+ISO 27001 certification for all sub-processors, the following alternatives have
+been evaluated:
+
+| Provider | ISO 27001 | SOC 2 Type 2 | Postgres Compatible | AU Data Residency | RLS | Auth Built-in | Governance Suitability |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| **Supabase** (current) | ❌ | ✅ | ✅ Native Postgres | ✅ Sydney `ap-southeast-2` | ✅ Native | ✅ GoTrue | ✅ Best fit — existing ecosystem, RLS, auth, Edge Functions |
+| **Cloudflare D1** | ✅ (via parent) | ✅ | ❌ SQLite | ✅ Global / jurisdiction controls | ❌ | ❌ (Workers Auth) | ⚠️ SQLite — no native RLS, triggers, or JSONB. Would require rewriting all audit recommendations. Already an existing supplier. |
+| **Neon** | ✅ | ✅ | ✅ Native Postgres | ⚠️ AWS regions — no explicit AU region listed | ✅ Native | ❌ | ✅ Drop-in Postgres replacement. Strong compliance. No built-in auth (would need Supabase Auth or separate IdP). |
+| **Azure Database for PostgreSQL** | ✅ | ✅ | ✅ Native Postgres | ✅ Australia East (Sydney) | ✅ Native | ❌ (Azure AD) | ✅ Gold standard for compliance. Highest operational overhead. IRAP-assessed for AU public sector. |
+| **PlanetScale** | ❌ | ✅ | ⚠️ MySQL/Vitess (now also managed PG) | ⚠️ Limited region selection | ❌ | ❌ | ⚠️ MySQL-first heritage. PG offering is new. No ISO 27001. |
+
+**Recommendation hierarchy:**
+
+1. **Default: Supabase** — SOC 2 Type 2 is sufficient for governance register
+   data. Existing ecosystem integration (auth, RLS, Edge Functions, existing
+   supplier relationship) makes it the lowest-friction option.
+2. **If ISO 27001 is mandated by auditor: Neon** — drop-in Postgres replacement
+   with ISO 27001 + ISO 27701 + SOC 2 Type 2. Requires adding a separate auth
+   solution (Supabase Auth can be used independently).
+3. **If AU government/IRAP is required: Azure Database for PostgreSQL** — highest
+   compliance ceiling (ISO 27001, SOC 2, IRAP). Highest operational overhead and
+   cost. Would require Azure AD integration.
+4. **Cloudflare D1** — not recommended for this use case. SQLite limitations
+   (no RLS, no triggers, no JSONB, no `CHECK` constraints) would invalidate the
+   entire recommendation stack from the governance audit. Only suitable for
+   key-value or simple lookup workloads.
+
+::: warning[Conditional Risk — R-NEW]
+
+If a Stage 2 ISO 27001 certification auditor requires all sub-processors to hold
+ISO 27001 certification, the governance database will need to be migrated from
+Supabase to Neon or Azure Database for PostgreSQL. This risk should be registered
+in the Risk Register as a conditional item once `supabase-common-bond` is
+created.
+
+:::
 
 ## 5. Supplier Review Process
 
