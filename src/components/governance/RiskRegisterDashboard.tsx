@@ -13,7 +13,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useSupabaseClient } from '../../lib/supabase';
 
 interface Risk {
-    id: string;
+    risk_id: string;
     title: string;
     category: string;
     likelihood: number;
@@ -83,10 +83,10 @@ export function RiskRegisterDashboard() {
         }
         supabase
             .from('risks')
-            .select('id,title,category,likelihood,impact,risk_level,status,treatment_strategy,evidence_url,evidence_description,owner,review_due_date,archived_at')
+            .select('risk_id,title,category,likelihood,impact,risk_level,status,treatment_strategy,evidence_url,evidence_description,owner,review_due_date,archived_at')
             .is('archived_at', null)
             .order('risk_level', { ascending: false })
-            .order('id')
+            .order('risk_id')
             .then(({ data, error: e }) => {
                 if (e) { setError(e.message); } else { setRisks(data as Risk[]); }
                 setLoading(false);
@@ -101,7 +101,7 @@ export function RiskRegisterDashboard() {
         if (filterStatus !== 'all' && r.status !== filterStatus) return false;
         if (filterLevel !== 'all' && r.risk_level !== filterLevel) return false;
         if (filterCategory !== 'all' && r.category !== filterCategory) return false;
-        if (search && !r.id.toLowerCase().includes(search.toLowerCase()) &&
+        if (search && !r.risk_id.toLowerCase().includes(search.toLowerCase()) &&
             !r.title.toLowerCase().includes(search.toLowerCase())) return false;
         return true;
     }), [risks, filterStatus, filterLevel, filterCategory, search]);
@@ -182,8 +182,8 @@ export function RiskRegisterDashboard() {
                     </thead>
                     <tbody>
                         {filtered.map(r => (
-                            <tr key={r.id} style={{ borderBottom: '1px solid #f3f4f6' }}>
-                                <td style={{ padding: '7px 12px', fontWeight: 600, whiteSpace: 'nowrap' }}>{r.id}</td>
+                            <tr key={r.risk_id} style={{ borderBottom: '1px solid #f3f4f6' }}>
+                                <td style={{ padding: '7px 12px', fontWeight: 600, whiteSpace: 'nowrap' }}>{r.risk_id}</td>
                                 <td style={{ padding: '7px 12px' }}>{r.title}</td>
                                 <td style={{ padding: '7px 12px', color: '#6b7280', whiteSpace: 'nowrap' }}>{r.category}</td>
                                 <td style={{ padding: '7px 12px' }}><Badge label={r.risk_level} colors={LEVEL_COLORS} /></td>

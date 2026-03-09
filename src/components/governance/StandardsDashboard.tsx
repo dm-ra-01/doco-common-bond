@@ -11,7 +11,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useSupabaseClient } from '../../lib/supabase';
 
 interface Standard {
-    id: string;
+    standard_id: string;
     title: string;
     domain: string;
     standard_type: string;
@@ -72,10 +72,10 @@ export function StandardsDashboard() {
         }
         supabase
             .from('standards')
-            .select('id,title,domain,standard_type,version,status,owner,review_due_date,last_reviewed,archived_at')
+            .select('standard_id,title,domain,standard_type,version,status,owner,review_due_date,last_reviewed,archived_at')
             .is('archived_at', null)
             .order('domain')
-            .order('id')
+            .order('standard_id')
             .then(({ data, error: e }) => {
                 if (e) { setError(e.message); } else { setStandards(data as Standard[]); }
                 setLoading(false);
@@ -90,7 +90,7 @@ export function StandardsDashboard() {
         if (filterDomain !== 'all' && s.domain !== filterDomain) return false;
         if (filterStatus !== 'all' && s.status !== filterStatus) return false;
         if (filterType !== 'all' && s.standard_type !== filterType) return false;
-        if (search && !s.id.toLowerCase().includes(search.toLowerCase()) &&
+        if (search && !s.standard_id.toLowerCase().includes(search.toLowerCase()) &&
             !s.title.toLowerCase().includes(search.toLowerCase())) return false;
         return true;
     }), [standards, filterDomain, filterStatus, filterType, search]);
@@ -166,8 +166,8 @@ export function StandardsDashboard() {
                     </thead>
                     <tbody>
                         {filtered.map(s => (
-                            <tr key={s.id} style={{ borderBottom: '1px solid #f3f4f6' }}>
-                                <td style={{ padding: '7px 12px', fontWeight: 600, whiteSpace: 'nowrap' }}>{s.id}</td>
+                            <tr key={s.standard_id} style={{ borderBottom: '1px solid #f3f4f6' }}>
+                                <td style={{ padding: '7px 12px', fontWeight: 600, whiteSpace: 'nowrap' }}>{s.standard_id}</td>
                                 <td style={{ padding: '7px 12px' }}>{s.title}</td>
                                 <td style={{ padding: '7px 12px', color: '#6b7280' }}>{s.domain}</td>
                                 <td style={{ padding: '7px 12px', color: '#6b7280' }}>{s.standard_type}</td>
