@@ -40,6 +40,20 @@ function Badge({ label, colors }: { label: string; colors: Record<string, { bg: 
     );
 }
 
+/**
+ * Normalises a URL stored in Supabase:
+ * - Absolute URLs (http/https) are returned unchanged.
+ * - Relative paths that already start with '/' are returned unchanged.
+ * - Bare relative paths (e.g. 'docs/audits/...') get a leading '/' so
+ *   they always resolve from the site root, not from the current page.
+ */
+function resolveUrl(url: string): string {
+    if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('/')) {
+        return url;
+    }
+    return '/' + url;
+}
+
 export function AuditRegistryDashboard() {
     const supabase = useSupabaseClient();
     const [audits, setAudits] = useState<Audit[]>([]);
@@ -142,9 +156,9 @@ export function AuditRegistryDashboard() {
                                         : <span style={{ color: '#9ca3af' }}>—</span>}
                                 </td>
                                 <td style={{ padding: '7px 12px', whiteSpace: 'nowrap' }}>
-                                    {a.audit_url && <a href={a.audit_url} target="_blank" rel="noopener noreferrer"
+                                    {a.audit_url && <a href={resolveUrl(a.audit_url)} target="_blank" rel="noopener noreferrer"
                                         style={{ color: '#2563eb', textDecoration: 'none', fontWeight: 500, marginRight: '8px' }}>📋 Audit</a>}
-                                    {a.recommendations_url && <a href={a.recommendations_url} target="_blank" rel="noopener noreferrer"
+                                    {a.recommendations_url && <a href={resolveUrl(a.recommendations_url)} target="_blank" rel="noopener noreferrer"
                                         style={{ color: '#2563eb', textDecoration: 'none', fontWeight: 500 }}>📝 Recs</a>}
                                     {!a.audit_url && !a.recommendations_url && <span style={{ color: '#9ca3af' }}>—</span>}
                                 </td>
