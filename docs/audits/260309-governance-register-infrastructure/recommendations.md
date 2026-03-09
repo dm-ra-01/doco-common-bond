@@ -243,7 +243,7 @@ migration is a single work item._
 
 **Finding:** INFRA-01
 
-- [ ] Update
+- [x] Update
       `/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/.agents/workflows/debug-ci.md`
       line 12 — change
       `documentation/common-bond/.agents/skills/act-local-ci/SKILL.md` to
@@ -254,7 +254,7 @@ migration is a single work item._
 
 **Finding:** CONC-01
 
-- [ ] Update `docs/registers/index.md` to add a new `ENG-REG-002` row for the
+- [x] Update `docs/registers/index.md` to add a new `ENG-REG-002` row for the
       `supabase-common-bond` Supabase project once it is created, and note it as
       the persistence layer for all governance registers
 
@@ -262,7 +262,7 @@ migration is a single work item._
 
 **Finding:** SCHEMA-01
 
-- [ ] Add `ENG-STD-011` to `docs/registers/standards-register.md` — "Supabase
+- [x] Add `ENG-STD-011` to `docs/registers/standards-register.md` — "Supabase
       Governance Database Standard" covering schema requirements, RLS posture,
       and skill references for the `supabase-common-bond` project
 
@@ -274,7 +274,7 @@ The SoA is an ISO 27001 Clause 6.1.3(d) output document, not a register in the
 operational sense. Noting this distinction in the Register of Registers prevents
 external audit confusion.
 
-- [ ] Update `docs/registers/index.md` entry for `ISMS-REG-006` (SoA) to add a
+- [x] Update `docs/registers/index.md` entry for `ISMS-REG-006` (SoA) to add a
       note: "ISO 27001 Clause 6.1.3(d) output document — listed here for
       discoverability; not a transactional register. See `operations/soa.md` for
       the full control matrix."
@@ -331,10 +331,10 @@ item. This recommendation supersedes and incorporates the original REC-11.
 Until Supabase migration is complete, a rule file provides a lightweight schema
 guard.
 
-- [ ] Create `.agents/rules/register-schema.md` defining the required column set
+- [x] Create `.agents/rules/register-schema.md` defining the required column set
       for each register type: Risk Register, NC Log, CA Register, Asset
       Register, Supplier Register
-- [ ] Include: "Before adding a row to any governance register, verify all
+- [x] Include: "Before adding a row to any governance register, verify all
       mandatory columns are present per `.agents/rules/register-schema.md`"
 
 ### REC-20 [260309-governance-register-infrastructure] — Create ISMS health metrics dashboard (Clause 9.1)
@@ -483,19 +483,19 @@ The following 5 directories are orphaned copies of canonical dev-environment
 skills and must be deleted. They create a silent skill drift risk — local
 copies will diverge from canonical versions without any warning.
 
-- [ ] Verify each skill at its canonical dev-environment path first:
+- [x] Verify each skill at its canonical dev-environment path first:
   `/Users/ryan/development/common_bond/antigravity-environment/dev-environment/.agents/skills/`
-- [ ] Delete the following from `.agents/skills/`:
+- [x] Delete the following from `.agents/skills/`:
   - `act-local-ci/`
   - `adversarial-code-review/`
   - `audit-document-standards/`
   - `audit-registry/`
   - `audit-verification-gates/`
-- [ ] Update `debug-ci.md` line 12 to reference the canonical dev-environment
+- [x] Update `debug-ci.md` line 12 to reference the canonical dev-environment
   path (resolves cross-reference with INFRA-01):
   `documentation/common-bond/.agents/skills/act-local-ci/SKILL.md`
   → `/Users/ryan/development/common_bond/antigravity-environment/dev-environment/.agents/skills/act-local-ci/SKILL.md`
-- [ ] Retain `supabase-postgres-best-practices/` — this is a legitimately local
+- [x] Retain `supabase-postgres-best-practices/` — this is a legitimately local
   skill not present in dev-environment
 
 ---
@@ -522,3 +522,33 @@ copies will diverge from canonical versions without any warning.
 | 6     | REC-07, REC-09, REC-10, REC-11, REC-18, REC-24 | Migrate Standards, RoR, Risk Register, Training, SoA; filter components to all pages                                 |
 | 7     | REC-12, REC-13, REC-14, REC-15, REC-19, REC-20, REC-28 | Housekeeping, schema guard, ISMS health dashboard, delete orphaned skill copies                            |
 
+---
+
+## Session Close — 2026-03-09
+
+**Completed:** REC-12, REC-13, REC-14, REC-15, REC-19, REC-28
+
+**Remaining:** REC-01, REC-02, REC-03, REC-04, REC-05, REC-06, REC-07, REC-08,
+REC-09, REC-10, REC-17, REC-18, REC-20, REC-21, REC-22, REC-23, REC-24, REC-25,
+REC-26, REC-27 — all target `common-bond` or the new `supabase-common-bond` repo
+
+**Blocked:** None
+
+**PR order note:** All Phase 7 changes are in `common-bond` only. No cross-repo
+dependencies for this session's changes. The next session (Phase 1 — REC-01,
+REC-02) will require creating `dm-ra-01/supabase-common-bond` repo and will
+involve a separate repo's PR.
+
+**Brief for next agent:**
+- Session 1 completed all Phase 7 housekeeping items (REC-12, REC-13, REC-14,
+  REC-15, REC-19, REC-28). Verification gate: `npm run build` → `[SUCCESS]`.
+- The `supabase-common-bond` Supabase project already exists (Q21: project ref
+  `wbpqompuqeauckdctemj`, region `ap-southeast-2`, Pro tier). The GitHub repo
+  `dm-ra-01/supabase-common-bond` does **not** yet exist — create it as the
+  first step of Session 2 (Phase 1).
+- REC-28 is fully complete: 5 orphaned skill dirs deleted, `supabase-postgres-best-practices` retained.
+- REC-12 and the `debug-ci.md` INFRA-01 fix overlap — both are now resolved in the same commit.
+- No decisions required from Agent Clarifications table for next session — all
+  Phase 1 decisions (Q1–Q21) are pre-approved.
+- Proposed Session 2 scope: REC-01 (schema creation) + REC-02 (workflow update). 
+  User should confirm before Phase 1 begins.
