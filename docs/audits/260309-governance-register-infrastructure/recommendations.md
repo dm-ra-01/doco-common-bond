@@ -24,7 +24,7 @@
 | DR-01 severity                    | 🟡 Medium (approved Round 1 iterative improvement)                                                |
 | SCHEMA-04 severity                | 🟢 Low (approved Round 1 iterative improvement)                                                   |
 | MONITOR-01 severity               | 🟠 High (approved Round 2 iterative improvement)                                                  |
-| SEC-01 severity                   | 🟠 High (approved Round 2 iterative improvement)                                                  |
+| SEC-01 severity                   | 🟡 Medium (downgraded from High — site behind Cloudflare Access; finding scoped to role-based tier gap) |
 | TRAIL-02 severity                 | 🟡 Medium (approved Round 2 iterative improvement)                                                |
 | GOV-01 severity                   | 🟡 Medium (approved Round 2 iterative improvement)                                                |
 | UX-01 severity                    | 🟢 Low (approved Round 2 iterative improvement)                                                   |
@@ -198,16 +198,10 @@ Supabase these become foreign keys.
       `(id, staff_member, training_module, completed_date, expiry_date, evidence_url)`
 - [ ] Apply RLS: read-only anon, write via service role
 
-### REC-11 [260309-governance-register-infrastructure] — Migrate Statement of Applicability (SoA) to Supabase
+### REC-11 [260309-governance-register-infrastructure] — _Merged into REC-18_
 
-**Finding:** QUERY-01 (the SoA is 93 rows — the highest-value Markdown→Supabase
-migration target)
-
-- [ ] Create `public.soa_controls` table:
-      `(control_id, title, applicable BOOLEAN, justification, implementation_status, owner, last_reviewed)`
-- [ ] Parse existing `soa.md` (39KB) and load all 93 controls
-- [ ] Expose via a filterable Docusaurus component that supports
-      `applicable = true/false` and `implementation_status` filters
+_This recommendation was merged into REC-18 to eliminate duplication. The SoA
+migration is a single work item._
 
 ---
 
@@ -282,17 +276,18 @@ _Actioned in same commit as Round 1 iterative improvements._
   - Risk cross-reference: R-008 (Supabase supplier failure), R-012 (GitHub
     access failure)
 
-### REC-18 [260309-governance-register-infrastructure] — Prioritise SoA Supabase migration; add filterable control dashboard
+### REC-18 [260309-governance-register-infrastructure] — Migrate SoA to Supabase; add filterable control dashboard (incorporates REC-11)
 
-**Finding:** SOA-01
+**Finding:** SOA-01, QUERY-01
 
 The SoA (93 rows, 39KB) is the single highest-ROI Markdown→Supabase migration
-item. It must be first within Phase 6.
+item. This recommendation supersedes and incorporates the original REC-11.
 
 - [ ] Create `public.soa_controls` table:
-      `(control_id, title, applicable BOOLEAN, justification,`
+      `(control_id TEXT PK, title, applicable BOOLEAN, justification,`
       `implementation_status TEXT CHECK (...IN ('Implemented', 'Partial', 'Planned',`
       `'Not Applicable')), owner, last_reviewed DATE)`
+- [ ] Parse existing `soa.md` (39KB) and load all 93 controls
 - [ ] Expose `/docs/compliance/iso27001/soa-dashboard` Docusaurus page with
       client-side filtering by `applicable` and `implementation_status`
 - [ ] Include SoA completion metric: `COUNT(implemented) / COUNT(applicable)`
@@ -326,22 +321,22 @@ expose aggregate metrics that are currently impossible to compute from Markdown.
 - [ ] Add these metrics to the annual Management Review agenda template
       (`docs/compliance/iso27001/governance/management-review.md`)
 
-### REC-21 [260309-governance-register-infrastructure] — Implement RLS access tiers for sensitive register content
+### REC-21 [260309-governance-register-infrastructure] — Implement RLS access tiers for role-based register content
 
 **Finding:** SEC-01
 
-Governance registers contain management-level security gap details (DPA status,
-NC root causes) that should not be universally readable.
+While Cloudflare Access prevents unauthenticated access, all authenticated users
+see the same content. As the team grows, NC root causes and supplier DPA gap
+details should be restricted to management roles.
 
 - [ ] Design two access tiers in `supabase-common-bond`:
-  - **Anon/public**: summary columns only (e.g., supplier name, criticality, DPA
-    status indicator — not `root_cause`, `gap_detail`)
-  - **Authenticated (management)**: full row including sensitive columns
+  - **Standard user**: summary columns only (e.g., supplier name, criticality,
+    DPA status indicator — not `root_cause`, `gap_detail`)
+  - **Management role**: full row including sensitive columns
 - [ ] Apply RLS policies per `supabase-standards.md`:
-      `ALTER TABLE ... ENABLE
-      ROW LEVEL SECURITY; CREATE POLICY ... USING (auth.role() = 'authenticated')`
-- [ ] Add a note to the Docusaurus register pages: "Full details available after
-      sign-in" with a link to the authenticated view
+      `CREATE POLICY ... USING (auth.jwt() ->> 'role' = 'management')`
+- [ ] Add a note to the Docusaurus register pages: "Detailed findings visible
+      to management role only"
 
 ### REC-22 [260309-governance-register-infrastructure] — Confirm row-level audit log covers all register tables (extends REC-08)
 

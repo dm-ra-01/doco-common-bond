@@ -18,13 +18,14 @@ observability requirements
 
 This audit evaluates whether Docusaurus-based Markdown files are an adequate
 long-term substrate for Common Bond's governance registers. 10 registers across
-3 domains were reviewed. **28 findings** were identified: 3 critical, 11 high,
-9 medium, 5 low. The audit demonstrates conclusively that static Markdown
+3 domains were reviewed. **28 findings** were identified: 3 critical, 10 high,
+10 medium, 5 low. The audit demonstrates conclusively that static Markdown
 registers fail on queryability, cross-referencing integrity, review-date
 enforcement, consistent schema, automation integration, concurrent write safety,
-monitoring and measurement capability, access control, evidence linkage, record
-lifecycle management, and privacy compliance — all of which become
-non-trivially painful at the current register scale of 10+ tracked entities.
+monitoring and measurement capability, access control granularity, evidence
+linkage, record lifecycle management, and privacy compliance — all of which
+become non-trivially painful at the current register scale of 10+ tracked
+entities.
 
 | Area                                 | Coverage | Issues Found | Overall              |
 | ------------------------------------ | -------- | ------------ | -------------------- |
@@ -36,12 +37,12 @@ non-trivially painful at the current register scale of 10+ tracked entities.
 | SoA observability                    | ❌       | 1            | ❌ Insufficient      |
 | Disaster recovery (governance data)  | ❌       | 1            | ❌ Undocumented      |
 | ISMS monitoring & measurement        | ❌       | 1            | ❌ None              |
-| Access control on register content   | ❌       | 1            | ❌ Absent            |
-| Governance ownership model           | ⚠️       | 1            | ⚠️ Sole-operator only |
-| Risk treatment evidence linkage      | ❌       | 1            | ❌ Absent            |
-| Record lifecycle & retention         | ❌       | 1            | ❌ None              |
-| Privacy compliance (personal data)   | ❌       | 1            | ❌ Irreconcilable gap |
-| Audit trail & change provenance      | ✅       | 2            | ⚠️ Partial          |
+| Access control on register content   | ⚠️       | 1            | ⚠️ No role-based tiers |
+| Governance ownership model           | ⚠️       | 1            | ⚠️ Sole-operator only  |
+| Risk treatment evidence linkage      | ❌       | 1            | ❌ Absent              |
+| Record lifecycle & retention         | ❌       | 1            | ❌ None                |
+| Privacy compliance (personal data)   | ❌       | 1            | ❌ Irreconcilable gap  |
+| Audit trail & change provenance      | ⚠️       | 2            | ⚠️ Partial             |
 | Agent infrastructure                 | ⚠️       | 2            | ⚠️ Minor             |
 | Concurrent update safety             | ❌       | 1            | ❌ Insufficient      |
 | Search & discoverability (UX)        | ⚠️       | 1            | ⚠️ Weak              |
@@ -331,20 +332,26 @@ non-trivially painful at the current register scale of 10+ tracked entities.
 
 ## 13. Access Control on Governance Register Content
 
-### 13.1 Sensitive register content is available to any site visitor
+### 13.1 No role-based access tiers within registers
+
+**Strengths:**
+
+- The Docusaurus site is deployed behind Cloudflare Access, so unauthenticated
+  public access is prevented at the network layer.
 
 **Gaps:**
 
 - SEC-01 `docs/compliance/iso27001/operations/supplier-register.md`,
-  `docs/compliance/iso27001/assurance/nonconformity-log.md` — The Supplier
-  Register contains detailed security gap descriptions (DPA non-execution, root
-  cause analysis) and the NC Log exposes incident root causes and corrective
-  action details. The Docusaurus site applies no role-based access control: any
-  person who can access the site can read all register content, including
-  management-level security gap details. In Supabase with RLS, access to
-  sensitive columns (e.g., `root_cause`, `dpa_gap_detail`) can be gated by
-  authentication role, enabling a "public summary / management detail" split
-  that Markdown cannot provide.
+  `docs/compliance/iso27001/assurance/nonconformity-log.md` — While Cloudflare
+  Access restricts site entry to authenticated users, the Supplier Register
+  contains detailed security gap descriptions (DPA non-execution, root cause
+  analysis) and the NC Log exposes incident root causes and corrective action
+  details. All authenticated users see the same content — there are no
+  role-based tiers distinguishing summary-level from management-detail views.
+  As the organisation scales beyond a sole operator, not every authenticated
+  user should see NC root causes or DPA gap details. In Supabase with RLS,
+  access to sensitive columns can be gated by auth role, enabling a
+  "summary / management detail" split that Markdown cannot provide.
 
 ---
 
@@ -469,7 +476,7 @@ non-trivially painful at the current register scale of 10+ tracked entities.
 | :--- | :--- | :--- | :--- | :--- |
 | QUERY-01 | Risk Register | `risk-register.md` | Queryability | 🔴 Critical |
 | AUTO-01 | Audit Registry | `audit-registry.md` | Automation / Concurrency | 🔴 Critical |
-| EVID-01 | Risk Register | `risk-register.md` | Evidence / ISO 8.3 | � Critical |
+| EVID-01 | Risk Register | `risk-register.md` | Evidence / ISO 8.3 | 🔴 Critical |
 | REF-02 | NC Log + CA Register | `nonconformity-log.md`, `corrective-actions.md` | Referential Integrity | 🟠 High |
 | AUTO-02 | All registers | multiple | Automation | 🟠 High |
 | CONC-01 | All registers | multiple | Concurrency | 🟠 High |
@@ -478,9 +485,9 @@ non-trivially painful at the current register scale of 10+ tracked entities.
 | SOA-01 | Statement of Applicability | `soa.md` | Queryability / Audit Readiness | 🟠 High |
 | INFRA-02 | Agent workflows | `audit-workflow.md` | Agent Infrastructure | 🟠 High |
 | MONITOR-01 | All registers | multiple | ISMS Monitoring / ISO 9.1 | 🟠 High |
-| SEC-01 | Supplier + NC registers | `supplier-register.md`, `nonconformity-log.md` | Security / Access Control | 🟠 High |
 | LIFECYCLE-01 | All registers | multiple | Retention / ISO 7.5.3 | 🟠 High |
 | PRIV-01 | Training + NC + CA | multiple | Privacy / Privacy Act 1988 | 🟠 High |
+| SEC-01 | Supplier + NC registers | `supplier-register.md`, `nonconformity-log.md` | Access Control Granularity | 🟡 Medium |
 | QUERY-02 | Audit Registry | `audit-registry.md` | Queryability | 🟡 Medium |
 | QUERY-03 | Standards Register | `standards-register.md` | Queryability | 🟡 Medium |
 | REF-01 | Risk Register | `risk-register.md` | Referential Integrity | 🟡 Medium |
