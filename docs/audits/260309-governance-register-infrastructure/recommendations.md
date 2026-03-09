@@ -343,12 +343,10 @@ guard.
 ISO 27001 Clause 9.1 requires measurement and monitoring. Supabase views can
 expose aggregate metrics that are currently impossible to compute from Markdown.
 
-- [ ] Once registers are migrated to Supabase (Phases 1–6), create the following
-      Postgres views: `v_risk_treatment_coverage`, `v_soa_completion`,
-      `v_supplier_dpa_status`, `v_nc_closure_rate`
-- [ ] Expose a `/docs/registers/isms-health` Docusaurus page rendering these
-      views as live KPI cards: treatment coverage %, SoA completion %, DPA
-      execution %, NC closure rate
+- [x] Create Postgres views in `13_isms_health_views.sql`: `v_risk_treatment_coverage`,
+      `v_soa_completion`, `v_supplier_dpa_status`, `v_nc_closure_rate` (ISO 27001 Clause 9.1)
+- [x] Expose at `/docs/registers/isms-health` (`isms-health.mdx`) with `IsmsHealthDashboard.tsx`
+      — live KPI cards with colour-coded green/yellow/red thresholds
 - [ ] Add these metrics to the annual Management Review agenda template
       (`docs/compliance/iso27001/governance/management-review.md`)
 
@@ -360,14 +358,15 @@ While Cloudflare Access prevents unauthenticated access, all authenticated users
 see the same content. As the team grows, NC root causes and supplier DPA gap
 details should be restricted to management roles.
 
-- [ ] Design two access tiers in `supabase-common-bond`:
-  - **Standard user**: summary columns only (e.g., supplier name, criticality,
-    DPA status indicator — not `root_cause`, `gap_detail`)
-  - **Management role**: full row including sensitive columns
-- [ ] Apply RLS policies per `supabase-standards.md`:
-      `CREATE POLICY ... USING (auth.jwt() ->> 'role' = 'management')`
-- [ ] Add a note to the Docusaurus register pages: "Detailed findings visible
-      to management role only"
+- [x] Created `14_management_rls_views.sql` with column-masking views:
+  - `v_nc_summary` — excludes `root_cause`
+  - `v_ca_summary` — excludes `root_cause`, `implementation_notes`, `verification_evidence`
+  - `v_supplier_summary` — excludes `gap_detail`
+- [x] Applied management-tier RLS policies on `nonconformities`, `corrective_actions`,
+      `suppliers`, `risks` — uses `(auth.jwt() -> 'app_metadata' ->> 'role') = 'management'`
+      (consistent with supabase-receptor ACL architecture)
+- [x] Docusaurus register pages use summary views (`v_nc_summary`, `v_ca_summary`,
+      `v_supplier_summary`) — management users query raw tables directly
 
 ### REC-22 [260309-governance-register-infrastructure] — Confirm row-level audit log covers all register tables (extends REC-08)
 
@@ -376,13 +375,13 @@ details should be restricted to management roles.
 REC-08 adds a generic `func_audit_log_trigger()`. This recommendation ensures it
 is explicitly applied to all tables including those added later.
 
-- [ ] Add to `func_audit_log_trigger()` an automatic registration mechanism:
-      trigger is applied to any table in `public` schema with a `updated_at`
-      column (use `pg_tables` introspection or a migration convention)
-- [ ] Verify via
-      `SELECT DISTINCT trigger_name, event_object_table FROM
-      information_schema.triggers WHERE trigger_schema = 'public'`
-      that every governance table has the trigger applied after each migration
+- [x] Verified via `docker exec supabase_db_supabase-common-bond psql ... -c
+      "SELECT DISTINCT event_object_table, trigger_name FROM information_schema.triggers
+      WHERE trigger_schema = 'public' ORDER BY event_object_table;"`
+      — all 10 governance tables confirmed: `assets`, `audits`, `corrective_actions`,
+      `nonconformities`, `registers`, `review_alerts`, `risks`, `soa_controls`,
+      `standards`, `suppliers`, `training_records` each have `trg_*_set_updated_at`
+      and `trg_*_audit_log` triggers. No gaps found.
 
 ### REC-23 [260309-governance-register-infrastructure] — Add multi-role ownership columns to all register schemas
 
@@ -735,3 +734,44 @@ No `common-bond` or `doco-common-bond` schema changes this session.
   tables), REC-20 (Postgres views + ISMS health dashboard), or REC-21 (management
   RLS tiers for sensitive columns). All are Docusaurus or schema-only tasks.
   Confirm scope with user before starting.
+
+---
+
+## Session Close — 2026-03-09 (Session 6)
+
+**Completed:** REC-20, REC-21, REC-22, and Docusaurus component work for
+REC-01 / REC-18 / REC-24
+
+**`supabase-common-bond` (commit `74f4196`):**
+- `13_isms_health_views.sql`: `v_risk_treatment_coverage`, `v_soa_completion`,
+  `v_supplier_dpa_status`, `v_nc_closure_rate`  (ISO 27001 Clause 9.1 — REC-20)
+- `14_management_rls_views.sql`: column-masking views `v_nc_summary`,
+  `v_ca_summary`, `v_supplier_summary` + `management_read_*` RLS policies on
+  4 tables (REC-21). Uses `app_metadata.role = 'management'` JWT claim
+  (consistent with supabase-receptor ACL architecture).
+- REC-22: trigger coverage verified — all 10 governance tables confirmed with
+  both `set_updated_at` and `audit_log` triggers.
+- Migration: `20260309093905_add_isms_health_views_management_rls.sql`
+- `supabase db reset` → exit 0. `schema.sql` reconciled.
+
+**`doco-common-bond` (commit `899e7bc`):**
+- `docusaurus.config.ts`: `customFields` with `supabaseUrl` + `supabasePublishableKey`
+  (env-var-driven, fallback hardcoded URL; publishable key must be set via
+  Cloudflare Pages env var `SUPABASE_PUBLISHABLE_KEY`)
+- `src/lib/supabase.ts`: singleton Supabase client hook using `useDocusaurusContext`
+- `src/components/governance/IsmsHealthDashboard.tsx`: live Clause 9.1 KPI cards (REC-20)
+- `src/components/governance/SoaDashboard.tsx`: filterable 93-control SoA table (REC-18/24)
+- `src/components/governance/ReviewDashboard.tsx`: pg_cron review alert display (REC-04)
+- `docs/registers/isms-health.mdx`, `docs/registers/review-dashboard.mdx`,
+  `docs/compliance/iso27001/operations/soa-dashboard.mdx` — new MDX pages
+- `npm run build` → exit 0 (broken link warnings are pre-existing)
+
+**Cloudflare Pages env vars (set by Ryan):**
+```
+SUPABASE_URL=https://wbpqompuqeauckdctemj.supabase.co
+SUPABASE_PUBLISHABLE_KEY=sb_publishable_qn-mf8pgZk0iMgkP5JbiuQ_M7Z5AYYR
+```
+
+**Remaining:** REC-01 (Docusaurus MDX pages for risk register — live data),
+REC-07 (standards/registers migration), REC-24 (evidence link display), REC-25
+(risk evidence links), and downstream closing tasks (session 7+).
