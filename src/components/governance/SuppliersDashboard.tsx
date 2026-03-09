@@ -49,6 +49,11 @@ function Badge({ label, colors }: { label: string; colors: Record<string, { bg: 
     );
 }
 
+function resolveUrl(url: string): string {
+    if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('/')) return url;
+    return '/' + url;
+}
+
 export function SuppliersDashboard() {
     const supabase = useSupabaseClient();
     const [suppliers, setSuppliers] = useState<Supplier[]>([]);
@@ -161,7 +166,7 @@ export function SuppliersDashboard() {
                                 <td style={{ padding: '7px 12px' }}><Badge label={s.dpa_status} colors={DPA_COLORS} /></td>
                                 <td style={{ padding: '7px 12px' }}>
                                     {s.security_trust_url
-                                        ? <a href={s.security_trust_url} target="_blank" rel="noopener noreferrer"
+                                        ? <a href={resolveUrl(s.security_trust_url)} target="_blank" rel="noopener noreferrer"
                                             style={{ color: '#2563eb', textDecoration: 'none', fontWeight: 500 }}>🔒 Trust page</a>
                                         : <span style={{ color: '#9ca3af' }}>—</span>}
                                 </td>

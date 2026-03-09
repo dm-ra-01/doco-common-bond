@@ -50,6 +50,11 @@ function ExpiryBadge({ expiry }: { expiry: string | null }) {
     );
 }
 
+function resolveUrl(url: string): string {
+    if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('/')) return url;
+    return '/' + url;
+}
+
 export function TrainingRecordsDashboard() {
     const supabase = useSupabaseClient();
     const [records, setRecords] = useState<TrainingRecord[]>([]);
@@ -163,7 +168,7 @@ export function TrainingRecordsDashboard() {
                                 <td style={{ padding: '7px 12px' }}><ExpiryBadge expiry={r.expiry_date} /></td>
                                 <td style={{ padding: '7px 12px' }}>
                                     {r.evidence_url
-                                        ? <a href={r.evidence_url} target="_blank" rel="noopener noreferrer"
+                                        ? <a href={resolveUrl(r.evidence_url)} target="_blank" rel="noopener noreferrer"
                                             style={{ color: '#2563eb', textDecoration: 'none', fontWeight: 500 }}>📎 View</a>
                                         : <span style={{ color: '#9ca3af' }}>—</span>}
                                 </td>

@@ -65,6 +65,11 @@ function Badge({
     );
 }
 
+function resolveUrl(url: string): string {
+    if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('/')) return url;
+    return '/' + url;
+}
+
 export function RiskRegisterDashboard() {
     const supabase = useSupabaseClient();
     const [risks, setRisks] = useState<Risk[]>([]);
@@ -192,7 +197,7 @@ export function RiskRegisterDashboard() {
                                 <td style={{ padding: '7px 12px', color: '#374151' }}>{r.treatment_strategy}</td>
                                 <td style={{ padding: '7px 12px' }}>
                                     {r.evidence_url
-                                        ? <a href={r.evidence_url} target="_blank" rel="noopener noreferrer"
+                                        ? <a href={resolveUrl(r.evidence_url)} target="_blank" rel="noopener noreferrer"
                                             title={r.evidence_description ?? 'Evidence link'}
                                             style={{ color: '#2563eb', textDecoration: 'none', fontWeight: 500 }}>
                                             📎 View
