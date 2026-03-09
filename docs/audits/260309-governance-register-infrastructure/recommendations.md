@@ -358,15 +358,33 @@ While Cloudflare Access prevents unauthenticated access, all authenticated users
 see the same content. As the team grows, NC root causes and supplier DPA gap
 details should be restricted to management roles.
 
-- [x] Created `14_management_rls_views.sql` with column-masking views:
-  - `v_nc_summary` — excludes `root_cause`
-  - `v_ca_summary` — excludes `root_cause`, `implementation_notes`, `verification_evidence`
-  - `v_supplier_summary` — excludes `gap_detail`
-- [x] Applied management-tier RLS policies on `nonconformities`, `corrective_actions`,
-      `suppliers`, `risks` — uses `(auth.jwt() -> 'app_metadata' ->> 'role') = 'management'`
-      (consistent with supabase-receptor ACL architecture)
-- [x] Docusaurus register pages use summary views (`v_nc_summary`, `v_ca_summary`,
-      `v_supplier_summary`) — management users query raw tables directly
+**Implementation (2026-03-09) — Revised from original scope:**
+
+The original plan used column-masking views for partial access. After user review,
+the decision was made to restrict **all** governance data exclusively to the
+`management` role — no anonymous or open-authenticated access to any table.
+
+- [x] Replaced all `anon_read_active_*` and open `authenticated` policies across
+      all 12 governance tables with a single `management_select_*` policy per table:
+      `TO authenticated USING ((auth.jwt() -> 'app_metadata' ->> 'role') = 'management' AND archived_at IS NULL)`
+      Tables covered: `audits`, `suppliers`, `corrective_actions`, `nonconformities`,
+      `assets`, `risks`, `register_audit_log`, `training_records`, `standards`,
+      `registers`, `review_alerts`, `soa_controls`
+- [x] Migration `20260309100557_restrict_governance_to_management_role.sql` generated
+      via `supabase db diff`; verified with `supabase db reset` (exit 0)
+- [x] `seed.sql` updated with idempotent `UPDATE auth.users SET raw_app_meta_data`
+      for both production management UIDs:
+      - `a665c4b7-8e69-491c-9653-8de3c81070b0` (ryan@commonbond.au)
+      - `f1a6dc7a-28d5-4e64-b41c-50964fc716be` (ryan@myjmoapp.com)
+- [x] Production: `app_metadata.role = 'management'` applied to both UIDs via
+      Supabase dashboard SQL — confirmed by user 2026-03-09
+- [x] `GovernanceAuthGate.tsx` created in `doco-common-bond` — email/password login
+      form (session + management role check); session bar with sign-out button
+- [x] `src/lib/supabase.ts` extended with `useSession`, `signIn`, `signOut` helpers
+- [x] `isms-health.mdx`, `review-dashboard.mdx`, `soa-dashboard.mdx` wrapped with
+      `<GovernanceAuthGate>` — unauthenticated visitors see login form, not data
+- [x] TypeScript check clean (`tsc --noEmit` → no output); both repos pushed
+
 
 ### REC-22 [260309-governance-register-infrastructure] — Confirm row-level audit log covers all register tables (extends REC-08)
 
