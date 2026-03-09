@@ -64,7 +64,7 @@ export default function GovernanceAuthGate({ children }: Props) {
                             value={email}
                             onChange={e => setEmail(e.target.value)}
                             className={styles.input}
-                            placeholder="ryan@commonbond.au"
+                            placeholder="you@example.com"
                         />
                         <label htmlFor="gov-password">Password</label>
                         <input
