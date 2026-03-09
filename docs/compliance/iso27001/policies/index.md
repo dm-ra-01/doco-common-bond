@@ -23,3 +23,4 @@ as part of onboarding.
 | [Access Control Policy](./access-control)                    | 5.15–5.18     | Least privilege; Supabase RLS; GitHub Teams; annual key rotation                             |
 | [Document Control Policy](./document-control)                | 7.5           | Git/PR workflow as ISMS document management; approval requirements; retention                |
 | [Data Classification Scheme](./data-classification)          | 5.12, 5.13    | 4-tier classification (Public / Internal / Confidential / Restricted); PII handling guidance |
+| [Privacy Policy](./privacy-policy)                           | 5.34, 8.3     | Privacy Act 1988 / APP compliance; personal data in governance records; correction rights    |

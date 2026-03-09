@@ -77,18 +77,16 @@ on `audit-registry.md` are the two highest-priority blockers against the current
 Markdown approach. These are not cosmetic issues — the first becomes an audit
 liability at 50+ risks; the second risks governance record corruption.
 
-- [ ] Create a new Supabase project: `supabase-common-bond` (separate from
+- [x] Create a new Supabase project: `supabase-common-bond` (separate from
       `supabase-receptor` to isolate governance data from operational data)
-- [ ] Apply `supabase-postgres-best-practices` skill to all schema definitions
-- [ ] Create the following tables with `COMMENT ON TABLE` and
+- [x] Apply `supabase-postgres-best-practices` skill to all schema definitions
+- [x] Create the following tables with `COMMENT ON TABLE` and
       `COMMENT ON COLUMN` per Supabase standards:
-  - `public.risks` (ISMS-REG-001) — columns: `risk_id`, `description`, `threat`,
-    `impact`, `risk_level`, `risk_owner`, `treatment_strategy`, `status`,
-    `created_at`, `updated_at`
-  - `public.audits` (ENG-REG-001) — columns: `slug`, `title`, `scope`,
-    `auditor`, `status`, `nc_raised`, `audit_url`, `recommendations_url`,
-    `audit_date`, `updated_at`
-- [ ] Enable RLS on both tables; anon key provides read-only SELECT; service
+  - `public.risks` (ISMS-REG-001) — consolidated DDL includes columns from
+    REC-01 + REC-09 (FK placeholders) + REC-23 (ownership) + REC-25 (evidence
+    constraint) + REC-27 (archival) per Q7 consolidated DDL decision
+  - `public.audits` (ENG-REG-001) — all columns + review dates + archival
+- [x] Enable RLS on both tables; anon key provides read-only SELECT; service
       role provides write access for agent-driven updates
 - [ ] Create a Docusaurus MDX page for each migrated register with a React
       component that fetches from the Supabase REST API client-side
@@ -154,12 +152,12 @@ function + pg_cron job can emit alerts.
 The Asset Register and Supplier Register both have `⚠️ Confirm` in mandatory ISO
 27001 date fields. This is a direct Stage 1 audit finding.
 
-- [ ] Ryan Ammendolea to confirm and set specific dates in:
+- [x] Ryan Ammendolea to confirm and set specific dates in:
   - `docs/compliance/iso27001/operations/asset-register.md` — Effective Date and
     Next Review
   - `docs/compliance/iso27001/operations/supplier-register.md` — Effective Date
     and Next Review
-- [ ] Remove all `⚠️ Confirm` placeholder text from both files
+- [x] Remove all `⚠️ Confirm` placeholder text from both files (set to `2026-03-09` / `2027-03-09` per Q11)
 - [ ] Once migrated to Supabase (REC-03), these fields become `DATE NOT NULL`
       columns — no placeholder possible
 
@@ -300,8 +298,8 @@ _Actioned in same commit as Round 1 iterative improvements._
 
 **Finding:** DR-01
 
-- [ ] Update `docs/compliance/iso27001/operations/business-continuity.md` to add
-      a "Governance Data Recovery" subsection:
+- [x] Update `docs/compliance/iso27001/operations/business-continuity.md` to add
+      a "Governance Data Recovery" subsection (Section 9):
   - Recovery dependencies: `doco-common-bond` GitHub repo (primary); Supabase
     `supabase-common-bond` PITR once created (REC-01)
   - RTO for governance registers: 4 hours (consistent with operational RTO)
@@ -440,7 +438,7 @@ The irreconcilable conflict between Git immutability and Privacy Act APP 13
 correction rights must be acknowledged and addressed in policy before Supabase
 migration resolves the technical gap.
 
-- [ ] Add a "Personal Data in Governance Records" section to the Privacy Policy
+- [x] Add a "Personal Data in Governance Records" section to the Privacy Policy
       (`docs/compliance/iso27001/policies/privacy-policy.md`) noting:
   - Governance registers may contain named individuals' data
   - Prior to Supabase migration: data correction requests cannot be applied
@@ -552,3 +550,46 @@ involve a separate repo's PR.
   Phase 1 decisions (Q1–Q21) are pre-approved.
 - Proposed Session 2 scope: REC-01 (schema creation) + REC-02 (workflow update). 
   User should confirm before Phase 1 begins.
+
+---
+
+## Session Close — 2026-03-09 (Session 2)
+
+**Completed:** REC-01 (partial — schema scaffolding only; Docusaurus pages and data migration remain),
+REC-05, REC-17, REC-26
+
+**Remaining:** REC-01 (Docusaurus MDX pages + Markdown retirement), REC-02,
+REC-03, REC-04, REC-06, REC-07, REC-08, REC-09, REC-10, REC-18, REC-20,
+REC-21, REC-22, REC-23, REC-24, REC-25 (DB constraint implemented in schema;
+still needs populate for existing 17 risks), REC-26 (privacy-policy.md
+created; `data_subject_name` minimisation pass deferred to Phase 3), REC-27
+
+**Blocked:**
+- REC-20 (CI secrets) — excluded by user preference; Ryan configures secrets
+  directly in GitHub
+
+**PR order note:** Two repos have audit branches with changes:
+1. `dm-ra-01/supabase-common-bond` — `audit/260309-governance-register-infrastructure`
+   (new repo; Phase 1 schema)
+2. `dm-ra-01/doco-common-bond` — `audit/260309-governance-register-infrastructure`
+   (REC-05, REC-17, REC-26 doc fixes)
+
+Merge order: no dependency — either can be merged first.
+
+**Brief for next agent:**
+- `dm-ra-01/supabase-common-bond` GitHub repo created; Supabase linked to
+  `wbpqompuqeauckdctemj`. Schema scaffolding: `public.audits` (ENG-REG-001)
+  and `public.risks` (ISMS-REG-001) with consolidated DDL, RLS, triggers,
+  and partial indexes. Verification: `supabase db reset` exit 0.
+  Branch: `audit/260309-governance-register-infrastructure`. CI secrets
+  (`SUPABASE_ACCESS_TOKEN`, `SUPABASE_DB_PASSWORD`) are **Ryan's to configure**.
+- Do **not** copy supabase-receptor config — it is a self-hosted Docker setup.
+  `supabase-common-bond` uses standard cloud-hosted Supabase CLI structure with
+  non-conflicting local ports (5433x range).
+- REC-05: date placeholders fixed in `asset-register.md` and `supplier-register.md`.
+- REC-17: BCP Section 9 (Governance Data Recovery) added to `business-continuity.md`.
+- REC-26: `privacy-policy.md` created under `policies/`; added to `policies/index.md`.
+  The `data_subject_name` column minimisation pass (second bullet of REC-26) deferred
+  to Phase 3 when NC/CA and training tables are created.
+- Session 3 proposed scope: REC-02 (update audit workflow files to call Supabase REST)
+  and begin Phase 3 (REC-03: NC/CA tables).
