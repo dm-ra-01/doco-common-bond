@@ -33,7 +33,7 @@ sidebar_position: 1
 
 | Slug                                        | Title                                    | Scope                                                                        | Auditor         | Status      | NC Raised | Report                                                                                                                                                                  |
 | :------------------------------------------ | :--------------------------------------- | :--------------------------------------------------------------------------- | :-------------- | :---------- | :-------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `260309-governance-register-infrastructure` | Governance Register Infrastructure Audit | `docs/registers/`, `docs/compliance/iso27001/` — all 10 governance registers | Ryan Ammendolea | 🔄 Drafting | —         | [audit.md](../audits/260309-governance-register-infrastructure/audit.md) · [recommendations.md](../audits/260309-governance-register-infrastructure/recommendations.md) |
+| `260309-governance-register-infrastructure` | Governance Register Infrastructure Audit | `docs/registers/`, `docs/compliance/iso27001/` — all 10 governance registers | Ryan Ammendolea | 📋 Findings Issued | —         | [audit.md](../audits/260309-governance-register-infrastructure/audit.md) · [recommendations.md](../audits/260309-governance-register-infrastructure/recommendations.md) |
 
 ### 🗓️ 2026-03-07
 
@@ -77,9 +77,9 @@ planner-frontend               3       2026-03-06
 workforce-frontend             2       2026-03-06
 preference-frontend            2       2026-03-06
 backend/receptor-planner       0       —
-common-bond (ISMS docs + eng)  4       2026-03-07
+common-bond (ISMS docs + eng)  5       2026-03-09
 ────────────────────────────────────── ─────────
-Total                          14+     2026-03-09
+Total                          15+     2026-03-09
 ```
 
 > **Coverage gaps addressed:** `workforce-frontend`, `preference-frontend`, and
