@@ -43,9 +43,11 @@ docker info >/dev/null 2>&1 && echo "✅ Docker running" || echo "❌ Start Dock
 # act must be installed
 act --version 2>/dev/null || brew install act
 
-# Set default runner image (once only — avoids the interactive prompt)
-grep -q 'catthehacker' ~/.actrc 2>/dev/null || \
-  echo '-P ubuntu-latest=catthehacker/ubuntu:act-22.04' >> ~/.actrc
+# Use js-22.04 runner — pre-installs Node v20 (~2GB), eliminates PATH issues
+# Switch if you're still on act-22.04:
+grep -q 'js-22.04' ~/.actrc 2>/dev/null && echo "✅ .actrc OK" || \
+  sed -i '' 's|catthehacker/ubuntu:act-22.04|ghcr.io/catthehacker/ubuntu:js-22.04|' ~/.actrc || \
+  echo '-P ubuntu-latest=ghcr.io/catthehacker/ubuntu:js-22.04' >> ~/.actrc
 
 echo "✅ Prerequisites OK"
 ```
