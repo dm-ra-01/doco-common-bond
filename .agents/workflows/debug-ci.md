@@ -9,7 +9,7 @@ description: >
 # `/debug-ci` — Local CI Debugging with `act`
 
 > **Skill dependency:** Read the `act-local-ci` skill first:
-> `documentation/common-bond/.agents/skills/act-local-ci/SKILL.md`
+> `/Users/ryan/development/common_bond/antigravity-environment/dev-environment/.agents/skills/act-local-ci/SKILL.md`
 
 // turbo-all
 

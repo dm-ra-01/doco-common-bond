@@ -42,7 +42,7 @@ _Registers maintained as part of the Information Security Management System (ISO
 | `ISMS-REG-003` | **Supplier Security Register**       | [/docs/compliance/iso27001/operations/supplier-register](/docs/compliance/iso27001/operations/supplier-register)   | ISO 27001 Annex A 5.19–5.22        | Ryan Ammendolea, CEO | Annual                      | ✅ Active |
 | `ISMS-REG-004` | **Non-Conformity Log**               | [/docs/compliance/iso27001/assurance/nonconformity-log](/docs/compliance/iso27001/assurance/nonconformity-log)     | ISO 27001 Clause 10.2              | Ryan Ammendolea, CEO | Continuous                  | ✅ Active |
 | `ISMS-REG-005` | **Corrective Actions Register**      | [/docs/compliance/iso27001/assurance/corrective-actions](/docs/compliance/iso27001/assurance/corrective-actions)   | ISO 27001 Clause 10.1              | Ryan Ammendolea, CEO | Continuous                  | ✅ Active |
-| `ISMS-REG-006` | **Statement of Applicability (SoA)** | [/docs/compliance/iso27001/operations/soa](/docs/compliance/iso27001/operations/soa)                               | ISO 27001 Clause 6.1.3             | Ryan Ammendolea, CEO | Annual                      | ✅ Active |
+| `ISMS-REG-006` | **Statement of Applicability (SoA)** | [/docs/compliance/iso27001/operations/soa](/docs/compliance/iso27001/operations/soa)                               | ISO 27001 Clause 6.1.3(d)          | Ryan Ammendolea, CEO | Annual                      | ✅ Active |
 | `ISMS-REG-007` | **Training Records**                 | [/docs/compliance/iso27001/operations/training-records](/docs/compliance/iso27001/operations/training-records)     | ISO 27001 Clause 7.2               | Ryan Ammendolea, CEO | Per onboarding event        | ✅ Active |
 
 ---
@@ -55,6 +55,7 @@ programme._
 | Register ID   | Name               | Location                                                   | Governing Standard             | Owner                  | Review Cadence | Status    |
 | :------------ | :----------------- | :--------------------------------------------------------- | :----------------------------- | :--------------------- | :------------- | :-------- |
 | `ENG-REG-001` | **Audit Registry** | [/docs/audits/audit-registry](/docs/audits/audit-registry) | PROC-03 / ISO 27001 Clause 9.2 | Engineering Leadership | Per audit      | ✅ Active |
+| `ENG-REG-002` | **Governance Database** | `supabase-common-bond` Supabase project (project ref `wbpqompuqeauckdctemj`, region `ap-southeast-2`) | REC-01 (260309-governance-register-infrastructure) | Engineering Leadership | Per migration  | 📅 Planned |
 
 ---
 
@@ -81,9 +82,16 @@ registers? See the [Standards Register](/docs/registers/standards-register). :::
 
 ---
 
-## Future: Relational Database Migration
+## Governance Database
 
-As the number of registers grows beyond ~20, or when automated review-date
-alerting is required, transitioning to a lightweight Supabase table
-(`public.registers`) with a generated Docusaurus page is the recommended path.
-This will be evaluated as a formal story item at the next governance review.
+As of 2026-03-09, all structured registers are being progressively migrated to
+the `supabase-common-bond` Supabase project (`ENG-REG-002`). This project
+provides queryable, RLS-protected tables with row-level audit logging — resolving
+the queryability, concurrency, and schema enforcement gaps identified in the
+`260309-governance-register-infrastructure` audit (`docs/audits/260309-governance-register-infrastructure/audit.md`).
+
+> [!NOTE]
+> **SoA classification (ISMS-REG-006):** The Statement of Applicability is an
+> ISO 27001 Clause 6.1.3(d) output document — listed here for discoverability.
+> It is not a transactional register in the same sense as the Risk Register or
+> Asset Register. See `operations/soa.md` for the full control matrix.
