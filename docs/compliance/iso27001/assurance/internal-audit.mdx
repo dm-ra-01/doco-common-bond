@@ -1,0 +1,66 @@
+---
+title: Internal Audit
+sidebar_position: 1
+---
+
+import GovernanceAuthGate from '@site/src/components/governance/GovernanceAuthGate';
+import { AuditRegistryDashboard } from '@site/src/components/governance/AuditRegistryDashboard';
+
+# Internal Audit Procedure
+
+## 1. Purpose
+
+To verify that the ISMS conforms to its own requirements and ISO 27001:2022
+standards, and that technical controls are implemented and effective.
+
+:::note[ISO 27001 Clause 9.2]
+
+Clause 9.2 requires that the organisation conduct internal audits at planned
+intervals to provide information on whether the ISMS conforms to its own
+requirements and is effectively implemented and maintained. Audit results must
+be retained as documented information.
+
+:::
+
+## 2. Audit Schedule
+
+Internal audits are conducted **annually** or before significant external
+audits. Technical control audits are conducted on a **rolling basis** using the
+adversarial review workflow documented at
+`.agents/workflows/audit.md` within each repository. This workflow constitutes
+the organisation's documented internal audit procedure for technical controls
+per ISO 27001 Clause 9.2.
+
+### Audit Programme — Live Registry
+
+<GovernanceAuthGate>
+  <AuditRegistryDashboard />
+</GovernanceAuthGate>
+
+## 3. Audit Process
+
+Each technical audit follows the structured workflow in `.agents/workflows/audit-workflow.md`:
+
+1. **Discovery** — adversarial review of code, configuration, and documentation
+2. **Reporting** — `audit.md` and `recommendations.md` written to the repository
+3. **Implementation** — findings tracked in `recommendations.md` and implemented via `/implement-audit-workflow`
+4. **Dual-Write** — audit registry updated in both `docs/audits/audit-registry.md` and Supabase `public.audits`
+5. **Finalisation** — PR raised, merged, and audit archived via `/finalise-local-audit` or `/finalise-global-audit`
+
+## 4. Traditional Audit Process
+
+For formal ISMS audits against the full ISO 27001 scope:
+
+1. **Planning** — define scope, objectives, and criteria
+2. **Evidence gathering** — document review, interviews, technical testing
+3. **Findings** — categorise as Major NC, Minor NC, or Observation
+4. **Reporting** — formal audit report with findings and recommendations
+5. **Corrective action** — NC entries raised in `public.nonconformities`, CAs in `public.corrective_actions`
+6. **Follow-up** — verify effective closure before next audit cycle
+
+## 5. Reporting
+
+Audit results are retained in:
+- `public.audits` (Supabase) — the authoritative registry (dual-write via workflow)
+- `docs/audits/archive/` — static Markdown archive after finalisation
+- GitHub audit branches and PRs — full change trail

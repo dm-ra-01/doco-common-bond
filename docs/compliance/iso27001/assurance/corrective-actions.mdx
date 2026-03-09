@@ -1,0 +1,25 @@
+---
+title: Corrective Actions
+sidebar_position: 3
+---
+
+import GovernanceAuthGate from '@site/src/components/governance/GovernanceAuthGate';
+import { CorrectiveActionsDashboard } from '@site/src/components/governance/CorrectiveActionsDashboard';
+
+# Corrective Actions
+
+This register records all corrective actions raised in response to non-conformities
+identified in the ISMS. Each corrective action is linked to a non-conformity in the
+[Non-Conformity Log](./nonconformity-log).
+
+## 1. Process
+
+1. **Raise** — a corrective action is created when a non-conformity is identified
+2. **Assign** — an owner is designated, with a target due date
+3. **Implement** — the root cause is addressed; evidence is documented
+4. **Verify** — the CA owner confirms effective closure, referencing evidence
+5. **Close** — `status` is set to `Closed` and `closed_date` is recorded in Supabase
+
+<GovernanceAuthGate>
+  <CorrectiveActionsDashboard />
+</GovernanceAuthGate>

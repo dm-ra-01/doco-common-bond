@@ -1,0 +1,25 @@
+---
+title: Training Records
+sidebar_position: 2
+---
+
+import GovernanceAuthGate from '@site/src/components/governance/GovernanceAuthGate';
+import { TrainingRecordsDashboard } from '@site/src/components/governance/TrainingRecordsDashboard';
+
+# Training Records
+
+This register records training and competency events for all Common Bond staff,
+as required by ISO 27001:2022 Clause 7.2 (Competence). One row per training event —
+the register is append-only and serves as the organisation's documented evidence
+of information security competence.
+
+:::warning[Outstanding Onboarding]
+
+Amelia Jane Cameron and Emma Nyhof have not yet completed their security onboarding.
+Policy acknowledgement and MFA setup must be completed before system access is granted.
+
+:::
+
+<GovernanceAuthGate>
+  <TrainingRecordsDashboard />
+</GovernanceAuthGate>

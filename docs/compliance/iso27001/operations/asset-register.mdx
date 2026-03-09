@@ -1,0 +1,50 @@
+---
+title: Asset Register
+sidebar_position: 7
+---
+
+import GovernanceAuthGate from '@site/src/components/governance/GovernanceAuthGate';
+import { AssetsDashboard } from '@site/src/components/governance/AssetsDashboard';
+
+# Information Asset Register
+
+## 1. Purpose
+
+This register identifies and classifies all information assets owned or managed by
+Common Bond, in accordance with ISO 27001:2022 Annex A 5.9 (Inventory of assets)
+and Annex A 5.12 (Classification of information).
+
+## 2. Asset Categories
+
+Assets are classified into four categories:
+
+| Category | Prefix | Description |
+|---|---|---|
+| **Information** | `IA-NNN` | Data sets, documentation, credentials |
+| **Software / Services** | `SA-NNN` | SaaS platforms, cloud services, tools |
+| **Hardware** | `HW-NNN` | Physical computing devices |
+| **People** | `PA-NNN` | Staff with privileged access |
+
+## 3. Asset Inventory
+
+<GovernanceAuthGate>
+  <AssetsDashboard />
+</GovernanceAuthGate>
+
+## 4. Asset Review
+
+This register is reviewed:
+- **Annually** as part of the management review cycle
+- **When a new asset is introduced** or an existing asset is decommissioned
+- **When an asset's classification or ownership changes**
+
+Decommissioned assets are soft-archived (`archived_at` is set) and excluded from
+the active dashboard. Review due dates are tracked in Supabase and monitored by
+the `pg_cron` review-alert job.
+
+:::tip[Full-Disk Encryption]
+
+All hardware assets (category `Hardware`) must have full-disk encryption enabled.
+Verify at onboarding and at each annual review.
+
+:::

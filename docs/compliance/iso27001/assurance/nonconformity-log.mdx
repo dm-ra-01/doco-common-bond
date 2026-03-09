@@ -1,0 +1,37 @@
+---
+title: Non-Conformity Log
+sidebar_position: 2
+---
+
+import GovernanceAuthGate from '@site/src/components/governance/GovernanceAuthGate';
+import { NonconformityDashboard } from '@site/src/components/governance/NonconformityDashboard';
+
+# Non-Conformity Log
+
+This log records all non-conformities identified through internal audits,
+management reviews, incident investigations, and external assessments.
+Each non-conformity has a linked corrective action (CA) tracked in the
+[Corrective Actions register](./corrective-actions).
+
+:::note[ISO 27001 Clause 10.2]
+
+Clause 10.2 requires that the organisation react to non-conformities, take action
+to control and correct them, deal with the consequences, evaluate the need for action
+to eliminate root causes, and implement any action needed. Non-conformities and
+corrective actions must be retained as documented information.
+
+:::
+
+<GovernanceAuthGate>
+  <NonconformityDashboard />
+</GovernanceAuthGate>
+
+## Notes
+
+**NC-003** — Resolved as part of the ACL Modernisation Audit (`260304-acl`). The
+hardcoded service-account email `allocator_py_admin@commonbond.com` was replaced
+with a JWT-claim-based service identity. Evidence: `260305-adversarial` re-audit.
+
+**NC-005** — Resolved across all repositories. PR merge gates, a global audit registry,
+and per-app audit workflows were implemented as part of the audit process meta-audit
+(`260306-audit-process`). Evidence: PRs merged across 6 repositories.

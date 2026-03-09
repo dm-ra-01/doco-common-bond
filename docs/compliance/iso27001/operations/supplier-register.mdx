@@ -1,0 +1,53 @@
+---
+title: Supplier Security Register
+sidebar_position: 5
+---
+
+import GovernanceAuthGate from '@site/src/components/governance/GovernanceAuthGate';
+import { SuppliersDashboard } from '@site/src/components/governance/SuppliersDashboard';
+
+# Supplier Security Register
+
+## 1. Purpose
+
+This register documents all third-party suppliers and sub-processors with access
+to Common Bond systems or data, as required by ISO 27001:2022 Annex A 5.19–5.22
+(Supplier relationships) and the Australian Privacy Act 1988 (APP 8 — cross-border
+disclosure).
+
+## 2. Scope
+
+Covers all suppliers that process, store, or transmit data on behalf of Common Bond,
+or that provide infrastructure critical to the availability of the Receptor platform.
+
+:::warning[DPA Action Required]
+
+All suppliers marked **Not Executed** require a signed Data Processing Agreement
+before processing personal data. Execute DPAs as documented in the dashboard below.
+
+:::
+
+## 3. Critical Supplier Register
+
+<GovernanceAuthGate>
+  <SuppliersDashboard />
+</GovernanceAuthGate>
+
+## 4. ISO 27001 Compliance Assessment
+
+| Control Reference | Requirement | Status |
+|---|---|---|
+| Annex A 5.19 | Information security in supplier relationships documented | ✅ This register |
+| Annex A 5.20 | Security requirements in supplier agreements (DPA) | ⚠️ DPAs pending execution for some suppliers |
+| Annex A 5.21 | ICT supply chain security | ✅ Tool selection criteria documented |
+| Annex A 5.22 | Supplier service monitoring and review | ✅ Annual review cycle, review_due_date tracked in Supabase |
+
+## 5. Review Process
+
+This register is reviewed:
+- **Annually** as part of the management review
+- **When a new supplier is onboarded** or an existing supplier is discontinued
+- **When a supplier's security posture changes** (e.g. certification lapse)
+
+Updates are made directly to `public.suppliers` in Supabase. The `review_due_date`
+field is monitored by `pg_cron` for automated upcoming-review alerts.
