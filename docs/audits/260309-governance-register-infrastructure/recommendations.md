@@ -23,6 +23,11 @@
 | SCHEMA-03 severity                | 🟡 Medium (approved Round 1 iterative improvement)                                                |
 | DR-01 severity                    | 🟡 Medium (approved Round 1 iterative improvement)                                                |
 | SCHEMA-04 severity                | 🟢 Low (approved Round 1 iterative improvement)                                                   |
+| MONITOR-01 severity               | 🟠 High (approved Round 2 iterative improvement)                                                  |
+| SEC-01 severity                   | 🟠 High (approved Round 2 iterative improvement)                                                  |
+| TRAIL-02 severity                 | 🟡 Medium (approved Round 2 iterative improvement)                                                |
+| GOV-01 severity                   | 🟡 Medium (approved Round 2 iterative improvement)                                                |
+| UX-01 severity                    | 🟢 Low (approved Round 2 iterative improvement)                                                   |
 
 ---
 
@@ -302,6 +307,84 @@ guard.
 - [ ] Include: "Before adding a row to any governance register, verify all
       mandatory columns are present per `.agents/rules/register-schema.md`"
 
+### REC-20 [260309-governance-register-infrastructure] — Create ISMS health metrics dashboard (Clause 9.1)
+
+**Finding:** MONITOR-01
+
+ISO 27001 Clause 9.1 requires measurement and monitoring. Supabase views can
+expose aggregate metrics that are currently impossible to compute from Markdown.
+
+- [ ] Once registers are migrated to Supabase (Phases 1–6), create the following
+      Postgres views: `v_risk_treatment_coverage`, `v_soa_completion`,
+      `v_supplier_dpa_status`, `v_nc_closure_rate`
+- [ ] Expose a `/docs/registers/isms-health` Docusaurus page rendering these
+      views as live KPI cards: treatment coverage %, SoA completion %, DPA
+      execution %, NC closure rate
+- [ ] Add these metrics to the annual Management Review agenda template
+      (`docs/compliance/iso27001/governance/management-review.md`)
+
+### REC-21 [260309-governance-register-infrastructure] — Implement RLS access tiers for sensitive register content
+
+**Finding:** SEC-01
+
+Governance registers contain management-level security gap details (DPA status,
+NC root causes) that should not be universally readable.
+
+- [ ] Design two access tiers in `supabase-common-bond`:
+  - **Anon/public**: summary columns only (e.g., supplier name, criticality, DPA
+    status indicator — not `root_cause`, `gap_detail`)
+  - **Authenticated (management)**: full row including sensitive columns
+- [ ] Apply RLS policies per `supabase-standards.md`:
+      `ALTER TABLE ... ENABLE
+      ROW LEVEL SECURITY; CREATE POLICY ... USING (auth.role() = 'authenticated')`
+- [ ] Add a note to the Docusaurus register pages: "Full details available after
+      sign-in" with a link to the authenticated view
+
+### REC-22 [260309-governance-register-infrastructure] — Confirm row-level audit log covers all register tables (extends REC-08)
+
+**Finding:** TRAIL-02
+
+REC-08 adds a generic `func_audit_log_trigger()`. This recommendation ensures it
+is explicitly applied to all tables including those added later.
+
+- [ ] Add to `func_audit_log_trigger()` an automatic registration mechanism:
+      trigger is applied to any table in `public` schema with a `updated_at`
+      column (use `pg_tables` introspection or a migration convention)
+- [ ] Verify via
+      `SELECT DISTINCT trigger_name, event_object_table FROM
+      information_schema.triggers WHERE trigger_schema = 'public'`
+      that every governance table has the trigger applied after each migration
+
+### REC-23 [260309-governance-register-infrastructure] — Add multi-role ownership columns to all register schemas
+
+**Finding:** GOV-01
+
+A sole-operator ownership model will fail a Stage 2 certification audit as the
+team grows. Supabase schema can enforce the distinction from day one.
+
+- [ ] Add to all governance register tables: `register_owner TEXT NOT NULL`,
+      `information_owner TEXT NOT NULL`, `process_owner TEXT NOT NULL`
+- [ ] Seed all three fields with "Ryan Ammendolea (CEO)" for existing entries
+- [ ] Document the distinction in `docs/registers/index.md` — Register Owner,
+      Information Owner, and Process Owner roles are defined in the ISMS RACI
+      (ISO 27001 Clause 5.3)
+
+### REC-24 [260309-governance-register-infrastructure] — Add client-side filter/search to all Docusaurus register React components
+
+**Finding:** UX-01
+
+Once registers are Supabase-backed, client-side filtering resolves the search
+discoverability gap as a side effect of each migration.
+
+- [ ] Standard React component pattern for all migrated register pages:
+      `<input
+      type="search">` state driving a `.filter()` on the Supabase
+      response array
+- [ ] Include column-specific filter dropdowns (e.g., `Risk Level`, `Status`,
+      `DPA Status`) as `<select>` elements alongside the text search input
+- [ ] Document the standard component interface in `docs/engineering/` so all
+      future register MDX pages follow a consistent pattern
+
 ---
 
 ## Deferred to Next Audit Cycle
@@ -315,12 +398,12 @@ guard.
 
 ## Implementation Order
 
-| Phase | Finding IDs                            | Rationale                                                                                                       |
-| :---- | :------------------------------------- | :-------------------------------------------------------------------------------------------------------------- |
-| 1     | REC-01, REC-02                         | Create `supabase-common-bond` project; migrate Audit Registry first (highest write-conflict risk)               |
-| 2     | REC-05, REC-16                         | Immediate compliance fixes — no infrastructure required; CEO action + workflow stub fix                         |
-| 3     | REC-03, REC-06                         | Migrate NC/CA (with FK integrity), Asset and Supplier Registers                                                 |
-| 4     | REC-08                                 | Add row-level audit log to all tables migrated so far                                                           |
-| 5     | REC-04, REC-17                         | Add review-date alerting once all register tables exist; add DR documentation to BCP                            |
-| 6     | REC-07, REC-09, REC-10, REC-11, REC-18 | Migrate Standards Register, RoR, Risk Register expansions, Training Records, SoA (highest-ROI migration target) |
-| 7     | REC-12, REC-13, REC-14, REC-15, REC-19 | Low-effort housekeeping, documentation, and schema-drift interim fix                                            |
+| Phase | Finding IDs                                    | Rationale                                                                                                          |
+| :---- | :--------------------------------------------- | :----------------------------------------------------------------------------------------------------------------- |
+| 1     | REC-01, REC-02                                 | Create `supabase-common-bond` project; migrate Audit Registry first (highest write-conflict risk)                  |
+| 2     | REC-05, REC-16, REC-21                         | Immediate compliance fixes: CEO date confirmation, workflow stub fix, RLS access tier design                       |
+| 3     | REC-03, REC-06                                 | Migrate NC/CA (with FK integrity), Asset and Supplier Registers; apply RLS tiers from REC-21                       |
+| 4     | REC-08, REC-22                                 | Add row-level audit log to all tables; verify trigger coverage across all tables                                   |
+| 5     | REC-04, REC-17, REC-23                         | Review-date alerting; DR documentation in BCP; add multi-role ownership columns                                    |
+| 6     | REC-07, REC-09, REC-10, REC-11, REC-18, REC-24 | Migrate Standards Register, RoR, Risk Register, Training Records, SoA; add filter components to all register pages |
+| 7     | REC-12, REC-13, REC-14, REC-15, REC-19, REC-20 | Housekeeping, schema guard, ISMS health dashboard (requires all register tables from Phase 6)                      |

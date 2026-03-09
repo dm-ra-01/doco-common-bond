@@ -18,25 +18,29 @@ observability requirements
 
 This audit evaluates whether Docusaurus-based Markdown files are an adequate
 long-term substrate for Common Bond's governance registers. 10 registers across
-3 domains were reviewed. **20 findings** were identified: 2 critical, 7 high, 7
-medium, 4 low. The audit demonstrates conclusively that static Markdown
+3 domains were reviewed. **25 findings** were identified: 2 critical, 9 high, 9
+medium, 5 low. The audit demonstrates conclusively that static Markdown
 registers fail on queryability, cross-referencing integrity, review-date
-enforcement, consistent schema, automation integration, and concurrent write
-safety — all of which become non-trivially painful at the current register scale
-of 10+ tracked entities.
+enforcement, consistent schema, automation integration, concurrent write safety,
+monitoring and measurement capability, and access control — all of which become
+non-trivially painful at the current register scale of 10+ tracked entities.
 
-| Area                                 | Coverage | Issues Found | Overall              |
-| ------------------------------------ | -------- | ------------ | -------------------- |
-| Queryability & filtering             | ⚠️       | 3            | ❌ Insufficient      |
-| Cross-register referential integrity | ⚠️       | 3            | ❌ Insufficient      |
-| Schema consistency                   | ⚠️       | 4            | ⚠️ Weak              |
-| Review-date enforcement & alerting   | ❌       | 2            | ❌ None              |
-| Automation / agent write integration | ❌       | 2            | ❌ None              |
-| SoA observability                    | ❌       | 1            | ❌ Insufficient      |
-| Disaster recovery (governance data)  | ❌       | 1            | ❌ Undocumented      |
-| Audit trail & change provenance      | ✅       | 1            | ✅ Git provides this |
-| Agent infrastructure                 | ⚠️       | 2            | ⚠️ Minor             |
-| Concurrent update safety             | ❌       | 1            | ❌ Insufficient      |
+| Area                                 | Coverage | Issues Found | Overall               |
+| ------------------------------------ | -------- | ------------ | --------------------- |
+| Queryability & filtering             | ⚠️       | 3            | ❌ Insufficient       |
+| Cross-register referential integrity | ⚠️       | 3            | ❌ Insufficient       |
+| Schema consistency                   | ⚠️       | 4            | ⚠️ Weak               |
+| Review-date enforcement & alerting   | ❌       | 2            | ❌ None               |
+| Automation / agent write integration | ❌       | 2            | ❌ None               |
+| SoA observability                    | ❌       | 1            | ❌ Insufficient       |
+| Disaster recovery (governance data)  | ❌       | 1            | ❌ Undocumented       |
+| ISMS monitoring & measurement        | ❌       | 1            | ❌ None               |
+| Access control on register content   | ❌       | 1            | ❌ Absent             |
+| Governance ownership model           | ⚠️       | 1            | ⚠️ Sole-operator only |
+| Audit trail & change provenance      | ✅       | 2            | ⚠️ Partial            |
+| Agent infrastructure                 | ⚠️       | 2            | ⚠️ Minor              |
+| Concurrent update safety             | ❌       | 1            | ❌ Insufficient       |
+| Search & discoverability (UX)        | ⚠️       | 1            | ⚠️ Weak               |
 
 ---
 
@@ -302,6 +306,96 @@ of 10+ tracked entities.
 
 ---
 
+## 12. ISMS Monitoring and Measurement
+
+### 12.1 No quantitative ISMS health metrics are computable from current registers
+
+**Gaps:**
+
+- MONITOR-01 Multiple registers — ISO/IEC 27001:2022 Clause 9.1 requires
+  measurement and monitoring of ISMS performance. Common operational questions
+  required for management review — "What % of risks have active treatment
+  plans?", "What % of applicable SoA controls are implemented?", "How many
+  suppliers still lack a DPA?" — cannot be answered without manual row-counting
+  across multiple Markdown files. The current register stack produces no
+  aggregate metrics, dashboards, or trend data. Supabase views and Postgres
+  computed columns can expose these as live-queryable values. Until this is
+  remediated, the ISMS measurement obligation (Clause 9.1) is met only in form,
+  not in substance.
+
+---
+
+## 13. Access Control on Governance Register Content
+
+### 13.1 Sensitive register content is available to any site visitor
+
+**Gaps:**
+
+- SEC-01 `docs/compliance/iso27001/operations/supplier-register.md`,
+  `docs/compliance/iso27001/assurance/nonconformity-log.md` — The Supplier
+  Register contains detailed security gap descriptions (DPA non-execution, root
+  cause analysis) and the NC Log exposes incident root causes and corrective
+  action details. The Docusaurus site applies no role-based access control: any
+  person who can access the site can read all register content, including
+  management-level security gap details. In Supabase with RLS, access to
+  sensitive columns (e.g., `root_cause`, `dpa_gap_detail`) can be gated by
+  authentication role, enabling a "public summary / management detail" split
+  that Markdown cannot provide.
+
+---
+
+## 14. Audit Trail Granularity
+
+### 14.1 Bulk register edits lose row-level change provenance
+
+**Gaps:**
+
+- TRAIL-02 All registers — When an agent updates multiple rows in a single
+  commit (e.g., adding 5 new risks, revising 8 SoA controls), the git diff is a
+  single monolithic block. There is no way to determine which specific rows
+  changed within that block, or when a specific field was last updated, without
+  manually parsing the diff context. This is a more precise variant of TRAIL-01:
+  Supabase row-level `updated_at` timestamps and the audit log trigger (REC-08)
+  provide this automatically with zero additional tooling.
+
+---
+
+## 15. Governance Ownership Model
+
+### 15.1 No distinction between Register Owner, Information Owner, and Process Owner
+
+**Gaps:**
+
+- GOV-01 All registers — Every governance register currently lists "Ryan
+  Ammendolea (CEO)" as the sole owner of everything. While appropriate for a
+  sole operator, the model has no distinction between the **Register Owner**
+  (responsible for the register's currency), the **Information Owner**
+  (accountable for entry data quality), and the **Process Owner** (accountable
+  for the process the register governs). This single-owner model will surface as
+  a Stage 2 (Certification) audit finding as the organisation scales. Supabase
+  schema can enforce explicit multi-role ownership via
+  `register_owner TEXT NOT NULL`, `information_owner TEXT NOT NULL`,
+  `process_owner TEXT NOT NULL` columns.
+
+---
+
+## 16. Search and Discoverability
+
+### 16.1 Docusaurus global search does not filter within register tables
+
+**Gaps:**
+
+- UX-01 All registers — Docusaurus Algolia/local search indexes page-level
+  content but does not provide table-cell-level filtering. Searching for "R-008"
+  returns the entire Risk Register page, not a filtered view of just R-008.
+  Searching for "DPA not executed" returns the entire Supplier Register, not
+  just the non-compliant suppliers. This compounds QUERY-01–03: even the
+  platform's native search mechanism cannot compensate for the absence of
+  queryability. A Supabase-backed register with a React search/filter component
+  resolves this for all migrated registers simultaneously.
+
+---
+
 ## Severity Summary
 
 | Finding ID | Area                           | File                                            | Category                       | Severity    |
@@ -315,6 +409,8 @@ of 10+ tracked entities.
 | SCHEMA-02  | Asset + Supplier               | `asset-register.md`, `supplier-register.md`     | Compliance                     | 🟠 High     |
 | SOA-01     | Statement of Applicability     | `soa.md`                                        | Queryability / Audit Readiness | 🟠 High     |
 | INFRA-02   | Agent workflows                | `audit-workflow.md`                             | Agent Infrastructure           | 🟠 High     |
+| MONITOR-01 | All registers                  | multiple                                        | ISMS Monitoring / ISO 9.1      | 🟠 High     |
+| SEC-01     | Supplier + NC registers        | `supplier-register.md`, `nonconformity-log.md`  | Security / Access Control      | 🟠 High     |
 | QUERY-02   | Audit Registry                 | `audit-registry.md`                             | Queryability                   | 🟡 Medium   |
 | QUERY-03   | Standards Register             | `standards-register.md`                         | Queryability                   | 🟡 Medium   |
 | REF-01     | Risk Register                  | `risk-register.md`                              | Referential Integrity          | 🟡 Medium   |
@@ -323,6 +419,9 @@ of 10+ tracked entities.
 | TRAIL-01   | Audit Registry + Risk Register | multiple                                        | Audit Trail                    | 🟡 Medium   |
 | SCHEMA-03  | All registers                  | multiple                                        | Schema Drift                   | 🟡 Medium   |
 | DR-01      | BCP + all registers            | `business-continuity.md`, multiple              | Disaster Recovery              | 🟡 Medium   |
+| TRAIL-02   | All registers                  | multiple                                        | Audit Trail                    | 🟡 Medium   |
+| GOV-01     | All registers                  | multiple                                        | Governance Maturity            | 🟡 Medium   |
 | SCHEMA-01  | Supplier Register              | `supplier-register.md`                          | Schema Consistency             | 🟢 Low      |
 | INFRA-01   | Agent workflows                | `debug-ci.md`                                   | Agent Infrastructure           | 🟢 Low      |
 | SCHEMA-04  | Register of Registers          | `registers/index.md`                            | Schema Consistency             | 🟢 Low      |
+| UX-01      | All registers                  | multiple                                        | Search / Discoverability       | 🟢 Low      |
