@@ -30,9 +30,9 @@ fully remote team, leveraging cloud infrastructure to deliver our services.
 - **Speed of Change:** Rapid development cycles require security to be
   integrated into the CI/CD pipeline (DevSecOps). An adversarial code review
   workflow is embedded in each repository via `.agents/workflows/audit.md`,
-  providing a repeatable internal audit mechanism for technical controls
-  (ISO 27001 Clause 9.2). All audit findings are tracked on feature branches
-  and in `docs/audits/` within each repository.
+  providing a repeatable internal audit mechanism for technical controls (ISO
+  27001 Clause 9.2). All audit findings are tracked on feature branches and in
+  `docs/audits/` within each repository.
 
 ### External Issues
 
@@ -74,4 +74,19 @@ technologies** used in the development, operation, and maintenance of the
 | **Customers**    | Confidentiality and integrity of their workforce data. Availability of the platform. |
 | **Employees**    | Clear guidance on security responsibilities and protection of their personal data.   |
 | **Shareholders** | Protection of intellectual property and brand reputation.                            |
-| **Regulators**   | Compliance with privacy laws (Privacy Act 1988).                                     |
+| **Regulators**   | Compliance with privacy laws (Privacy Act 1988) and applicable AI guidance.          |
+
+## 5. Regulatory Framework
+
+_Updated 2026-03-09 per audit `260307-iso27001-ai-gaps` REC-AI-08 (approved by
+Founder 2026-03-07)._
+
+The following regulatory documents are recognised as relevant interested-party
+requirements under ISO 27001 Clause 4.2:
+
+| Instrument                                                      | Issuer   | Relevance                                                                                                                                                                                                                                                                                                                                                                     |
+| :-------------------------------------------------------------- | :------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Privacy Act 1988 (Cth), Australian Privacy Principles (APPs)    | OAIC     | Governs collection, use, disclosure, and security of personal information held by Common Bond.                                                                                                                                                                                                                                                                                |
+| Notifiable Data Breaches scheme (Part IIIC, Privacy Act)        | OAIC     | Mandatory notification obligations upon eligible data breach.                                                                                                                                                                                                                                                                                                                 |
+| OAIC — Privacy and Generative AI guidance (October 2024)        | OAIC     | Applicable where Antigravity or other approved AI tools process personal information. Common Bond's documented position: AI tools in scope process only Internal-tier data in normal engineering use; no Worker PII or Workforce Admin PII is submitted to AI tools without ISM approval. This position will be confirmed in writing prior to production customer onboarding. |
+| ASD/ACSC — Engaging with Artificial Intelligence (January 2024) | ASD/ACSC | Referenced for AI security hygiene (prompt injection, data leakage, supply chain risk). Findings incorporated into the Risk Register (R-013–R-016).                                                                                                                                                                                                                           |

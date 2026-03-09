@@ -120,6 +120,33 @@ priority action.** Status columns below track progress.
 | **DPA Action**          | Execute ClickUp's DPA at [clickup.com/dpa](https://clickup.com/dpa) if ClickUp stores any personal information or business-sensitive information. Confirm scope of data stored before executing. |
 | **Last Reviewed**       | 2026-03-05                                                                                                                                                                                       |
 
+---
+
+### Google Antigravity (AI Engineering Tool)
+
+_Added 2026-03-09 per audit `260307-iso27001-ai-gaps` REC-AI-04._
+
+| Field                   | Detail                                                                                                                                                                                                                                                                                                                |
+| ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Service**             | AI coding assistant, code review, ISMS documentation, agent-based engineering workflows                                                                                                                                                                                                                               |
+| **Data Processed**      | Source code, configuration context, engineering instructions, repository content passed as agent context. Does not process Worker PII or Workforce Admin PII in normal engineering use.                                                                                                                               |
+| **Classification**      | Internal / Confidential (source code is IP; ISMS documents are Internal)                                                                                                                                                                                                                                              |
+| **Hosting**             | Google LLC (US) — accessed via Google Workspace Business Standard account                                                                                                                                                                                                                                             |
+| **Criticality**         | Medium — operational inconvenience if unavailable; no direct platform user data processed                                                                                                                                                                                                                             |
+| **Security Trust Page** | [cloud.google.com/terms/cloud-privacy-notice](https://cloud.google.com/terms/cloud-privacy-notice)                                                                                                                                                                                                                    |
+| **DPA Status**          | ✅ Google Cloud Data Processing Addendum active via Workspace Business Standard. Confirmed at [cloud.google.com/terms/data-processing-addendum](https://cloud.google.com/terms/data-processing-addendum) (updated April 2024).                                                                                        |
+| **Training Exclusion**  | ✅ When Antigravity is accessed via Google Workspace or GCP, Google explicitly states it will **not** collect prompts, content, or model responses for training.                                                                                                                                                      |
+| **Telemetry Decision**  | ⚠️ Antigravity is a no-cost public preview product. Telemetry covers usage/performance analytics only (not prompt content). Training exclusion is guaranteed by Workspace account access, not the telemetry toggle. Decision to confirm by Ryan Ammendolea (Founder/CEO): record ON or OFF in the next annual review. |
+| **Caveat**              | Antigravity is in **no-cost public preview** as of 2026-03-09. Confirm at next annual review or when pricing changes whether paid-account exclusions are fully active.                                                                                                                                                |
+| **DPA Action**          | ✅ No further DPA execution required — Workspace DPA already covers Antigravity usage. Re-confirm at annual review by **2026-04-30**.                                                                                                                                                                                 |
+| **Last Reviewed**       | 2026-03-09                                                                                                                                                                                                                                                                                                            |
+
+---
+
+> **GitHub Copilot — Exclusion Note:** GitHub Copilot is **not in use** at
+> Common Bond. No supplier register entry is required. Confirmed 2026-03-07.
+> Re-confirm at next annual review.
+
 ## 5. Supplier Review Process
 
 Suppliers are reviewed annually or when a significant change occurs (e.g.,

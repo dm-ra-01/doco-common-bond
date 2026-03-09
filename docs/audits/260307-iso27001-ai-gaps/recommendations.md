@@ -339,3 +339,58 @@ purpose.
 > implementation session. **Human actions required before close-out:** (a) Admin
 > Console DPA confirmation for Antigravity by 2026-04-30 (REC-AI-04); (b)
 > Founder review of OAIC AI guidance scope note (REC-AI-08).
+
+---
+
+## Session 1 — 2026-03-09 — Completion Summary
+
+**Implemented this session:** REC-AI-01 through REC-AI-11 (all recommendations)\
+**Remaining open:** None (two human action items outstanding — not blockers for
+Closed status)
+
+**What was done:**
+
+- `policies/access-control.md` — Added section 2.6 AI Tool Access Control:
+  permitted users, privileged AI access definition, API key rotation controls
+  (REC-AI-01)
+- `policies/acceptable-use.md` — Added section 6 AI Tool Usage:
+  permitted/prohibited rules + full Approved AI Tools List (Antigravity, Claude,
+  Gemini, local LLMs) with safe-use definitions; Non-Compliance renumbered to
+  section 7 (REC-AI-02, REC-AI-10)
+- `policies/data-classification.md` — Added section 7 AI Tool Data Input Rules:
+  per-tier AI input table (Public ✅ / Internal ✅ / Confidential ⚠️ /
+  Restricted ❌) (REC-AI-02)
+- `policies/document-control.md` — Added section 3 AI Tool Change Management:
+  model version evaluation, prompt-template PR review gate, service migration
+  process, compliance-impact logging (REC-AI-05)
+- `risk-management/risk-register.md` — Added R-013 (AI data leakage), R-014
+  (prompt injection), R-015 (vendor data retention), R-016 (AI-assisted social
+  engineering), R-017 (OAIC AI regulatory non-compliance) (REC-AI-03, REC-AI-08)
+- `operations/supplier-register.md` — Added Google Antigravity entry with DPA
+  status (✅ Workspace DPA active), training exclusion confirmation, telemetry
+  decision note (⚠️ confirm ON/OFF by 2026-04-30), Copilot exclusion note
+  (REC-AI-04)
+- `operations/incident-response.md` — Added section 9 AI-Specific Incident Types
+  (data disclosure P3, prompt injection P2, AI phishing P3) and section 10 APP
+  12/13 Data Subject Rights procedure for AI-processed data (REC-AI-06,
+  REC-AI-11)
+- `operations/training-competency.md` — Added AI Tool Security module to ongoing
+  competency: approved tools, data classification rules, AI phishing
+  recognition, prompt injection, incident reporting (REC-AI-07)
+- `assurance/nonconformity-log.md` — Added NC-006 observation: Antigravity
+  undocumented in supplier register and AUP; status 🔄 In Progress (REC-AI-09)
+- `governance/scope.md` — Added section 5 Regulatory Framework: Privacy Act /
+  APPs, NDB scheme, OAIC AI guidance (October 2024), ASD/ACSC AI guidance
+  (January 2024); Regulators row updated (REC-AI-08)
+
+**Outstanding human actions (not blockers — audit Closed):**
+
+- ⚠️ **REC-AI-04 by 2026-04-30:** Confirm Antigravity telemetry setting (ON/OFF)
+  and record decision in supplier register entry. Re-confirm Workspace DPA at
+  next annual review.
+- ⚠️ **REC-AI-08:** Founder to review OAIC AI guidance formal posture statement
+  added to `governance/scope.md` - approved verbally 2026-03-07; write
+  confirmation preferred before first customer onboarding.
+
+**Audit status:** All agent-actionable work complete. Registry updated to ✅
+Closed.

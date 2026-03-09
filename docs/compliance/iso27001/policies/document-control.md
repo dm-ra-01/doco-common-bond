@@ -43,3 +43,24 @@ control system.
 
 External documents (e.g., ISO standards, laws, customer contracts) are
 identified and controlled by the CTO.
+
+## 3. AI Tool Change Management
+
+_ISO 27001 Annex A 8.32 (Change management) — added 2026-03-09 per audit
+`260307-iso27001-ai-gaps` REC-AI-05._
+
+- **Model version changes:** Google Antigravity model version updates must be
+  evaluated for behavioural impact before adoption in production engineering
+  workflows. Changes that alter outputs materially should be documented.
+- **Prompt-template changes:** Changes to `.agents/` workflow and skill files
+  that govern Antigravity's actions on ISMS or compliance work require a PR
+  review by the ISM before merge, using the same approval process as ISMS
+  document changes.
+- **Service migrations and deprecations:** AI tool deprecations (e.g.,
+  Antigravity exiting preview, migration to a different approved tool) follow
+  the standard change management process: PR + ISM review + approval table
+  update.
+- **Compliance-impacting changes:** Changes to agent behaviour that materially
+  affect compliance outputs (e.g., changes to audit workflows, risk assessment
+  prompts) must be logged as an ISMS change event in the corrective actions or
+  non-conformity log as appropriate.

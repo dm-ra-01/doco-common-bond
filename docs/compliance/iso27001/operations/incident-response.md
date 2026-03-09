@@ -120,3 +120,59 @@ requirements.
 
 This plan is reviewed annually and after every P1 or P2 incident. The
 Founder/CEO is responsible for ensuring the plan remains current.
+
+## 9. AI-Specific Incident Types
+
+_ISO 27001 Annex A 8.15 (Logging) and 8.16 (Monitoring) — added 2026-03-09 per
+audit `260307-iso27001-ai-gaps` REC-AI-06._
+
+The following AI-specific incident types are classified under this plan and must
+be assessed and reported through the standard response process above.
+
+| Incident Type             | Description                                                                                                              | Initial Severity | Response                                                                                                                              |
+| :------------------------ | :----------------------------------------------------------------------------------------------------------------------- | :--------------: | :------------------------------------------------------------------------------------------------------------------------------------ |
+| **AI data disclosure**    | Employee inadvertently pastes Confidential or PII data into an AI tool                                                   |        P3        | Treat as potential data breach. Notify ISM. Determine vendor's data retention position per supplier register. Assess NDB threshold.   |
+| **Prompt injection**      | Adversarial or malicious input causes an AI tool to execute an unintended action or produce misleading compliance output |        P2        | Isolate the workflow. Log the prompt and output. Escalate to ISM. Assess whether any compliance document or ISMS output was affected. |
+| **AI-generated phishing** | Staff receive suspected AI-generated phishing or impersonation content                                                   |        P3        | Treat as phishing incident. Notify all staff. Escalate to ISM. Do not click links or respond to sender.                               |
+
+All AI-related incidents are logged and factored into the annual internal audit
+scope (see `assurance/internal-audit.md` IA-2026-01).
+
+## 10. Data Subject Rights and AI-Processed Information
+
+_Australian Privacy Act 1988 APP 12 / APP 13; OAIC AI guidance (October 2024) —
+added 2026-03-09 per audit `260307-iso27001-ai-gaps` REC-AI-11._
+
+:::caution[Production Launch Gate]
+
+This procedure must be confirmed as operational before any customer PII enters
+Common Bond systems. It is a production-launch blocker.
+
+:::
+
+### APP 12 — Data Subject Access Requests
+
+When a data subject submits a request to access their personal information (APP
+12):
+
+1. Identify all systems in which that personal information is held.
+2. **Check AI tool context:** Determine whether the personal information was
+   also submitted to an AI tool (e.g., as part of an engineering prompt or agent
+   context). If yes, note in the response that the information may be retained
+   by the AI provider under their DPA terms and provide Google's privacy URL:
+   [cloud.google.com/terms/cloud-privacy-notice](https://cloud.google.com/terms/cloud-privacy-notice).
+3. Respond to the data subject within 30 days of receipt of the request (APP 12
+   requirement).
+
+### APP 13 — Data Subject Correction / Deletion Requests
+
+When a data subject submits a correction or deletion request (APP 13):
+
+1. Correct or delete the personal information from all Common Bond-controlled
+   systems (Supabase, Google Workspace).
+2. **Confirm AI tool retention:** Verify whether deletion from Google Workspace
+   also removes the data from Antigravity context storage (e.g., conversation
+   history). Document the outcome.
+3. If uncertainty exists about the AI vendor's retention of the personal
+   information, escalate to the ISM and treat as a potential data breach for NDB
+   threshold assessment.

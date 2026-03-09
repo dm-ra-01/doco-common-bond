@@ -135,3 +135,19 @@ required.
 
 This scheme is reviewed annually or when new data types are introduced to
 operations. The Information Security Manager initiates each review.
+
+## 7. AI Tool Data Input Rules
+
+_ISO 27001 Annex A 5.12, 5.13; OAIC AI guidance (October 2024) — added
+2026-03-09 per audit `260307-iso27001-ai-gaps` REC-AI-02._
+
+The following table defines whether each classification tier may be used as
+input to approved AI tools. See the Acceptable Use Policy section 6.2 for the
+full Approved AI Tools List.
+
+| Tier             | AI Input Permitted?                                                                                                                 |
+| :--------------- | :---------------------------------------------------------------------------------------------------------------------------------- |
+| **Public**       | ✅ Yes — freely permitted with approved tools                                                                                       |
+| **Internal**     | ✅ Yes — permitted with approved tools; do not use personal AI accounts                                                             |
+| **Confidential** | ⚠️ No — prohibited unless explicit ISM written approval obtained; report accidental disclosure immediately to `alert@commonbond.au` |
+| **Restricted**   | ❌ No — prohibited under all circumstances; treat any accidental disclosure as a data breach                                        |

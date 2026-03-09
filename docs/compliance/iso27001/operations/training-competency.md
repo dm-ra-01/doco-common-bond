@@ -31,6 +31,15 @@ Completion of onboarding training is recorded in
 
 - **Security Awareness:** All staff receive annual security awareness training
   covering emerging threats (phishing, social engineering, account security).
+- **AI Tool Security:** All staff (including Territory Managers) receive annual
+  AI Tool Security training covering: the Approved AI Tools List; data
+  classification rules for AI inputs (Confidential/Restricted data prohibited);
+  recognition of AI-generated phishing and impersonation content; prompt
+  injection awareness; and the incident reporting procedure for AI-related
+  events. This module satisfies awareness obligations under R-013 (AI data
+  leakage), R-014 (prompt injection), and R-016 (AI-assisted social engineering)
+  in the Risk Register. _(Added 2026-03-09 per audit `260307-iso27001-ai-gaps`
+  REC-AI-07.)_
 - **Technical Training:** Engineering staff are encouraged to maintain and build
   skills in secure coding practices (OWASP Top 10, DevSecOps).
 - **Certifications:** Relevant certifications are recorded in the Competency

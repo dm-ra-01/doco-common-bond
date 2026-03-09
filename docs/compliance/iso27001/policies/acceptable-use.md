@@ -63,7 +63,47 @@ systems.
 - Report lost or stolen devices immediately to the CTO.
 - Report suspected phishing attempts or suspicious activity.
 
-## 5. Non-Compliance
+## 6. AI Tool Usage
+
+_ISO 27001 Annex A 5.12, 5.13, 5.1; OAIC AI guidance (October 2024) — added
+2026-03-09 per audit `260307-iso27001-ai-gaps` REC-AI-02, REC-AI-10._
+
+### 6.1 Rules for AI Tool Use
+
+- **Permitted:** Inputting Public and Internal-tier data into approved AI tools
+  (see Approved AI Tools List below).
+- **Prohibited:** Inputting Confidential or Restricted data (e.g., PII,
+  credentials, financial records) into any AI tool without explicit written
+  approval from the ISM.
+- **Prohibited:** Using personal AI accounts (e.g., personal ChatGPT
+  subscription, personal Claude account) for any work-related data input.
+- **Required:** Report any unintentional disclosure of Confidential data via AI
+  prompt to `alert@commonbond.au` as a potential security incident.
+- **Local/offline models:** Locally running LLMs require written ISM approval
+  before use with any company data, regardless of data classification.
+
+### 6.2 Approved AI Tools List
+
+| Tool               | Provider                                 | Safe-Use Conditions                                                                                                                      | Local/Offline? | Status                                  |
+| :----------------- | :--------------------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------- | :------------: | :-------------------------------------- |
+| Google Antigravity | Google (via Workspace Business Standard) | Input only Public/Internal data; no Confidential without ISM approval; DPA active via Workspace terms                                    |       No       | ✅ Approved                             |
+| Claude (any plan)  | Anthropic                                | Input only Public/Internal data; use organisation account, not personal; do not enable model training on conversation history if offered |       No       | ✅ Approved (safe-use conditions apply) |
+| Gemini (any plan)  | Google                                   | Input only Public/Internal data; use Google Workspace account, not personal; subject to Workspace terms                                  |       No       | ✅ Approved (safe-use conditions apply) |
+| Local/offline LLMs | Any                                      | Requires written ISM approval before use with company data; security review of model source required                                     |      Yes       | ⚠️ Requires ISM approval                |
+| Any other AI tool  | Any                                      | Not approved; must seek ISM approval before use                                                                                          |       —        | ❌ Not approved                         |
+
+**"Safe use" is defined as:**
+
+- Only Public or Internal-tier data is input into the tool.
+- An organisational account (not a personal account) is used.
+- Conversation history / model training on inputs is disabled where the option
+  exists.
+- Outputs are reviewed by a human before being acted upon or shared.
+- Any suspected misuse or accidental disclosure is reported immediately.
+
+---
+
+## 7. Non-Compliance
 
 Breaches of this policy may result in disciplinary action, up to and including
 termination of employment or contract, consistent with the consequences defined

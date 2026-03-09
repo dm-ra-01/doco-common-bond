@@ -16,14 +16,14 @@ sidebar_position: 1
 
 ## How to Read This Registry
 
-| Column        | Meaning                                               |
-| :------------ | :---------------------------------------------------- |
-| **Slug**      | Unique audit identifier in `YYMMDD-short-name` format |
-| **Scope**     | Repository / subsystem covered                        |
-| **Auditor**   | Who performed the audit                               |
+| Column        | Meaning                                                                               |
+| :------------ | :------------------------------------------------------------------------------------ |
+| **Slug**      | Unique audit identifier in `YYMMDD-short-name` format                                 |
+| **Scope**     | Repository / subsystem covered                                                        |
+| **Auditor**   | Who performed the audit                                                               |
 | **Status**    | `✅ Closed` · `🔄 Implementing` · `📋 Findings Issued` · `🔄 Drafting` · `📋 Planned` |
-| **NC Raised** | Non-conformity log entries raised as a result         |
-| **Report**    | Links to `audit.md` and `recommendations.md`          |
+| **NC Raised** | Non-conformity log entries raised as a result                                         |
+| **Report**    | Links to `audit.md` and `recommendations.md`                                          |
 
 ---
 
@@ -31,10 +31,10 @@ sidebar_position: 1
 
 ### 🗓️ 2026-03-07
 
-| Slug                      | Title                              | Scope                                                             | Auditor         | Status             | NC Raised | Report                                                                                                                                      |
-| :------------------------ | :--------------------------------- | :---------------------------------------------------------------- | :-------------- | :----------------- | :-------- | :------------------------------------------------------------------------------------------------------------------------------------------ |
-| `260307-iso27001-ai-gaps` | ISO 27001 AI-Specific Gap Analysis | `docs/compliance/iso27001/` — all sections, against AI tool usage | Ryan Ammendolea | 🔄 Drafting        | —         | [audit.md](../audits/260307-iso27001-ai-gaps/audit.md) · [recommendations.md](../audits/260307-iso27001-ai-gaps/recommendations.md)         |
-| `260307-ip-licensing`     | IP Ownership & Licensing Audit     | All repositories — ecosystem-wide IP attribution and licensing    | Ryan Ammendolea | 📋 Findings Issued | —         | [audit.md](../audits/archive/260307-ip-licensing/audit.md) · [recommendations.md](../audits/archive/260307-ip-licensing/recommendations.md) |
+| Slug                      | Title                              | Scope                                                             | Auditor         | Status             | NC Raised                                                                      | Report                                                                                                                                      |
+| :------------------------ | :--------------------------------- | :---------------------------------------------------------------- | :-------------- | :----------------- | :----------------------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------ |
+| `260307-iso27001-ai-gaps` | ISO 27001 AI-Specific Gap Analysis | `docs/compliance/iso27001/` — all sections, against AI tool usage | Ryan Ammendolea | ✅ Closed          | [NC-006](/docs/compliance/iso27001/assurance/nonconformity-log#nc-006--detail) | [audit.md](../audits/260307-iso27001-ai-gaps/audit.md) · [recommendations.md](../audits/260307-iso27001-ai-gaps/recommendations.md)         |
+| `260307-ip-licensing`     | IP Ownership & Licensing Audit     | All repositories — ecosystem-wide IP attribution and licensing    | Ryan Ammendolea | 📋 Findings Issued | —                                                                              | [audit.md](../audits/archive/260307-ip-licensing/audit.md) · [recommendations.md](../audits/archive/260307-ip-licensing/recommendations.md) |
 
 ### 🗓️ 2026-03-06
 
