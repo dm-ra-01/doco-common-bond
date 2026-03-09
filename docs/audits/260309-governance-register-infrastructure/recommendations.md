@@ -10,6 +10,11 @@
 
 ## Agent Clarifications (Human-Approved)
 
+_All decisions approved by Ryan Ammendolea (Founder/CEO) on 2026-03-09. These
+are authoritative for all implementing agents — do not re-ask these questions._
+
+### Original Audit Decisions
+
 | Item                              | Decision                                                                                          |
 | :-------------------------------- | :------------------------------------------------------------------------------------------------ |
 | Migration target                  | Separate `supabase-common-bond` project (governance data isolated from operational Receptor data) |
@@ -17,7 +22,7 @@
 | Docusaurus integration approach   | Client-side Supabase fetch via React components in MDX pages (live data, no rebuild required)     |
 | Supabase skill                    | `supabase-postgres-best-practices` installed; apply to schema design and all SQL artefacts        |
 | Register IDs                      | Domain-prefixed (ISMS-REG-NNN, ENG-REG-NNN, CORP-REG-NNN) — carry into DB primary key design      |
-| Deferred items                    | Docusaurus build-time SSG fetch (evaluate post-MVP if SSR is needed)                              |
+| Deferred items                    | Docusaurus build-time SSG fetch (evaluate post-MVP if SSR is needed)                             |
 | SOA-01 severity                   | 🟠 High (approved Round 1 iterative improvement)                                                  |
 | INFRA-02 severity                 | 🟠 High — audit-workflow.md stub to be fixed in same commit as this improvement round             |
 | SCHEMA-03 severity                | 🟡 Medium (approved Round 1 iterative improvement)                                                |
@@ -31,6 +36,33 @@
 | EVID-01 severity                  | 🔴 Critical (approved Round 3 — ISO 27001 Clause 8.3 evidence gap)                                |
 | LIFECYCLE-01 severity             | 🟠 High (approved Round 3 — ISO 27001 Clause 7.5.3 retention gap)                                |
 | PRIV-01 severity                  | 🟠 High (approved Round 3 — Privacy Act 1988 APP 11/13 gap)                                      |
+
+### Pre-flight Implementation Decisions (Q1–Q20)
+
+| # | Topic | Decision |
+| :-- | :---- | :------- |
+| Q1 | Supabase plan tier | **Pro tier ($25/mo)** — required for pg_cron (REC-04, REC-27), PITR, and SOC 2 report access |
+| Q2 | Supabase region | **`ap-southeast-2` (Sydney)** — Australian data sovereignty under Privacy Act APP 8 |
+| Q3 | Project creation | **Ryan creates manually** in Supabase dashboard; provides project ref ID to agent as first step |
+| Q4 | Repo location | **New top-level GitHub repo: `dm-ra-01/supabase-common-bond`** — likely to host more than docs (infra, CI, etc.); agent creates via `gh` CLI or GitHub MCP |
+| Q5 | Auth for role-based columns | **Option B: Supabase Auth integrated into Docusaurus** — magic link / Google OAuth; all users auth through Cloudflare Access first (network gate), then Supabase Auth (role gate) |
+| Q6 | Management JWT claim | **`app_metadata.role = 'management'`** — consistent with `supabase-receptor` auth architecture |
+| Q7 | Schema migration strategy | **Consolidated DDL** — write full `CREATE TABLE` per entity with all columns from all RECs; one canonical schema file per entity, no iterative `ALTER TABLE` churn |
+| Q8 | Status enum values | Approved as proposed: `risks.status` → `Planned\|Ongoing\|Closed\|Accepted\|Transferred`; `nonconformities.status` → `Open\|In Progress\|Closed`; `corrective_actions.status` → `Open\|In Progress\|Closed\|Verified`; `soa_controls.implementation_status` → `Not Started\|Planned\|Partial\|Implemented\|Not Applicable` |
+| Q9 | Supplier free-form fields | **`TEXT` for free-form paragraphs; `BOOLEAN` for binary decisions** (e.g., `training_excluded BOOLEAN`, `dpa_executed BOOLEAN`) |
+| Q10 | Training record staff ID | **Employee ID as `TEXT`** — format `NNN` zero-padded increments of 2, starting at `010`. Seed data: Ryan Ammendolea = `010`, Amelia Jane Cameron = `012`, Emma Nyhof = `014` |
+| Q11 | Effective dates (REC-05) | **`2026-03-09`** for both Asset Register and Supplier Register effective dates; Next Review = `2027-03-09` |
+| Q12 | Deprecated Markdown transition | **Full replacement** — migrate completely, then delete the Markdown source files; no dual-publishing |
+| Q13 | pg_cron availability | **Resolved by Q1** (Pro tier includes pg_cron); REC-04 and REC-27 are unblocked |
+| Q14 | `changed_by` in audit log | **`auth.uid()`** for all writes including agent-driven writes — agents impersonate Ryan's UID (`010`) given he holds direct authority over all governance operations |
+| Q15 | Cross-ecosystem workflow change | **Authorised** — REC-02 is a global workflow change; implementing agent is authorised to modify `finalise-local-audit.md` and `finalise-global-audit.md` across all repos |
+| Q16 | New repo name | **`dm-ra-01/supabase-common-bond`** — agent creates via `gh repo create` or GitHub MCP |
+| Q17 | Employee ID format | **Zero-padded 3-digit decimals, incrementing by 2** starting at `010`. Assigned: `010` = Ryan Ammendolea, `012` = Amelia Jane Cameron, `014` = Emma Nyhof. New employees continue from `016` |
+| Q18 | Docusaurus production URL | **`https://docs.commonbond.au`** — add to Supabase `supabase-common-bond` CORS allowed origins |
+| Q19 | DPA execution workflow | **Agent sets status to `⏳ Pending execution — action required`**, then raises a GitHub issue on `dm-ra-01/doco-common-bond` for each DPA requiring Ryan's out-of-band execution |
+| Q20 | CI/CD for `supabase-common-bond` | **Full mirror of `supabase-receptor` CI** — `supabase db diff` check on PR, `supabase db push` on merge, ephemeral local Supabase via `act`, pgTAP tests |
+
+
 
 ---
 
