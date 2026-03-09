@@ -18,6 +18,11 @@
 | Supabase skill                    | `supabase-postgres-best-practices` installed; apply to schema design and all SQL artefacts        |
 | Register IDs                      | Domain-prefixed (ISMS-REG-NNN, ENG-REG-NNN, CORP-REG-NNN) — carry into DB primary key design      |
 | Deferred items                    | Docusaurus build-time SSG fetch (evaluate post-MVP if SSR is needed)                              |
+| SOA-01 severity                   | 🟠 High (approved Round 1 iterative improvement)                                                  |
+| INFRA-02 severity                 | 🟠 High — audit-workflow.md stub to be fixed in same commit as this improvement round             |
+| SCHEMA-03 severity                | 🟡 Medium (approved Round 1 iterative improvement)                                                |
+| DR-01 severity                    | 🟡 Medium (approved Round 1 iterative improvement)                                                |
+| SCHEMA-04 severity                | 🟢 Low (approved Round 1 iterative improvement)                                                   |
 
 ---
 
@@ -227,6 +232,76 @@ migration target)
       Governance Database Standard" covering schema requirements, RLS posture,
       and skill references for the `supabase-common-bond` project
 
+### REC-15 [260309-governance-register-infrastructure] — Fix RoR classification of SoA; add clarifying note
+
+**Finding:** SCHEMA-04
+
+The SoA is an ISO 27001 Clause 6.1.3(d) output document, not a register in the
+operational sense. Noting this distinction in the Register of Registers prevents
+external audit confusion.
+
+- [ ] Update `docs/registers/index.md` entry for `ISMS-REG-006` (SoA) to add a
+      note: "ISO 27001 Clause 6.1.3(d) output document — listed here for
+      discoverability; not a transactional register. See `operations/soa.md` for
+      the full control matrix."
+
+---
+
+### REC-16 [260309-governance-register-infrastructure] — Fix audit-workflow.md stub for this repo
+
+**Finding:** INFRA-02
+
+The `audit-workflow.md` stub referenced Python-specific skills irrelevant to
+this repo and omitted the `supabase-postgres-best-practices` skill.
+
+- [x] Remove Python-specific skill references from
+      `.agents/workflows/audit-workflow.md`
+- [x] Add `supabase-postgres-best-practices` skill reference to Required Skills
+      block
+- [x] Add note clarifying that cross-ecosystem audits should use `/global-audit`
+
+_Actioned in same commit as Round 1 iterative improvements._
+
+### REC-17 [260309-governance-register-infrastructure] — Document governance data DR procedure in BCP
+
+**Finding:** DR-01
+
+- [ ] Update `docs/compliance/iso27001/operations/business-continuity.md` to add
+      a "Governance Data Recovery" subsection:
+  - Recovery dependencies: `doco-common-bond` GitHub repo (primary); Supabase
+    `supabase-common-bond` PITR once created (REC-01)
+  - RTO for governance registers: 4 hours (consistent with operational RTO)
+  - Risk cross-reference: R-008 (Supabase supplier failure), R-012 (GitHub
+    access failure)
+
+### REC-18 [260309-governance-register-infrastructure] — Prioritise SoA Supabase migration; add filterable control dashboard
+
+**Finding:** SOA-01
+
+The SoA (93 rows, 39KB) is the single highest-ROI Markdown→Supabase migration
+item. It must be first within Phase 6.
+
+- [ ] Create `public.soa_controls` table:
+      `(control_id, title, applicable BOOLEAN, justification,`
+      `implementation_status TEXT CHECK (...IN ('Implemented', 'Partial', 'Planned',`
+      `'Not Applicable')), owner, last_reviewed DATE)`
+- [ ] Expose `/docs/compliance/iso27001/soa-dashboard` Docusaurus page with
+      client-side filtering by `applicable` and `implementation_status`
+- [ ] Include SoA completion metric: `COUNT(implemented) / COUNT(applicable)`
+
+### REC-19 [260309-governance-register-infrastructure] — Add interim schema guard for Markdown registers
+
+**Finding:** SCHEMA-03
+
+Until Supabase migration is complete, a rule file provides a lightweight schema
+guard.
+
+- [ ] Create `.agents/rules/register-schema.md` defining the required column set
+      for each register type: Risk Register, NC Log, CA Register, Asset
+      Register, Supplier Register
+- [ ] Include: "Before adding a row to any governance register, verify all
+      mandatory columns are present per `.agents/rules/register-schema.md`"
+
 ---
 
 ## Deferred to Next Audit Cycle
@@ -240,12 +315,12 @@ migration target)
 
 ## Implementation Order
 
-| Phase | Finding IDs                    | Rationale                                                                                         |
-| :---- | :----------------------------- | :------------------------------------------------------------------------------------------------ |
-| 1     | REC-01, REC-02                 | Create `supabase-common-bond` project; migrate Audit Registry first (highest write-conflict risk) |
-| 2     | REC-05                         | Immediate compliance fix — no infrastructure required; CEO action                                 |
-| 3     | REC-03, REC-06                 | Migrate NC/CA (with FK integrity), Asset and Supplier Registers                                   |
-| 4     | REC-08                         | Add row-level audit log to all tables migrated so far                                             |
-| 5     | REC-04                         | Add review-date alerting once all register tables exist                                           |
-| 6     | REC-07, REC-09, REC-10, REC-11 | Migrate Standards Register, RoR, Risk Register expansions, Training Records, SoA                  |
-| 7     | REC-12, REC-13, REC-14         | Low-effort housekeeping and documentation                                                         |
+| Phase | Finding IDs                            | Rationale                                                                                                       |
+| :---- | :------------------------------------- | :-------------------------------------------------------------------------------------------------------------- |
+| 1     | REC-01, REC-02                         | Create `supabase-common-bond` project; migrate Audit Registry first (highest write-conflict risk)               |
+| 2     | REC-05, REC-16                         | Immediate compliance fixes — no infrastructure required; CEO action + workflow stub fix                         |
+| 3     | REC-03, REC-06                         | Migrate NC/CA (with FK integrity), Asset and Supplier Registers                                                 |
+| 4     | REC-08                                 | Add row-level audit log to all tables migrated so far                                                           |
+| 5     | REC-04, REC-17                         | Add review-date alerting once all register tables exist; add DR documentation to BCP                            |
+| 6     | REC-07, REC-09, REC-10, REC-11, REC-18 | Migrate Standards Register, RoR, Risk Register expansions, Training Records, SoA (highest-ROI migration target) |
+| 7     | REC-12, REC-13, REC-14, REC-15, REC-19 | Low-effort housekeeping, documentation, and schema-drift interim fix                                            |

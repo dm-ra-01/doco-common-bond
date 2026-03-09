@@ -18,8 +18,8 @@ observability requirements
 
 This audit evaluates whether Docusaurus-based Markdown files are an adequate
 long-term substrate for Common Bond's governance registers. 10 registers across
-3 domains were reviewed. **15 findings** were identified: 2 critical, 5 high, 5
-medium, 3 low. The audit demonstrates conclusively that static Markdown
+3 domains were reviewed. **20 findings** were identified: 2 critical, 7 high, 7
+medium, 4 low. The audit demonstrates conclusively that static Markdown
 registers fail on queryability, cross-referencing integrity, review-date
 enforcement, consistent schema, automation integration, and concurrent write
 safety — all of which become non-trivially painful at the current register scale
@@ -29,11 +29,13 @@ of 10+ tracked entities.
 | ------------------------------------ | -------- | ------------ | -------------------- |
 | Queryability & filtering             | ⚠️       | 3            | ❌ Insufficient      |
 | Cross-register referential integrity | ⚠️       | 3            | ❌ Insufficient      |
-| Schema consistency                   | ⚠️       | 2            | ⚠️ Weak              |
+| Schema consistency                   | ⚠️       | 4            | ⚠️ Weak              |
 | Review-date enforcement & alerting   | ❌       | 2            | ❌ None              |
 | Automation / agent write integration | ❌       | 2            | ❌ None              |
+| SoA observability                    | ❌       | 1            | ❌ Insufficient      |
+| Disaster recovery (governance data)  | ❌       | 1            | ❌ Undocumented      |
 | Audit trail & change provenance      | ✅       | 1            | ✅ Git provides this |
-| Agent infrastructure                 | ✅       | 1            | ⚠️ Minor             |
+| Agent infrastructure                 | ⚠️       | 2            | ⚠️ Minor             |
 | Concurrent update safety             | ❌       | 1            | ❌ Insufficient      |
 
 ---
@@ -206,7 +208,7 @@ of 10+ tracked entities.
 
 ## 8. Agent Infrastructure
 
-### 8.1 One workflow references a locally-installed skill path
+### 8.1 Workflow stubs are not tailored to this repo's technology context
 
 **Strengths:**
 
@@ -229,24 +231,98 @@ of 10+ tracked entities.
   different working directory. Consistent with the standard established by all
   other workflows, the path should be absolute.
 
+- INFRA-02 `.agents/workflows/audit-workflow.md` lines 1–161 — The
+  `audit-workflow.md` stub currently references Python-specific skills
+  (`python-design-patterns`, `python-testing-patterns`) that are irrelevant to
+  the `common-bond` documentation repository. It also does not reference the
+  newly installed `supabase-postgres-best-practices` skill, which is now
+  directly applicable to this repo's primary audit focus. Additionally, the
+  workflow does not mention `/global-audit` as the appropriate workflow for
+  cross-ecosystem audits originating from this repo, creating ambiguity for
+  future audit agents.
+
+---
+
+## 9. Statement of Applicability (SoA) Observability
+
+### 9.1 The SoA is the highest-density structured document and is entirely unqueryable
+
+**Gaps:**
+
+- SOA-01 `docs/compliance/iso27001/operations/soa.md` — The SoA is 39KB and
+  contains 93 ISO 27001 Annex A controls, each with applicability,
+  justification, and implementation status fields. There is currently no way to
+  answer "how many controls are implemented?", "which applicable controls are
+  Not Started?", or "what is the current SoA completion percentage?" without
+  manually counting rows. A Stage 1 external auditor will specifically
+  interrogate SoA completeness; the inability to produce a filtered view is a
+  material audit-readiness gap. At 93 rows, the SoA is also the single
+  highest-ROI item for Markdown→Supabase migration.
+
+---
+
+## 10. Schema Drift Risk
+
+### 10.1 No machine-readable schema definition exists for any register
+
+**Gaps:**
+
+- SCHEMA-03 Multiple registers — No JSON Schema, Zod schema, or SQL DDL file
+  defines what a valid Risk Register row, NC entry, or Supplier card looks like.
+  Two agents or two humans adding rows independently have no validator to catch
+  missing fields, wrong status enumerations, or malformed IDs. The Supabase
+  migration resolves this structurally (column types and CHECK constraints serve
+  as schema), but until migration is complete, schema drift is undetected.
+
+- SCHEMA-04 `docs/registers/index.md` — The Register of Registers lists the
+  Statement of Applicability (SoA) as `ISMS-REG-006` with 93 sub-entries, each
+  with their own applicability status. The SoA is not strictly a "register" in
+  the same sense as the Risk Register or Asset Register — it is an output
+  document required by ISO 27001 Clause 6.1.3(d). Classifying it as a register
+  without noting this distinction conflates two ISO 27001 document types, which
+  could cause confusion in an external audit context.
+
+---
+
+## 11. Disaster Recovery for Governance Data
+
+### 11.1 No documented recovery path for governance records
+
+**Gaps:**
+
+- DR-01 Multiple registers — The Business Continuity Plan
+  (`docs/compliance/iso27001/operations/business-continuity.md`) documents
+  RTO/RPO for the Receptor operational platform (Supabase PITR, 4-hour RTO). It
+  does not document the recovery path for governance registers specifically. If
+  the `doco-common-bond` GitHub repository became inaccessible (R-008 scenario —
+  supplier failure), all 10 governance registers would be simultaneously
+  unavailable with no documented recovery procedure. The Supabase migration
+  inherently improves this (PITR covers governance data), but the transition
+  period creates a gap that is not risk-registered or documented.
+
 ---
 
 ## Severity Summary
 
-| Finding ID | Area                           | File                                            | Category                 | Severity    |
-| :--------- | :----------------------------- | :---------------------------------------------- | :----------------------- | :---------- |
-| QUERY-01   | Risk Register                  | `risk-register.md`                              | Queryability             | 🔴 Critical |
-| AUTO-01    | Audit Registry                 | `audit-registry.md`                             | Automation / Concurrency | 🔴 Critical |
-| REF-02     | NC Log + CA Register           | `nonconformity-log.md`, `corrective-actions.md` | Referential Integrity    | 🟠 High     |
-| AUTO-02    | All registers                  | multiple                                        | Automation               | 🟠 High     |
-| CONC-01    | All registers                  | multiple                                        | Concurrency              | 🟠 High     |
-| ALERT-01   | All registers                  | multiple                                        | Review Enforcement       | 🟠 High     |
-| SCHEMA-02  | Asset + Supplier               | `asset-register.md`, `supplier-register.md`     | Compliance               | 🟠 High     |
-| QUERY-02   | Audit Registry                 | `audit-registry.md`                             | Queryability             | 🟡 Medium   |
-| QUERY-03   | Standards Register             | `standards-register.md`                         | Queryability             | 🟡 Medium   |
-| REF-01     | Risk Register                  | `risk-register.md`                              | Referential Integrity    | 🟡 Medium   |
-| REF-03     | Asset + Supplier               | `asset-register.md`, `supplier-register.md`     | Referential Integrity    | 🟡 Medium   |
-| ALERT-02   | Standards Register             | `standards-register.md`                         | Review Enforcement       | 🟡 Medium   |
-| TRAIL-01   | Audit Registry + Risk Register | multiple                                        | Audit Trail              | 🟡 Medium   |
-| SCHEMA-01  | Supplier Register              | `supplier-register.md`                          | Schema Consistency       | 🟢 Low      |
-| INFRA-01   | Agent workflows                | `debug-ci.md`                                   | Agent Infrastructure     | 🟢 Low      |
+| Finding ID | Area                           | File                                            | Category                       | Severity    |
+| :--------- | :----------------------------- | :---------------------------------------------- | :----------------------------- | :---------- |
+| QUERY-01   | Risk Register                  | `risk-register.md`                              | Queryability                   | 🔴 Critical |
+| AUTO-01    | Audit Registry                 | `audit-registry.md`                             | Automation / Concurrency       | 🔴 Critical |
+| REF-02     | NC Log + CA Register           | `nonconformity-log.md`, `corrective-actions.md` | Referential Integrity          | 🟠 High     |
+| AUTO-02    | All registers                  | multiple                                        | Automation                     | 🟠 High     |
+| CONC-01    | All registers                  | multiple                                        | Concurrency                    | 🟠 High     |
+| ALERT-01   | All registers                  | multiple                                        | Review Enforcement             | 🟠 High     |
+| SCHEMA-02  | Asset + Supplier               | `asset-register.md`, `supplier-register.md`     | Compliance                     | 🟠 High     |
+| SOA-01     | Statement of Applicability     | `soa.md`                                        | Queryability / Audit Readiness | 🟠 High     |
+| INFRA-02   | Agent workflows                | `audit-workflow.md`                             | Agent Infrastructure           | 🟠 High     |
+| QUERY-02   | Audit Registry                 | `audit-registry.md`                             | Queryability                   | 🟡 Medium   |
+| QUERY-03   | Standards Register             | `standards-register.md`                         | Queryability                   | 🟡 Medium   |
+| REF-01     | Risk Register                  | `risk-register.md`                              | Referential Integrity          | 🟡 Medium   |
+| REF-03     | Asset + Supplier               | `asset-register.md`, `supplier-register.md`     | Referential Integrity          | 🟡 Medium   |
+| ALERT-02   | Standards Register             | `standards-register.md`                         | Review Enforcement             | 🟡 Medium   |
+| TRAIL-01   | Audit Registry + Risk Register | multiple                                        | Audit Trail                    | 🟡 Medium   |
+| SCHEMA-03  | All registers                  | multiple                                        | Schema Drift                   | 🟡 Medium   |
+| DR-01      | BCP + all registers            | `business-continuity.md`, multiple              | Disaster Recovery              | 🟡 Medium   |
+| SCHEMA-01  | Supplier Register              | `supplier-register.md`                          | Schema Consistency             | 🟢 Low      |
+| INFRA-01   | Agent workflows                | `debug-ci.md`                                   | Agent Infrastructure           | 🟢 Low      |
+| SCHEMA-04  | Register of Registers          | `registers/index.md`                            | Schema Consistency             | 🟢 Low      |
