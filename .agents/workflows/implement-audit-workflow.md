@@ -121,15 +121,36 @@ PRs, merge, and archive.
    `/Users/ryan/development/common_bond/antigravity-environment/dev-environment/.agents/skills/audit-verification-gates/SKILL.md`
    for the required format.
 
-2. Update the audit status in
-   `documentation/common-bond/docs/audits/audit-registry.md` — see
-   `/Users/ryan/development/common_bond/antigravity-environment/dev-environment/.agents/skills/audit-registry/SKILL.md`
-   for the canonical status values:
+2. **Dual-write the registry status update** (both must be kept in sync):
 
-   | Situation                             | Status to set   |
-   | :------------------------------------ | :-------------- |
-   | Implementation begun this session     | 🔧 Implementing |
-   | All recommendations actioned/deferred | ✅ Closed       |
+   a. **Markdown** — Update the audit status in
+      `documentation/common-bond/docs/audits/audit-registry.md` — see
+      `/Users/ryan/development/common_bond/antigravity-environment/dev-environment/.agents/skills/audit-registry/SKILL.md`
+      for the canonical status values:
+
+      | Situation                             | Status to set   |
+      | :------------------------------------ | :-------------- |
+      | Implementation begun this session     | 🔧 Implementing |
+      | All recommendations actioned/deferred | ✅ Closed       |
+
+   b. **Supabase** — `UPSERT` the matching row in the `supabase-common-bond`
+      `public.audits` table via the REST API:
+      ```bash
+      curl -X POST \
+        "https://wbpqompuqeauckdctemj.supabase.co/rest/v1/audits" \
+        -H "apikey: $SUPABASE_SERVICE_ROLE_KEY" \
+        -H "Authorization: Bearer $SUPABASE_SERVICE_ROLE_KEY" \
+        -H "Content-Type: application/json" \
+        -H "Prefer: resolution=merge-duplicates" \
+        -d '{
+          "slug": "YYMMDD-slug",
+          "status": "Implementing"
+        }'
+      ```
+      > [!NOTE]
+      > Use `status: "Implementing"` mid-audit and `status: "Closed"` when all
+      > tasks are actioned. `SUPABASE_SERVICE_ROLE_KEY` is in GitHub secrets for
+      > `dm-ra-01/supabase-common-bond` — never hard-code it.
 
 3. Use `notify_user` to report session completion, completed IDs, blockers, and
    next targets.
