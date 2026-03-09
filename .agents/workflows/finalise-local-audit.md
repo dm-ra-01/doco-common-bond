@@ -70,10 +70,35 @@ that everything (branch, PR, archive) stays in the **target repo**, not in
    `/Users/ryan/development/common_bond/antigravity-environment/dev-environment/.agents/skills/audit-verification-gates/SKILL.md`
    for the required format.
 
-2. Update `documentation/common-bond/docs/audits/audit-registry.md` — set the
-   status for this audit to `✅ Closed`. See
-   `/Users/ryan/development/common_bond/antigravity-environment/dev-environment/.agents/skills/audit-registry/SKILL.md`
-   for the canonical status values and commit conventions.
+2. **Dual-write the registry update** (both must be kept in sync):
+
+   a. **Markdown** — Update `documentation/common-bond/docs/audits/audit-registry.md`
+      — set the status for this audit to `✅ Closed`. See
+      `/Users/ryan/development/common_bond/antigravity-environment/dev-environment/.agents/skills/audit-registry/SKILL.md`
+      for the canonical status values and commit conventions.
+
+   b. **Supabase** — `UPSERT` the audit row in the `supabase-common-bond`
+      `public.audits` table via the REST API:
+      ```bash
+      curl -X POST \
+        "https://wbpqompuqeauckdctemj.supabase.co/rest/v1/audits" \
+        -H "apikey: $SUPABASE_SERVICE_ROLE_KEY" \
+        -H "Authorization: Bearer $SUPABASE_SERVICE_ROLE_KEY" \
+        -H "Content-Type: application/json" \
+        -H "Prefer: resolution=merge-duplicates" \
+        -d '{
+          "slug": "YYMMDD-slug",
+          "status": "Closed",
+          "scope": "<scope description>",
+          "recommendations_url": "docs/audits/archive/YYMMDD-slug/recommendations.md"
+        }'
+      ```
+      > [!NOTE]
+      > `SUPABASE_SERVICE_ROLE_KEY` is a repository secret in
+      > `dm-ra-01/supabase-common-bond`. Retrieve it from GitHub secrets or
+      > the Supabase dashboard — never hard-code it. Both Markdown and Supabase
+      > must be updated before committing; they are the dual source of truth
+      > until the Markdown file is formally deprecated.
 
 3. Commit the final `re-audit.md`, updated `recommendations.md`, and the
    checked-off `recommendations.md` to the **target repo's** `audit/YYMMDD-slug`

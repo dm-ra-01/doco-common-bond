@@ -1,0 +1,44 @@
+---
+title: Register of Registers — Live Dashboard
+sidebar_label: Register of Registers (Live)
+sidebar_position: 2
+description: Live queryable Register of Registers sourced from the supabase-common-bond governance database. Filter by register type and status.
+---
+
+import { RegistersOfRegistersDashboard } from '@site/src/components/governance/RegistersOfRegistersDashboard';
+import GovernanceAuthGate from '@site/src/components/governance/GovernanceAuthGate';
+
+# 📋 Register of Registers — Live Dashboard
+
+Live view of all named registers, logs, and tracked artefact collections sourced from the
+[`supabase-common-bond`](https://github.com/dm-ra-01/supabase-common-bond) governance database.
+
+> **META-001 Implementation.** This is the authoritative live index for the question: _"Where do we track X?"_
+
+**Register ID:** `CORP-REG-001` | **Owner:** Ryan Ammendolea, CEO | **Review Cadence:** Annual / on new register addition
+
+Use the filters below to filter by **register type** and **status**.
+The static overview (with row-level explanation) is at [registers/index](./index).
+
+<GovernanceAuthGate>
+<RegistersOfRegistersDashboard />
+</GovernanceAuthGate>
+
+---
+
+## Register Types
+
+| Type | Description |
+|:---|:---|
+| **ISMS** | Registers mandated by ISO 27001:2022 |
+| **Engineering** | Registers maintained by the engineering governance programme |
+| **Corporate** | Registers maintained at the corporate entity level |
+
+## Status Definitions
+
+| Status | Meaning |
+|:---|:---|
+| **Active** | Register is current, maintained, and reviewed on schedule |
+| **In Progress** | Register is being migrated or developed |
+| **Planned** | Register creation scheduled but not yet commenced |
+| **Needs Review** | Register is overdue for its scheduled review |

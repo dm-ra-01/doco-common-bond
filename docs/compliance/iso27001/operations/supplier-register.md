@@ -7,7 +7,7 @@ sidebar_position: 5
 
 | Version | Effective Date | Approved By          | Next Review |
 | ------- | -------------- | -------------------- | ----------- |
-| 1.0     | ⚠️ Confirm     | Ryan Ammendolea, CEO | ⚠️ Confirm  |
+| 1.0     | 2026-03-09     | Ryan Ammendolea, CEO | 2027-03-09  |
 
 ## 1. Purpose
 

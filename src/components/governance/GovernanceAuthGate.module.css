@@ -1,0 +1,144 @@
+/**
+ * GovernanceAuthGate.module.css
+ * Styles for the authentication gate that protects all governance register pages.
+ */
+
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 60vh;
+    padding: 2rem;
+}
+
+.card {
+    background: var(--ifm-card-background-color, #1e1e2e);
+    border: 1px solid var(--ifm-color-emphasis-300, #313244);
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.24);
+    max-width: 420px;
+    width: 100%;
+    padding: 2.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.icon {
+    font-size: 2.5rem;
+    margin-bottom: 0.25rem;
+}
+
+.card h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.subtitle {
+    color: var(--ifm-color-emphasis-600, #6c7086);
+    margin: 0;
+    font-size: 0.9rem;
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.form label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--ifm-color-emphasis-700, #a6adc8);
+    margin-bottom: 0;
+}
+
+.input {
+    width: 100%;
+    padding: 0.6rem 0.85rem;
+    border: 1px solid var(--ifm-color-emphasis-300, #313244);
+    border-radius: 8px;
+    background: var(--ifm-background-color, #181825);
+    color: var(--ifm-font-color-base, #cdd6f4);
+    font-size: 0.95rem;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.input:focus {
+    border-color: var(--ifm-color-primary, #89b4fa);
+}
+
+.input::placeholder {
+    color: var(--ifm-color-emphasis-400, #45475a);
+}
+
+.button {
+    margin-top: 0.5rem;
+    padding: 0.7rem 1.25rem;
+    border: none;
+    border-radius: 8px;
+    background: var(--ifm-color-primary, #89b4fa);
+    color: #1e1e2e;
+    font-weight: 700;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.1s;
+    width: 100%;
+}
+
+.button:hover:not(:disabled) {
+    opacity: 0.9;
+    transform: translateY(-1px);
+}
+
+.button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.error {
+    color: var(--ifm-color-danger, #f38ba8);
+    font-size: 0.85rem;
+    margin: 0;
+    padding: 0.5rem 0.75rem;
+    background: rgba(243, 139, 168, 0.1);
+    border-radius: 6px;
+}
+
+.hint {
+    text-align: center;
+    font-size: 0.8rem;
+    color: var(--ifm-color-emphasis-500, #585b70);
+    margin-top: 0.25rem;
+}
+
+/* Session bar shown when authenticated */
+.sessionBar {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 1rem;
+    padding: 0.4rem 1rem;
+    background: var(--ifm-color-emphasis-100, #181825);
+    border-bottom: 1px solid var(--ifm-color-emphasis-200, #313244);
+    font-size: 0.8rem;
+    color: var(--ifm-color-emphasis-700, #a6adc8);
+}
+
+.signOutBtn {
+    background: transparent;
+    border: 1px solid var(--ifm-color-emphasis-300, #45475a);
+    color: var(--ifm-color-emphasis-700, #a6adc8);
+    border-radius: 6px;
+    padding: 0.25rem 0.7rem;
+    font-size: 0.78rem;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+
+.signOutBtn:hover {
+    background: var(--ifm-color-emphasis-200, #313244);
+}

@@ -23,6 +23,14 @@ const config: Config = {
     locales: ['en'],
   },
 
+  // Governance database credentials (supabase-common-bond).
+  // Set SUPABASE_URL and SUPABASE_PUBLISHABLE_KEY in your Cloudflare Pages
+  // environment variables (or .env.local for local dev).
+  customFields: {
+    supabaseUrl: process.env.SUPABASE_URL ?? 'https://wbpqompuqeauckdctemj.supabase.co',
+    supabasePublishableKey: process.env.SUPABASE_PUBLISHABLE_KEY ?? '',
+  },
+
   presets: [
     [
       'classic',

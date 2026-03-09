@@ -1,0 +1,34 @@
+---
+title: ISMS Health Dashboard
+sidebar_label: ISMS Health
+sidebar_position: 4
+description: Live ISO 27001 Clause 9.1 ISMS health metrics — risk treatment coverage, SoA completion, DPA execution rate, and NC closure rate.
+---
+
+import { IsmsHealthDashboard } from '@site/src/components/governance/IsmsHealthDashboard';
+import GovernanceAuthGate from '@site/src/components/governance/GovernanceAuthGate';
+
+# 📊 ISMS Health Dashboard
+
+Live ISMS performance metrics sourced from the [`supabase-common-bond`](https://github.com/dm-ra-01/supabase-common-bond) governance database (`ENG-REG-002`).
+
+> **ISO 27001 Clause 9.1** — _"The organisation shall evaluate the information security performance and the effectiveness of the information security management system."_
+
+Metrics are refreshed on each page load (client-side fetch). Review alerts are generated daily at 08:00 AEST by the pg_cron job `func_send_review_alert()` (REC-04).
+
+<GovernanceAuthGate>
+<IsmsHealthDashboard />
+</GovernanceAuthGate>
+
+---
+
+## About These Metrics
+
+| Metric | Source | Green threshold |
+|--------|--------|-----------------|
+| **Risk Treatment Coverage** | `v_risk_treatment_coverage` | ≥ 80% of risks Ongoing/Closed/Transferred |
+| **SoA Completion** | `v_soa_completion` | ≥ 80% of applicable controls Implemented |
+| **DPA Execution Rate** | `v_supplier_dpa_status` | 100% of DPA-required suppliers Executed |
+| **NC Closure Rate** | `v_nc_closure_rate` | ≥ 80% of NCs Closed |
+
+These four metrics are presented to the **Management Review** meeting (ISO 27001 Clause 9.3) and updated before each review session.

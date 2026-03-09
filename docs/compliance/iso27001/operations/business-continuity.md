@@ -130,3 +130,47 @@ record.
 This plan is reviewed annually and after any activation. The Founder/CEO is
 responsible for maintaining this plan and ensuring recovery credentials remain
 accessible and current.
+
+---
+
+## 9. Governance Data Recovery
+
+> [!NOTE]
+> This section addresses recovery of governance registers (ISMS registers, Audit
+> Registry, NC/CA Log, SoA) which are managed separately from the main Receptor
+> operational platform.
+
+### 9.1 Recovery Dependencies
+
+| Source | Status | Role |
+| :----- | :----- | :--- |
+| `dm-ra-01/doco-common-bond` GitHub repo (Markdown source) | Primary (active) | Git history provides ISO 27001 Clause 7.5 audit trail; always accessible |
+| `supabase-common-bond` Supabase project (PITR) | **Pending creation** (REC-01) | Will become primary persistence layer for structured governance data once migration is complete |
+
+### 9.2 Recovery Objectives
+
+| Metric | Target | Rationale |
+| :----- | :----- | :-------- |
+| **RTO** | 4 hours | Consistent with Receptor platform RTO (Section 3); governance registers are non-real-time |
+| **RPO** | 24 hours | Acceptable for governance records; PITR on `supabase-common-bond` will achieve better than 24h once live |
+
+### 9.3 Recovery Procedure
+
+**If `doco-common-bond` repo is unavailable:**
+1. Access the GitHub organisation at [github.com/dm-ra-01](https://github.com/dm-ra-01)
+2. If GitHub itself is unavailable: use a local clone of the repo (maintained on Founder/CEO workstation)
+3. RTO: < 1 hour (local clone exists)
+
+**If `supabase-common-bond` project is unavailable (once live per REC-01):**
+1. Navigate to the [Supabase dashboard](https://app.supabase.com) and restore via PITR
+2. Apply the declarative schema via `supabase db push` from `dm-ra-01/supabase-common-bond`
+3. Docusaurus register pages fall back to empty state (no data displayed) — the Markdown source in `doco-common-bond` remains the authoritative record until restoration
+4. RTO: 4 hours
+
+### 9.4 Risk Cross-References
+
+| Risk ID | Description | Relevance |
+| :------ | :---------- | :-------- |
+| R-008   | Supabase supplier failure | Primary persistence layer for governance registers once `supabase-common-bond` is live |
+| R-012   | GitHub access failure | `doco-common-bond` primary source; GitHub outage removes write access to governance records |
+

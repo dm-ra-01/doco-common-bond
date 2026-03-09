@@ -12,7 +12,7 @@ sidebar_position: 2
 > ("documented information control") requirement for a current list of
 > controlled documents.
 
-**Last Updated:** 2026-03-09 | **Owner:** Ryan Ammendolea, CEO | **Next
+**Last Updated:** 2026-03-09 (audit/260309-governance-register-infrastructure) | **Owner:** Ryan Ammendolea, CEO | **Next
 Review:** 2027-03-01
 
 ---
@@ -81,6 +81,7 @@ audited, and deployed. Maintained by Engineering Leadership._
 | `ENG-STD-008` | Playwright Testing Standard      | Standard | All frontend E2E test suites                                    | Engineering Leadership | 2026-03-07     | 2027-03-01  | ✅ Active | `dev-environment/.agents/skills/playwright-best-practices/`        |
 | `ENG-STD-009` | Python Design Patterns Standard  | Standard | `backend/receptor-planner`, `backend/match-backend`             | Engineering Leadership | 2026-03-05     | 2027-03-01  | ✅ Active | `backend/receptor-planner/.agents/skills/python-design-patterns/`  |
 | `ENG-STD-010` | Python Testing Patterns Standard | Standard | `backend/receptor-planner`, `backend/match-backend`             | Engineering Leadership | 2026-03-05     | 2027-03-01  | ✅ Active | `backend/receptor-planner/.agents/skills/python-testing-patterns/` |
+| `ENG-STD-011` | Supabase Governance Database Standard | Standard | `supabase-common-bond` project — all governance register tables | Engineering Leadership | 2026-03-09     | 2027-03-01  | ✅ Active | Agent skill: `documentation/common-bond/.agents/skills/supabase-postgres-best-practices/`; see also `dev-environment/.agents/skills/supabase-standards/SKILL.md` |
 
 ---
 
