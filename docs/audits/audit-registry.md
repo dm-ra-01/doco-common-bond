@@ -33,7 +33,7 @@ sidebar_position: 1
 
 | Slug                                        | Title                                    | Scope                                                                        | Auditor         | Status      | NC Raised | Report                                                                                                                                                                  |
 | :------------------------------------------ | :--------------------------------------- | :--------------------------------------------------------------------------- | :-------------- | :---------- | :-------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `260309-governance-register-infrastructure` | Governance Register Infrastructure Audit | `docs/registers/`, `docs/compliance/iso27001/` — all 10 governance registers | Ryan Ammendolea | ✅ Closed | —         | [audit.md](../audits/260309-governance-register-infrastructure/audit.md) · [recommendations.md](../audits/260309-governance-register-infrastructure/recommendations.md) |
+| `260309-governance-register-infrastructure` | Governance Register Infrastructure Audit | `docs/registers/`, `docs/compliance/iso27001/` — all 10 governance registers | Ryan Ammendolea | ✅ Closed | —         | [audit.md](../audits/archive/260309-governance-register-infrastructure/audit.md) · [recommendations.md](../audits/archive/260309-governance-register-infrastructure/recommendations.md) |
 
 ### 🗓️ 2026-03-07
 
