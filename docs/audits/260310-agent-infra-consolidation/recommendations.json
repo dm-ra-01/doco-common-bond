@@ -1,0 +1,503 @@
+{
+  "$schema": "../../../dev-environment/.agents/schemas/recommendations.schema.json",
+  "auditSlug": "260310-agent-infra-consolidation",
+  "title": "Agent Infrastructure Consolidation",
+  "date": "2026-03-10",
+  "scope": "All 9 active Receptor ecosystem repositories (.agents/.agent directories)",
+  "auditor": "Ryan Ammendolea",
+  "branch": "audit/260310-agent-infra-consolidation",
+  "findings": [
+    {
+      "id": "ARCH-01",
+      "severity": "critical",
+      "status": "complete",
+      "category": "Architectural Drift",
+      "repo": "all",
+      "area": ".agents directory architecture",
+      "description": "Each of the 9 repos maintains its own .agents/ directory with no symlink architecture. Skill updates in dev-environment never propagate automatically; local copies drift silently.",
+      "tasks": [
+        {
+          "taskId": "ARCH-01-T1",
+          "status": "complete",
+          "description": "Create the 4 category subdirectories in dev-environment/.agents/: frontend-nextjs/, supabase-infrastructure/, backend-python/, docusaurus/ \u2014 each with workflows/ and rules/ subdirs.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/dev-environment/.agents/",
+          "completedAt": "2026-03-10T06:40:55Z",
+          "completedBy": "session-b07c138c"
+        },
+        {
+          "taskId": "ARCH-01-T2",
+          "status": "complete",
+          "description": "Write canonical workflow files (audit-workflow.md, implement-audit-workflow.md, finalise-local-audit.md) into each of the 4 category directories, generalising repo-specific rows. Also write frontend-nextjs/rules/git.md using the ecosystem-wide pre-commit bypass rule (identical content from planner-frontend/rules/pre-commit.md, preference-frontend/rules/git.md, and workforce-frontend/rules/git.md).",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/dev-environment/.agents/",
+          "completedAt": "2026-03-10T06:40:55Z",
+          "completedBy": "session-b07c138c"
+        },
+        {
+          "taskId": "ARCH-01-T3",
+          "status": "complete",
+          "description": "Delete local .agents/ workflow and rules contents from all 9 repos (keep directory for symlink step).",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/",
+          "completedAt": "2026-03-10T08:24:34Z",
+          "completedBy": "session-cd5313c3"
+        },
+        {
+          "taskId": "ARCH-01-T4",
+          "status": "complete",
+          "description": "Create symlinks: planner-frontend/.agents -> frontend-nextjs, preference-frontend/.agents -> frontend-nextjs, workforce-frontend/.agents -> frontend-nextjs, website-frontend/.agents -> frontend-nextjs, supabase-receptor/.agents -> supabase-infrastructure, match-backend/.agents -> backend-python, receptor-planner/.agents -> backend-python, common-bond/.agents -> docusaurus.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/",
+          "completedAt": "2026-03-10T08:24:34Z",
+          "completedBy": "session-cd5313c3"
+        },
+        {
+          "taskId": "ARCH-01-T5",
+          "status": "complete",
+          "description": "Add .agents to .gitignore in each of the 9 child repos. CONFIRMED: zero of 8 audited repos currently have .agents in .gitignore (rotator_worker not checked as it has no .agents). This task applies to all 9 repos.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/",
+          "completedAt": "2026-03-10T08:24:34Z",
+          "completedBy": "session-cd5313c3"
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "ARCH-02",
+      "severity": "critical",
+      "status": "complete",
+      "category": "Process Gap",
+      "repo": "dev-environment",
+      "area": ".agents directory structure",
+      "description": "dev-environment/.agents/ has no category-level organisation. Workflow files with category-specific context live in individual repos rather than in a shared canonical location.",
+      "tasks": [
+        {
+          "taskId": "ARCH-02-T1",
+          "status": "complete",
+          "description": "Addressed by ARCH-01-T1 and ARCH-01-T2 \u2014 no separate tasks required.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/dev-environment/.agents/",
+          "completedAt": "2026-03-10T06:40:55Z",
+          "completedBy": "session-b07c138c"
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "PL-01",
+      "severity": "high",
+      "status": "complete",
+      "category": "Architectural Drift",
+      "repo": "planner-frontend",
+      "area": ".agents/skills/",
+      "description": "planner-frontend has local copies of 9 skills (adversarial-code-review was previously committed as deleted; remaining: design-md, enhance-prompt, find-skills, nextjs-app-router-patterns, playwright-best-practices, playwright-skill, react-components, stitch-loop, vitest, vitest-failure-investigation). All exist in dev-environment. Approximately 89 files of pure duplication.",
+      "tasks": [
+        {
+          "taskId": "PL-01-T1",
+          "status": "complete",
+          "description": "Delete frontend/planner-frontend/.agents/skills/ entirely (9 remaining skill directories). adversarial-code-review was already deleted and committed. Addressed by ARCH-01 symlink.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/frontend/planner-frontend/.agents/skills/",
+          "completedAt": "2026-03-10T08:24:34Z",
+          "completedBy": "session-cd5313c3"
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "PL-02",
+      "severity": "medium",
+      "status": "complete",
+      "category": "Architectural Drift",
+      "repo": "planner-frontend",
+      "area": ".agents/rules/",
+      "description": "planner-frontend has rules/vitest-failure-investigation.md (mirrors dev-environment skill) and rules/pre-commit.md. The vitest rule is the rule-as-skill anti-pattern.",
+      "tasks": [
+        {
+          "taskId": "PL-02-T1",
+          "status": "complete",
+          "description": "Delete rules/vitest-failure-investigation.md. For pre-commit.md: content is identical to preference-frontend/rules/git.md and workforce-frontend/rules/git.md (ecosystem-wide 'don't bypass pre-commit hooks' rule). Promote this content to dev-environment/.agents/frontend-nextjs/rules/git.md (addressed by ARCH-01-T2), then delete the local pre-commit.md.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/frontend/planner-frontend/.agents/rules/",
+          "completedAt": "2026-03-10T08:24:34Z",
+          "completedBy": "session-cd5313c3"
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "PREF-01",
+      "severity": "medium",
+      "status": "complete",
+      "category": "Architectural Drift",
+      "repo": "preference-frontend",
+      "area": ".agents/skills/adversarial-code-review/",
+      "description": "preference-frontend had adversarial-code-review deleted from disk during this audit session, but the deletion was NEVER committed to git. git log on preference-frontend main shows no deletion commit. Additionally, .agents/skills/ still contains vitest-failure-investigation dir. Implementation agent must commit the deletion.",
+      "tasks": [
+        {
+          "taskId": "PREF-01-T1",
+          "status": "complete",
+          "description": "Commit the disk-level deletion of frontend/preference-frontend/.agents/skills/adversarial-code-review/ (directory was removed from disk but not staged/committed). Also commit removal of vitest-failure-investigation from skills/ (it belongs in workflows via required_skills, not as a local skills/ copy).",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/frontend/preference-frontend/.agents/skills/adversarial-code-review/",
+          "completedAt": "2026-03-10T06:40:55Z",
+          "completedBy": "session-b07c138c"
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "PREF-02",
+      "severity": "medium",
+      "status": "complete",
+      "category": "Architectural Drift",
+      "repo": "preference-frontend",
+      "area": ".agents/rules/",
+      "description": "preference-frontend has rules/vitest-failure-investigation.md and rules/git.md. The vitest rule mirrors the canonical dev-environment skill.",
+      "tasks": [
+        {
+          "taskId": "PREF-02-T1",
+          "status": "complete",
+          "description": "rules/git.md content is identical to planner-frontend/rules/pre-commit.md and workforce-frontend/rules/git.md. It is promoted to dev-environment/.agents/frontend-nextjs/rules/git.md (addressed by ARCH-01-T2). Delete local copies after symlink. Also delete rules/vitest-failure-investigation.md.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/frontend/preference-frontend/.agents/rules/",
+          "completedAt": "2026-03-10T08:24:34Z",
+          "completedBy": "session-cd5313c3"
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "WF-01",
+      "severity": "medium",
+      "status": "complete",
+      "category": "Architectural Drift",
+      "repo": "workforce-frontend",
+      "area": ".agents/skills/adversarial-code-review/",
+      "description": "workforce-frontend had adversarial-code-review deleted from disk during this audit session, but the deletion was NEVER committed to git. git log on workforce-frontend shows no deletion commit. .agents/skills/ still contains vitest-failure-investigation dir. Implementation agent must commit the deletion.",
+      "tasks": [
+        {
+          "taskId": "WF-01-T1",
+          "status": "complete",
+          "description": "Commit the disk-level deletion of frontend/workforce-frontend/.agents/skills/adversarial-code-review/ (directory was removed from disk but not staged/committed). Also commit removal of vitest-failure-investigation from skills/.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/frontend/workforce-frontend/.agents/skills/adversarial-code-review/",
+          "completedAt": "2026-03-10T06:40:55Z",
+          "completedBy": "session-b07c138c"
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "WF-02",
+      "severity": "medium",
+      "status": "complete",
+      "category": "Architectural Drift",
+      "repo": "workforce-frontend",
+      "area": ".agents/rules/",
+      "description": "workforce-frontend has rules/vitest-failure-investigation.md and rules/git.md. The vitest rule mirrors the canonical dev-environment skill.",
+      "tasks": [
+        {
+          "taskId": "WF-02-T1",
+          "status": "complete",
+          "description": "rules/git.md content is identical to planner-frontend/rules/pre-commit.md and preference-frontend/rules/git.md. Promoted to frontend-nextjs/rules/git.md (addressed by ARCH-01-T2). Delete local copies after symlink. Also delete rules/vitest-failure-investigation.md.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/frontend/workforce-frontend/.agents/rules/",
+          "completedAt": "2026-03-10T08:24:34Z",
+          "completedBy": "session-cd5313c3"
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "SR-01",
+      "severity": "medium",
+      "status": "complete",
+      "category": "Architectural Drift",
+      "repo": "supabase-receptor",
+      "area": ".agents/skills/adversarial-code-review/",
+      "description": "supabase-receptor had adversarial-code-review deleted from disk during this audit session, but the deletion was NEVER committed to git. git log on supabase-receptor shows no deletion commit. .agents/skills/ is now an empty directory. Implementation agent must commit the deletion.",
+      "tasks": [
+        {
+          "taskId": "SR-01-T1",
+          "status": "complete",
+          "description": "Commit the disk-level deletion of supabase-receptor/.agents/skills/adversarial-code-review/ (directory was removed from disk but not staged/committed).",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/.agents/skills/adversarial-code-review/",
+          "completedAt": "2026-03-10T06:40:55Z",
+          "completedBy": "session-b07c138c"
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "SR-02",
+      "severity": "high",
+      "status": "complete",
+      "category": "Architectural Drift",
+      "repo": "supabase-receptor",
+      "area": ".agents/rules/supabase-standards.md",
+      "description": "supabase-receptor has a rules file whose content mirrors the canonical dev-environment supabase-standards skill. This is the rule-as-skill anti-pattern.",
+      "tasks": [
+        {
+          "taskId": "SR-02-T1",
+          "status": "complete",
+          "description": "Delete supabase-receptor/.agents/rules/supabase-standards.md. The canonical skill is referenced by absolute path in supabase-receptor's audit-workflow.md.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/.agents/rules/supabase-standards.md",
+          "completedAt": "2026-03-10T06:40:55Z",
+          "completedBy": "session-b07c138c"
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "CB-01",
+      "severity": "high",
+      "status": "complete",
+      "category": "Process Gap",
+      "repo": "documentation/common-bond",
+      "area": ".agents/skills/supabase-postgres-best-practices/",
+      "description": "supabase-postgres-best-practices (20+ reference files) exists only in common-bond's local .agents/skills/ and is not in dev-environment. Under the target architecture it should live in docusaurus/skills/ in dev-environment.",
+      "tasks": [
+        {
+          "taskId": "CB-01-T1",
+          "status": "complete",
+          "description": "Copy documentation/common-bond/.agents/skills/supabase-postgres-best-practices/ into dev-environment/.agents/docusaurus/skills/. Update the reference in docusaurus/workflows/audit-workflow.md to the new canonical path.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/dev-environment/.agents/docusaurus/skills/supabase-postgres-best-practices/",
+          "completedAt": "2026-03-10T06:40:55Z",
+          "completedBy": "session-b07c138c"
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "CB-02",
+      "severity": "high",
+      "status": "complete",
+      "category": "Process Gap",
+      "repo": "documentation/common-bond",
+      "area": ".agents/workflows/audit-workflow.md",
+      "description": "common-bond's audit-workflow.md (197 lines, dual-mode) contains Docusaurus-specific context not shared with any other documentation repo. Under the target architecture this becomes the canonical docusaurus/workflows/audit-workflow.md in dev-environment.",
+      "tasks": [
+        {
+          "taskId": "CB-02-T1",
+          "status": "complete",
+          "description": "Use common-bond's audit-workflow.md as the basis for dev-environment/.agents/docusaurus/workflows/audit-workflow.md. Generalise any common-bond-specific references. Addressed as part of ARCH-01-T2.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/dev-environment/.agents/docusaurus/workflows/audit-workflow.md",
+          "completedAt": "2026-03-10T06:40:55Z",
+          "completedBy": "session-b07c138c"
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "FE-01",
+      "severity": "high",
+      "status": "complete",
+      "category": "Process Gap",
+      "repo": "frontend (monorepo root)",
+      "area": ".agent/ directory",
+      "description": "frontend/.agent/ exists at the monorepo parent level which is not a git repository. It contains 5 files: 4 workflow files (audit-workflow.md, finalise-local-audit.md, frontend-test-audit.md, implement-audit-workflow.md) and 1 rules file (component-sync.md). UNIQUE CONTENT: (a) frontend-test-audit.md is also present in dev-environment/.agents/workflows/ but may have diverged \u2014 verify and canonicalize. (b) component-sync.md (33 lines) is UNIQUE and VALUABLE \u2014 defines the design-first UI sync rule requiring all new components be implemented in design-frontend first. This must be promoted to dev-environment/.agents/frontend-nextjs/rules/component-sync.md, NOT deleted. Evidence: file contents read during iterative review.",
+      "tasks": [
+        {
+          "taskId": "FE-01-T1",
+          "status": "complete",
+          "description": "DO NOT simply delete frontend/.agent/. Steps: (1) Compare frontend/.agent/workflows/frontend-test-audit.md with dev-environment/.agents/workflows/frontend-test-audit.md \u2014 merge any unique content. (2) Promote frontend/.agent/rules/component-sync.md to dev-environment/.agents/frontend-nextjs/rules/component-sync.md. (3) Remaining 3 workflow stubs (audit, implement, finalise) are duplicates \u2014 discard. (4) Delete frontend/.agent/ entirely.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/frontend/.agent/",
+          "completedAt": "2026-03-10T06:41:33Z",
+          "completedBy": "session-b07c138c"
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "RW-01",
+      "severity": "medium",
+      "status": "complete",
+      "category": "Process Gap",
+      "repo": "rotator_worker",
+      "area": ".agents/ (missing)",
+      "description": "rotator_worker (Flutter/Dart) has no .agents/ directory. It is the only repository in the ecosystem with zero agent infrastructure. Modernisation of this legacy repo is planned. Evidence: find frontend/rotator_worker -name '.agents' returns no results. Recommend a new dart-flutter/ category in dev-environment/.agents/ rather than mapping to backend-python/.",
+      "tasks": [
+        {
+          "taskId": "RW-01-T1",
+          "status": "complete",
+          "description": "Create dev-environment/.agents/dart-flutter/ category with workflows/ and rules/ subdirs. Write dart-flutter-specific audit-workflow.md, implement-audit-workflow.md, finalise-local-audit.md. Symlink frontend/rotator_worker/.agents -> dev-environment/.agents/dart-flutter/. Add .agents to rotator_worker .gitignore.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/frontend/rotator_worker/.agents",
+          "completedAt": "2026-03-10T08:24:34Z",
+          "completedBy": "session-cd5313c3"
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "DE-01",
+      "severity": "low",
+      "status": "complete",
+      "category": "Process Gap",
+      "repo": "dev-environment",
+      "area": ".agents/ (root)",
+      "description": "dev-environment/.agents/ has no README.md or contribution guide. The directory contains schemas/, scripts/, skills/, and workflows/ but no documentation explaining the architecture, how to add a new skill, how to add a new category, or naming conventions. Implementation agents creating new category structures will lack a canonical reference and may make inconsistent decisions.",
+      "tasks": [
+        {
+          "taskId": "DE-01-T1",
+          "status": "complete",
+          "description": "Create dev-environment/.agents/README.md documenting: (1) directory structure and purpose of each subdirectory, (2) how to add a new skill (naming, SKILL.md frontmatter, registration), (3) how to add a new category (dir structure, required workflow files, symlink convention), (4) naming conventions (snake-case skills, category dirs), (5) how the symlink architecture works.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/dev-environment/.agents/README.md",
+          "completedAt": "2026-03-10T06:40:55Z",
+          "completedBy": "session-b07c138c"
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "DEF-01",
+      "severity": "low",
+      "status": "deferred",
+      "category": "Process Gap",
+      "repo": "receptor-ecosystem",
+      "area": ".agents/ directory",
+      "description": "documentation/receptor-ecosystem does not exist as a local repository. When created, it will need to be mapped to the docusaurus category symlink.",
+      "tasks": [
+        {
+          "taskId": "DEF-01-T1",
+          "status": "open",
+          "description": "When receptor-ecosystem repo is created: create symlink documentation/receptor-ecosystem/.agents -> dev-environment/.agents/docusaurus. Add .agents to its .gitignore.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/documentation/receptor-ecosystem/",
+          "completedAt": "",
+          "completedBy": ""
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "MB-01",
+      "severity": "medium",
+      "status": "complete",
+      "category": "Architectural Drift",
+      "repo": "match-backend",
+      "area": ".agents/skills/",
+      "description": "match-backend has local copies of python-design-patterns and python-testing-patterns, both of which exist in dev-environment/.agents/skills/. Discovered in iterative review \u2014 missed in initial audit. Evidence: find backend/match-backend/.agents/skills -type f returns SKILL.md for both.",
+      "tasks": [
+        {
+          "taskId": "MB-01-T1",
+          "status": "complete",
+          "description": "Delete backend/match-backend/.agents/skills/python-design-patterns/ and backend/match-backend/.agents/skills/python-testing-patterns/. Addressed by the ARCH-01 symlink to backend-python/ category.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/backend/match-backend/.agents/skills/",
+          "completedAt": "2026-03-10T08:24:34Z",
+          "completedBy": "session-cd5313c3"
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "RP-01",
+      "severity": "medium",
+      "status": "complete",
+      "category": "Architectural Drift",
+      "repo": "receptor-planner",
+      "area": ".agents/skills/",
+      "description": "receptor-planner has local copies of python-design-patterns and python-testing-patterns, both of which exist in dev-environment/.agents/skills/. Discovered in iterative review \u2014 missed in initial audit. Evidence: find backend/receptor-planner/.agents/skills -type f returns SKILL.md for both.",
+      "tasks": [
+        {
+          "taskId": "RP-01-T1",
+          "status": "complete",
+          "description": "Delete backend/receptor-planner/.agents/skills/python-design-patterns/ and backend/receptor-planner/.agents/skills/python-testing-patterns/. Addressed by the ARCH-01 symlink to backend-python/ category.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/backend/receptor-planner/.agents/skills/",
+          "completedAt": "2026-03-10T08:24:34Z",
+          "completedBy": "session-cd5313c3"
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "RISK-01",
+      "severity": "low",
+      "status": "complete",
+      "category": "Process Risk",
+      "repo": "all",
+      "area": "symlink migration sequence",
+      "description": "The symlink migration creates a window where some repos are symlinked and others are not. An agent invoked mid-migration will see inconsistent state. Mitigation: execute atomically per category (all frontend repos in one pass, then backend, then supabase, then docusaurus).",
+      "tasks": [
+        {
+          "taskId": "RISK-01-T1",
+          "status": "complete",
+          "description": "Implementation agent must process all repos in a single category before moving to the next. Recommended sequence: (1) frontend-nextjs: planner, preference, workforce, website, (2) backend-python: match-backend, receptor-planner, (3) supabase-infrastructure: supabase-receptor, (4) docusaurus: common-bond.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/",
+          "completedAt": "2026-03-10T08:24:34Z",
+          "completedBy": "session-cd5313c3"
+        }
+      ],
+      "severity_history": []
+    }
+  ],
+  "clarifications": [
+    {
+      "item": "Category assignment for documentation/common-bond",
+      "decision": "documentation/common-bond maps to the docusaurus category (not frontend-nextjs). A 4th category directory docusaurus/ is created in dev-environment to serve documentation repos."
+    },
+    {
+      "item": "Orphaned frontend/.agent/ directory",
+      "decision": "frontend/ is not a git repository. The .agent/ directory is orphaned. Its useful content will be absorbed into frontend-nextjs/audit-workflow.md before deletion."
+    },
+    {
+      "item": "Option A vs Option B symlink approach",
+      "decision": "Option A approved: full symlink of .agents/ to the appropriate category. Repo-specific context rows are generalised at category level; agents read actual repo files for specifics."
+    },
+    {
+      "item": "vitest-failure-investigation rules files",
+      "decision": "rules/vitest-failure-investigation.md files in planner, preference, and workforce frontends are the rule-as-skill anti-pattern. They will be deleted; the skill is referenced via absolute path in workflow required_skills."
+    },
+    {
+      "item": "pre-commit.md / git.md rules files",
+      "decision": "All three instances (planner-frontend/rules/pre-commit.md, preference-frontend/rules/git.md, workforce-frontend/rules/git.md) are byte-for-byte identical ecosystem-wide content. Promote to dev-environment/.agents/frontend-nextjs/rules/git.md; delete local copies."
+    },
+    {
+      "item": "Uncommitted adversarial-code-review deletions",
+      "decision": "The adversarial-code-review skill was deleted from disk in preference-frontend, workforce-frontend, and supabase-receptor during the audit session but was never committed. PREF-01, WF-01, SR-01 remain open. The implementation agent must commit these deletions as its first step."
+    },
+    {
+      "item": "supabase-receptor audit-workflow.md Repo Context rows",
+      "decision": "supabase-receptor/.agents/workflows/audit-workflow.md is fully JSON-refactor compliant and contains unique, valuable Repo Context rows (stack: PostgreSQL/Supabase/Deno, verify command: supabase db reset && supabase test db && deno check). These rows MUST be preserved in dev-environment/.agents/supabase-infrastructure/workflows/audit-workflow.md when creating the canonical category workflow."
+    }
+  ],
+  "implementationPhases": [
+    {
+      "phase": 1,
+      "rationale": "Create category structure, canonical workflows, and commit uncommitted deletion leftovers",
+      "findingIds": [
+        "ARCH-01",
+        "ARCH-02",
+        "CB-02",
+        "FE-01",
+        "PREF-01",
+        "WF-01",
+        "SR-01",
+        "DE-01"
+      ]
+    },
+    {
+      "phase": 2,
+      "rationale": "Promote supabase-postgres-best-practices skill to docusaurus category",
+      "findingIds": [
+        "CB-01"
+      ]
+    },
+    {
+      "phase": 3,
+      "rationale": "Delete local duplicates, create symlinks, update .gitignore",
+      "findingIds": [
+        "PL-01",
+        "PL-02",
+        "PREF-02",
+        "WF-02",
+        "SR-02",
+        "MB-01",
+        "RP-01",
+        "RW-01"
+      ]
+    },
+    {
+      "phase": 4,
+      "rationale": "Deferred \u2014 receptor-ecosystem setup",
+      "findingIds": [
+        "DEF-01"
+      ]
+    }
+  ],
+  "deferred": [
+    {
+      "item": "DEF-01: receptor-ecosystem .agents symlink",
+      "reason": "documentation/receptor-ecosystem repository does not yet exist. This task applies when the repo is created."
+    }
+  ]
+}
