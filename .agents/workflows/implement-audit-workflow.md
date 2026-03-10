@@ -1,180 +1,71 @@
 ---
-description: Implement tasks from an audit recommendations.md in focused, context-safe sessions. Proposes a chunk of work, implements it, commits to the feature branch, then briefs the next agent.
+description: Implement tasks from an audit recommendations.json for common-bond documentation repo in focused, context-safe sessions.
+required_skills:
+   - audit-document-standards
+   - audit-registry
+   - audit-verification-gates
 ---
 
-## Overview
+## Repo Context
 
-Audit implementation is done in manageable chunks (1 phase or 2-4 related
-recommendations) so progress can be committed and context safely handed to the
-next agent.
+| Item               | Value                                    |
+| :----------------- | :--------------------------------------- |
+| **Stack**          | Docusaurus, Markdown, Supabase (gov DBs) |
+| **Verify command** | Doc review — no compile gate             |
 
-> [!IMPORTANT]
-> **Read these skills before starting any implementation session:**
->
-> - `/Users/ryan/development/common_bond/antigravity-environment/dev-environment/.agents/skills/audit-verification-gates/SKILL.md`
->   — verification commands, coverage assessment, Destructive Operations Gate,
->   Session Close format
-> - `/Users/ryan/development/common_bond/antigravity-environment/dev-environment/.agents/skills/audit-registry/SKILL.md`
->   — registry status values and commit conventions
+## Required Skills
 
----
+Read these before starting any implementation session:
 
-## Step 1: Pre-Flight
+- `/Users/ryan/development/common_bond/antigravity-environment/dev-environment/.agents/skills/audit-document-standards/SKILL.md`
+  — `recommendations.json` schema, mutation scripts, canonical `jq` queries,
+  `audit-brief.json` format
+- `/Users/ryan/development/common_bond/antigravity-environment/dev-environment/.agents/skills/audit-verification-gates/SKILL.md`
+  — coverage assessment, Session Close format (no destructive gate for
+  documentation repos)
+- `/Users/ryan/development/common_bond/antigravity-environment/dev-environment/.agents/skills/audit-registry/SKILL.md`
+  — registry status values, Supabase dual-write, commit conventions
 
-1. **Locate the audit files:** The audit slug in `recommendations.md` and
-   feature branch name are the canonical pointers. Paths follow conventions:
-   - Cross-ecosystem (active/complete): `docs/audits/` (in `common-bond`)
-   - Repo-local (active): `docs/audits/` (in target repo)
-   - Repo-local (archived): `docs/audits/archive/`
-   - Docusaurus exception: `dev-docs/audits/`
-2. **Verify cleanliness:**
+## Steps
+
+1. **Pre-Flight** — Locate `recommendations.json` (primary) and
+   `audit-brief.json` in `docs/audits/YYMMDD-slug/`. Read both before writing
+   any code. If only `recommendations.md` exists (pre-migration audit), fall
+   back to scanning `- [ ]` checkboxes. Verify working tree is clean. Checkout
+   `audit/YYMMDD-slug`.
+
+2. **Identify open tasks:**
    ```bash
-   git status
+   jq '[.findings[] | {id: .id, repo: .repo, tasks: [.tasks[] | select(.status == "open")]} | select(.tasks | length > 0)]' \
+     docs/audits/YYMMDD-slug/recommendations.json
    ```
-   Fail if the working tree is dirty — clean it up first.
-3. **Checkout feature branch:** e.g., `git checkout audit/YYMMDD-slug`.
+   See `audit-document-standards` skill for additional canonical `jq` patterns.
+
+3. **Propose Scope** — Use `notify_user` to state exactly what you will
+   implement. Wait for approval.
+
+4. **Implement & Verify** — Follow exact file paths in recommendations. For
+   documentation changes, verify Docusaurus site builds cleanly if applicable.
+   Commit to `audit/YYMMDD-slug`.
+
+5. **Finalise Session** — Update task status via mutation script (do not
+   hand-edit `recommendations.json`):
    ```bash
-   git branch -vv
-   # Confirm the branch shows [origin/audit/YYMMDD-slug] — if not, run:
-   # git branch --set-upstream-to=origin/audit/YYMMDD-slug
+   /Users/ryan/development/common_bond/antigravity-environment/dev-environment/.agents/scripts/complete-task.sh \
+     --file docs/audits/YYMMDD-slug/recommendations.json \
+     --finding FINDING-ID \
+     --task TASK-ID \
+     --completed-by "session-id"
    ```
-4. **Identify uncompleted tasks:** Look for open `- [ ]` checkboxes in
-   `recommendations.md`.
-5. **Read the Agent Clarifications table** at the top of `recommendations.md`
-   before writing any code. Every human decision is recorded there — approved
-   exemptions, severity escalations, preferred approaches, and out-of-scope
-   deferrals. Do not re-implement, ask about, or second-guess decisions already
-   captured in that table.
-6. **Note any reference implementations** mentioned in `recommendations.md` or
-   `audit.md`. Before designing your own approach for a finding, check if
-   another file or repo already implements the pattern correctly — use it as the
-   template.
-
----
-
-## Step 2: Propose Scope
-
-Use `notify_user` to state exactly what you will tackle in this session. Wait
-for approval before writing code. Include:
-
-- Which recommendation IDs you will implement (e.g. `CROSS-04`, `WF-02`)
-- What verification gate you will run
-- Any decisions you need from the user that aren't in the Agent Clarifications
-  table (keep these minimal — most should already be there)
-
----
-
-## Step 3: Implement & Verify
-
-1. Follow exact file paths in the recommendation tasks.
-2. Adhere to repo-specific KI patterns (e.g. `python_microservice_architecture`
-   or `supabase_infrastructure_and_database_architecture`).
-3. Maintain frontmatter, lint rules, and type safety constraints.
-4. **Check the Agent Clarifications table before implementing anything that
-   involves a third-party tool, CI secret, or external service** — the approved
-   approach will be documented there.
-5. **For CI secrets** and the **Destructive Operations Gate:** see
-   `/Users/ryan/development/common_bond/antigravity-environment/dev-environment/.agents/skills/audit-verification-gates/SKILL.md`.
-6. **Run the repo-specific verification gate before committing** — see
-   `/Users/ryan/development/common_bond/antigravity-environment/dev-environment/.agents/skills/audit-verification-gates/SKILL.md`
-   for the canonical command per repo type.
-
----
-
-## Step 4: Finalise Session
-
-1. Cross off completed tasks in `recommendations.md` with an `x`.
-2. Ensure everything committed maps to the feature branch. Do not merge to
-   `main`.
-3. Push to original branch: `git push origin HEAD`
-4. **Only raise a PR when all tasks are complete** (or when the user explicitly
-   requests one mid-audit). Opening draft PRs after each session creates noise.
-   If a PR is needed:
+   Re-render and validate:
    ```bash
-   gh pr create --base main \
-     --head audit/YYMMDD-slug \
-     --title "audit(YYMMDD-slug): implement recommendations" \
-     --body "Closes audit in docs/audits/YYMMDD-slug/"
+   python /Users/ryan/development/common_bond/antigravity-environment/dev-environment/.agents/scripts/render-recommendations.py \
+     docs/audits/YYMMDD-slug/recommendations.json
+   python /Users/ryan/development/common_bond/antigravity-environment/dev-environment/.agents/scripts/validate-recommendations.py \
+     docs/audits/YYMMDD-slug/recommendations.json
    ```
-   Merge only occurs after the user approves the PR on GitHub.
+   Update `audit-brief.json` and registry per the skills. Append a Session Close
+   block per the `audit-verification-gates` skill format.
 
----
-
-## Step 5: Re-Audit (Definition of Done)
-
-If your session completes the **final remaining tasks** of an audit:
-
-1. Conduct a mini re-audit to verify the implemented state matches the original
-   recommendations.
-2. Save findings to `re-audit.md` in the same directory.
-3. Do not close the audit until `re-audit.md` asserts full completion.
-
-Then transition to `/finalise-local-audit` (single-repo) or
-`/finalise-global-audit` (cross-ecosystem) to perform the full re-audit, raise
-PRs, merge, and archive.
-
----
-
-## Step 6: Update Registry & Close Session
-
-1. Append a **Session Close** section to `recommendations.md` — see
-   `/Users/ryan/development/common_bond/antigravity-environment/dev-environment/.agents/skills/audit-verification-gates/SKILL.md`
-   for the required format.
-
-2. **Dual-write the registry status update** (both must be kept in sync):
-
-   a. **Markdown** — Update the audit status in
-      `documentation/common-bond/docs/audits/audit-registry.md` — see
-      `/Users/ryan/development/common_bond/antigravity-environment/dev-environment/.agents/skills/audit-registry/SKILL.md`
-      for the canonical status values:
-
-      | Situation                             | Status to set   |
-      | :------------------------------------ | :-------------- |
-      | Implementation begun this session     | 🔧 Implementing |
-      | All recommendations actioned/deferred | ✅ Closed       |
-
-   b. **Supabase** — `UPSERT` the matching row in the `supabase-common-bond`
-      `public.audits` table via the REST API:
-      ```bash
-      curl -X POST \
-        "https://wbpqompuqeauckdctemj.supabase.co/rest/v1/audits" \
-        -H "apikey: $SUPABASE_SERVICE_ROLE_KEY" \
-        -H "Authorization: Bearer $SUPABASE_SERVICE_ROLE_KEY" \
-        -H "Content-Type: application/json" \
-        -H "Prefer: resolution=merge-duplicates" \
-        -d '{
-          "slug": "YYMMDD-slug",
-          "status": "Implementing"
-        }'
-      ```
-      > [!NOTE]
-      > Use `status: "Implementing"` mid-audit and `status: "Closed"` when all
-      > tasks are actioned. `SUPABASE_SERVICE_ROLE_KEY` is in GitHub secrets for
-      > `dm-ra-01/supabase-common-bond` — never hard-code it.
-
-3. Use `notify_user` to report session completion, completed IDs, blockers, and
-   next targets.
-
----
-
-## Rules of Engagement
-
-1. **Ask before implementing anything ambiguous.** If a task's intent is
-   unclear, the target file has changed since the audit, or the correct approach
-   is disputed — ask before writing code.
-
-2. **Raise concerns, don't suppress them.** If a recommendation seems
-   inappropriate, risky, overly broad, or premature — say so in `notify_user`.
-   Surface your reasoning rather than blindly following the task list.
-
-3. **Check the Agent Clarifications table first.** Many questions about
-   approach, tooling, and approved exemptions are already answered there.
-   Re-asking documented decisions wastes the user's time.
-
-4. **Verify gates are not optional.** Do not skip `tsc --noEmit`, `pytest`, or
-   `npm run build` to save time.
-
-5. **One repo at a time.** Commit and push each repo before moving to the next.
-
-6. **Exemptions are not oversights.** If the Agent Clarifications table records
-   an approved exemption for a finding, do not implement that finding anyway.
+6. **Re-Audit (if final session)** — If all tasks are done, trigger
+   `/finalise-local-audit`.

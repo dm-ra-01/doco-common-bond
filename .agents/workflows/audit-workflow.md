@@ -1,12 +1,15 @@
 ---
-description: Audit a feature, section, or technical area; save audit.md and recommendations.md to ./docs/audits/[YYMMDD-slug]/ (or archive/ for repo-local)
+description: Audit a feature, section, or technical area within the common-bond documentation repository; save audit.md and recommendations.json to ./docs/audits/[YYMMDD-slug]/
+required_skills:
+   - audit-document-standards
+   - audit-registry
 ---
 
 ## Agent Infrastructure Compliance
 
 > [!IMPORTANT]
-> At the start of **every** audit (whether run on `common-bond` itself or on a
-> target repo), verify the target repo's agent infrastructure against the
+> At the start of **every** audit (whether scoped to `common-bond` itself or
+> targeting a repo), verify the target repo's agent infrastructure against the
 > standard defined in:
 > `documentation/common-bond/docs/engineering/agent-infrastructure.md`
 >
@@ -29,168 +32,91 @@ Two modes:
 
 - **Documentation audits** — corporate governance, readability, regulatory
   accuracy
-- **Technical audits** — code, DB schema, infrastructure, API surfaces
-
-Produce two documents for the stated scope:
-
-- `audit.md` — factual findings with evidence
-- `recommendations.md` — prioritised, actionable tasks
+- **Technical audits** — Supabase schema, governance register infrastructure,
+  API surfaces
 
 > [!IMPORTANT]
-> **Read these skills before starting any audit session:**
->
-> - `/Users/ryan/development/common_bond/antigravity-environment/dev-environment/.agents/skills/audit-document-standards/SKILL.md`
->   — document structure, field rules, DoD checklist, iterative improvement
->   protocol
-> - `/Users/ryan/development/common_bond/antigravity-environment/dev-environment/.agents/skills/audit-registry/SKILL.md`
->   — registry location, status values, commit conventions
->
-> **For audits involving database schema, governance register migration, or
-> Supabase/Postgres configuration (primary focus of this repo):**
->
-> - `/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/.agents/skills/supabase-postgres-best-practices/SKILL.md`
->   — schema design, RLS, indexing, and query optimisation best practices
->
 > **For cross-ecosystem audits spanning multiple repositories**, use the
 > `/global-audit` workflow instead of this one. This `audit-workflow.md` is
 > scoped to audits **within** the `common-bond` documentation repository.
 
----
+## Repo Context
 
-## Step 1: Orient
+| Item                     | Value                                    |
+| :----------------------- | :--------------------------------------- |
+| **Stack**                | Docusaurus, Markdown, Supabase (gov DBs) |
+| **Verify command**       | Doc review — no compile gate             |
+| **Audit path (active)**  | `docs/audits/YYMMDD-slug/`               |
+| **Audit path (archive)** | `docs/audits/archive/YYMMDD-slug/`       |
+| **Feature branch**       | `audit/YYMMDD-slug` in this repo         |
 
-1. Read KIs related to the scope
-2. Check `docs/audits/` (or `archive/` for repo-local) for prior audits
-3. Read the adversarial-code-review skill:
-   `/Users/ryan/development/common_bond/antigravity-environment/dev-environment/.agents/skills/adversarial-code-review/SKILL.md`
-4. **Identify any carryover tasks** explicitly stated by the user — these are
-   first-class findings, not footnotes.
-5. **Batch all blocking questions into one `notify_user` call** before starting
-   research. Do not ask for information mid-audit that you could have requested
-   upfront (e.g. third-party DSNs, approved exemptions, severity decisions).
+## Required Skills
 
----
+Read these before starting any audit session:
 
-## Step 2: Research
+- `/Users/ryan/development/common_bond/antigravity-environment/dev-environment/.agents/skills/audit-document-standards/SKILL.md`
+  — `recommendations.json` schema, DoD checklist, mutation scripts, canonical
+  `jq` queries, iterative improvement protocol
+- `/Users/ryan/development/common_bond/antigravity-environment/dev-environment/.agents/skills/audit-registry/SKILL.md`
+  — registry location, status values, Supabase dual-write (canonical field set
+  in `dev-environment/.agents/schemas/supabase-audits-table.schema.json`),
+  commit conventions
 
-For each finding: file + line/section, what it says/does vs Gold Standard,
-severity (🔴/🟠/🟡/🟢).
+For adversarial and technical review:
 
-**Documentation categories:** Coverage Gap, Regulatory Accuracy, Readability,
-Tone & Voice, Metadata, Internal Links, Structural Integrity, Governance
-Completeness.
+- `/Users/ryan/development/common_bond/antigravity-environment/dev-environment/.agents/skills/adversarial-code-review/SKILL.md`
 
-**Technical categories:** Security, Architectural Drift, Test Coverage, Contract
-Stability, Performance, Observability, Dead Code / Tech Debt.
+## Steps
 
-> [!NOTE]
-> When one area or file already handles a concern correctly, flag it as the
-> **reference implementation** for the others. This saves implementation agents
-> from having to research the pattern themselves.
+1. **Scope** — Read the user's request. Read relevant KIs for the area in scope.
+   Check `docs/audits/` for prior audits in the same area. Batch all blocking
+   questions into one `notify_user` call before starting research.
+2. **Branch** —
+   `git checkout -b audit/YYMMDD-slug && git push -u origin audit/YYMMDD-slug`
+3. **Research** — Read content, configs, and schema files. Note findings with
+   file path, evidence, and severity (🔴/🟠/🟡/🟢). Do not make changes during
+   the audit phase.
 
----
+   **Documentation categories:** Coverage Gap, Regulatory Accuracy, Readability,
+   Tone & Voice, Metadata, Internal Links, Structural Integrity, Governance
+   Completeness.
 
-## Step 3: Write `audit.md` and `recommendations.md`
+   **Technical categories:** Security, Architectural Drift, Test Coverage,
+   Contract Stability, Observability, Tech Debt.
 
-Save to:
+   > [!NOTE]
+   > When one area handles a concern correctly, flag it as the **reference
+   > implementation** for the others. This saves implementation agents from
+   > having to research the pattern themselves.
 
-- Cross-ecosystem: `docs/audits/[YYMMDD-slug]/` (in `common-bond`)
-- Repo-local active: `docs/audits/[YYMMDD-slug]/` (in target repo)
-- Repo-local complete: moved to `docs/audits/archive/[YYMMDD-slug]/`
-- Exception: `dev-docs/audits/[YYMMDD-slug]/` if target repo has a Docusaurus
-  `docs/`
-
-Create the feature branch before finalising:
-
-```bash
-git checkout -b audit/YYMMDD-slug
-git push -u origin audit/YYMMDD-slug
-git log --oneline origin/audit/YYMMDD-slug -1
-# Confirm the remote branch exists and your most recent commit appears.
-```
-
-**For full document structure, field rules (including `Auditor:` field), finding
-ID format, Agent Clarifications table, Implementation Order, Deferred Items, and
-the Definition-of-Done checklist:** read
-`/Users/ryan/development/common_bond/antigravity-environment/dev-environment/.agents/skills/audit-document-standards/SKILL.md`.
-
----
-
-## Step 4: Iterative Improvement
-
-The iterative improvement protocol is defined in
-`/Users/ryan/development/common_bond/antigravity-environment/dev-environment/.agents/skills/audit-document-standards/SKILL.md`
-(see "Iterative Improvement Protocol"). After presenting the initial audit,
-offer 5 meaningful additions and repeat until the user concludes the session.
-Commit and push after each approved round.
-
----
-
-## Step 5: Update Registry and Notify
-
-1. **Dual-write the registry entry** (both must be kept in sync from day one):
-
-   a. **Markdown** — Add a row to
-      `documentation/common-bond/docs/audits/audit-registry.md` with status
-      `🔄 Drafting`. For status values, transition rules, and commit conventions,
-      read
-      `/Users/ryan/development/common_bond/antigravity-environment/dev-environment/.agents/skills/audit-registry/SKILL.md`.
-
-   b. **Supabase** — `INSERT` (or `UPSERT`) the audit row in the
-      `supabase-common-bond` `public.audits` table via the REST API:
-      ```bash
-      curl -X POST \
-        "https://wbpqompuqeauckdctemj.supabase.co/rest/v1/audits" \
-        -H "apikey: $SUPABASE_SERVICE_ROLE_KEY" \
-        -H "Authorization: Bearer $SUPABASE_SERVICE_ROLE_KEY" \
-        -H "Content-Type: application/json" \
-        -H "Prefer: resolution=merge-duplicates" \
-        -d '{
-          "slug": "YYMMDD-slug",
-          "status": "Drafting",
-          "scope": "<scope description>",
-          "recommendations_url": "docs/audits/YYMMDD-slug/recommendations.md"
-        }'
-      ```
-      > [!NOTE]
-      > `SUPABASE_SERVICE_ROLE_KEY` is in GitHub secrets for
-      > `dm-ra-01/supabase-common-bond`. Never hard-code it. Both Markdown and
-      > Supabase must be updated at every status transition (Drafting →
-      > Findings Issued → Implementing → Closed); they are the dual source of
-      > truth until the Markdown file is formally deprecated.
-
-2. Commit audit files + registry update to the feature branch.
-
-3. Use `notify_user`: top 3–5 findings, slug, branch name, blocking decisions.
-
----
+4. **Write** — Produce `audit.md` and `recommendations.json` per the
+   `audit-document-standards` skill. Render `recommendations.md` and validate
+   before committing:
+   ```bash
+   python /Users/ryan/development/common_bond/antigravity-environment/dev-environment/.agents/scripts/render-recommendations.py \
+     docs/audits/YYMMDD-slug/recommendations.json
+   python /Users/ryan/development/common_bond/antigravity-environment/dev-environment/.agents/scripts/validate-recommendations.py \
+     docs/audits/YYMMDD-slug/recommendations.json
+   ```
+5. **Iterative improvement** — Follow the `proposed` → `accepted` → `open` JSON
+   lifecycle in the `audit-document-standards` skill. Commit after each approved
+   round.
+6. **Registry** — Dual-write: markdown row + Supabase UPSERT per the
+   `audit-registry` skill. Validate the UPSERT payload against
+   `dev-environment/.agents/schemas/supabase-audits-table.schema.json` before
+   sending. Write `audit-brief.json` per the `audit-document-standards` skill.
+7. **Notify** — Present top findings and the audit slug via `notify_user`.
 
 ## Rules of Engagement
 
-1. **Ask before assuming.** If the scope is ambiguous, the standard being
-   audited is unclear, or a finding could be interpreted multiple ways — ask the
-   user. A wrong assumption baked into `audit.md` is harder to fix than a
-   clarifying question asked upfront.
-
-2. **Caveat your suggestions honestly.** When proposing enhancements or
-   iterative improvements, flag anything that:
-   - Has genuine uncertainty ("this may already be handled — worth checking
-     first")
-   - Carries meaningful risk or scope ("this would require auditing 40+ files")
-   - Depends on a business decision outside engineering ("only appropriate if
-     the app goes public-facing")
-
-3. **Severity is a human decision.** You may propose a severity level, but if
-   you are uncertain — or if bumping a severity has significant implementation
-   consequences — surface your reasoning and ask.
-
-4. **If something feels wrong, say so.** If a finding seems inappropriate,
-   premature, or potentially harmful to document in a shared repository, raise
-   it with the user before committing.
-
-5. **Read before writing.** Never assume a repo's state. Every finding must be
-   grounded in evidence from actual files — not inference or prior knowledge.
-
-6. **Scope creep is a finding, not a reason to expand.** If research reveals an
-   issue significantly outside the stated scope, record it as a 🟢 Low finding
-   and flag it for a separate audit — do not silently expand the current audit.
+1. **Ask before assuming.** If the scope is ambiguous, ask the user before
+   starting research. Batch all questions into one `notify_user` call.
+2. **Caveat your suggestions honestly.** Flag genuine uncertainty, meaningful
+   scope, or business decisions before escalating severity.
+3. **Severity is a human decision.** Propose severity, but surface reasoning
+   before escalating to 🔴 Critical.
+4. **If something feels wrong, say so.** Raise concerns before committing.
+5. **Read before writing.** Every finding must be grounded in evidence from
+   actual files — not inference or prior knowledge.
+6. **Scope creep is a finding, not a reason to expand.** Record out-of-scope
+   issues as 🟢 Low findings and flag for a separate audit.
