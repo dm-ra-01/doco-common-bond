@@ -39,7 +39,16 @@ const config: Config = {
           sidebarPath: './sidebars.ts',
           editUrl: 'https://github.com/dm-ra-01/doco-common-bond/tree/main/',
         },
-        blog: false,
+        blog: {
+          showReadingTime: true,
+          blogTitle: 'Common Bond Journal',
+          blogDescription: 'Notes on building Common Bond — product, governance, and technology.',
+          postsPerPage: 10,
+          blogSidebarTitle: 'Recent posts',
+          blogSidebarCount: 10,
+          authorsMapPath: 'authors.yml',
+          editUrl: 'https://github.com/dm-ra-01/doco-common-bond/tree/main/',
+        },
         theme: {
           customCss: './src/css/custom.css',
         },
@@ -129,6 +138,7 @@ const config: Config = {
           ],
         },
         { to: '/knowledge-graph', label: '🧠 Map', position: 'right' },
+        { to: '/blog', label: 'Journal', position: 'right' },
         {
           href: 'https://github.com/dm-ra-01/doco-common-bond',
           label: 'GitHub',
