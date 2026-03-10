@@ -69,6 +69,12 @@ const config: Config = {
       },
       items: [
         {
+          type: 'docSidebar',
+          sidebarId: 'aboutUsSidebar',
+          label: 'About Us',
+          position: 'left',
+        },
+        {
           type: 'dropdown',
           label: 'Business',
           position: 'left',
