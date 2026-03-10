@@ -340,3 +340,27 @@ dirs were untracked (never committed to git on the audit branch) — deleted wit
 pending `receptor-ecosystem` repo creation. Proceed with
 `/finalise-global-audit` to run the re-audit, raise PRs across all 9 repos,
 merge, and archive.
+
+---
+
+## Finalise Session Close — 2026-03-10
+
+**Re-Audit Result:** ✅ All 16 actionable findings confirmed implemented. DEF-01
+formally deferred (receptor-ecosystem repo does not yet exist).
+
+**Completed this session:** Re-audit verification of all 9 repos; `re-audit.md`
+written to `docs/audits/260310-agent-infra-consolidation/re-audit.md`.
+
+**Remaining:** None — audit is complete. DEF-01 is formally deferred and
+documented in the Deferred section above.
+
+**Blocked:** None
+
+**PR order note:** No merge-order dependency between repos. All 9 repos +
+dev-environment
+
+- common-bond can be merged in parallel.
+
+**Brief for next agent:** Re-audit confirmed all symlinks resolving correctly,
+all `.gitignore` entries present, all category dirs with 3 workflows each, all
+local skill/rule duplicates deleted. Audit is being closed and archived.
