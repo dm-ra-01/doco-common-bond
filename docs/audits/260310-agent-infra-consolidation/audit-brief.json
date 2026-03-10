@@ -2,10 +2,16 @@
   "$schema": "../../../dev-environment/.agents/schemas/audit-brief.schema.json",
   "auditSlug": "260310-agent-infra-consolidation",
   "status": "implementing",
-  "nextAction": "implement",
-  "openTaskCount": 12,
-  "latestHandover": "Phase 1+2 complete. Created 5 category directories in dev-environment/.agents/ (frontend-nextjs, backend-python, supabase-infrastructure, docusaurus, dart-flutter), each with canonical audit-workflow.md, implement-audit-workflow.md, and finalise-local-audit.md. Wrote frontend-nextjs/rules/git.md (promoted from planner/preference/workforce local copies) and frontend-nextjs/rules/component-sync.md (promoted from frontend/.agent/rules/). Deleted frontend/.agent/ entirely. Promoted supabase-postgres-best-practices to docusaurus/skills/. Committed disk-level adversarial-code-review deletions in preference-frontend (PREF-01), workforce-frontend (WF-01), and supabase-receptor (SR-01+SR-02). All 4 repos have audit/260310-agent-infra-consolidation branches pushed. Phase 3 (local skill deletion, symlinks, .gitignore updates) remains for next session. Repos with open work: planner-frontend (PL-01, PL-02), preference-frontend (PREF-02), workforce-frontend (WF-02), match-backend (MB-01), receptor-planner (RP-01), rotator_worker (RW-01, partially done — dart-flutter dir created, symlink+.gitignore remains). RISK-01-T1 (migration sequencing) addressed by following the recommended sequence in Phase 3.",
+  "nextAction": "finalise",
+  "openTaskCount": 1,
+  "latestHandover": "Phase 3 complete. All 9 repos have had their local .agents/ contents deleted (tracked files via git rm, untracked via rm -rf) and .agents added to their .gitignore. All 9 local symlinks created: planner-frontend, preference-frontend, workforce-frontend, website-frontend → frontend-nextjs; match-backend, receptor-planner → backend-python; supabase-receptor → supabase-infrastructure; common-bond → docusaurus; rotator_worker → dart-flutter. All repos committed and pushed to audit/260310-agent-infra-consolidation. 11 tasks marked complete this session. 1 remaining open task: DEF-01-T1 (receptor-ecosystem .agents symlink — repo does not yet exist, formally deferred). All actionable work is done. Next action: /finalise-global-audit to run re-audit, raise PRs, and close.",
   "sessionHistory": [
+    {
+      "sessionId": "session-cd5313c3",
+      "date": "2026-03-10",
+      "completedFindingIds": ["ARCH-01-T3", "ARCH-01-T4", "ARCH-01-T5", "PL-01-T1", "PL-02-T1", "PREF-02-T1", "WF-02-T1", "MB-01-T1", "RP-01-T1", "RW-01-T1", "RISK-01-T1"],
+      "summary": "Phase 3 implementation. Deleted all local .agents/ content from all 9 repos (git rm + rm -rf for untracked files). Added .agents to .gitignore for all 9 repos. Created correct symlinks: 4 frontends → frontend-nextjs, 2 backends → backend-python, supabase-receptor → supabase-infrastructure, common-bond → docusaurus, rotator_worker → dart-flutter. All committed to audit/260310-agent-infra-consolidation and pushed. Verified all 9 symlinks resolve correctly with ls -la. 11 tasks marked complete. 1 task remains (DEF-01-T1, formally deferred — reactor-ecosystem repo does not exist)."
+    },
     {
       "sessionId": "session-b138c4b3",
       "date": "2026-03-10",
