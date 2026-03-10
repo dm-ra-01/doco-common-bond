@@ -19,7 +19,7 @@
         {
           "taskId": "ARCH-01-T1",
           "status": "open",
-          "description": "Create the 4 category subdirectories in dev-environment/.agents/: frontend-nextjs/, supabase-infrastructure/, backend-python/, docusaurus/ — each with workflows/ and rules/ subdirs.",
+          "description": "Create the 4 category subdirectories in dev-environment/.agents/: frontend-nextjs/, supabase-infrastructure/, backend-python/, docusaurus/ \u2014 each with workflows/ and rules/ subdirs.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/dev-environment/.agents/",
           "completedAt": "",
           "completedBy": ""
@@ -71,7 +71,7 @@
         {
           "taskId": "ARCH-02-T1",
           "status": "open",
-          "description": "Addressed by ARCH-01-T1 and ARCH-01-T2 — no separate tasks required.",
+          "description": "Addressed by ARCH-01-T1 and ARCH-01-T2 \u2014 no separate tasks required.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/dev-environment/.agents/",
           "completedAt": "",
           "completedBy": ""
@@ -126,15 +126,15 @@
       "category": "Architectural Drift",
       "repo": "preference-frontend",
       "area": ".agents/skills/adversarial-code-review/",
-      "description": "preference-frontend had a local copy of adversarial-code-review (confirmed identical to dev-environment). Deleted during this audit session.",
+      "description": "preference-frontend had adversarial-code-review deleted from disk during this audit session, but the deletion was NEVER committed to git. git log on preference-frontend main shows no deletion commit. Additionally, .agents/skills/ still contains vitest-failure-investigation dir. Implementation agent must commit the deletion.",
       "tasks": [
         {
           "taskId": "PREF-01-T1",
-          "status": "complete",
-          "description": "Delete frontend/preference-frontend/.agents/skills/adversarial-code-review/ (completed mid-session).",
+          "status": "open",
+          "description": "Commit the disk-level deletion of frontend/preference-frontend/.agents/skills/adversarial-code-review/ (directory was removed from disk but not staged/committed). Also commit removal of vitest-failure-investigation from skills/ (it belongs in workflows via required_skills, not as a local skills/ copy).",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/frontend/preference-frontend/.agents/skills/adversarial-code-review/",
-          "completedAt": "2026-03-10T15:50:00Z",
-          "completedBy": "session-b138c4b3"
+          "completedAt": "",
+          "completedBy": ""
         }
       ],
       "severity_history": []
@@ -166,15 +166,15 @@
       "category": "Architectural Drift",
       "repo": "workforce-frontend",
       "area": ".agents/skills/adversarial-code-review/",
-      "description": "workforce-frontend had a local copy of adversarial-code-review (confirmed identical). Deleted during this audit session.",
+      "description": "workforce-frontend had adversarial-code-review deleted from disk during this audit session, but the deletion was NEVER committed to git. git log on workforce-frontend shows no deletion commit. .agents/skills/ still contains vitest-failure-investigation dir. Implementation agent must commit the deletion.",
       "tasks": [
         {
           "taskId": "WF-01-T1",
-          "status": "complete",
-          "description": "Delete frontend/workforce-frontend/.agents/skills/adversarial-code-review/ (completed mid-session).",
+          "status": "open",
+          "description": "Commit the disk-level deletion of frontend/workforce-frontend/.agents/skills/adversarial-code-review/ (directory was removed from disk but not staged/committed). Also commit removal of vitest-failure-investigation from skills/.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/frontend/workforce-frontend/.agents/skills/adversarial-code-review/",
-          "completedAt": "2026-03-10T15:50:00Z",
-          "completedBy": "session-b138c4b3"
+          "completedAt": "",
+          "completedBy": ""
         }
       ],
       "severity_history": []
@@ -206,15 +206,15 @@
       "category": "Architectural Drift",
       "repo": "supabase-receptor",
       "area": ".agents/skills/adversarial-code-review/",
-      "description": "supabase-receptor had a local copy of adversarial-code-review (confirmed identical). Deleted during this audit session.",
+      "description": "supabase-receptor had adversarial-code-review deleted from disk during this audit session, but the deletion was NEVER committed to git. git log on supabase-receptor shows no deletion commit. .agents/skills/ is now an empty directory. Implementation agent must commit the deletion.",
       "tasks": [
         {
           "taskId": "SR-01-T1",
-          "status": "complete",
-          "description": "Delete supabase-receptor/.agents/skills/adversarial-code-review/ (completed mid-session).",
+          "status": "open",
+          "description": "Commit the disk-level deletion of supabase-receptor/.agents/skills/adversarial-code-review/ (directory was removed from disk but not staged/committed).",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/.agents/skills/adversarial-code-review/",
-          "completedAt": "2026-03-10T15:50:00Z",
-          "completedBy": "session-b138c4b3"
+          "completedAt": "",
+          "completedBy": ""
         }
       ],
       "severity_history": []
@@ -300,6 +300,26 @@
       "severity_history": []
     },
     {
+      "id": "RW-01",
+      "severity": "medium",
+      "status": "open",
+      "category": "Process Gap",
+      "repo": "rotator_worker",
+      "area": ".agents/ (missing)",
+      "description": "rotator_worker (Flutter/Dart) has no .agents/ directory. It is the only repository in the ecosystem with zero agent infrastructure. Modernisation of this legacy repo is planned. Evidence: find frontend/rotator_worker -name '.agents' returns no results. Recommend a new dart-flutter/ category in dev-environment/.agents/ rather than mapping to backend-python/.",
+      "tasks": [
+        {
+          "taskId": "RW-01-T1",
+          "status": "open",
+          "description": "Create dev-environment/.agents/dart-flutter/ category with workflows/ and rules/ subdirs. Write dart-flutter-specific audit-workflow.md, implement-audit-workflow.md, finalise-local-audit.md. Symlink frontend/rotator_worker/.agents -> dev-environment/.agents/dart-flutter/. Add .agents to rotator_worker .gitignore.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/frontend/rotator_worker/.agents",
+          "completedAt": "",
+          "completedBy": ""
+        }
+      ],
+      "severity_history": []
+    },
+    {
       "id": "DEF-01",
       "severity": "low",
       "status": "deferred",
@@ -326,7 +346,7 @@
       "category": "Architectural Drift",
       "repo": "match-backend",
       "area": ".agents/skills/",
-      "description": "match-backend has local copies of python-design-patterns and python-testing-patterns, both of which exist in dev-environment/.agents/skills/. Discovered in iterative review — missed in initial audit. Evidence: find backend/match-backend/.agents/skills -type f returns SKILL.md for both.",
+      "description": "match-backend has local copies of python-design-patterns and python-testing-patterns, both of which exist in dev-environment/.agents/skills/. Discovered in iterative review \u2014 missed in initial audit. Evidence: find backend/match-backend/.agents/skills -type f returns SKILL.md for both.",
       "tasks": [
         {
           "taskId": "MB-01-T1",
@@ -346,7 +366,7 @@
       "category": "Architectural Drift",
       "repo": "receptor-planner",
       "area": ".agents/skills/",
-      "description": "receptor-planner has local copies of python-design-patterns and python-testing-patterns, both of which exist in dev-environment/.agents/skills/. Discovered in iterative review — missed in initial audit. Evidence: find backend/receptor-planner/.agents/skills -type f returns SKILL.md for both.",
+      "description": "receptor-planner has local copies of python-design-patterns and python-testing-patterns, both of which exist in dev-environment/.agents/skills/. Discovered in iterative review \u2014 missed in initial audit. Evidence: find backend/receptor-planner/.agents/skills -type f returns SKILL.md for both.",
       "tasks": [
         {
           "taskId": "RP-01-T1",
@@ -400,28 +420,53 @@
     {
       "item": "pre-commit.md / git.md rules files",
       "decision": "All three instances (planner-frontend/rules/pre-commit.md, preference-frontend/rules/git.md, workforce-frontend/rules/git.md) are byte-for-byte identical ecosystem-wide content. Promote to dev-environment/.agents/frontend-nextjs/rules/git.md; delete local copies."
+    },
+    {
+      "item": "Uncommitted adversarial-code-review deletions",
+      "decision": "The adversarial-code-review skill was deleted from disk in preference-frontend, workforce-frontend, and supabase-receptor during the audit session but was never committed. PREF-01, WF-01, SR-01 remain open. The implementation agent must commit these deletions as its first step."
     }
   ],
   "implementationPhases": [
     {
       "phase": 1,
-      "rationale": "Create category structure and canonical workflows",
-      "findingIds": ["ARCH-01", "ARCH-02", "CB-02", "FE-01"]
+      "rationale": "Create category structure, canonical workflows, and commit uncommitted deletion leftovers",
+      "findingIds": [
+        "ARCH-01",
+        "ARCH-02",
+        "CB-02",
+        "FE-01",
+        "PREF-01",
+        "WF-01",
+        "SR-01"
+      ]
     },
     {
       "phase": 2,
       "rationale": "Promote supabase-postgres-best-practices skill to docusaurus category",
-      "findingIds": ["CB-01"]
+      "findingIds": [
+        "CB-01"
+      ]
     },
     {
       "phase": 3,
       "rationale": "Delete local duplicates, create symlinks, update .gitignore",
-      "findingIds": ["PL-01", "PL-02", "PREF-02", "WF-02", "SR-02", "MB-01", "RP-01"]
+      "findingIds": [
+        "PL-01",
+        "PL-02",
+        "PREF-02",
+        "WF-02",
+        "SR-02",
+        "MB-01",
+        "RP-01",
+        "RW-01"
+      ]
     },
     {
       "phase": 4,
-      "rationale": "Deferred — receptor-ecosystem setup",
-      "findingIds": ["DEF-01"]
+      "rationale": "Deferred \u2014 receptor-ecosystem setup",
+      "findingIds": [
+        "DEF-01"
+      ]
     }
   ],
   "deferred": [

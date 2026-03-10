@@ -16,8 +16,7 @@ ecosystem reveals significant structural drift from the intended
 single-source-of-truth model. The current state has 9 repositories each
 maintaining their own local copies of skills, rules, and workflow files that are
 either identical to — or degraded copies of — the canonical versions in
-`dev-environment/.agents/`. **16 findings** were identified: 2 critical, 5 high,
-7 medium, 2 low.
+`dev-environment/.agents/`. **17 findings** were identified (2 critical, 5 high, 8 medium, 2 low, 1 risk, 1 deferred); **97 redundant skill files** identified across 6 repositories.
 
 | Repository / Area           | Coverage | Issues Found | Overall                                    |
 | :-------------------------- | :------- | :----------- | :----------------------------------------- |

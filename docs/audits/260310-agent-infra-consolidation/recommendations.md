@@ -22,6 +22,7 @@
 | Option A vs Option B symlink approach | Option A approved: full symlink of .agents/ to the appropriate category. Repo-specific context rows are generalised at category level; agents read actual repo files for specifics. |
 | vitest-failure-investigation rules files | rules/vitest-failure-investigation.md files in planner, preference, and workforce frontends are the rule-as-skill anti-pattern. They will be deleted; the skill is referenced via absolute path in workflow required_skills. |
 | pre-commit.md / git.md rules files | All three instances (planner-frontend/rules/pre-commit.md, preference-frontend/rules/git.md, workforce-frontend/rules/git.md) are byte-for-byte identical ecosystem-wide content. Promote to dev-environment/.agents/frontend-nextjs/rules/git.md; delete local copies. |
+| Uncommitted adversarial-code-review deletions | The adversarial-code-review skill was deleted from disk in preference-frontend, workforce-frontend, and supabase-receptor during the audit session but was never committed. PREF-01, WF-01, SR-01 remain open. The implementation agent must commit these deletions as its first step. |
 
 
 ---
@@ -104,14 +105,13 @@ Affects: `planner-frontend` — .agents/rules/
 - [ ] Delete rules/vitest-failure-investigation.md. For pre-commit.md: content is identical to preference-frontend/rules/git.md and workforce-frontend/rules/git.md (ecosystem-wide 'don't bypass pre-commit hooks' rule). Promote this content to dev-environment/.agents/frontend-nextjs/rules/git.md (addressed by ARCH-01-T2), then delete the local pre-commit.md.
       `/Users/ryan/development/common_bond/antigravity-environment/frontend/planner-frontend/.agents/rules/`
 
-### PREF-01: preference-frontend had a local copy of adversarial-code-review (confirmed identical to dev-environment). Deleted during
+### PREF-01: preference-frontend had adversarial-code-review deleted from disk during this audit session, but the deletion was NEVER 
 
 Affects: `preference-frontend` — .agents/skills/adversarial-code-review/
 
 
-- [x] Delete frontend/preference-frontend/.agents/skills/adversarial-code-review/ (completed mid-session).
+- [ ] Commit the disk-level deletion of frontend/preference-frontend/.agents/skills/adversarial-code-review/ (directory was removed from disk but not staged/committed). Also commit removal of vitest-failure-investigation from skills/ (it belongs in workflows via required_skills, not as a local skills/ copy).
       `/Users/ryan/development/common_bond/antigravity-environment/frontend/preference-frontend/.agents/skills/adversarial-code-review/`
-      _(Completed: 2026-03-10T15:50:00Z)_
 
 ### PREF-02: preference-frontend has rules/vitest-failure-investigation.md and rules/git.md. The vitest rule mirrors the canonical de
 
@@ -121,14 +121,13 @@ Affects: `preference-frontend` — .agents/rules/
 - [ ] rules/git.md content is identical to planner-frontend/rules/pre-commit.md and workforce-frontend/rules/git.md. It is promoted to dev-environment/.agents/frontend-nextjs/rules/git.md (addressed by ARCH-01-T2). Delete local copies after symlink. Also delete rules/vitest-failure-investigation.md.
       `/Users/ryan/development/common_bond/antigravity-environment/frontend/preference-frontend/.agents/rules/`
 
-### WF-01: workforce-frontend had a local copy of adversarial-code-review (confirmed identical). Deleted during this audit session.
+### WF-01: workforce-frontend had adversarial-code-review deleted from disk during this audit session, but the deletion was NEVER c
 
 Affects: `workforce-frontend` — .agents/skills/adversarial-code-review/
 
 
-- [x] Delete frontend/workforce-frontend/.agents/skills/adversarial-code-review/ (completed mid-session).
+- [ ] Commit the disk-level deletion of frontend/workforce-frontend/.agents/skills/adversarial-code-review/ (directory was removed from disk but not staged/committed). Also commit removal of vitest-failure-investigation from skills/.
       `/Users/ryan/development/common_bond/antigravity-environment/frontend/workforce-frontend/.agents/skills/adversarial-code-review/`
-      _(Completed: 2026-03-10T15:50:00Z)_
 
 ### WF-02: workforce-frontend has rules/vitest-failure-investigation.md and rules/git.md. The vitest rule mirrors the canonical dev
 
@@ -138,14 +137,21 @@ Affects: `workforce-frontend` — .agents/rules/
 - [ ] rules/git.md content is identical to planner-frontend/rules/pre-commit.md and preference-frontend/rules/git.md. Promoted to frontend-nextjs/rules/git.md (addressed by ARCH-01-T2). Delete local copies after symlink. Also delete rules/vitest-failure-investigation.md.
       `/Users/ryan/development/common_bond/antigravity-environment/frontend/workforce-frontend/.agents/rules/`
 
-### SR-01: supabase-receptor had a local copy of adversarial-code-review (confirmed identical). Deleted during this audit session.
+### SR-01: supabase-receptor had adversarial-code-review deleted from disk during this audit session, but the deletion was NEVER co
 
 Affects: `supabase-receptor` — .agents/skills/adversarial-code-review/
 
 
-- [x] Delete supabase-receptor/.agents/skills/adversarial-code-review/ (completed mid-session).
+- [ ] Commit the disk-level deletion of supabase-receptor/.agents/skills/adversarial-code-review/ (directory was removed from disk but not staged/committed).
       `/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/.agents/skills/adversarial-code-review/`
-      _(Completed: 2026-03-10T15:50:00Z)_
+
+### RW-01: rotator_worker (Flutter/Dart) has no .agents/ directory. It is the only repository in the ecosystem with zero agent infr
+
+Affects: `rotator_worker` — .agents/ (missing)
+
+
+- [ ] Create dev-environment/.agents/dart-flutter/ category with workflows/ and rules/ subdirs. Write dart-flutter-specific audit-workflow.md, implement-audit-workflow.md, finalise-local-audit.md. Symlink frontend/rotator_worker/.agents -> dev-environment/.agents/dart-flutter/. Add .agents to rotator_worker .gitignore.
+      `/Users/ryan/development/common_bond/antigravity-environment/frontend/rotator_worker/.agents`
 
 ### MB-01: match-backend has local copies of python-design-patterns and python-testing-patterns, both of which exist in dev-environ
 
@@ -197,9 +203,9 @@ Affects: `all` — symlink migration sequence
 
 | Phase | Finding IDs | Rationale |
 | :---- | :---------- | :-------- |
-| 1 | ARCH-01, ARCH-02, CB-02, FE-01 | Create category structure and canonical workflows |
+| 1 | ARCH-01, ARCH-02, CB-02, FE-01, PREF-01, WF-01, SR-01 | Create category structure, canonical workflows, and commit uncommitted deletion leftovers |
 | 2 | CB-01 | Promote supabase-postgres-best-practices skill to docusaurus category |
-| 3 | PL-01, PL-02, PREF-02, WF-02, SR-02, MB-01, RP-01 | Delete local duplicates, create symlinks, update .gitignore |
+| 3 | PL-01, PL-02, PREF-02, WF-02, SR-02, MB-01, RP-01, RW-01 | Delete local duplicates, create symlinks, update .gitignore |
 | 4 | DEF-01 | Deferred — receptor-ecosystem setup |
 
 
@@ -222,6 +228,7 @@ Affects: `all` — symlink migration sequence
 | WF-01 | .agents/skills/adversarial-code-review/ | `adversarial-code-review` | Architectural Drift | 🟡 Medium |
 | WF-02 | .agents/rules/ | `rules` | Architectural Drift | 🟡 Medium |
 | SR-01 | .agents/skills/adversarial-code-review/ | `adversarial-code-review` | Architectural Drift | 🟡 Medium |
+| RW-01 | .agents/ (missing) | `.agents` | Process Gap | 🟡 Medium |
 | MB-01 | .agents/skills/ | `skills` | Architectural Drift | 🟡 Medium |
 | RP-01 | .agents/skills/ | `skills` | Architectural Drift | 🟡 Medium |
 | DEF-01 | .agents/ directory | `receptor-ecosystem` | Process Gap | 🟢 Low |
