@@ -1,0 +1,154 @@
+{
+  "$schema": "https://raw.githubusercontent.com/dm-ra-01/dev-environment/main/.agents/schemas/recommendations.schema.json",
+  "auditSlug": "260311-about-us-documentation",
+  "title": "About-Us Documentation Audit",
+  "date": "2026-03-11",
+  "scope": "documentation/common-bond — docs/about-us/ section, sidebars.ts, docusaurus.config.ts",
+  "auditor": "Ryan Ammendolea",
+  "branch": "audit/260311-about-us-documentation",
+  "findings": [
+    {
+      "id": "INFO-01",
+      "severity": "low",
+      "status": "open",
+      "category": "Documentation Gap",
+      "repo": "doco-common-bond",
+      "area": "docs/about-us",
+      "description": "The docs/about-us/ directory was created but contains zero files. There is no cohesive narrative section covering who Common Bond is, who Ryan is (narrative first), what Receptor does, where Common Bond currently stands operationally, and what the aims are. This gap is material for onboarding advisors, future hires, and partner relationships.",
+      "tasks": [
+        {
+          "taskId": "INFO-01-T1",
+          "status": "open",
+          "description": "Create docs/about-us/_category_.json with sidebar label, position 0, and generated-index link.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/about-us/_category_.json",
+          "completedAt": "",
+          "completedBy": ""
+        },
+        {
+          "taskId": "INFO-01-T2",
+          "status": "open",
+          "description": "Create docs/about-us/index.md as the hub page with card grid linking to sub-pages and a TL;DR summary.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/about-us/index.md",
+          "completedAt": "",
+          "completedBy": ""
+        },
+        {
+          "taskId": "INFO-01-T3",
+          "status": "open",
+          "description": "Create docs/about-us/founder.md as a narrative-first personal profile of Dr Ryan Ammendolea — not a CV dump. Include headshot placeholder, origin story, dual clinical/engineering identity, and personal vision statement. Link to strategy/strategy-vision/founder.md for full credentials.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/about-us/founder.md",
+          "completedAt": "",
+          "completedBy": ""
+        },
+        {
+          "taskId": "INFO-01-T4",
+          "status": "open",
+          "description": "Create docs/about-us/who-we-are.md covering: Common Bond Pty Ltd identity (trustee for Ammendolea Family Trust, ABN 50 152 085 287), MyJMO Pty Ltd as IP owner, the software licence relationship between entities, solo-founder EOS operating model, four brand pillars, technology philosophy.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/about-us/who-we-are.md",
+          "completedAt": "",
+          "completedBy": ""
+        },
+        {
+          "taskId": "INFO-01-T5",
+          "status": "open",
+          "description": "Create docs/about-us/what-we-do.md covering Receptor product suite (Workforce, Planner, Preferencer, Allocator), the problem solved, the SaaS+Consulting flywheel, and in/out-of-scope boundaries. Cross-link to strategy/strategy-vision/vision.md and product docs.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/about-us/what-we-do.md",
+          "completedAt": "",
+          "completedBy": ""
+        },
+        {
+          "taskId": "INFO-01-T6",
+          "status": "open",
+          "description": "Create docs/about-us/where-we-are.md: honest current-state page covering pre-revenue active development stage, quarterly rocks (FY2026 Q1), product readiness, StartSpace community context, solo-founder reality, and active relationship-building with PMCV (piqued interest via Monash Health, not yet formalised).",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/about-us/where-we-are.md",
+          "completedAt": "",
+          "completedBy": ""
+        },
+        {
+          "taskId": "INFO-01-T7",
+          "status": "open",
+          "description": "Create docs/about-us/our-aims.md covering 1yr (FY2026 Monash pilot + first 3 SaaS clients), 3yr (FY2028 $250k+ ARR, Victoria+SA+WA), and 10yr (national standard for all healthcare trainee allocations). Cross-link to operations/eos/vto.md and strategy/strategy-vision/vision.md.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/about-us/our-aims.md",
+          "completedAt": "",
+          "completedBy": ""
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "INFO-02",
+      "severity": "low",
+      "status": "open",
+      "category": "Configuration Gap",
+      "repo": "doco-common-bond",
+      "area": "sidebars.ts",
+      "description": "No aboutUsSidebar autogenerated entry exists in sidebars.ts. Without this, the docs/about-us/ directory will not be wired into Docusaurus navigation.",
+      "tasks": [
+        {
+          "taskId": "INFO-02-T1",
+          "status": "open",
+          "description": "Add aboutUsSidebar autogenerated entry for dirName 'about-us' to sidebars.ts.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/sidebars.ts",
+          "completedAt": "",
+          "completedBy": ""
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "INFO-03",
+      "severity": "low",
+      "status": "open",
+      "category": "Configuration Gap",
+      "repo": "doco-common-bond",
+      "area": "docusaurus.config.ts",
+      "description": "No navbar item exists for the About Us section. The section is unreachable from top-level navigation without this entry.",
+      "tasks": [
+        {
+          "taskId": "INFO-03-T1",
+          "status": "open",
+          "description": "Add a top-level 'About Us' navbar item in docusaurus.config.ts pointing at the aboutUsSidebar, positioned prominently (before Business dropdown).",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docusaurus.config.ts",
+          "completedAt": "",
+          "completedBy": ""
+        }
+      ],
+      "severity_history": []
+    }
+  ],
+  "clarifications": [
+    {
+      "item": "Legal entities",
+      "decision": "Include both MyJMO Pty Ltd (IP Owner) and Common Bond Pty Ltd (Exclusive Licensee). Common Bond Pty Ltd is the trustee for The Ammendolea Family Trust (ABN: 50 152 085 287). Document the software licence relationship between the two entities."
+    },
+    {
+      "item": "StartSpace affiliation",
+      "decision": "Include StartSpace as a community affiliation on where-we-are.md. StartSpace is an open community of early-stage founders powered by State Library Victoria."
+    },
+    {
+      "item": "PMCV relationship",
+      "decision": "We have NO existing formal relationship with PMCV. We are actively working to build one. Monash Health work has piqued PMCV interest. Do not overstate — describe as relationship-building in progress, not an established relationship."
+    },
+    {
+      "item": "Tone",
+      "decision": "Mostly structured/professional, but occasional personal and candid statements are appropriate — especially on where-we-are.md and founder.md."
+    },
+    {
+      "item": "Headshot photo",
+      "decision": "Leave a <!-- TODO: add headshot image path --> placeholder comment in founder.md where the image would appear."
+    }
+  ],
+  "implementationPhases": [
+    {
+      "phase": 1,
+      "findingIds": ["INFO-01"],
+      "rationale": "Content creation must precede navigation wiring; all 7 markdown files for the about-us section are created first."
+    },
+    {
+      "phase": 2,
+      "findingIds": ["INFO-02", "INFO-03"],
+      "rationale": "Navigation wiring (sidebars.ts and docusaurus.config.ts) is applied once content files exist and can be linked."
+    }
+  ],
+  "deferred": []
+}

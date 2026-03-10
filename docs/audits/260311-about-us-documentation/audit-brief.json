@@ -1,0 +1,15 @@
+{
+  "auditSlug": "260311-about-us-documentation",
+  "title": "About-Us Documentation Audit",
+  "date": "2026-03-11",
+  "scope": "documentation/common-bond — docs/about-us/ section",
+  "auditor": "Ryan Ammendolea",
+  "branch": "audit/260311-about-us-documentation",
+  "status": "Drafting",
+  "session": 1,
+  "totalFindings": 3,
+  "openFindings": ["INFO-01", "INFO-02", "INFO-03"],
+  "completedFindings": [],
+  "deferredFindings": [],
+  "handoverNotes": "Audit artefacts complete. All 3 findings are open and ready for implementation via /implement-audit-workflow. Phase 1 (INFO-01): create 7 markdown content files under docs/about-us/. Phase 2 (INFO-02, INFO-03): wire sidebar and navbar. Clarifications are recorded in recommendations.json clarifications[]. Key notes: PMCV relationship is NOT established (only piqued interest); Common Bond Pty Ltd = trustee for Ammendolea Family Trust (ABN 50 152 085 287); MyJMO Pty Ltd = IP owner under software licence; StartSpace included on where-we-are.md; tone is structured with occasional candid statements; headshot placeholder on founder.md."
+}
