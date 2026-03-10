@@ -1,10 +1,10 @@
 {
   "$schema": "../../../dev-environment/.agents/schemas/audit-brief.schema.json",
   "auditSlug": "260310-agent-workflow-json-refactor",
-  "status": "implementing",
-  "nextAction": "finalise",
+  "status": "closed",
+  "nextAction": "closed",
   "openTaskCount": 0,
-  "latestHandover": "All 13 findings implemented in a single session (2026-03-10). Deliverables in dev-environment: 3 JSON schemas (recommendations, audit-brief, supabase-audits-table), 5 scripts (validate-recommendations.py, render-recommendations.py, add-finding.sh, complete-task.sh, defer-finding.sh), audit-document-standards SKILL.md rewritten as JSON-native, audit-registry SKILL.md extended with Supabase dual-write for all 4 status transitions, and all 3 workflow files updated with required_skills frontmatter and JSON task-scanning patterns. All tasks are complete. Run /finalise-global-audit next.",
+  "latestHandover": "Re-audit complete (2026-03-10). All 13 PROC findings verified. Audit closed. Registry updated to Closed. PRs raised for dm-ra-01/receptor-dev-environment and dm-ra-01/common-bond. Awaiting merge and archive.",
   "sessionHistory": [
     {
       "sessionDate": "2026-03-10",
@@ -25,6 +25,12 @@
       ],
       "blockedFindingIds": [],
       "summary": "All 13 findings implemented in a single session. Schemas and scripts created in dev-environment/.agents/. All workflow and skill files updated. Verified JSON schemas parse cleanly. Committed to audit/260310-agent-workflow-json-refactor in dev-environment (9088a76)."
+    },
+    {
+      "sessionDate": "2026-03-10",
+      "completedFindingIds": [],
+      "blockedFindingIds": [],
+      "summary": "Re-audit session. All 13 PROC findings verified against commit 9088a76. Coverage assessment: all gaps acceptable (docs/scripts repo — no build gate). Re-audit.md written. Registry updated to Closed. Supabase dual-write performed. PRs raised. Awaiting user approval to merge."
     }
   ]
 }

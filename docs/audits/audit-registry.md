@@ -31,9 +31,9 @@ sidebar_position: 1
 
 ### 🗓️ 2026-03-10
 
-| Slug                                  | Title                              | Scope                                          | Auditor         | Status          | NC Raised | Report                                                                                                                                                      |
-| :------------------------------------ | :--------------------------------- | :--------------------------------------------- | :-------------- | :-------------- | :-------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `260310-agent-workflow-json-refactor` | Agent Workflow JSON Refactor Audit | `dev-environment/.agents/` — workflows, skills | Ryan Ammendolea | 🔧 Implementing | —         | [audit.md](../audits/260310-agent-workflow-json-refactor/audit.md) · [recommendations.md](../audits/260310-agent-workflow-json-refactor/recommendations.md) |
+| Slug                                  | Title                              | Scope                                          | Auditor         | Status    | NC Raised | Report                                                                                                                                                                      |
+| :------------------------------------ | :--------------------------------- | :--------------------------------------------- | :-------------- | :-------- | :-------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `260310-agent-workflow-json-refactor` | Agent Workflow JSON Refactor Audit | `dev-environment/.agents/` — workflows, skills | Ryan Ammendolea | ✅ Closed | —         | [audit.md](../audits/archive/260310-agent-workflow-json-refactor/audit.md) · [recommendations.md](../audits/archive/260310-agent-workflow-json-refactor/recommendations.md) |
 
 ### 🗓️ 2026-03-09
 
