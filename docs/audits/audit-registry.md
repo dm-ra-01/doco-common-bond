@@ -31,9 +31,10 @@ sidebar_position: 1
 
 ### 🗓️ 2026-03-10
 
-| Slug                                  | Title                              | Scope                                          | Auditor         | Status    | NC Raised | Report                                                                                                                                                                      |
-| :------------------------------------ | :--------------------------------- | :--------------------------------------------- | :-------------- | :-------- | :-------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `260310-agent-workflow-json-refactor` | Agent Workflow JSON Refactor Audit | `dev-environment/.agents/` — workflows, skills | Ryan Ammendolea | ✅ Closed | —         | [audit.md](../audits/archive/260310-agent-workflow-json-refactor/audit.md) · [recommendations.md](../audits/archive/260310-agent-workflow-json-refactor/recommendations.md) |
+| Slug                                  | Title                              | Scope                                          | Auditor         | Status      | NC Raised | Report                                                                                                                                                                      |
+| :------------------------------------ | :--------------------------------- | :--------------------------------------------- | :-------------- | :---------- | :-------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `260310-agent-infra-consolidation`    | Agent Infrastructure Consolidation | All 9 repos — `.agents`/`.agent` directories   | Ryan Ammendolea | 🔄 Drafting | —         | [audit.md](../audits/260310-agent-infra-consolidation/audit.md) · [recommendations.md](../audits/260310-agent-infra-consolidation/recommendations.md)                       |
+| `260310-agent-workflow-json-refactor` | Agent Workflow JSON Refactor Audit | `dev-environment/.agents/` — workflows, skills | Ryan Ammendolea | ✅ Closed   | —         | [audit.md](../audits/archive/260310-agent-workflow-json-refactor/audit.md) · [recommendations.md](../audits/archive/260310-agent-workflow-json-refactor/recommendations.md) |
 
 ### 🗓️ 2026-03-09
 
@@ -85,7 +86,7 @@ preference-frontend            2       2026-03-06
 backend/receptor-planner       0       —
 common-bond (ISMS docs + eng)  5       2026-03-09
 ────────────────────────────────────── ─────────
-Total                          15+     2026-03-09
+Total                          16+     2026-03-10
 ```
 
 > **Coverage gaps addressed:** `workforce-frontend`, `preference-frontend`, and
