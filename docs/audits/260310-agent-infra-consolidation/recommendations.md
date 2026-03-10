@@ -23,6 +23,7 @@
 | vitest-failure-investigation rules files | rules/vitest-failure-investigation.md files in planner, preference, and workforce frontends are the rule-as-skill anti-pattern. They will be deleted; the skill is referenced via absolute path in workflow required_skills. |
 | pre-commit.md / git.md rules files | All three instances (planner-frontend/rules/pre-commit.md, preference-frontend/rules/git.md, workforce-frontend/rules/git.md) are byte-for-byte identical ecosystem-wide content. Promote to dev-environment/.agents/frontend-nextjs/rules/git.md; delete local copies. |
 | Uncommitted adversarial-code-review deletions | The adversarial-code-review skill was deleted from disk in preference-frontend, workforce-frontend, and supabase-receptor during the audit session but was never committed. PREF-01, WF-01, SR-01 remain open. The implementation agent must commit these deletions as its first step. |
+| supabase-receptor audit-workflow.md Repo Context rows | supabase-receptor/.agents/workflows/audit-workflow.md is fully JSON-refactor compliant and contains unique, valuable Repo Context rows (stack: PostgreSQL/Supabase/Deno, verify command: supabase db reset && supabase test db && deno check). These rows MUST be preserved in dev-environment/.agents/supabase-infrastructure/workflows/audit-workflow.md when creating the canonical category workflow. |
 
 
 ---
@@ -42,7 +43,7 @@ Affects: `all` — .agents directory architecture
       `/Users/ryan/development/common_bond/antigravity-environment/`
 - [ ] Create symlinks: planner-frontend/.agents -> frontend-nextjs, preference-frontend/.agents -> frontend-nextjs, workforce-frontend/.agents -> frontend-nextjs, website-frontend/.agents -> frontend-nextjs, supabase-receptor/.agents -> supabase-infrastructure, match-backend/.agents -> backend-python, receptor-planner/.agents -> backend-python, common-bond/.agents -> docusaurus.
       `/Users/ryan/development/common_bond/antigravity-environment/`
-- [ ] Add .agents to .gitignore in each of the 9 child repos.
+- [ ] Add .agents to .gitignore in each of the 9 child repos. CONFIRMED: zero of 8 audited repos currently have .agents in .gitignore (rotator_worker not checked as it has no .agents). This task applies to all 9 repos.
       `/Users/ryan/development/common_bond/antigravity-environment/`
 
 ### ARCH-02: dev-environment/.agents/ has no category-level organisation. Workflow files with category-specific context live in indiv
@@ -55,12 +56,12 @@ Affects: `dev-environment` — .agents directory structure
 
 ## 🟠 High
 
-### PL-01: planner-frontend has local copies of 10 skills (adversarial-code-review, design-md, enhance-prompt, find-skills, nextjs-
+### PL-01: planner-frontend has local copies of 9 skills (adversarial-code-review was previously committed as deleted; remaining: d
 
 Affects: `planner-frontend` — .agents/skills/
 
 
-- [ ] Delete frontend/planner-frontend/.agents/skills/ entirely (all 10 skill directories). Addressed by ARCH-01 symlink.
+- [ ] Delete frontend/planner-frontend/.agents/skills/ entirely (9 remaining skill directories). adversarial-code-review was already deleted and committed. Addressed by ARCH-01 symlink.
       `/Users/ryan/development/common_bond/antigravity-environment/frontend/planner-frontend/.agents/skills/`
 
 ### SR-02: supabase-receptor has a rules file whose content mirrors the canonical dev-environment supabase-standards skill. This is
@@ -87,12 +88,12 @@ Affects: `documentation/common-bond` — .agents/workflows/audit-workflow.md
 - [ ] Use common-bond's audit-workflow.md as the basis for dev-environment/.agents/docusaurus/workflows/audit-workflow.md. Generalise any common-bond-specific references. Addressed as part of ARCH-01-T2.
       `/Users/ryan/development/common_bond/antigravity-environment/dev-environment/.agents/docusaurus/workflows/audit-workflow.md`
 
-### FE-01: frontend/.agent/ exists at the monorepo parent level which is not a git repository. It contains 4 workflow files and 1 r
+### FE-01: frontend/.agent/ exists at the monorepo parent level which is not a git repository. It contains 5 files: 4 workflow file
 
 Affects: `frontend (monorepo root)` — .agent/ directory
 
 
-- [ ] Absorb unique content from frontend/.agent/workflows/audit-workflow.md into dev-environment/.agents/frontend-nextjs/workflows/audit-workflow.md. Delete frontend/.agent/ entirely.
+- [ ] DO NOT simply delete frontend/.agent/. Steps: (1) Compare frontend/.agent/workflows/frontend-test-audit.md with dev-environment/.agents/workflows/frontend-test-audit.md — merge any unique content. (2) Promote frontend/.agent/rules/component-sync.md to dev-environment/.agents/frontend-nextjs/rules/component-sync.md. (3) Remaining 3 workflow stubs (audit, implement, finalise) are duplicates — discard. (4) Delete frontend/.agent/ entirely.
       `/Users/ryan/development/common_bond/antigravity-environment/frontend/.agent/`
 
 ## 🟡 Medium
@@ -171,6 +172,14 @@ Affects: `receptor-planner` — .agents/skills/
 
 ## 🟢 Low
 
+### DE-01: dev-environment/.agents/ has no README.md or contribution guide. The directory contains schemas/, scripts/, skills/, and
+
+Affects: `dev-environment` — .agents/ (root)
+
+
+- [ ] Create dev-environment/.agents/README.md documenting: (1) directory structure and purpose of each subdirectory, (2) how to add a new skill (naming, SKILL.md frontmatter, registration), (3) how to add a new category (dir structure, required workflow files, symlink convention), (4) naming conventions (snake-case skills, category dirs), (5) how the symlink architecture works.
+      `/Users/ryan/development/common_bond/antigravity-environment/dev-environment/.agents/README.md`
+
 ### DEF-01: documentation/receptor-ecosystem does not exist as a local repository. When created, it will need to be mapped to the do
 
 Affects: `receptor-ecosystem` — .agents/ directory
@@ -203,7 +212,7 @@ Affects: `all` — symlink migration sequence
 
 | Phase | Finding IDs | Rationale |
 | :---- | :---------- | :-------- |
-| 1 | ARCH-01, ARCH-02, CB-02, FE-01, PREF-01, WF-01, SR-01 | Create category structure, canonical workflows, and commit uncommitted deletion leftovers |
+| 1 | ARCH-01, ARCH-02, CB-02, FE-01, PREF-01, WF-01, SR-01, DE-01 | Create category structure, canonical workflows, and commit uncommitted deletion leftovers |
 | 2 | CB-01 | Promote supabase-postgres-best-practices skill to docusaurus category |
 | 3 | PL-01, PL-02, PREF-02, WF-02, SR-02, MB-01, RP-01, RW-01 | Delete local duplicates, create symlinks, update .gitignore |
 | 4 | DEF-01 | Deferred — receptor-ecosystem setup |
@@ -231,6 +240,7 @@ Affects: `all` — symlink migration sequence
 | RW-01 | .agents/ (missing) | `.agents` | Process Gap | 🟡 Medium |
 | MB-01 | .agents/skills/ | `skills` | Architectural Drift | 🟡 Medium |
 | RP-01 | .agents/skills/ | `skills` | Architectural Drift | 🟡 Medium |
+| DE-01 | .agents/ (root) | `README.md` | Process Gap | 🟢 Low |
 | DEF-01 | .agents/ directory | `receptor-ecosystem` | Process Gap | 🟢 Low |
 | RISK-01 | symlink migration sequence | `antigravity-environment` | Process Risk | 🟢 Low |
 
