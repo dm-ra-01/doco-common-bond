@@ -1,0 +1,30 @@
+{
+  "$schema": "../../../dev-environment/.agents/schemas/audit-brief.schema.json",
+  "auditSlug": "260310-agent-workflow-json-refactor",
+  "status": "implementing",
+  "nextAction": "finalise",
+  "openTaskCount": 0,
+  "latestHandover": "All 13 findings implemented in a single session (2026-03-10). Deliverables in dev-environment: 3 JSON schemas (recommendations, audit-brief, supabase-audits-table), 5 scripts (validate-recommendations.py, render-recommendations.py, add-finding.sh, complete-task.sh, defer-finding.sh), audit-document-standards SKILL.md rewritten as JSON-native, audit-registry SKILL.md extended with Supabase dual-write for all 4 status transitions, and all 3 workflow files updated with required_skills frontmatter and JSON task-scanning patterns. All tasks are complete. Run /finalise-global-audit next.",
+  "sessionHistory": [
+    {
+      "sessionDate": "2026-03-10",
+      "completedFindingIds": [
+        "PROC-01",
+        "PROC-02",
+        "PROC-03",
+        "PROC-04",
+        "PROC-05",
+        "PROC-06",
+        "PROC-07",
+        "PROC-08",
+        "PROC-09",
+        "PROC-10",
+        "PROC-11",
+        "PROC-12",
+        "PROC-13"
+      ],
+      "blockedFindingIds": [],
+      "summary": "All 13 findings implemented in a single session. Schemas and scripts created in dev-environment/.agents/. All workflow and skill files updated. Verified JSON schemas parse cleanly. Committed to audit/260310-agent-workflow-json-refactor in dev-environment (9088a76)."
+    }
+  ]
+}
