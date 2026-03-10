@@ -183,9 +183,111 @@ approves.
 
 ## Implementation Order
 
-| Phase | Finding IDs      | Rationale                                                       |
-| :---- | :--------------- | :-------------------------------------------------------------- |
-| 1     | PROC-01, PROC-02 | Core schema + validator — all other tasks depend on this        |
-| 2     | PROC-03, PROC-04 | Update skills and workflows to use JSON primitives              |
-| 3     | PROC-05, PROC-06 | Registry dual-write + Supabase schema documentation             |
-| 4     | PROC-07, PROC-08 | Frontmatter deps + iterative suggestion state — low risk polish |
+| Phase | Finding IDs               | Rationale                                                       |
+| :---- | :------------------------ | :-------------------------------------------------------------- |
+| 1     | PROC-01, PROC-02          | Core schema + validator — all other tasks depend on this        |
+| 2     | PROC-03, PROC-04, PROC-09 | JSON primitives in skills/workflows + `$schema` self-validation |
+| 3     | PROC-05, PROC-06, PROC-10 | Registry dual-write, Supabase schema, atomic scripts            |
+| 4     | PROC-11, PROC-12          | Session state machine + jq-native skill queries                 |
+| 5     | PROC-07, PROC-08, PROC-13 | Frontmatter deps, iterative state, severity audit trail         |
+
+---
+
+## Iterative Improvement Round 1 — 2026-03-10
+
+_Inspired by the `peer-reviews/.agents/` workspace design. All 5 findings below
+are new; they do not duplicate the initial set._
+
+### 🔴 Critical (escalated from initial assessment)
+
+#### PROC-09: All schema files must declare `additionalProperties: false`
+
+The peer-review `issues.schema.json` sets `"additionalProperties": false` on
+every object in the schema, making unexpected fields a hard validation error.
+The initial recommendations only specified required fields and types — without
+`additionalProperties: false`, agents can silently introduce extra fields that
+are invisible to downstream consumers.
+
+- [ ] Add `"additionalProperties": false` to all objects in
+      `recommendations.schema.json` at
+      `/Users/ryan/development/common_bond/antigravity-environment/dev-environment/.agents/schemas/recommendations.schema.json`
+
+### 🟠 High
+
+#### PROC-10: Atomic mutation shell scripts for task state changes
+
+The peer-review workspace uses `add-issue.sh` and `close-question.sh` as
+authoritative mutation operators — they enforce duplicate-ID guards, validate
+before writing, and use `jq | mv` for atomicity. Without equivalent scripts for
+audits, agents will hand-edit `recommendations.json` and risk corrupting the
+file on merge conflicts or partial writes.
+
+- [ ] Create
+      `/Users/ryan/development/common_bond/antigravity-environment/dev-environment/.agents/scripts/add-finding.sh`
+      — appends one finding to `recommendations.json` with dupe-ID guard and
+      atomic `jq > tmp && mv tmp target` pattern
+
+- [ ] Create
+      `/Users/ryan/development/common_bond/antigravity-environment/dev-environment/.agents/scripts/complete-task.sh`
+      — sets `task.status = "complete"`, writes `completedAt` ISO timestamp,
+      validates schema before commit
+
+- [ ] Create
+      `/Users/ryan/development/common_bond/antigravity-environment/dev-environment/.agents/scripts/defer-finding.sh`
+      — moves a finding to the `deferred[]` array with a required `reason` field
+
+#### PROC-11: `audit-brief.json` as a session state machine
+
+The peer-review `brief.json` is a persistent session state machine: it stores
+`next_skill`, `next_section`, `latest_handover`, and `session_history[]` so any
+new agent can cold-boot from it without reading narrative prose. The same
+pattern should apply to audit sessions — currently, the only handover mechanism
+is the `Session Close` prose block appended to `recommendations.md`.
+
+- [ ] Add `audit-brief.json` as a required artefact in the audit directory
+      alongside `recommendations.json`. Define its schema in
+      `/Users/ryan/development/common_bond/antigravity-environment/dev-environment/.agents/schemas/audit-brief.schema.json`
+      with fields: `auditSlug`, `status`, `currentSession`, `nextAction`
+      (`"implement" | "finalise" | "closed"`), `openTaskCount`, `latestHandover`
+      (string), `sessionHistory[]`
+
+- [ ] Update `global-audit.md` Step 6 and `implement-global-audit.md` Step 4 to
+      write/update `audit-brief.json` at session close, replacing the
+      `Session Close` prose block (which may be retained as a rendered view but
+      not as the primary handover mechanism) in
+      `/Users/ryan/development/common_bond/antigravity-environment/dev-environment/.agents/workflows/`
+
+### 🟡 Medium
+
+#### PROC-12: `jq`-native status queries in `implement-global-audit.md`
+
+The peer-review `peer-review-status` skill queries issues using
+`jq '... map(select(.status == "open")) ...'` directly in bash. The current
+`implement-global-audit.md` has no canonical `jq` query pattern — agents must
+improvise. Define the canonical queries in the skill so there is one source of
+truth.
+
+- [ ] Add a **"Canonical `jq` Queries"** section to
+      `audit-document-standards/SKILL.md` documenting: open task query,
+      phase-specific task query, and finding-by-ID lookup. Example:
+      `bash
+      # All open tasks
+      jq '[.findings[].tasks[] | select(.status == "open")]' recommendations.json
+      # Tasks for a specific repo
+      jq '[.findings[] | select(.repo == "supabase-receptor") | .tasks[] | select(.status == "open")]' recommendations.json`
+      at
+      `/Users/ryan/development/common_bond/antigravity-environment/dev-environment/.agents/skills/audit-document-standards/SKILL.md`
+
+### 🟢 Low
+
+#### PROC-13: `severity_history[]` audit trail on finding severity changes
+
+The peer-review `issues.schema.json` includes a `severity_history[]` array
+recording every severity bump: `from`, `to`, `session`, `date`, `reason`. The
+current audit design has no tracking of severity changes — the Agent
+Clarifications table is the only record, but it is prose-only and not queryable.
+
+- [ ] Add `severity_history[]` array to the `findings[]` items in
+      `recommendations.schema.json` with fields: `from`, `to`, `changedAt` (ISO
+      date), `reason` (string) at
+      `/Users/ryan/development/common_bond/antigravity-environment/dev-environment/.agents/schemas/recommendations.schema.json`

@@ -11,8 +11,8 @@
 
 This audit evaluates the `.agents/` directory in `dev-environment` with a focus
 on the suitability of the current markdown-based format for tracking audit
-recommendations. **8 findings** were identified across 2 skills and 3 workflows:
-2 🔴 Critical, 3 🟠 High, 2 🟡 Medium, 1 🟢 Low.
+recommendations. **13 findings** were identified across 2 skills and 3
+workflows: 3 🔴 Critical, 5 🟠 High, 3 🟡 Medium, 2 🟢 Low.
 
 The core issue is that `recommendations.md` uses freeform markdown checkboxes
 and tables as the primary data contract between audit, implementation, and
@@ -21,13 +21,19 @@ programmatically query finding status, duplicate headings are a documented
 failure mode, and the `<!-- audit-slug -->` comment is the only machine-readable
 anchor. Migration to a JSON recommendations data model would eliminate an entire
 class of parse errors and enable structured queries across audit sessions.
+Additional patterns from the `peer-reviews/.agents/` workspace —
+`additionalProperties: false` schema strictness, atomic mutation scripts,
+session state machines (`brief.json`), and `jq`-native queries — further
+strengthen the proposed design.
 
 | Area                          | Coverage | Issues Found | Overall |
 | ----------------------------- | -------- | ------------ | ------- |
 | `recommendations.md` contract | ✅       | 4            | 🔴 Poor |
 | `audit-registry.md` contract  | ✅       | 2            | 🟠 Weak |
+| Schema design                 | ✅       | 3            | 🔴 Poor |
+| Atomic mutation / scripts     | ✅       | 2            | 🟠 Weak |
+| Session state management      | ✅       | 1            | 🟠 Weak |
 | Workflow cross-references     | ✅       | 1            | 🟡 Fair |
-| Skill interop / composition   | ✅       | 1            | 🟢 Good |
 
 ---
 
@@ -140,13 +146,18 @@ class of parse errors and enable structured queries across audit sessions.
 
 ## Severity Summary
 
-| Finding ID | Area               | File                                | Category    | Severity    |
-| ---------- | ------------------ | ----------------------------------- | ----------- | ----------- |
-| PROC-01    | recommendations.md | `audit-document-standards/SKILL.md` | Process Gap | 🔴 Critical |
-| PROC-02    | recommendations.md | `audit-document-standards/SKILL.md` | Process Gap | 🔴 Critical |
-| PROC-03    | recommendations.md | `audit-document-standards/SKILL.md` | Tech Debt   | 🟠 High     |
-| PROC-04    | implement workflow | `implement-global-audit.md`         | Process Gap | 🟠 High     |
-| PROC-05    | audit-registry     | `audit-registry/SKILL.md`           | Process Gap | 🟠 High     |
-| PROC-06    | finalise workflow  | `finalise-global-audit.md`          | Tech Debt   | 🟡 Medium   |
-| PROC-07    | all 3 workflows    | `global-audit.md`, et al.           | Process Gap | 🟡 Medium   |
-| PROC-08    | iterative protocol | `audit-document-standards/SKILL.md` | Tech Debt   | 🟢 Low      |
+| Finding ID | Area               | File                                  | Category    | Severity    |
+| ---------- | ------------------ | ------------------------------------- | ----------- | ----------- |
+| PROC-01    | recommendations.md | `audit-document-standards/SKILL.md`   | Process Gap | 🔴 Critical |
+| PROC-02    | recommendations.md | `audit-document-standards/SKILL.md`   | Process Gap | 🔴 Critical |
+| PROC-09    | schema design      | `schemas/recommendations.schema.json` | Tech Debt   | 🔴 Critical |
+| PROC-03    | recommendations.md | `audit-document-standards/SKILL.md`   | Tech Debt   | 🟠 High     |
+| PROC-04    | implement workflow | `implement-global-audit.md`           | Process Gap | 🟠 High     |
+| PROC-05    | audit-registry     | `audit-registry/SKILL.md`             | Process Gap | 🟠 High     |
+| PROC-10    | atomic mutations   | `scripts/` (missing)                  | Process Gap | 🟠 High     |
+| PROC-11    | session state      | `schemas/audit-brief.schema.json`     | Process Gap | 🟠 High     |
+| PROC-06    | finalise workflow  | `finalise-global-audit.md`            | Tech Debt   | 🟡 Medium   |
+| PROC-07    | all 3 workflows    | `global-audit.md`, et al.             | Process Gap | 🟡 Medium   |
+| PROC-12    | implement workflow | `implement-global-audit.md`           | Tech Debt   | 🟡 Medium   |
+| PROC-08    | iterative protocol | `audit-document-standards/SKILL.md`   | Tech Debt   | 🟢 Low      |
+| PROC-13    | schema design      | `schemas/recommendations.schema.json` | Tech Debt   | 🟢 Low      |
