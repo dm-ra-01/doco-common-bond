@@ -27,7 +27,7 @@
         {
           "taskId": "ARCH-01-T2",
           "status": "open",
-          "description": "Write canonical workflow files (audit-workflow.md, implement-audit-workflow.md, finalise-local-audit.md) into each of the 4 category directories, generalising repo-specific rows.",
+          "description": "Write canonical workflow files (audit-workflow.md, implement-audit-workflow.md, finalise-local-audit.md) into each of the 4 category directories, generalising repo-specific rows. Also write frontend-nextjs/rules/git.md using the ecosystem-wide pre-commit bypass rule (identical content from planner-frontend/rules/pre-commit.md, preference-frontend/rules/git.md, and workforce-frontend/rules/git.md).",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/dev-environment/.agents/",
           "completedAt": "",
           "completedBy": ""
@@ -111,7 +111,7 @@
         {
           "taskId": "PL-02-T1",
           "status": "open",
-          "description": "Delete rules/vitest-failure-investigation.md. Evaluate pre-commit.md — absorb into frontend-nextjs/rules/ if cross-category, otherwise it will be deleted when symlink is created.",
+          "description": "Delete rules/vitest-failure-investigation.md. For pre-commit.md: content is identical to preference-frontend/rules/git.md and workforce-frontend/rules/git.md (ecosystem-wide 'don't bypass pre-commit hooks' rule). Promote this content to dev-environment/.agents/frontend-nextjs/rules/git.md (addressed by ARCH-01-T2), then delete the local pre-commit.md.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/frontend/planner-frontend/.agents/rules/",
           "completedAt": "",
           "completedBy": ""
@@ -151,7 +151,7 @@
         {
           "taskId": "PREF-02-T1",
           "status": "open",
-          "description": "rules/vitest-failure-investigation.md and rules/git.md will be absorbed into frontend-nextjs/rules/ (addressed by ARCH-01). Delete local copies after symlink.",
+          "description": "rules/git.md content is identical to planner-frontend/rules/pre-commit.md and workforce-frontend/rules/git.md. It is promoted to dev-environment/.agents/frontend-nextjs/rules/git.md (addressed by ARCH-01-T2). Delete local copies after symlink. Also delete rules/vitest-failure-investigation.md.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/frontend/preference-frontend/.agents/rules/",
           "completedAt": "",
           "completedBy": ""
@@ -191,7 +191,7 @@
         {
           "taskId": "WF-02-T1",
           "status": "open",
-          "description": "rules/vitest-failure-investigation.md and rules/git.md will be absorbed into frontend-nextjs/rules/ (addressed by ARCH-01). Delete local copies after symlink.",
+          "description": "rules/git.md content is identical to planner-frontend/rules/pre-commit.md and preference-frontend/rules/git.md. Promoted to frontend-nextjs/rules/git.md (addressed by ARCH-01-T2). Delete local copies after symlink. Also delete rules/vitest-failure-investigation.md.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/frontend/workforce-frontend/.agents/rules/",
           "completedAt": "",
           "completedBy": ""
@@ -318,6 +318,66 @@
         }
       ],
       "severity_history": []
+    },
+    {
+      "id": "MB-01",
+      "severity": "medium",
+      "status": "open",
+      "category": "Architectural Drift",
+      "repo": "match-backend",
+      "area": ".agents/skills/",
+      "description": "match-backend has local copies of python-design-patterns and python-testing-patterns, both of which exist in dev-environment/.agents/skills/. Discovered in iterative review — missed in initial audit. Evidence: find backend/match-backend/.agents/skills -type f returns SKILL.md for both.",
+      "tasks": [
+        {
+          "taskId": "MB-01-T1",
+          "status": "open",
+          "description": "Delete backend/match-backend/.agents/skills/python-design-patterns/ and backend/match-backend/.agents/skills/python-testing-patterns/. Addressed by the ARCH-01 symlink to backend-python/ category.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/backend/match-backend/.agents/skills/",
+          "completedAt": "",
+          "completedBy": ""
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "RP-01",
+      "severity": "medium",
+      "status": "open",
+      "category": "Architectural Drift",
+      "repo": "receptor-planner",
+      "area": ".agents/skills/",
+      "description": "receptor-planner has local copies of python-design-patterns and python-testing-patterns, both of which exist in dev-environment/.agents/skills/. Discovered in iterative review — missed in initial audit. Evidence: find backend/receptor-planner/.agents/skills -type f returns SKILL.md for both.",
+      "tasks": [
+        {
+          "taskId": "RP-01-T1",
+          "status": "open",
+          "description": "Delete backend/receptor-planner/.agents/skills/python-design-patterns/ and backend/receptor-planner/.agents/skills/python-testing-patterns/. Addressed by the ARCH-01 symlink to backend-python/ category.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/backend/receptor-planner/.agents/skills/",
+          "completedAt": "",
+          "completedBy": ""
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "RISK-01",
+      "severity": "low",
+      "status": "open",
+      "category": "Process Risk",
+      "repo": "all",
+      "area": "symlink migration sequence",
+      "description": "The symlink migration creates a window where some repos are symlinked and others are not. An agent invoked mid-migration will see inconsistent state. Mitigation: execute atomically per category (all frontend repos in one pass, then backend, then supabase, then docusaurus).",
+      "tasks": [
+        {
+          "taskId": "RISK-01-T1",
+          "status": "open",
+          "description": "Implementation agent must process all repos in a single category before moving to the next. Recommended sequence: (1) frontend-nextjs: planner, preference, workforce, website, (2) backend-python: match-backend, receptor-planner, (3) supabase-infrastructure: supabase-receptor, (4) docusaurus: common-bond.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/",
+          "completedAt": "",
+          "completedBy": ""
+        }
+      ],
+      "severity_history": []
     }
   ],
   "clarifications": [
@@ -336,6 +396,10 @@
     {
       "item": "vitest-failure-investigation rules files",
       "decision": "rules/vitest-failure-investigation.md files in planner, preference, and workforce frontends are the rule-as-skill anti-pattern. They will be deleted; the skill is referenced via absolute path in workflow required_skills."
+    },
+    {
+      "item": "pre-commit.md / git.md rules files",
+      "decision": "All three instances (planner-frontend/rules/pre-commit.md, preference-frontend/rules/git.md, workforce-frontend/rules/git.md) are byte-for-byte identical ecosystem-wide content. Promote to dev-environment/.agents/frontend-nextjs/rules/git.md; delete local copies."
     }
   ],
   "implementationPhases": [
@@ -352,7 +416,7 @@
     {
       "phase": 3,
       "rationale": "Delete local duplicates, create symlinks, update .gitignore",
-      "findingIds": ["PL-01", "PL-02", "PREF-02", "WF-02", "SR-02"]
+      "findingIds": ["PL-01", "PL-02", "PREF-02", "WF-02", "SR-02", "MB-01", "RP-01"]
     },
     {
       "phase": 4,
