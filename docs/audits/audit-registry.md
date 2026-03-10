@@ -10,7 +10,7 @@ sidebar_position: 1
 > platform. Each entry links to the source `audit.md` and `recommendations.md`
 > where they live inside the relevant repository's `docs/audits/` folder.
 
-**Last Updated:** 2026-03-09 | **Maintained by:** Engineering Leadership
+**Last Updated:** 2026-03-10 | **Maintained by:** Engineering Leadership
 
 ---
 
@@ -29,10 +29,16 @@ sidebar_position: 1
 
 ## Active Registry
 
+### 🗓️ 2026-03-10
+
+| Slug                                  | Title                              | Scope                                          | Auditor         | Status      | NC Raised | Report                                                                                                                                                      |
+| :------------------------------------ | :--------------------------------- | :--------------------------------------------- | :-------------- | :---------- | :-------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `260310-agent-workflow-json-refactor` | Agent Workflow JSON Refactor Audit | `dev-environment/.agents/` — workflows, skills | Ryan Ammendolea | 🔄 Drafting | —         | [audit.md](../audits/260310-agent-workflow-json-refactor/audit.md) · [recommendations.md](../audits/260310-agent-workflow-json-refactor/recommendations.md) |
+
 ### 🗓️ 2026-03-09
 
-| Slug                                        | Title                                    | Scope                                                                        | Auditor         | Status      | NC Raised | Report                                                                                                                                                                  |
-| :------------------------------------------ | :--------------------------------------- | :--------------------------------------------------------------------------- | :-------------- | :---------- | :-------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Slug                                        | Title                                    | Scope                                                                        | Auditor         | Status    | NC Raised | Report                                                                                                                                                                                  |
+| :------------------------------------------ | :--------------------------------------- | :--------------------------------------------------------------------------- | :-------------- | :-------- | :-------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `260309-governance-register-infrastructure` | Governance Register Infrastructure Audit | `docs/registers/`, `docs/compliance/iso27001/` — all 10 governance registers | Ryan Ammendolea | ✅ Closed | —         | [audit.md](../audits/archive/260309-governance-register-infrastructure/audit.md) · [recommendations.md](../audits/archive/260309-governance-register-infrastructure/recommendations.md) |
 
 ### 🗓️ 2026-03-07
