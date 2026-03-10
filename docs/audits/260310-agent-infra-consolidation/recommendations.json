@@ -18,19 +18,19 @@
       "tasks": [
         {
           "taskId": "ARCH-01-T1",
-          "status": "open",
-          "description": "Create the 4 category subdirectories in dev-environment/.agents/: frontend-nextjs/, supabase-infrastructure/, backend-python/, docusaurus/ \u2014 each with workflows/ and rules/ subdirs.",
+          "status": "complete",
+          "description": "Create the 4 category subdirectories in dev-environment/.agents/: frontend-nextjs/, supabase-infrastructure/, backend-python/, docusaurus/ — each with workflows/ and rules/ subdirs.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/dev-environment/.agents/",
-          "completedAt": "",
-          "completedBy": ""
+          "completedAt": "2026-03-10T06:40:55Z",
+          "completedBy": "session-b07c138c"
         },
         {
           "taskId": "ARCH-01-T2",
-          "status": "open",
+          "status": "complete",
           "description": "Write canonical workflow files (audit-workflow.md, implement-audit-workflow.md, finalise-local-audit.md) into each of the 4 category directories, generalising repo-specific rows. Also write frontend-nextjs/rules/git.md using the ecosystem-wide pre-commit bypass rule (identical content from planner-frontend/rules/pre-commit.md, preference-frontend/rules/git.md, and workforce-frontend/rules/git.md).",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/dev-environment/.agents/",
-          "completedAt": "",
-          "completedBy": ""
+          "completedAt": "2026-03-10T06:40:55Z",
+          "completedBy": "session-b07c138c"
         },
         {
           "taskId": "ARCH-01-T3",
@@ -70,11 +70,11 @@
       "tasks": [
         {
           "taskId": "ARCH-02-T1",
-          "status": "open",
-          "description": "Addressed by ARCH-01-T1 and ARCH-01-T2 \u2014 no separate tasks required.",
+          "status": "complete",
+          "description": "Addressed by ARCH-01-T1 and ARCH-01-T2 — no separate tasks required.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/dev-environment/.agents/",
-          "completedAt": "",
-          "completedBy": ""
+          "completedAt": "2026-03-10T06:40:55Z",
+          "completedBy": "session-b07c138c"
         }
       ],
       "severity_history": []
@@ -130,11 +130,11 @@
       "tasks": [
         {
           "taskId": "PREF-01-T1",
-          "status": "open",
+          "status": "complete",
           "description": "Commit the disk-level deletion of frontend/preference-frontend/.agents/skills/adversarial-code-review/ (directory was removed from disk but not staged/committed). Also commit removal of vitest-failure-investigation from skills/ (it belongs in workflows via required_skills, not as a local skills/ copy).",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/frontend/preference-frontend/.agents/skills/adversarial-code-review/",
-          "completedAt": "",
-          "completedBy": ""
+          "completedAt": "2026-03-10T06:40:55Z",
+          "completedBy": "session-b07c138c"
         }
       ],
       "severity_history": []
@@ -170,11 +170,11 @@
       "tasks": [
         {
           "taskId": "WF-01-T1",
-          "status": "open",
+          "status": "complete",
           "description": "Commit the disk-level deletion of frontend/workforce-frontend/.agents/skills/adversarial-code-review/ (directory was removed from disk but not staged/committed). Also commit removal of vitest-failure-investigation from skills/.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/frontend/workforce-frontend/.agents/skills/adversarial-code-review/",
-          "completedAt": "",
-          "completedBy": ""
+          "completedAt": "2026-03-10T06:40:55Z",
+          "completedBy": "session-b07c138c"
         }
       ],
       "severity_history": []
@@ -210,11 +210,11 @@
       "tasks": [
         {
           "taskId": "SR-01-T1",
-          "status": "open",
+          "status": "complete",
           "description": "Commit the disk-level deletion of supabase-receptor/.agents/skills/adversarial-code-review/ (directory was removed from disk but not staged/committed).",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/.agents/skills/adversarial-code-review/",
-          "completedAt": "",
-          "completedBy": ""
+          "completedAt": "2026-03-10T06:40:55Z",
+          "completedBy": "session-b07c138c"
         }
       ],
       "severity_history": []
@@ -230,11 +230,11 @@
       "tasks": [
         {
           "taskId": "SR-02-T1",
-          "status": "open",
+          "status": "complete",
           "description": "Delete supabase-receptor/.agents/rules/supabase-standards.md. The canonical skill is referenced by absolute path in supabase-receptor's audit-workflow.md.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/.agents/rules/supabase-standards.md",
-          "completedAt": "",
-          "completedBy": ""
+          "completedAt": "2026-03-10T06:40:55Z",
+          "completedBy": "session-b07c138c"
         }
       ],
       "severity_history": []
@@ -250,11 +250,11 @@
       "tasks": [
         {
           "taskId": "CB-01-T1",
-          "status": "open",
+          "status": "complete",
           "description": "Copy documentation/common-bond/.agents/skills/supabase-postgres-best-practices/ into dev-environment/.agents/docusaurus/skills/. Update the reference in docusaurus/workflows/audit-workflow.md to the new canonical path.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/dev-environment/.agents/docusaurus/skills/supabase-postgres-best-practices/",
-          "completedAt": "",
-          "completedBy": ""
+          "completedAt": "2026-03-10T06:40:55Z",
+          "completedBy": "session-b07c138c"
         }
       ],
       "severity_history": []
@@ -270,11 +270,11 @@
       "tasks": [
         {
           "taskId": "CB-02-T1",
-          "status": "open",
+          "status": "complete",
           "description": "Use common-bond's audit-workflow.md as the basis for dev-environment/.agents/docusaurus/workflows/audit-workflow.md. Generalise any common-bond-specific references. Addressed as part of ARCH-01-T2.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/dev-environment/.agents/docusaurus/workflows/audit-workflow.md",
-          "completedAt": "",
-          "completedBy": ""
+          "completedAt": "2026-03-10T06:40:55Z",
+          "completedBy": "session-b07c138c"
         }
       ],
       "severity_history": []
@@ -286,15 +286,15 @@
       "category": "Process Gap",
       "repo": "frontend (monorepo root)",
       "area": ".agent/ directory",
-      "description": "frontend/.agent/ exists at the monorepo parent level which is not a git repository. It contains 5 files: 4 workflow files (audit-workflow.md, finalise-local-audit.md, frontend-test-audit.md, implement-audit-workflow.md) and 1 rules file (component-sync.md). UNIQUE CONTENT: (a) frontend-test-audit.md is also present in dev-environment/.agents/workflows/ but may have diverged \u2014 verify and canonicalize. (b) component-sync.md (33 lines) is UNIQUE and VALUABLE \u2014 defines the design-first UI sync rule requiring all new components be implemented in design-frontend first. This must be promoted to dev-environment/.agents/frontend-nextjs/rules/component-sync.md, NOT deleted. Evidence: file contents read during iterative review.",
+      "description": "frontend/.agent/ exists at the monorepo parent level which is not a git repository. It contains 5 files: 4 workflow files (audit-workflow.md, finalise-local-audit.md, frontend-test-audit.md, implement-audit-workflow.md) and 1 rules file (component-sync.md). UNIQUE CONTENT: (a) frontend-test-audit.md is also present in dev-environment/.agents/workflows/ but may have diverged — verify and canonicalize. (b) component-sync.md (33 lines) is UNIQUE and VALUABLE — defines the design-first UI sync rule requiring all new components be implemented in design-frontend first. This must be promoted to dev-environment/.agents/frontend-nextjs/rules/component-sync.md, NOT deleted. Evidence: file contents read during iterative review.",
       "tasks": [
         {
           "taskId": "FE-01-T1",
-          "status": "open",
-          "description": "DO NOT simply delete frontend/.agent/. Steps: (1) Compare frontend/.agent/workflows/frontend-test-audit.md with dev-environment/.agents/workflows/frontend-test-audit.md \u2014 merge any unique content. (2) Promote frontend/.agent/rules/component-sync.md to dev-environment/.agents/frontend-nextjs/rules/component-sync.md. (3) Remaining 3 workflow stubs (audit, implement, finalise) are duplicates \u2014 discard. (4) Delete frontend/.agent/ entirely.",
+          "status": "complete",
+          "description": "DO NOT simply delete frontend/.agent/. Steps: (1) Compare frontend/.agent/workflows/frontend-test-audit.md with dev-environment/.agents/workflows/frontend-test-audit.md — merge any unique content. (2) Promote frontend/.agent/rules/component-sync.md to dev-environment/.agents/frontend-nextjs/rules/component-sync.md. (3) Remaining 3 workflow stubs (audit, implement, finalise) are duplicates — discard. (4) Delete frontend/.agent/ entirely.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/frontend/.agent/",
-          "completedAt": "",
-          "completedBy": ""
+          "completedAt": "2026-03-10T06:41:33Z",
+          "completedBy": "session-b07c138c"
         }
       ],
       "severity_history": []
@@ -330,11 +330,11 @@
       "tasks": [
         {
           "taskId": "DE-01-T1",
-          "status": "open",
+          "status": "complete",
           "description": "Create dev-environment/.agents/README.md documenting: (1) directory structure and purpose of each subdirectory, (2) how to add a new skill (naming, SKILL.md frontmatter, registration), (3) how to add a new category (dir structure, required workflow files, symlink convention), (4) naming conventions (snake-case skills, category dirs), (5) how the symlink architecture works.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/dev-environment/.agents/README.md",
-          "completedAt": "",
-          "completedBy": ""
+          "completedAt": "2026-03-10T06:40:55Z",
+          "completedBy": "session-b07c138c"
         }
       ],
       "severity_history": []
@@ -366,7 +366,7 @@
       "category": "Architectural Drift",
       "repo": "match-backend",
       "area": ".agents/skills/",
-      "description": "match-backend has local copies of python-design-patterns and python-testing-patterns, both of which exist in dev-environment/.agents/skills/. Discovered in iterative review \u2014 missed in initial audit. Evidence: find backend/match-backend/.agents/skills -type f returns SKILL.md for both.",
+      "description": "match-backend has local copies of python-design-patterns and python-testing-patterns, both of which exist in dev-environment/.agents/skills/. Discovered in iterative review — missed in initial audit. Evidence: find backend/match-backend/.agents/skills -type f returns SKILL.md for both.",
       "tasks": [
         {
           "taskId": "MB-01-T1",
@@ -386,7 +386,7 @@
       "category": "Architectural Drift",
       "repo": "receptor-planner",
       "area": ".agents/skills/",
-      "description": "receptor-planner has local copies of python-design-patterns and python-testing-patterns, both of which exist in dev-environment/.agents/skills/. Discovered in iterative review \u2014 missed in initial audit. Evidence: find backend/receptor-planner/.agents/skills -type f returns SKILL.md for both.",
+      "description": "receptor-planner has local copies of python-design-patterns and python-testing-patterns, both of which exist in dev-environment/.agents/skills/. Discovered in iterative review — missed in initial audit. Evidence: find backend/receptor-planner/.agents/skills -type f returns SKILL.md for both.",
       "tasks": [
         {
           "taskId": "RP-01-T1",
@@ -488,7 +488,7 @@
     },
     {
       "phase": 4,
-      "rationale": "Deferred \u2014 receptor-ecosystem setup",
+      "rationale": "Deferred — receptor-ecosystem setup",
       "findingIds": [
         "DEF-01"
       ]

@@ -1,15 +1,21 @@
 {
   "$schema": "../../../dev-environment/.agents/schemas/audit-brief.schema.json",
   "auditSlug": "260310-agent-infra-consolidation",
-  "status": "drafting",
+  "status": "implementing",
   "nextAction": "implement",
-  "openTaskCount": 15,
-  "latestHandover": "Initial audit complete. 14 findings across all 9 repos + dev-environment (2 critical, 5 high, 5 medium, 2 low). Phase 1 priorities: ARCH-01, ARCH-02 (create category dirs + write canonical workflows). PREF-01, WF-01, SR-01 already completed mid-session. See recommendations.json for full task list.",
+  "openTaskCount": 12,
+  "latestHandover": "Phase 1+2 complete. Created 5 category directories in dev-environment/.agents/ (frontend-nextjs, backend-python, supabase-infrastructure, docusaurus, dart-flutter), each with canonical audit-workflow.md, implement-audit-workflow.md, and finalise-local-audit.md. Wrote frontend-nextjs/rules/git.md (promoted from planner/preference/workforce local copies) and frontend-nextjs/rules/component-sync.md (promoted from frontend/.agent/rules/). Deleted frontend/.agent/ entirely. Promoted supabase-postgres-best-practices to docusaurus/skills/. Committed disk-level adversarial-code-review deletions in preference-frontend (PREF-01), workforce-frontend (WF-01), and supabase-receptor (SR-01+SR-02). All 4 repos have audit/260310-agent-infra-consolidation branches pushed. Phase 3 (local skill deletion, symlinks, .gitignore updates) remains for next session. Repos with open work: planner-frontend (PL-01, PL-02), preference-frontend (PREF-02), workforce-frontend (WF-02), match-backend (MB-01), receptor-planner (RP-01), rotator_worker (RW-01, partially done — dart-flutter dir created, symlink+.gitignore remains). RISK-01-T1 (migration sequencing) addressed by following the recommended sequence in Phase 3.",
   "sessionHistory": [
     {
       "sessionId": "session-b138c4b3",
       "date": "2026-03-10",
       "summary": "Initial audit. Discovered and documented 14 findings across all repos. Deleted adversarial-code-review local copies from preference-frontend, workforce-frontend, supabase-receptor mid-session (PREF-01, WF-01, SR-01 tasks complete). Produced audit.md, recommendations.json, audit-brief.json. Validated and rendered recommendations.md."
+    },
+    {
+      "sessionId": "session-b07c138c",
+      "date": "2026-03-10",
+      "completedFindingIds": ["ARCH-01-T1", "ARCH-01-T2", "ARCH-02-T1", "CB-01-T1", "CB-02-T1", "DE-01-T1", "FE-01-T1", "PREF-01-T1", "WF-01-T1", "SR-01-T1", "SR-02-T1"],
+      "summary": "Phase 1+2 implementation. Created all 5 category directories in dev-environment/.agents/ with canonical workflow files (15 files). Wrote README.md ([DE-01-T1). Promoted git.md and component-sync.md rules to frontend-nextjs/rules/ (ARCH-01-T2). Promoted supabase-postgres-best-practices to docusaurus/skills/ (CB-01-T1). Deleted frontend/.agent/ after promoting component-sync.md (FE-01-T1). Committed uncommitted deletions: PREF-01, WF-01, SR-01+SR-02 across preference-frontend, workforce-frontend, supabase-receptor. All 4 implementation repos pushed to audit/260310-agent-infra-consolidation. 12 open tasks remain (Phase 3: symlinks, local skill deletion, .gitignore)."
     }
   ]
 }
