@@ -17,11 +17,16 @@
 
 | Item | Decision |
 | :--- | :------- |
-| Legal entities | Include both MyJMO Pty Ltd (IP Owner) and Common Bond Pty Ltd (Exclusive Licensee). Common Bond Pty Ltd is the trustee for The Ammendolea Family Trust (ABN: 50 152 085 287). Document the software licence relationship between the two entities. |
+| Legal entities | Include both MyJMO Pty Ltd (ACN 648 051 852, IP Owner) and Common Bond Pty Ltd (ACN 694 840 394, Exclusive Licensee, Trustee for Ammendolea Family Trust ABN 50 152 085 287). Document the software licence relationship between entities. |
 | StartSpace affiliation | Include StartSpace as a community affiliation on where-we-are.md. StartSpace is an open community of early-stage founders powered by State Library Victoria. |
 | PMCV relationship | We have NO existing formal relationship with PMCV. We are actively working to build one. Monash Health work has piqued PMCV interest. Do not overstate — describe as relationship-building in progress, not an established relationship. |
 | Tone | Mostly structured/professional, but occasional personal and candid statements are appropriate — especially on where-we-are.md and founder.md. |
 | Headshot photo | Leave a <!-- TODO: add headshot image path --> placeholder comment in founder.md where the image would appear. |
+| INFO-04 (our-technology page) | Approved. Create docs/about-us/our-technology.md as a non-technical narrative technology overview. |
+| INFO-05 (Our Story timeline) | Approved. Add a Mermaid timeline covering the full journey from 2005 engineering career to 2026 pilot. Place on founder.md. |
+| INFO-06 (ACN numbers) | Approved. ACNs confirmed: MyJMO Pty Ltd ACN 648 051 852; Common Bond Pty Ltd ACN 694 840 394. |
+| INFO-07 (SEO frontmatter) | Approved. All about-us pages must include a description: frontmatter field. |
+| INFO-08 (intro.md cross-link) | Approved. Add About Us to the Corporate Framework section of intro.md. |
 
 
 ---
@@ -37,11 +42,11 @@ Affects: `doco-common-bond` — docs/about-us
       `/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/about-us/_category_.json`
 - [ ] Create docs/about-us/index.md as the hub page with card grid linking to sub-pages and a TL;DR summary.
       `/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/about-us/index.md`
-- [ ] Create docs/about-us/founder.md as a narrative-first personal profile of Dr Ryan Ammendolea — not a CV dump. Include headshot placeholder, origin story, dual clinical/engineering identity, and personal vision statement. Link to strategy/strategy-vision/founder.md for full credentials.
+- [ ] Create docs/about-us/founder.md as a narrative-first personal profile of Dr Ryan Ammendolea. Include headshot placeholder, origin story, dual clinical/engineering identity, personal vision statement. Link to strategy/strategy-vision/founder.md for full credentials.
       `/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/about-us/founder.md`
-- [ ] Create docs/about-us/who-we-are.md covering: Common Bond Pty Ltd identity (trustee for Ammendolea Family Trust, ABN 50 152 085 287), MyJMO Pty Ltd as IP owner, the software licence relationship between entities, solo-founder EOS operating model, four brand pillars, technology philosophy.
+- [ ] Create docs/about-us/who-we-are.md covering: Common Bond Pty Ltd (ACN 694 840 394, trustee for Ammendolea Family Trust ABN 50 152 085 287), MyJMO Pty Ltd (ACN 648 051 852, IP owner), software licence relationship between entities, solo-founder EOS operating model, four brand pillars, technology philosophy.
       `/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/about-us/who-we-are.md`
-- [ ] Create docs/about-us/what-we-do.md covering Receptor product suite (Workforce, Planner, Preferencer, Allocator), the problem solved, the SaaS+Consulting flywheel, and in/out-of-scope boundaries. Cross-link to strategy/strategy-vision/vision.md and product docs.
+- [ ] Create docs/about-us/what-we-do.md covering Receptor product suite (Workforce, Planner, Preferencer, Allocator), the problem solved, the SaaS+Consulting flywheel, in/out-of-scope boundaries. Cross-link to strategy/strategy-vision/vision.md.
       `/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/about-us/what-we-do.md`
 - [ ] Create docs/about-us/where-we-are.md: honest current-state page covering pre-revenue active development stage, quarterly rocks (FY2026 Q1), product readiness, StartSpace community context, solo-founder reality, and active relationship-building with PMCV (piqued interest via Monash Health, not yet formalised).
       `/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/about-us/where-we-are.md`
@@ -61,8 +66,48 @@ Affects: `doco-common-bond` — sidebars.ts
 Affects: `doco-common-bond` — docusaurus.config.ts
 
 
-- [ ] Add a top-level 'About Us' navbar item in docusaurus.config.ts pointing at the aboutUsSidebar, positioned prominently (before Business dropdown).
+- [ ] Add a top-level 'About Us' navbar item in docusaurus.config.ts pointing at the aboutUsSidebar, positioned before the Business dropdown.
       `/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docusaurus.config.ts`
+
+### INFO-04: No narrative technology overview exists in the about-us section. Advisors, partners, and future hires need a non-technic
+
+Affects: `doco-common-bond` — docs/about-us
+
+
+- [ ] Create docs/about-us/our-technology.md as a non-technical summary of the Receptor technology stack: Supabase (Postgres, Auth, Realtime), Cloudflare (Pages, Workers, edge delivery), OR-Tools (Google constraint solver for the matching engine), Python match-backend microservice, and Next.js/Flutter frontends. Explain the 'why' behind each choice in plain language.
+      `/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/about-us/our-technology.md`
+
+### INFO-05: The about-us section has no chronological narrative of how Common Bond came to be. A timeline showing the journey from e
+
+Affects: `doco-common-bond` — docs/about-us
+
+
+- [ ] Add a Mermaid timeline diagram to docs/about-us/founder.md (or index.md) showing key milestones: 2005 (engineering career start), 2007–2010 (BSc Internetworking, Murdoch University), 2008–2020 (St John Ambulance volunteer), 2016–2019 (MD, Notre Dame), 2020 (internship, Fiona Stanley & Fremantle Hospitals), 2021–2022 (Critical Care HMO, Monash Health), 2023 (ICU Registrar + Receptor v1 + Monash ICU Survival Guide), 2024 (Receptor public launch), 2026 (first major pilot).
+      `/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/about-us/founder.md`
+
+### INFO-06: The legal entity table on who-we-are.md should include ASIC ACN numbers alongside ABN for completeness. Confirmed: MyJMO
+
+Affects: `doco-common-bond` — docs/about-us/who-we-are.md
+
+
+- [ ] Include ACN numbers in the legal entity table on docs/about-us/who-we-are.md: MyJMO Pty Ltd ACN 648 051 852 (IP Owner); Common Bond Pty Ltd ACN 694 840 394 (Exclusive Licensee, Trustee for Ammendolea Family Trust ABN 50 152 085 287).
+      `/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/about-us/who-we-are.md`
+
+### INFO-07: All planned about-us pages lack a 'description:' frontmatter field. Docusaurus uses this for SEO meta descriptions and f
+
+Affects: `doco-common-bond` — docs/about-us
+
+
+- [ ] Ensure all 7 about-us markdown files include a 'description:' frontmatter field (1–2 sentences, SEO-friendly). This populates both Docusaurus meta tags and the generated-index card previews.
+      `/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/about-us/`
+
+### INFO-08: The site homepage (intro.md) has no link or reference to the About Us section. A new visitor or advisor entering via the
+
+Affects: `doco-common-bond` — docs/intro.md
+
+
+- [ ] Add an 'About Us' entry to the Corporate Framework section of docs/intro.md, linking to ./about-us/ with a brief one-line description.
+      `/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/intro.md`
 
 
 ---
@@ -74,8 +119,8 @@ Affects: `doco-common-bond` — docusaurus.config.ts
 
 | Phase | Finding IDs | Rationale |
 | :---- | :---------- | :-------- |
-| 1 | INFO-01 | Content creation must precede navigation wiring; all 7 markdown files for the about-us section are created first. |
-| 2 | INFO-02, INFO-03 | Navigation wiring (sidebars.ts and docusaurus.config.ts) is applied once content files exist and can be linked. |
+| 1 | INFO-01, INFO-04, INFO-05, INFO-06, INFO-07 | All content creation tasks — the 8 about-us markdown files including our-technology.md. INFO-05, INFO-06, INFO-07 are satisfied within the same files created by INFO-01 and INFO-04 (founder.md, who-we-are.md, and frontmatter respectively). |
+| 2 | INFO-02, INFO-03, INFO-08 | Navigation and cross-linking: sidebar wiring, navbar entry, and intro.md homepage link. Applied after content files are in place. |
 
 
 ---
@@ -87,4 +132,9 @@ Affects: `doco-common-bond` — docusaurus.config.ts
 | INFO-01 | docs/about-us | `_category_.json` | Documentation Gap | 🟢 Low |
 | INFO-02 | sidebars.ts | `sidebars.ts` | Configuration Gap | 🟢 Low |
 | INFO-03 | docusaurus.config.ts | `docusaurus.config.ts` | Configuration Gap | 🟢 Low |
+| INFO-04 | docs/about-us | `our-technology.md` | Documentation Gap | 🟢 Low |
+| INFO-05 | docs/about-us | `founder.md` | Documentation Gap | 🟢 Low |
+| INFO-06 | docs/about-us/who-we-are.md | `who-we-are.md` | Documentation Gap | 🟢 Low |
+| INFO-07 | docs/about-us | `about-us` | Documentation Gap | 🟢 Low |
+| INFO-08 | docs/intro.md | `intro.md` | Documentation Gap | 🟢 Low |
 
