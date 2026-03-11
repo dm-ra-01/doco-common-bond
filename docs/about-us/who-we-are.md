@@ -32,10 +32,10 @@ Bond Pty Ltd (Licensee) establishes an exclusive, perpetual licence to
 commercialise all Receptor IP, with appropriate royalty and governance
 provisions.
 
-:::note For ISO 27001 and governance purposes, Common Bond Pty Ltd is the entity
-referenced in all client agreements, ISMS documentation, and external
-communications. MyJMO Pty Ltd is the registered holder of the underlying
-intellectual property. :::
+:::note
+For ISO 27001 and governance purposes, Common Bond Pty Ltd is the entity referenced in all client agreements, ISMS documentation, and external communications. MyJMO Pty Ltd is the registered holder of the underlying intellectual property.
+:::
+:::
 
 ---
 
@@ -118,6 +118,7 @@ See [Our Technology](./our-technology) for a full internal architecture brief.
 
 ---
 
-:::tip For Governance Context For ISO 27001 compliance documentation, risk
-register, and asset inventory referencing these entities, see
-[Compliance](../compliance/iso27001/). :::
+:::tip[For Governance Context]
+For ISO 27001 compliance documentation, risk register, and asset inventory referencing these entities, see [Compliance](../compliance/iso27001/).
+:::
+:::

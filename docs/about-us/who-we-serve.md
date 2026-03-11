@@ -64,11 +64,10 @@ workflow from the inside.
 rotation cycle run through Receptor at a major metropolitan LHN. Detailed pilot
 objectives are documented in the [VTO](../operations/eos/vto).
 
-:::note PMCV The Postgraduate Medical Council of Victoria (PMCV) coordinates
-prevocational training across Victorian health services. Common Bond is actively
-working to build a relationship with PMCV — our work at Monash Health has
-generated meaningful interest. No formal agreement exists at this stage; we
-anticipate relationship formalisation in FY2027. :::
+:::note[PMCV]
+The Postgraduate Medical Council of Victoria (PMCV) coordinates prevocational training across Victorian health services. Common Bond is actively working to build a relationship with PMCV — our work at Monash Health has generated meaningful interest. No formal agreement exists at this stage; we anticipate relationship formalisation in FY2027.
+:::
+:::
 
 ---
 
@@ -102,10 +101,9 @@ A Medical Workforce team at a large health service purchases Receptor because:
 
 ---
 
-:::tip See Also
-
+:::tip[See Also]
 - [Our Aims](./our-aims) — specific targets and revenue milestones
-- [Why Now?](../strategy/strategy-vision/why-now) — the market forces driving
-  demand
-- [Competitive Strengths](../strategy/strategy-vision/strengths) — how we
-  differentiate from existing solutions :::
+- [Why Now?](../strategy/strategy-vision/why-now) — the market forces driving demand
+- [Competitive Strengths](../strategy/strategy-vision/strengths) — how we differentiate from existing solutions
+:::
+:::

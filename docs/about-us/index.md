@@ -87,7 +87,7 @@ This section tells that story — structured, honest, and occasionally candid.
 
 ---
 
-:::tip For Advisors & Partners For the deeper strategic picture — revenue
-projections, market analysis, and competitive positioning — see the
-[Business Planning](../strategy/) section. For governance and legal, see
-[Governance & Legal](../governance/). :::
+:::tip[For Advisors & Partners]
+For the deeper strategic picture — revenue projections, market analysis, and competitive positioning — see the [Business Planning](../strategy/) section. For governance and legal, see [Governance & Legal](../governance/).
+:::
+:::

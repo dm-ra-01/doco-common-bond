@@ -11,7 +11,7 @@ import { FrameworkCard, MatrixGrid } from
 
 # Our Technology
 
-:::caution Internal Brief This document is an **internal reference only** —
+:::caution[Internal Brief] This document is an **internal reference only** —
 intended to prepare the founder (and future team members) for technical
 conversations with hospital IT teams, advisors, and procurement panels. It is
 published internally, not to customers. :::
@@ -113,7 +113,7 @@ briefings.
 
 ---
 
-:::tip For Deeper Reading
+:::tip[For Deeper Reading]
 
 - [Database Schema](../infrastructure/database-schema) — full schema
   documentation with entity-relationship diagrams

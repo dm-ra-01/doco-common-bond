@@ -74,11 +74,10 @@ graph LR
   </FrameworkCard>
 </MatrixGrid>
 
-:::note Scope Boundary **Receptor begins where onboarding ends.** Recruitment,
-credentialing, and payroll are out of scope — these are handled by HR teams
-before a doctor enters the allocation workflow. See
-[Scope & Boundaries](../strategy/strategy-vision/scope) for the full boundary
-matrix. :::
+:::note[Scope Boundary]
+**Receptor begins where onboarding ends.** Recruitment, credentialing, and payroll are out of scope — these are handled by HR teams before a doctor enters the allocation workflow. See [Scope & Boundaries](../strategy/strategy-vision/scope) for the full boundary matrix.
+:::
+:::
 
 ---
 
@@ -122,10 +121,9 @@ graph LR
 
 ---
 
-:::tip Deeper Reading
-
-- [Vision & Future Roadmap](../strategy/strategy-vision/vision) — long-term
-  ambition for Receptor beyond junior doctors
+:::tip[Deeper Reading]
+- [Vision & Future Roadmap](../strategy/strategy-vision/vision) — long-term ambition for Receptor beyond junior doctors
 - [Our Aims](./our-aims) — specific 1yr, 3yr, and 10yr targets
-- [Why Now?](../strategy/strategy-vision/why-now) — the market forces making
-  this essential right now :::
+- [Why Now?](../strategy/strategy-vision/why-now) — the market forces making this essential right now
+:::
+:::
