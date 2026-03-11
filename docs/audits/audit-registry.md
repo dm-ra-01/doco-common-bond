@@ -10,7 +10,7 @@ sidebar_position: 1
 > platform. Each entry links to the source `audit.md` and `recommendations.md`
 > where they live inside the relevant repository's `docs/audits/` folder.
 
-**Last Updated:** 2026-03-10 | **Maintained by:** Engineering Leadership
+**Last Updated:** 2026-03-11 | **Maintained by:** Engineering Leadership
 
 ---
 
@@ -28,6 +28,12 @@ sidebar_position: 1
 ---
 
 ## Active Registry
+
+### 🗓️ 2026-03-11
+
+| Slug                            | Title                        | Scope                                                                                 | Auditor         | Status    | NC Raised | Report                                                                                                                                                          |
+| :------------------------------ | :--------------------------- | :------------------------------------------------------------------------------------ | :-------------- | :-------- | :-------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `260311-about-us-documentation` | About-Us Documentation Audit | `documentation/common-bond` — `docs/about-us/`, `sidebars.ts`, `docusaurus.config.ts` | Ryan Ammendolea | ✅ Closed | —         | [audit.md](../audits/archive/260311-about-us-documentation/audit.md) · [recommendations.md](../audits/archive/260311-about-us-documentation/recommendations.md) |
 
 ### 🗓️ 2026-03-10
 
