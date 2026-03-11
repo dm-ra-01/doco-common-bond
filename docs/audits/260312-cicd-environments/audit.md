@@ -9,7 +9,7 @@
 
 ## Executive Summary
 
-**27 findings across 6 repositories and cross-ecosystem CI infrastructure.** The ecosystem's CI/CD pipeline has three compounding structural deficiencies: (1) all Supabase-dependent CI jobs boot an independent ephemeral instance per job with no sharing, consuming approximately 4 minutes of runner time per boot and 12+ minutes per frontend push; (2) a hard Supabase API key format incompatibility between the new `sb_publishable_*` format (used by REST/GraphQL) and the legacy JWT `ANON_KEY` (required by `signInWithPassword`) is undocumented and creates invisible auth failures if the dual-key export workaround is removed; and (3) all three frontend repos pin `version: latest` for the Supabase CLI, creating schema-drift false positives when the upstream CLI changes its output formatting. Beyond CI, no test, staging, or production environment is documented or deployed — only a single dev instance exists. **A new strategic opportunity has been identified**: the available Windows 11 Pro machine (Intel i7-265KF 20-core, 32 GB DDR5, 1 TB NVMe, RTX 5080) with Hyper-V support is capable of running a `k3s`-based Kubernetes cluster that would fundamentally resolve the CI/CD boot-time and isolation problems at the infrastructure level.
+**32 findings across 6 repositories and cross-ecosystem CI infrastructure.** The ecosystem's CI/CD pipeline has three compounding structural deficiencies: (1) all Supabase-dependent CI jobs boot an independent ephemeral instance per job with no sharing, consuming approximately 4 minutes of runner time per boot and 12+ minutes per frontend push; (2) a hard Supabase API key format incompatibility between the new `sb_publishable_*` format (used by REST/GraphQL) and the legacy JWT `ANON_KEY` (required by `signInWithPassword`) is undocumented and creates invisible auth failures if the dual-key export workaround is removed; and (3) all three frontend repos pin `version: latest` for the Supabase CLI, creating schema-drift false positives when the upstream CLI changes its output formatting. Beyond CI, no test, staging, or production environment is documented or deployed — only a single dev instance exists. **A new strategic opportunity has been identified**: the available Windows 11 Pro machine (Intel i7-265KF 20-core, 32 GB DDR5, 1 TB NVMe, RTX 5080) with Hyper-V support is capable of running a `k3s`-based Kubernetes cluster that would fundamentally resolve the CI/CD boot-time and isolation problems at the infrastructure level.
 
 | Repository / Area | Coverage | Issues Found | Overall |
 | --- | --- | --- | --- |
@@ -257,3 +257,8 @@ The available Windows 11 Pro workstation (Intel i7-265KF — 8 P-cores + 12 E-co
 | SEC-02 | Cross-ecosystem | `.github/workflows/ci.yml` (all 5) | Security | 🟡 Medium |
 | CICD-05 | Cross-ecosystem | `.github/workflows/ci.yml` (all 5) | Process Gap | 🟡 Medium |
 | ENV-05 | supabase-receptor | `.github/workflows/` (missing) | Compliance | 🟡 Medium |
+| ARCH-05 | supabase-receptor | `docs/adr/` (missing) | Documentation Gap | 🟡 Medium |
+| SEC-03 | Cross-ecosystem | — | Security | 🟙 High (deferred to Phase 10) |
+| CICD-06 | Cross-ecosystem | `.github/dependabot.yml` (all 6) | Tech Debt | 🟡 Medium |
+| ISO-03 | cross-ecosystem/supabase-receptor | `docs/compliance/iso27001/operations/soa.md` | Compliance | 🟡 Medium |
+| ENV-06 | supabase-receptor | `docs/infrastructure/security/key-management.md` | Process Gap | 🟡 Medium |

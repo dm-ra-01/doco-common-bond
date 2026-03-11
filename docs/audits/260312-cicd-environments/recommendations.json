@@ -738,6 +738,123 @@
         }
       ],
       "severity_history": []
+    },
+    {
+
+      "id": "ARCH-05",
+      "severity": "medium",
+      "status": "open",
+      "category": "Documentation Gap",
+      "repo": "supabase-receptor",
+      "area": "Architecture Decision Records",
+      "description": "No ADR (Architecture Decision Record) process exists. Major infrastructure choices (k3s vs Docker Compose, self-hosted vs GitHub-hosted runners, Docker network vs namespace isolation) are undocumented. Without ADRs, future engineers cannot understand why decisions were made and risk reversing them unknowingly.",
+      "tasks": [
+        {
+          "taskId": "ARCH-05-T1",
+          "status": "open",
+          "description": "Create docs/adr/ directory in supabase-receptor. Write ADR-001 (k3s cluster selection rationale over Docker Compose/Swarm/Nomad), ADR-002 (self-hosted runner vs GitHub-hosted), ADR-003 (Docker network isolation vs k8s namespace isolation). Use standard ADR template: Context, Decision, Consequences.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/docs/adr/README.md",
+          "completedAt": null,
+          "completedBy": null
+        },
+        {
+          "taskId": "ARCH-05-T2",
+          "status": "open",
+          "description": "TODO (deferred): Create a dedicated 'architecture_decisions' table in supabase-common-bond Supabase instance for queryable ADR indexing. Until then, register each ADR as an entry in the 'standards' table with document_type='ADR', domain='Infrastructure', issuing_body='Engineering Team', and location pointing to the git file path. Current 'standards' schema has title/document_type/domain/scope/issuing_body/effective_date/status/location fields which accommodate ADR index entries adequately.",
+          "targetFile": "",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "SEC-03",
+      "severity": "high",
+      "status": "accepted",
+      "category": "Security",
+      "repo": "cross-ecosystem",
+      "area": "Branch protection on main",
+      "description": "No branch protection rules exist on main in any repository, allowing direct pushes that bypass CI checks entirely. Deferred until CI/CD processes are stable (Phases 1-9 complete), as fast iteration is currently the priority. ISO 27001 A.8.32 (change management).",
+      "tasks": [
+        {
+          "taskId": "SEC-03-T1",
+          "status": "open",
+          "description": "Enable branch protection on main across all 6 repositories once CI is stable: require PR, require all CI status checks to pass, require at least 1 approval, disallow force pushes and deletions. Use GitHub repository rulesets for cross-org consistency.",
+          "targetFile": "",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "CICD-06",
+      "severity": "medium",
+      "status": "open",
+      "category": "Tech Debt",
+      "repo": "cross-ecosystem",
+      "area": "Dependabot for GitHub Actions ecosystem",
+      "description": "Dependabot is active for npm/pip dependencies but no .github/dependabot.yml entry exists for the 'github-actions' ecosystem in any repository. Once Actions are SHA-pinned (SEC-02), automated SHA bumps are required or the pins will drift and accumulate upstream security fixes silently.",
+      "tasks": [
+        {
+          "taskId": "CICD-06-T1",
+          "status": "open",
+          "description": "Add a 'package-ecosystem: github-actions' block to each repo's .github/dependabot.yml (or create the file if absent), with update-schedule: weekly and target-branch: main. Ensure Renovate Bot and Dependabot are not duplicating the same bump — prefer Renovate if already configured for the repo.",
+          "targetFile": "",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "ISO-03",
+      "severity": "medium",
+      "status": "open",
+      "category": "Compliance",
+      "repo": "supabase-receptor",
+      "area": "Physical security scope change from k3s bare-metal node",
+      "description": "The SoA currently marks ISO 27001 controls 7.1-7.4 (physical security perimeters, physical entry, securing offices/facilities, physical security monitoring) as Not Applicable because Common Bond operates no physical infrastructure. Deploying a self-hosted k3s node on the Windows 11 Pro workstation introduces a physical asset that changes this scoping decision.",
+      "tasks": [
+        {
+          "taskId": "ISO-03-T1",
+          "status": "open",
+          "description": "Review SoA controls 7.1, 7.2, 7.3, and 7.4 for applicability once the k3s node is provisioned. At minimum, document compensating physical controls: machine location (locked room or secured area), screen lock policy, cable lock, OS-level full disk encryption (BitLocker), and access restriction. Update the SoA exclusion block in docs/compliance/iso27001/operations/soa.md to reflect any newly applicable controls.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/compliance/iso27001/operations/soa.md",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "ENV-06",
+      "severity": "medium",
+      "status": "open",
+      "category": "Process Gap",
+      "repo": "supabase-receptor",
+      "area": "Secrets rotation schedule",
+      "description": "SUPABASE_SECRET_KEY and CI GitHub Secrets have no documented rotation cadence. The KEY-01 key format migration is the right moment to formalise this. Without a schedule, keys may remain valid indefinitely after a breach, increasing blast radius of any exposure.",
+      "tasks": [
+        {
+          "taskId": "ENV-06-T1",
+          "status": "open",
+          "description": "Add a rotation schedule table to docs/infrastructure/security/key-management.md: service_role key (180-day), anon/publishable test key (90-day), staging keys (90-day). Document the rotation procedure: 1) generate new key in Supabase dashboard, 2) update GitHub Secret via 'gh secret set', 3) update dev-environment/.env, 4) verify CI passes.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/docs/infrastructure/security/key-management.md",
+          "completedAt": null,
+          "completedBy": null
+        },
+        {
+          "taskId": "ENV-06-T2",
+          "status": "open",
+          "description": "Create a GitHub Actions scheduled workflow '.github/workflows/key-rotation-reminder.yml' that runs on the first of each month and posts a Slack/email notification if any key is within 14 days of its rotation due date. Due dates are stored as GitHub Actions variables (not secrets) so they can be read without elevation.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/.github/workflows/key-rotation-reminder.yml",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
     }
   ],
   "clarifications": [
@@ -775,39 +892,47 @@
     },
     {
       "item": "ISO SoA compliance tracking",
-      "decision": "When SEC-01, SEC-02, ENV-05, and ARCH-04 are implemented, the corresponding ISO 27001 SoA entries (8.3, 8.8, 8.32, and 8.31) must be updated in docs/compliance/iso27001/operations/soa.md and the Supabase audits register. Each relevant finding has a dedicated compliance-update task."
+      "decision": "When SEC-01, SEC-02, ENV-05, ISO-03, and ARCH-04 are implemented, the corresponding ISO 27001 SoA entries (8.3, 8.8, 8.32, 7.1-7.4, and 8.31) must be updated in docs/compliance/iso27001/operations/soa.md and the Supabase governance registers. Each relevant finding has a dedicated compliance-update task."
+    },
+    {
+      "item": "ADR storage strategy",
+      "decision": "ADRs are stored as markdown files in docs/adr/ within supabase-receptor (ARCH-05-T1). As an interim index, each ADR is registered in the Supabase 'standards' table with document_type='ADR'. A dedicated 'architecture_decisions' Supabase table is a future TODO (ARCH-05-T2). The 'registers' table is not appropriate — it tracks meta governance objects (risk register, asset register), not individual records."
+    },
+    {
+      "item": "Branch protection timing",
+      "decision": "Branch protection on main (SEC-03) is intentionally deferred to Phase 10 (the final task). Fast iteration is the current priority. SEC-03 will be enabled only after Phases 1-9 CI fixes are complete and stable."
     }
   ],
   "implementationPhases": [
     {
       "phase": 1,
       "name": "Strategic Priority: Kubernetes Cluster Planning & Infrastructure",
-      "rationale": "User-designated top priority for this audit. Design and provision the k3s cluster on Windows 11 Pro Hyper-V — this structurally resolves CICD-01, ARCH-01, ARCH-02, and ARCH-03 at the infrastructure level. Write the cluster runbook in parallel.",
-      "findingIds": ["ARCH-04", "DOC-03"]
+      "rationale": "User-designated top priority for this audit. Design and provision the k3s cluster on Windows 11 Pro Hyper-V — this structurally resolves CICD-01, ARCH-01, ARCH-02, and ARCH-03 at the infrastructure level. Write the cluster runbook and ADRs in parallel.",
+      "findingIds": ["ARCH-04", "DOC-03", "ARCH-05"]
     },
     {
       "phase": 2,
       "name": "Critical: Key Format & Service Role Fixes",
-      "rationale": "Fix the two security-class CI defects that cause silent auth failures. These are safe to implement immediately — they only change CI variable sourcing and can proceed in parallel with Phase 1 planning.",
+      "rationale": "Fix the two security-class CI defects that cause silent auth failures. Safe to implement immediately in parallel with Phase 1 planning.",
       "findingIds": ["KEY-01", "CICD-03"]
     },
     {
       "phase": 3,
       "name": "High: CLI Pinning, Codegen Gate & Backend CI Cleanup",
-      "rationale": "Pin Supabase CLI version across all repos, standardise the codegen gate to the git-diff pattern, fix receptor-planner bare pytest, and replace hardcoded JWT stubs and add job timeouts.",
+      "rationale": "Pin Supabase CLI version across all repos, standardise the codegen gate to the git-diff pattern, fix receptor-planner bare pytest, replace hardcoded JWT stubs, and add job timeouts.",
       "findingIds": ["CICD-02", "CGEN-01", "CGEN-02", "CICD-04", "CICD-05", "BACK-01", "BACK-02"]
     },
     {
       "phase": 4,
       "name": "High: CI Security & Supply-Chain Hardening",
-      "rationale": "Add explicit GITHUB_TOKEN permission blocks and pin all third-party Actions to commit SHAs. Update SoA controls 8.3 and 8.8 upon completion.",
-      "findingIds": ["SEC-01", "SEC-02"]
+      "rationale": "Add explicit GITHUB_TOKEN permission blocks, pin all third-party Actions to commit SHAs, and configure Dependabot for the github-actions ecosystem. Update SoA controls 8.3 and 8.8 upon completion.",
+      "findingIds": ["SEC-01", "SEC-02", "CICD-06"]
     },
     {
       "phase": 5,
       "name": "High: Environment Tiers & Documentation",
-      "rationale": "Provision staging, document all 4 environment tiers, write the promotion runbook, update key management docs. Strategic prerequisites before implementing CI architecture changes in Phase 6.",
-      "findingIds": ["ENV-01", "ENV-02", "KEY-02", "DOC-02"]
+      "rationale": "Provision staging, document all 4 environment tiers, write the promotion runbook, update key management docs and rotation schedule.",
+      "findingIds": ["ENV-01", "ENV-02", "KEY-02", "DOC-02", "ENV-06"]
     },
     {
       "phase": 6,
@@ -823,10 +948,23 @@
     },
     {
       "phase": 8,
+      "name": "Medium: Physical Security Scope Review (k3s node)",
+      "rationale": "Review and update ISO 27001 physical security controls (7.1-7.4) now that a bare-metal node exists. Document compensating physical controls and update SoA.",
+      "findingIds": ["ISO-03"]
+    },
+    {
+      "phase": 9,
       "name": "Low: Job Consolidation & Secrets Vault",
       "rationale": "Reduce Supabase boots per CI run once architecture decisions from phases 1 and 6 are finalised, and resolve the open secrets vault TODO.",
       "findingIds": ["CICD-01", "DOC-01"]
+    },
+    {
+      "phase": 10,
+      "name": "Final Gate: Branch Protection on Main",
+      "rationale": "Enable branch protection across all 6 repositories only after CI is stable and all previous phases are complete. Fast iteration is the current priority; this is the final hardening step.",
+      "findingIds": ["SEC-03"]
     }
   ],
   "deferred": []
 }
+

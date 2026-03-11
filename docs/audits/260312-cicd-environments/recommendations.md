@@ -25,7 +25,9 @@
 | pg_cron cleanup | A pg_cron task should clean up stale __test_* orgs on the staging/test instance with a 24-hour TTL. |
 | Key format migration | Supabase key format migration (JWT → sb_publishable_*/sb_secret_*) deadline was October 1 2025 (already passed). preference-frontend already exports dual keys. planner-frontend and workforce-frontend must be audited and fixed (KEY-01). |
 | Kubernetes CI/CD infrastructure | The available Windows 11 Pro workstation (Intel i7-265KF 20-core, 32 GB DDR5, 1 TB NVMe, RTX 5080, Hyper-V) is the proposed host for a k3s Kubernetes cluster. This is the strategic long-term solution for all CI/CD and environment tier hosting (ARCH-04). ARCH-04 + DOC-03 are the top implementation priority for this audit. |
-| ISO SoA compliance tracking | When SEC-01, SEC-02, ENV-05, and ARCH-04 are implemented, the corresponding ISO 27001 SoA entries (8.3, 8.8, 8.32, and 8.31) must be updated in docs/compliance/iso27001/operations/soa.md and the Supabase audits register. Each relevant finding has a dedicated compliance-update task. |
+| ISO SoA compliance tracking | When SEC-01, SEC-02, ENV-05, ISO-03, and ARCH-04 are implemented, the corresponding ISO 27001 SoA entries (8.3, 8.8, 8.32, 7.1-7.4, and 8.31) must be updated in docs/compliance/iso27001/operations/soa.md and the Supabase governance registers. Each relevant finding has a dedicated compliance-update task. |
+| ADR storage strategy | ADRs are stored as markdown files in docs/adr/ within supabase-receptor (ARCH-05-T1). As an interim index, each ADR is registered in the Supabase 'standards' table with document_type='ADR'. A dedicated 'architecture_decisions' Supabase table is a future TODO (ARCH-05-T2). The 'registers' table is not appropriate — it tracks meta governance objects (risk register, asset register), not individual records. |
+| Branch protection timing | Branch protection on main (SEC-03) is intentionally deferred to Phase 10 (the final task). Fast iteration is the current priority. SEC-03 will be enabled only after Phases 1-9 CI fixes are complete and stable. |
 
 
 ---
@@ -139,6 +141,14 @@ Affects: `cross-ecosystem` — Kubernetes cluster infrastructure
       `/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/docs/infrastructure/environment/kubernetes-cluster.md`
 - [ ] Install a GitHub Actions self-hosted runner as a Deployment in the control-plane namespace. Update all frontend ci.yml files to use runs-on: [self-hosted, linux, k3s] for Supabase-dependent jobs.
       `/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/docs/infrastructure/environment/kubernetes-cluster.md`
+
+### SEC-03: No branch protection rules exist on main in any repository, allowing direct pushes that bypass CI checks entirely. Defer
+
+Affects: `cross-ecosystem` — Branch protection on main
+
+
+- [ ] Enable branch protection on main across all 6 repositories once CI is stable: require PR, require all CI status checks to pass, require at least 1 approval, disallow force pushes and deletions. Use GitHub repository rulesets for cross-org consistency.
+      ``
 
 ## 🟡 Medium
 
@@ -284,6 +294,42 @@ Affects: `supabase-receptor` — Production database change gate
 - [ ] Update Supabase audits table via REST API upsert to note that ENV-05 (production migration gate) addresses ISO 27001 A.8.32. This is a documentation-only update to the governance register — no schema change required.
       ``
 
+### ARCH-05: No ADR (Architecture Decision Record) process exists. Major infrastructure choices (k3s vs Docker Compose, self-hosted v
+
+Affects: `supabase-receptor` — Architecture Decision Records
+
+
+- [ ] Create docs/adr/ directory in supabase-receptor. Write ADR-001 (k3s cluster selection rationale over Docker Compose/Swarm/Nomad), ADR-002 (self-hosted runner vs GitHub-hosted), ADR-003 (Docker network isolation vs k8s namespace isolation). Use standard ADR template: Context, Decision, Consequences.
+      `/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/docs/adr/README.md`
+- [ ] TODO (deferred): Create a dedicated 'architecture_decisions' table in supabase-common-bond Supabase instance for queryable ADR indexing. Until then, register each ADR as an entry in the 'standards' table with document_type='ADR', domain='Infrastructure', issuing_body='Engineering Team', and location pointing to the git file path. Current 'standards' schema has title/document_type/domain/scope/issuing_body/effective_date/status/location fields which accommodate ADR index entries adequately.
+      ``
+
+### CICD-06: Dependabot is active for npm/pip dependencies but no .github/dependabot.yml entry exists for the 'github-actions' ecosys
+
+Affects: `cross-ecosystem` — Dependabot for GitHub Actions ecosystem
+
+
+- [ ] Add a 'package-ecosystem: github-actions' block to each repo's .github/dependabot.yml (or create the file if absent), with update-schedule: weekly and target-branch: main. Ensure Renovate Bot and Dependabot are not duplicating the same bump — prefer Renovate if already configured for the repo.
+      ``
+
+### ISO-03: The SoA currently marks ISO 27001 controls 7.1-7.4 (physical security perimeters, physical entry, securing offices/facil
+
+Affects: `supabase-receptor` — Physical security scope change from k3s bare-metal node
+
+
+- [ ] Review SoA controls 7.1, 7.2, 7.3, and 7.4 for applicability once the k3s node is provisioned. At minimum, document compensating physical controls: machine location (locked room or secured area), screen lock policy, cable lock, OS-level full disk encryption (BitLocker), and access restriction. Update the SoA exclusion block in docs/compliance/iso27001/operations/soa.md to reflect any newly applicable controls.
+      `/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/compliance/iso27001/operations/soa.md`
+
+### ENV-06: SUPABASE_SECRET_KEY and CI GitHub Secrets have no documented rotation cadence. The KEY-01 key format migration is the ri
+
+Affects: `supabase-receptor` — Secrets rotation schedule
+
+
+- [ ] Add a rotation schedule table to docs/infrastructure/security/key-management.md: service_role key (180-day), anon/publishable test key (90-day), staging keys (90-day). Document the rotation procedure: 1) generate new key in Supabase dashboard, 2) update GitHub Secret via 'gh secret set', 3) update dev-environment/.env, 4) verify CI passes.
+      `/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/docs/infrastructure/security/key-management.md`
+- [ ] Create a GitHub Actions scheduled workflow '.github/workflows/key-rotation-reminder.yml' that runs on the first of each month and posts a Slack/email notification if any key is within 14 days of its rotation due date. Due dates are stored as GitHub Actions variables (not secrets) so they can be read without elevation.
+      `/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/.github/workflows/key-rotation-reminder.yml`
+
 ## 🟢 Low
 
 ### DOC-01: key-management.md:86-88 has an open TODO block for integrating Bitwarden/Doppler CLI into the deployment workflow. This 
@@ -312,14 +358,16 @@ Affects: `supabase-receptor` — Kubernetes cluster runbook
 
 | Phase | Finding IDs | Rationale |
 | :---- | :---------- | :-------- |
-| 1 | ARCH-04, DOC-03 | User-designated top priority for this audit. Design and provision the k3s cluster on Windows 11 Pro Hyper-V — this structurally resolves CICD-01, ARCH-01, ARCH-02, and ARCH-03 at the infrastructure level. Write the cluster runbook in parallel. |
-| 2 | KEY-01, CICD-03 | Fix the two security-class CI defects that cause silent auth failures. These are safe to implement immediately — they only change CI variable sourcing and can proceed in parallel with Phase 1 planning. |
-| 3 | CICD-02, CGEN-01, CGEN-02, CICD-04, CICD-05, BACK-01, BACK-02 | Pin Supabase CLI version across all repos, standardise the codegen gate to the git-diff pattern, fix receptor-planner bare pytest, and replace hardcoded JWT stubs and add job timeouts. |
-| 4 | SEC-01, SEC-02 | Add explicit GITHUB_TOKEN permission blocks and pin all third-party Actions to commit SHAs. Update SoA controls 8.3 and 8.8 upon completion. |
-| 5 | ENV-01, ENV-02, KEY-02, DOC-02 | Provision staging, document all 4 environment tiers, write the promotion runbook, update key management docs. Strategic prerequisites before implementing CI architecture changes in Phase 6. |
+| 1 | ARCH-04, DOC-03, ARCH-05 | User-designated top priority for this audit. Design and provision the k3s cluster on Windows 11 Pro Hyper-V — this structurally resolves CICD-01, ARCH-01, ARCH-02, and ARCH-03 at the infrastructure level. Write the cluster runbook and ADRs in parallel. |
+| 2 | KEY-01, CICD-03 | Fix the two security-class CI defects that cause silent auth failures. Safe to implement immediately in parallel with Phase 1 planning. |
+| 3 | CICD-02, CGEN-01, CGEN-02, CICD-04, CICD-05, BACK-01, BACK-02 | Pin Supabase CLI version across all repos, standardise the codegen gate to the git-diff pattern, fix receptor-planner bare pytest, replace hardcoded JWT stubs, and add job timeouts. |
+| 4 | SEC-01, SEC-02, CICD-06 | Add explicit GITHUB_TOKEN permission blocks, pin all third-party Actions to commit SHAs, and configure Dependabot for the github-actions ecosystem. Update SoA controls 8.3 and 8.8 upon completion. |
+| 5 | ENV-01, ENV-02, KEY-02, DOC-02, ENV-06 | Provision staging, document all 4 environment tiers, write the promotion runbook, update key management docs and rotation schedule. |
 | 6 | ARCH-01, ARCH-02, ARCH-03, ISO-01, ISO-02, ENV-03, ENV-04 | Design and implement the branch-matched CI architecture (ADR + runner decision), add CI mode to setup.sh, implement test data isolation and pg_cron cleanup. May be superseded by Phase 1 k8s namespace-per-branch approach. |
 | 7 | ENV-05 | Add the prod migration gate workflow (ISO 27001 A.8.32) and update SoA upon completion. Update Supabase governance register. |
-| 8 | CICD-01, DOC-01 | Reduce Supabase boots per CI run once architecture decisions from phases 1 and 6 are finalised, and resolve the open secrets vault TODO. |
+| 8 | ISO-03 | Review and update ISO 27001 physical security controls (7.1-7.4) now that a bare-metal node exists. Document compensating physical controls and update SoA. |
+| 9 | CICD-01, DOC-01 | Reduce Supabase boots per CI run once architecture decisions from phases 1 and 6 are finalised, and resolve the open secrets vault TODO. |
+| 10 | SEC-03 | Enable branch protection across all 6 repositories only after CI is stable and all previous phases are complete. Fast iteration is the current priority; this is the final hardening step. |
 
 
 ---
@@ -337,6 +385,7 @@ Affects: `supabase-receptor` — Kubernetes cluster runbook
 | ARCH-03 | CI runner strategy | `cicd-architecture.md` | Process Gap | 🟠 High |
 | ENV-01 | Environment tier documentation | `environment-tiers.md` | Documentation Gap | 🟠 High |
 | ARCH-04 | Kubernetes cluster infrastructure | `kubernetes-cluster.md` | Strategic Opportunity | 🟠 High |
+| SEC-03 | Branch protection on main | `` | Security | 🟠 High |
 | CGEN-01 | GraphQL codegen CI gate | `ci.yml` | Architectural Drift | 🟡 Medium |
 | CGEN-02 | GraphQL codegen CI gate | `ci.yml` | Architectural Drift | 🟡 Medium |
 | CICD-04 | supabase-receptor CI robustness | `ci.yml` | Tech Debt | 🟡 Medium |
@@ -353,6 +402,10 @@ Affects: `supabase-receptor` — Kubernetes cluster runbook
 | SEC-02 | Third-party Action version pinning | `` | Security | 🟡 Medium |
 | CICD-05 | CI job timeout configuration | `` | Process Gap | 🟡 Medium |
 | ENV-05 | Production database change gate | `prod-deploy.yml` | Compliance | 🟡 Medium |
+| ARCH-05 | Architecture Decision Records | `README.md` | Documentation Gap | 🟡 Medium |
+| CICD-06 | Dependabot for GitHub Actions ecosystem | `` | Tech Debt | 🟡 Medium |
+| ISO-03 | Physical security scope change from k3s bare-metal node | `soa.md` | Compliance | 🟡 Medium |
+| ENV-06 | Secrets rotation schedule | `key-management.md` | Process Gap | 🟡 Medium |
 | DOC-01 | Secrets vault | `key-management.md` | Documentation Gap | 🟢 Low |
 | DOC-03 | Kubernetes cluster runbook | `kubernetes-cluster.md` | Documentation Gap | 🟢 Low |
 

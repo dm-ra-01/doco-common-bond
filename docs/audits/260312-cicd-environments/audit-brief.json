@@ -3,7 +3,7 @@
   "auditSlug": "260312-cicd-environments",
   "status": "drafting",
   "nextAction": "implement",
-  "openTaskCount": 51,
-  "latestHandover": "Initial audit complete. 27 findings across all 6 repos. TOP PRIORITY: Phase 1 — ARCH-04 (k3s Kubernetes cluster on Windows 11 Pro Hyper-V) + DOC-03 (cluster runbook). Phase 2: KEY-01 (critical auth failures). Full phase map in implementationPhases[]. ISO 27001 SoA compliance update tasks embedded in SEC-01-T2 (8.3), SEC-02-T2 (8.8), ENV-05-T2 (8.32), ENV-05-T3 (Supabase register). Reference implementation: preference-frontend ci.yml.",
+  "openTaskCount": 58,
+  "latestHandover": "Initial audit complete. 32 findings across all 6 repos. 10 phases. TOP PRIORITY: Phase 1 — ARCH-04+DOC-03+ARCH-05 (k3s cluster, runbook, ADRs). Phase 2: KEY-01 (critical auth). ADRs stored at docs/adr/ with interim entry in Supabase 'standards' table (document_type=ADR). SEC-03 deferred to Phase 10 (after CI stable). ISO SoA tasks wired in SEC-01/SEC-02/ENV-05/ISO-03. 58 open tasks.",
   "sessionHistory": []
 }
