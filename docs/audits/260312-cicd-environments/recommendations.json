@@ -498,6 +498,114 @@
         }
       ],
       "severity_history": []
+    },
+    {
+      "id": "BACK-01",
+      "severity": "medium",
+      "status": "open",
+      "category": "Process Gap",
+      "repo": "match-backend, receptor-planner",
+      "area": "Backend CI integration test coverage",
+      "description": "match-backend integration tests (test_supabase_integration.py) are skipped in CI via pytest.mark.skipif when stub env vars are detected and are never run in CI. receptor-planner runs bare pytest with no path scoping — no unit/integration tier separation exists, meaning all tests run against stub URLs with misleading pass/fail results.",
+      "tasks": [
+        {
+          "taskId": "BACK-01-T1",
+          "status": "open",
+          "description": "Add pytest path scoping to receptor-planner ci.yml: replace bare 'pytest' with 'pytest tests/unit/ -m unit' (or equivalent). Add a --co flag dryrun first to enumerate what's currently being collected.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/backend/receptor-planner/.github/workflows/ci.yml",
+          "completedAt": null,
+          "completedBy": null
+        },
+        {
+          "taskId": "BACK-01-T2",
+          "status": "open",
+          "description": "Add an integration-tests job to match-backend ci.yml that boots a Supabase instance (using supabase/setup-cli@v1) and runs pytest allocator/tests/integration/ with real Supabase credentials extracted from supabase status -o env.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/backend/match-backend/.github/workflows/ci.yml",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "BACK-02",
+      "severity": "medium",
+      "status": "open",
+      "category": "Security",
+      "repo": "match-backend, receptor-planner",
+      "area": "Hardcoded JWT placeholder in CI",
+      "description": "Both backend repos set SUPABASE_SERVICE_ROLE_KEY to a hardcoded decoded JWT placeholder string (eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...) in their ci.yml. While intentionally non-functional, this leaks a JWT pattern into the repository that secret scanners (GitGuardian, GitHub secret scanning) may flag as a credential leak.",
+      "tasks": [
+        {
+          "taskId": "BACK-02-T1",
+          "status": "open",
+          "description": "Replace the hardcoded JWT placeholder in both ci.yml files with a clearly non-JWT stub value such as 'stub-service-role-key-not-real' that will not trigger credential scanner heuristics.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/backend/match-backend/.github/workflows/ci.yml",
+          "completedAt": null,
+          "completedBy": null
+        },
+        {
+          "taskId": "BACK-02-T2",
+          "status": "open",
+          "description": "Apply the same stub replacement to receptor-planner ci.yml.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/backend/receptor-planner/.github/workflows/ci.yml",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "ARCH-04",
+      "severity": "high",
+      "status": "open",
+      "category": "Strategic Opportunity",
+      "repo": "cross-ecosystem",
+      "area": "Kubernetes cluster infrastructure",
+      "description": "A k3s Kubernetes cluster on the available Windows 11 Pro machine (Intel i7-265KF 20-core, 32 GB DDR5, 1 TB NVMe, Hyper-V) would structurally resolve CICD-01, ARCH-01, ARCH-02, and ARCH-03. Namespace-per-branch CI with shared image cache reduces Supabase boot from ~4 min cold to ~30-60 sec warm. Traefik ingress enables branch-slug URLs without port juggling. Persistent dev/staging/prod namespaces with PVCs replace the current single-VM Docker Compose setup.",
+      "tasks": [
+        {
+          "taskId": "ARCH-04-T1",
+          "status": "open",
+          "description": "Design the k3s cluster topology: 3 Hyper-V VMs (control plane: 4 cores/6 GB, worker-1: 6 cores/10 GB for persistent envs, worker-2: 6 cores/10 GB for ephemeral branch CI). Document in docs/infrastructure/environment/kubernetes-cluster.md.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/docs/infrastructure/environment/kubernetes-cluster.md",
+          "completedAt": null,
+          "completedBy": null
+        },
+        {
+          "taskId": "ARCH-04-T2",
+          "status": "open",
+          "description": "Provision a k3s cluster on the Windows 11 Pro machine using Hyper-V VMs running Ubuntu Server 24.04 LTS. Install k3s on the control plane and join the two worker nodes.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/docs/operations/vm-setup.md",
+          "completedAt": null,
+          "completedBy": null
+        },
+        {
+          "taskId": "ARCH-04-T3",
+          "status": "open",
+          "description": "Deploy Supabase to the k3s cluster using the community Helm chart (https://github.com/supabase-community/supabase-kubernetes). Create namespaces: supabase-dev, supabase-staging, supabase-prod with separate PVCs per namespace.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/docs/infrastructure/environment/kubernetes-cluster.md",
+          "completedAt": null,
+          "completedBy": null
+        },
+        {
+          "taskId": "ARCH-04-T4",
+          "status": "open",
+          "description": "Configure Traefik ingress rules to route <branch-slug>.ci.commonbond.local to the corresponding supabase-ci-<branch-slug> namespace. This replaces the port-juggling / Docker network isolation approach.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/docs/infrastructure/environment/kubernetes-cluster.md",
+          "completedAt": null,
+          "completedBy": null
+        },
+        {
+          "taskId": "ARCH-04-T5",
+          "status": "open",
+          "description": "Install a GitHub Actions self-hosted runner as a Deployment in the control-plane namespace. Update all frontend ci.yml files to use runs-on: [self-hosted, linux, k3s] for Supabase-dependent jobs.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/docs/infrastructure/environment/kubernetes-cluster.md",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
     }
   ],
   "clarifications": [
@@ -528,6 +636,10 @@
     {
       "item": "Key format migration",
       "decision": "Supabase key format migration (JWT → sb_publishable_*/sb_secret_*) deadline was October 1 2025 (already passed). preference-frontend already exports dual keys. planner-frontend and workforce-frontend must be audited and fixed (KEY-01)."
+    },
+    {
+      "item": "Kubernetes CI/CD infrastructure",
+      "decision": "The available Windows 11 Pro workstation (Intel i7-265KF 20-core, 32 GB DDR5, 1 TB NVMe, RTX 5080, Hyper-V) is the proposed host for a k3s Kubernetes cluster. This is the strategic long-term solution for all CI/CD and environment tier hosting (ARCH-04)."
     }
   ],
   "implementationPhases": [
@@ -539,9 +651,9 @@
     },
     {
       "phase": 2,
-      "name": "High: CLI Pinning & Codegen Gate Standardisation",
-      "rationale": "Pin Supabase CLI version across all repos and standardise the codegen gate to the git-diff pattern. Low-risk, high-reliability wins.",
-      "findingIds": ["CICD-02", "CGEN-01", "CGEN-02", "CICD-04"]
+      "name": "High: CLI Pinning, Codegen Gate & Backend CI Cleanup",
+      "rationale": "Pin Supabase CLI version across all repos, standardise the codegen gate to the git-diff pattern, fix receptor-planner bare pytest, and replace hardcoded JWT stubs.",
+      "findingIds": ["CICD-02", "CGEN-01", "CGEN-02", "CICD-04", "BACK-01", "BACK-02"]
     },
     {
       "phase": 3,
@@ -560,12 +672,13 @@
       "name": "Low: Job Consolidation & Secrets Vault",
       "rationale": "Reduce Supabase boots per CI run once architecture decisions from phase 4 are finalised, and resolve the open secrets vault TODO.",
       "findingIds": ["CICD-01", "DOC-01"]
+    },
+    {
+      "phase": 6,
+      "name": "Strategic: Kubernetes Cluster Infrastructure",
+      "rationale": "Long-term strategic infrastructure investment. Deploy k3s on Windows 11 Pro Hyper-V, provision Supabase via Helm, configure Traefik ingress for branch-slug routing, and install the self-hosted runner. Structurally supersedes CICD-01, ARCH-01, ARCH-02, and ARCH-03.",
+      "findingIds": ["ARCH-04"]
     }
   ],
-  "deferred": [
-    {
-      "item": "BACKEND-CI: backend/receptor-planner and backend/match-backend CI gaps",
-      "reason": "Backend repos have no CI files at all. This is a known gap tracked in the 260311-testing-efficiency audit and is outside the scope of this CI/CD infrastructure audit, which focuses on Supabase environment architecture."
-    }
-  ]
+  "deferred": []
 }

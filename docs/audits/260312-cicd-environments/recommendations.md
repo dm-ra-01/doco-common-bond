@@ -24,6 +24,7 @@
 | CI runner type | All repos currently use GitHub-hosted ubuntu-latest runners. Installing a self-hosted runner on the VM is strongly recommended to unlock Docker daemon sharing and eliminate per-job 4-min Supabase cold boots. This is ARCH-03. |
 | pg_cron cleanup | A pg_cron task should clean up stale __test_* orgs on the staging/test instance with a 24-hour TTL. |
 | Key format migration | Supabase key format migration (JWT → sb_publishable_*/sb_secret_*) deadline was October 1 2025 (already passed). preference-frontend already exports dual keys. planner-frontend and workforce-frontend must be audited and fixed (KEY-01). |
+| Kubernetes CI/CD infrastructure | The available Windows 11 Pro workstation (Intel i7-265KF 20-core, 32 GB DDR5, 1 TB NVMe, RTX 5080, Hyper-V) is the proposed host for a k3s Kubernetes cluster. This is the strategic long-term solution for all CI/CD and environment tier hosting (ARCH-04). |
 
 
 ---
@@ -122,6 +123,22 @@ Affects: `supabase-receptor` — Environment tier documentation
 - [ ] Provision the staging environment using setup.sh --env staging --project-name receptor-staging. Configure Cloudflare tunnel to staging-api-829c83.commonbond.au.
       `/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/setup.conf.example`
 
+### ARCH-04: A k3s Kubernetes cluster on the available Windows 11 Pro machine (Intel i7-265KF 20-core, 32 GB DDR5, 1 TB NVMe, Hyper-V
+
+Affects: `cross-ecosystem` — Kubernetes cluster infrastructure
+
+
+- [ ] Design the k3s cluster topology: 3 Hyper-V VMs (control plane: 4 cores/6 GB, worker-1: 6 cores/10 GB for persistent envs, worker-2: 6 cores/10 GB for ephemeral branch CI). Document in docs/infrastructure/environment/kubernetes-cluster.md.
+      `/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/docs/infrastructure/environment/kubernetes-cluster.md`
+- [ ] Provision a k3s cluster on the Windows 11 Pro machine using Hyper-V VMs running Ubuntu Server 24.04 LTS. Install k3s on the control plane and join the two worker nodes.
+      `/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/docs/operations/vm-setup.md`
+- [ ] Deploy Supabase to the k3s cluster using the community Helm chart (https://github.com/supabase-community/supabase-kubernetes). Create namespaces: supabase-dev, supabase-staging, supabase-prod with separate PVCs per namespace.
+      `/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/docs/infrastructure/environment/kubernetes-cluster.md`
+- [ ] Configure Traefik ingress rules to route <branch-slug>.ci.commonbond.local to the corresponding supabase-ci-<branch-slug> namespace. This replaces the port-juggling / Docker network isolation approach.
+      `/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/docs/infrastructure/environment/kubernetes-cluster.md`
+- [ ] Install a GitHub Actions self-hosted runner as a Deployment in the control-plane namespace. Update all frontend ci.yml files to use runs-on: [self-hosted, linux, k3s] for Supabase-dependent jobs.
+      `/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/docs/infrastructure/environment/kubernetes-cluster.md`
+
 ## 🟡 Medium
 
 ### CGEN-01: planner-frontend ci.yml:180 uses 'npx graphql-codegen --config codegen.check.ts --check'. The --check flag performs in-m
@@ -206,6 +223,26 @@ Affects: `supabase-receptor` — Promotion runbook
 - [ ] Write docs/operations/promotion-runbook.md describing the promotion workflow: (1) feature branch CI passes against ephemeral test instance, (2) merge to main triggers migration against staging, (3) manual approval gate for prod promotion, (4) rollback via RESET_setup.sh --env staging --force.
       `/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/docs/operations/promotion-runbook.md`
 
+### BACK-01: match-backend integration tests (test_supabase_integration.py) are skipped in CI via pytest.mark.skipif when stub env va
+
+Affects: `match-backend, receptor-planner` — Backend CI integration test coverage
+
+
+- [ ] Add pytest path scoping to receptor-planner ci.yml: replace bare 'pytest' with 'pytest tests/unit/ -m unit' (or equivalent). Add a --co flag dryrun first to enumerate what's currently being collected.
+      `/Users/ryan/development/common_bond/antigravity-environment/backend/receptor-planner/.github/workflows/ci.yml`
+- [ ] Add an integration-tests job to match-backend ci.yml that boots a Supabase instance (using supabase/setup-cli@v1) and runs pytest allocator/tests/integration/ with real Supabase credentials extracted from supabase status -o env.
+      `/Users/ryan/development/common_bond/antigravity-environment/backend/match-backend/.github/workflows/ci.yml`
+
+### BACK-02: Both backend repos set SUPABASE_SERVICE_ROLE_KEY to a hardcoded decoded JWT placeholder string (eyJhbGciOiJIUzI1NiIsInR5
+
+Affects: `match-backend, receptor-planner` — Hardcoded JWT placeholder in CI
+
+
+- [ ] Replace the hardcoded JWT placeholder in both ci.yml files with a clearly non-JWT stub value such as 'stub-service-role-key-not-real' that will not trigger credential scanner heuristics.
+      `/Users/ryan/development/common_bond/antigravity-environment/backend/match-backend/.github/workflows/ci.yml`
+- [ ] Apply the same stub replacement to receptor-planner ci.yml.
+      `/Users/ryan/development/common_bond/antigravity-environment/backend/receptor-planner/.github/workflows/ci.yml`
+
 ## 🟢 Low
 
 ### DOC-01: key-management.md:86-88 has an open TODO block for integrating Bitwarden/Doppler CLI into the deployment workflow. This 
@@ -219,12 +256,6 @@ Affects: `supabase-receptor` — Secrets vault
 
 ---
 
-## Deferred to Next Audit Cycle
-
-| Item | Reason Deferred |
-| :--- | :-------------- |
-| BACKEND-CI: backend/receptor-planner and backend/match-backend CI gaps | Backend repos have no CI files at all. This is a known gap tracked in the 260311-testing-efficiency audit and is outside the scope of this CI/CD infrastructure audit, which focuses on Supabase environment architecture. |
-
 
 ---
 
@@ -233,10 +264,11 @@ Affects: `supabase-receptor` — Secrets vault
 | Phase | Finding IDs | Rationale |
 | :---- | :---------- | :-------- |
 | 1 | KEY-01, CICD-03 | Fix the two security-class CI defects that can cause silent auth failures right now. These are safe to implement immediately — they only change CI variable sourcing. |
-| 2 | CICD-02, CGEN-01, CGEN-02, CICD-04 | Pin Supabase CLI version across all repos and standardise the codegen gate to the git-diff pattern. Low-risk, high-reliability wins. |
+| 2 | CICD-02, CGEN-01, CGEN-02, CICD-04, BACK-01, BACK-02 | Pin Supabase CLI version across all repos, standardise the codegen gate to the git-diff pattern, fix receptor-planner bare pytest, and replace hardcoded JWT stubs. |
 | 3 | ENV-01, ENV-02, KEY-02, DOC-02 | Provision staging, document all 4 environment tiers, write the promotion runbook, update key management docs. These are strategic prerequisites before implementing CI architecture changes. |
 | 4 | ARCH-01, ARCH-02, ARCH-03, ISO-01, ISO-02, ENV-03, ENV-04 | Design and implement the branch-matched CI architecture (ADR + runner decision), add CI mode to setup.sh, implement test data isolation and pg_cron cleanup. |
 | 5 | CICD-01, DOC-01 | Reduce Supabase boots per CI run once architecture decisions from phase 4 are finalised, and resolve the open secrets vault TODO. |
+| 6 | ARCH-04 | Long-term strategic infrastructure investment. Deploy k3s on Windows 11 Pro Hyper-V, provision Supabase via Helm, configure Traefik ingress for branch-slug routing, and install the self-hosted runner. Structurally supersedes CICD-01, ARCH-01, ARCH-02, and ARCH-03. |
 
 
 ---
@@ -253,6 +285,7 @@ Affects: `supabase-receptor` — Secrets vault
 | ARCH-02 | CI-native provisioning | `setup.sh` | Process Gap | 🟠 High |
 | ARCH-03 | CI runner strategy | `cicd-architecture.md` | Process Gap | 🟠 High |
 | ENV-01 | Environment tier documentation | `environment-tiers.md` | Documentation Gap | 🟠 High |
+| ARCH-04 | Kubernetes cluster infrastructure | `kubernetes-cluster.md` | Strategic Opportunity | 🟠 High |
 | CGEN-01 | GraphQL codegen CI gate | `ci.yml` | Architectural Drift | 🟡 Medium |
 | CGEN-02 | GraphQL codegen CI gate | `ci.yml` | Architectural Drift | 🟡 Medium |
 | CICD-04 | supabase-receptor CI robustness | `ci.yml` | Tech Debt | 🟡 Medium |
@@ -263,5 +296,7 @@ Affects: `supabase-receptor` — Secrets vault
 | ISO-01 | Test data isolation | `globalSetup.ts` | Process Gap | 🟡 Medium |
 | ISO-02 | Seed data isolation | `seed.sql` | Process Gap | 🟡 Medium |
 | DOC-02 | Promotion runbook | `promotion-runbook.md` | Documentation Gap | 🟡 Medium |
+| BACK-01 | Backend CI integration test coverage | `ci.yml` | Process Gap | 🟡 Medium |
+| BACK-02 | Hardcoded JWT placeholder in CI | `ci.yml` | Security | 🟡 Medium |
 | DOC-01 | Secrets vault | `key-management.md` | Documentation Gap | 🟢 Low |
 

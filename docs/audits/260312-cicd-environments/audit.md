@@ -9,7 +9,7 @@
 
 ## Executive Summary
 
-19 findings across 2 repositories and cross-ecosystem CI infrastructure. The ecosystem's CI/CD pipeline has three compounding structural deficiencies: (1) all Supabase-dependent CI jobs boot an independent ephemeral instance per job with no sharing, consuming approximately 4 minutes of runner time per boot and 12+ minutes per frontend push; (2) a hard Supabase API key format incompatibility between the new `sb_publishable_*` format (used by REST/GraphQL) and the legacy JWT `ANON_KEY` (required by `signInWithPassword`) is undocumented and creates invisible auth failures if the dual-key export workaround is removed; and (3) all three frontend repos pin `version: latest` for the Supabase CLI, creating schema-drift false positives when the upstream CLI changes its output formatting. Beyond CI, no test, staging, or production environment is documented or deployed — only a single dev instance exists. The Supabase key format hard-deadline of October 1, 2025 (already passed) requires an urgent migration audit of all four repos.
+19 findings across 4 repositories and cross-ecosystem CI infrastructure (corrected: all 6 repositories have CI). The ecosystem's CI/CD pipeline has three compounding structural deficiencies: (1) all Supabase-dependent CI jobs boot an independent ephemeral instance per job with no sharing, consuming approximately 4 minutes of runner time per boot and 12+ minutes per frontend push; (2) a hard Supabase API key format incompatibility between the new `sb_publishable_*` format (used by REST/GraphQL) and the legacy JWT `ANON_KEY` (required by `signInWithPassword`) is undocumented and creates invisible auth failures if the dual-key export workaround is removed; and (3) all three frontend repos pin `version: latest` for the Supabase CLI, creating schema-drift false positives when the upstream CLI changes its output formatting. Beyond CI, no test, staging, or production environment is documented or deployed — only a single dev instance exists. **A new strategic opportunity has been identified**: the available Windows 11 Pro machine (Intel i7-265KF 20-core, 32 GB DDR5, 1 TB NVMe, RTX 5080) with Hyper-V support is capable of running a `k3s`-based Kubernetes cluster that would fundamentally resolve the CI/CD boot-time and isolation problems at the infrastructure level.
 
 | Repository / Area | Coverage | Issues Found | Overall |
 | --- | --- | --- | --- |
@@ -17,8 +17,11 @@
 | `planner-frontend` CI | ⚠️ | 6 | ❌ Non-compliant |
 | `workforce-frontend` CI | ⚠️ | 5 | ❌ Non-compliant |
 | `supabase-receptor` CI | ❌ | 3 | ❌ Non-compliant |
+| `match-backend` CI | ⚠️ | 2 | ❌ Non-compliant |
+| `receptor-planner` CI | ❌ | 2 | ❌ Non-compliant |
 | Environment Tiers | ❌ | 4 | ❌ Critical gap |
 | Key Format Migration | ❌ | 1 | 🔴 Critical/Deadline passed |
+| CI/CD Architecture Strategy | ⚠️ | **NEW** | 🟢 Strategic Opportunity |
 
 ---
 
@@ -128,11 +131,98 @@
 
 ---
 
-## 8. Cross-Cutting Observations
+## 8. Backend Repo CI
 
-1. **Reference implementation exists**: `preference-frontend` CI is the most advanced — dual-key export, `git diff` codegen gate, `tr -d '"'` quote-stripping. It should be the canonical reference for upgrading the other two frontend repos.
-2. **`supabase-receptor` CI is the thinnest**: It runs `supabase start` with no workdir and no key extraction, has no integration between `database-tests` and `deno-check` jobs, and does not pin the CLI version.
-3. **Backend repos have no CI**: `receptor-planner` and `match-backend` have no CI files at all (directory search returned 0 results). This is noteworthy as a cross-ecosystem gap; it is tracked in `260311-testing-efficiency` and is deferred from this audit.
+### 8.1 match-backend
+
+**Strengths:**
+- Has a CI pipeline (`match-backend/.github/workflows/ci.yml`). Unit tests are explicitly scoped to `allocator/tests/unit/` with `-m 'not slow'`, correctly avoiding slow tests in CI.
+- Uses a `python:3.11-slim` container — clean, reproducible, dependency-free.
+
+**Gaps:**
+- [BACK-01] `match-backend` has no integration test job. `test_supabase_integration.py` is skipped in CI via `pytest.mark.skipif` guard when stub env vars are detected. This means the Supabase-dependent integration tests are never run in CI — they rely entirely on developer discipline to run locally.
+- [BACK-02] Both `match-backend` and `receptor-planner` set `SUPABASE_SERVICE_ROLE_KEY` to a hardcoded placeholder JWT string (`eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwi...`). While this is intentionally non-functional (it triggers the skipif guard), it leaks a test JWT pattern into the repo that could be mistaken for a real credential by static analysis scanners.
+
+### 8.2 receptor-planner
+
+**Gaps:**
+- [BACK-01] `receptor-planner/.github/workflows/ci.yml` runs bare `pytest` with no path scoping. This runs *all* discovered test files including any future integration tests, with stub env vars. There is no `unit` project or `-m unit` selector — any inadvertent integration test addition will run against stub URLs and silently pass or produce misleading failures.
+- [BACK-02] Same hardcoded JWT placeholder in `SUPABASE_SERVICE_ROLE_KEY` as match-backend.
+
+---
+
+## 9. Strategic Architecture: Kubernetes-Class CI/CD
+
+### 9.1 Kubernetes Cluster Opportunity (Windows 11 Pro + Hyper-V)
+
+The available Windows 11 Pro workstation (Intel i7-265KF — 8 P-cores + 12 E-cores = 20 cores, 32 GB DDR5-6000, 1 TB Kingston NVMe) with native Hyper-V support represents a significant infrastructure opportunity. A lightweight Kubernetes cluster (`k3s` or `k3d`) deployed across Hyper-V VMs would fundamentally resolve all three CI/CD architectural deficiencies (CICD-01, ARCH-01, ARCH-03) at the infrastructure level.
+
+**Recommended Architecture — k3s on Hyper-V:**
+
+```
+┌─────────────────────────────────────────────────────┐
+│ Windows 11 Pro Host (i7-265KF 20c, 32 GB DDR5)     │
+│  Hyper-V Hypervisor                                  │
+│                                                      │
+│  ┌──────────────────────────────────────────────┐   │
+│  │  Ubuntu Server VM — k3s Control Plane        │   │
+│  │  4 cores, 6 GB RAM                           │   │
+│  │  - GitHub Actions Runner (self-hosted)       │   │
+│  │  - Cert Manager / Traefik ingress            │   │
+│  └──────────────────────────────────────────────┘   │
+│                                                      │
+│  ┌──────────────────────────────────────────────┐   │
+│  │  Ubuntu Server VM — k3s Worker Node 1        │   │
+│  │  6 cores, 10 GB RAM                          │   │
+│  │  - Supabase dev namespace (persistent)       │   │
+│  │  - Supabase staging namespace (persistent)   │   │
+│  └──────────────────────────────────────────────┘   │
+│                                                      │
+│  ┌──────────────────────────────────────────────┐   │
+│  │  Ubuntu Server VM — k3s Worker Node 2        │   │
+│  │  6 cores, 10 GB RAM                          │   │
+│  │  - Branch CI namespaces (ephemeral)          │   │
+│  │  - receptor-ci-<branch-slug> namespaces      │   │
+│  └──────────────────────────────────────────────┘   │
+└─────────────────────────────────────────────────────┘
+```
+
+**Key Benefits:**
+
+1. **Namespace-per-branch CI isolation** — each feature branch gets its own `receptor-ci-<slug>` Kubernetes namespace with a dedicated Supabase pod, Postgres PVC, and ephemeral lifecycle.
+2. **Shared container image pull cache** — Supabase Docker images (~3 GB) are pulled once and cached in the cluster's container registry. Branch instances start from cached layers, reducing boot time from ~4 min to ~30–60 sec.
+3. **Ingress reverse proxy** — a Traefik/nginx ingress controller can route `<branch>.ci.commonbond.local` to the correct namespace, solving the URL-per-branch problem without port juggling.
+4. **Persistent named environments** — dev and staging are just named namespaces with persistent PVCs. Promotion from CI → staging is a `kubectl apply` with the staging namespace config.
+5. **No Docker-in-Docker issues** — pods run natively on the k3s containerd runtime; no privileged containers or DinD required.
+6. **RTX 5080 available for future ML workloads** — the GPU is accessible via device plugin if the match-backend allocator adopts GPU-accelerated work.
+
+**Feasibility on available hardware:**
+
+| Resource | Available | Required (3-VM k3s) | Headroom |
+| --- | --- | --- | --- |
+| CPU cores | 20 (8P+12E) | 16 | 4 free |
+| RAM | 32 GB | 26 GB | 6 GB free |
+| NVMe storage | 1 TB | ~100 GB | 900 GB free |
+| Network | 1x NIC | 1x NIC (Hyper-V vSwitch) | ✅ |
+
+**Recommended tooling:**
+- `k3s` v1.x (lightweight, single-binary Kubernetes, excellent for homelab/mini-cloud)
+- `Helm` for deploying Supabase (community Helm chart exists)
+- `Traefik` (bundled with k3s) as ingress controller
+- `cert-manager` for automatic TLS on dev subdomains via Cloudflare DNS-01 challenge
+- GitHub Actions self-hosted runner as a Deployment in the control plane VM
+
+**Gaps (ARCH-04):**
+- [ARCH-04] No Kubernetes cluster exists. This finding captures the recommendation to evaluate and implement a k3s cluster on the Windows 11 Pro machine as the strategic long-term CI/CD infrastructure. The current Docker Compose-based setup should continue as an intermediate state while the cluster is designed and provisioned.
+
+---
+
+## 10. Cross-Cutting Observations
+
+1. **Reference implementation exists**: `preference-frontend` CI is the most advanced — dual-key export, `git diff` codegen gate, `tr -d '"'` quote-stripping. It should be the canonical reference for upgrading planner and workforce frontends.
+2. **`supabase-receptor` CI is the thinnest**: Runs `supabase start` with no workdir, no key extraction, no job dependencies, and no CLI pinning.
+3. **`receptor-planner` CI is the weakest overall**: Bare `pytest` with no path scoping, no coverage, and hardcoded JWT stubs. Oldest CI file in the ecosystem.
+4. **Kubernetes cluster is the strategic long-term solution**: The available hardware (32 GB DDR5, 20-core i7-265KF, Windows 11 Pro + Hyper-V) makes a k3s cluster viable with comfortable headroom. ARCH-04 resolves CICD-01, ARCH-01, ARCH-02, and ARCH-03 structurally.
 
 ---
 
@@ -157,5 +247,8 @@
 | ENV-04 | supabase-receptor | `supabase/` (missing) | Process Gap | 🟡 Medium |
 | ISO-01 | All frontend repos | `ci.yml` (all 3) | Process Gap | 🟡 Medium |
 | ISO-02 | supabase-receptor | `seed_acacia.sql`, `test_user_credentials.json` | Process Gap | 🟡 Medium |
+| BACK-01 | match-backend, receptor-planner | `.github/workflows/ci.yml` (both) | Process Gap | 🟡 Medium |
+| BACK-02 | match-backend, receptor-planner | `.github/workflows/ci.yml` (both) | Security | 🟡 Medium |
+| ARCH-04 | cross-ecosystem | — | Strategic Opportunity | 🟢 Strategic/High-Value |
 | DOC-01 | supabase-receptor | `docs/infrastructure/security/key-management.md` | Documentation Gap | 🟢 Low |
 | DOC-02 | supabase-receptor | `docs/operations/` (missing) | Documentation Gap | 🟡 Medium |
