@@ -226,7 +226,7 @@
     {
       "id": "NEXT-04",
       "severity": "medium",
-      "status": "open",
+      "status": "complete",
       "category": "Test Coverage",
       "repo": "preference-frontend",
       "area": "src/__tests__/visual/",
@@ -234,8 +234,8 @@
       "tasks": [
         {
           "taskId": "NEXT-04-T1",
-          "status": "open",
-          "description": "Either configure a 'browser' vitest project with Playwright browser mode and add it to the CI workflow, or delete the visual test files if browser-mode testing is out of scope. Document the decision in a clarification entry.",
+          "status": "complete",
+          "description": "Configured a 'browser' vitest project with Playwright/chromium browser mode and added a visual-tests CI job to preference-frontend/.github/workflows/ci.yml. The @vitest/browser-playwright provider is used with the playwright() factory API.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/frontend/preference-frontend/vitest.config.ts"
         }
       ],
@@ -244,7 +244,7 @@
     {
       "id": "NEXT-05",
       "severity": "high",
-      "status": "open",
+      "status": "complete",
       "category": "Test Isolation",
       "repo": "planner-frontend, workforce-frontend, preference-frontend",
       "area": "GitHub Actions secrets",
@@ -264,7 +264,7 @@
     {
       "id": "NEXT-06",
       "severity": "low",
-      "status": "open",
+      "status": "complete",
       "category": "Hygiene",
       "repo": "preference-frontend",
       "area": "codegen.ts postcodegen",
@@ -272,8 +272,8 @@
       "tasks": [
         {
           "taskId": "NEXT-06-T1",
-          "status": "open",
-          "description": "Move the gql.ts // @ts-nocheck patch from the postcodegen npm script into an afterAllFileWrite hook inside codegen.ts, targeting only src/graphql/gql.ts. Remove the postcodegen script from package.json. This ensures the patch is always applied as part of `npm run codegen`.",
+          "status": "complete",
+          "description": "Moved the gql.ts // @ts-nocheck patch into an afterAllFileWrite hook in codegen.ts. Removed the postcodegen script from package.json. The patch now always runs as part of `npm run codegen`.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/frontend/preference-frontend/codegen.ts"
         }
       ],
@@ -282,7 +282,7 @@
     {
       "id": "NEXT-07",
       "severity": "low",
-      "status": "open",
+      "status": "complete",
       "category": "CI Structure",
       "repo": "planner-frontend, workforce-frontend, preference-frontend",
       "area": ".husky/pre-push",
@@ -290,8 +290,8 @@
       "tasks": [
         {
           "taskId": "NEXT-07-T1",
-          "status": "open",
-          "description": "Reorder .husky/pre-push in all three frontends to: (1) codegen --check (if Supabase live), (2) tsc --noEmit, (3) vitest unit, (4) vitest integration (if Supabase live). This ensures schema drift is flagged before tsc errors that are downstream of it.",
+          "status": "complete",
+          "description": "Reordered .husky/pre-push in all three frontends to: (1) codegen --check (if Supabase live), (2) tsc --noEmit, (3) vitest unit, (4) vitest integration (if Supabase live). Schema drift is now flagged before tsc errors that are downstream of it.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/frontend/planner-frontend/.husky/pre-push"
         }
       ],
@@ -300,7 +300,7 @@
     {
       "id": "NEXT-08",
       "severity": "low",
-      "status": "open",
+      "status": "complete",
       "category": "Test Coverage",
       "repo": "planner-frontend, workforce-frontend, preference-frontend",
       "area": "vitest.config.ts coverage thresholds",
@@ -308,7 +308,7 @@
       "tasks": [
         {
           "taskId": "NEXT-08-T1",
-          "status": "open",
+          "status": "complete",
           "description": "Add a --coverage flag to the DB-free unit-tests CI job in all three frontends. Set a separate, realistic unit-only coverage threshold (e.g. 60% statements) in the Vitest unit project config. The integration job continues to measure combined coverage at the existing threshold.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/frontend/planner-frontend/.github/workflows/ci.yml"
         }
@@ -318,7 +318,7 @@
     {
       "id": "MB-04",
       "severity": "medium",
-      "status": "open",
+      "status": "complete",
       "category": "Test Coverage",
       "repo": "match-backend",
       "area": "allocator/tests/integration/",
@@ -326,9 +326,9 @@
       "tasks": [
         {
           "taskId": "MB-04-T1",
-          "status": "open",
+          "status": "complete",
           "description": "Write at least one pytest integration test in allocator/tests/integration/ that points to a real local Supabase instance. The test should: (1) call the allocator API endpoint with a minimal valid payload, (2) verify the allocation_runs table receives a write-back, and (3) be guarded with pytest.mark.skipif when SUPABASE_URL contains 'test.com' (matching MB-03's existing skip guard pattern).",
-          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/backend/match-backend/allocator/tests/integration/"
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/backend/match-backend/allocator/tests/integration/test_allocator_integration.py"
         }
       ],
       "severity_history": []
@@ -336,7 +336,7 @@
     {
       "id": "CROSS-01",
       "severity": "medium",
-      "status": "open",
+      "status": "complete",
       "category": "Test Coverage",
       "repo": "match-backend, supabase-receptor",
       "area": "Cross-service integration",
@@ -344,9 +344,9 @@
       "tasks": [
         {
           "taskId": "CROSS-01-T1",
-          "status": "open",
+          "status": "complete",
           "description": "Write a pytest integration test (or Supabase pgTAP test) that seeds a minimal allocation plan via the Supabase service role, calls the match-backend /allocate endpoint directly (not via Edge Function), and asserts that allocation records appear in the allocation_runs or job_lines tables. Mark skipif no live Supabase. Document the test as the canonical cross-service contract test.",
-          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/backend/match-backend/allocator/tests/integration/"
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/backend/match-backend/allocator/tests/integration/test_allocator_integration.py"
         }
       ],
       "severity_history": []
@@ -354,7 +354,7 @@
     {
       "id": "DEV-01",
       "severity": "low",
-      "status": "open",
+      "status": "complete",
       "category": "Hygiene",
       "repo": "dev-environment",
       "area": ".agents/skills/act-local-ci/SKILL.md",
@@ -362,7 +362,7 @@
       "tasks": [
         {
           "taskId": "DEV-01-T1",
-          "status": "open",
+          "status": "complete",
           "description": "Update act-local-ci/SKILL.md to reflect the current setup: (1) replace all references to supabase-ci/config.toml with supabase/ (main config), (2) replace port 55321 with 54321, (3) update the isolation model diagram and troubleshooting table to remove the supabase-ci row, (4) note that dev and CI Supabase cannot run concurrently on the same machine (supabase stop required before act runs that boot Supabase).",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/dev-environment/.agents/skills/act-local-ci/SKILL.md"
         }
