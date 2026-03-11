@@ -1,0 +1,64 @@
+{
+  "$schema": "../../../dev-environment/.agents/schemas/audit-brief.schema.json",
+  "auditSlug": "260311-testing-efficiency",
+  "status": "closed",
+  "nextAction": "archive",
+  "openTaskCount": 0,
+  "latestHandover": "Session 4 complete. All 7 open tasks implemented across Phase 5 and Phase 6. Phase 5 (CI Robustness): NEXT-07 (pre-push reordered, codegen check runs first in all 3 frontends), NEXT-05 (already done in S3), DEV-01 (act-local-ci SKILL.md updated: removed supabase-ci references, port 55321→54321, updated isolation model and CI jobs table). Phase 6 (Test Coverage Depth): NEXT-04 (browser vitest project with playwright() factory + visual-tests CI job in preference-frontend), NEXT-06 (postcodegen patch moved inline to codegen.ts afterAllFileWrite hook, postcodegen script removed from package.json), NEXT-08 (--coverage added to unit-tests CI job in all 3 frontends), MB-04 + CROSS-01 (test_allocator_integration.py written: MB-04 tests /solve endpoint returns 202, CROSS-01 seeds Supabase, triggers allocator, polls for allocation_run status write-back). All 18 findings now complete. Audit ready for re-audit and close phase.",
+  "sessionHistory": [
+    {
+      "session": 1,
+      "date": "2026-03-11",
+      "completedTasks": [
+        "NEXT-01-T1",
+        "NEXT-01-T2",
+        "NEXT-01-T3",
+        "NEXT-02-T1",
+        "NEXT-03-T1",
+        "MB-01-T1",
+        "MB-02-T1",
+        "MB-03-T1"
+      ],
+      "notes": "Phase 1+2 merged. Frontend CI split complete across planner, workforce, preference. match-backend CI + test restructure + skip guard implemented. vitest.config.ts uses test.projects (not removed test.workspace). act configured for local CI testing."
+    },
+    {
+      "session": 2,
+      "date": "2026-03-11",
+      "completedTasks": [
+        "DB-01-T1",
+        "EF-01-T1",
+        "EF-01-T2",
+        "EF-01-T3",
+        "DB-02-T1",
+        "PL-01-T1"
+      ],
+      "notes": "supabase-receptor: CI workflow (DB-01), planner-orchestration handler export + test rewrite (EF-01), smoke tests for invalidate-session + force-refresh-on-role-change (EF-01-T3), RLS truth matrix expanded (DB-02). receptor-planner: Python 3.9→3.11 (PL-01). Also fixed pre-existing done→complete status normalisation. All 0 open tasks remain."
+    },
+    {
+      "session": 3,
+      "date": "2026-03-11",
+      "completedTasks": ["NEXT-05-T1"],
+      "notes": "Iterative improvement round. 8 new findings identified during implementation session (NEXT-04 through NEXT-08, MB-04, CROSS-01, DEV-01). All approved by auditor. Added as open findings in Phase 5-6. NEXT-05-T1 completed: RLS guard variable name fixed. Audit doc updated: 9→18 findings in executive summary and severity table."
+    },
+    {
+      "session": 5,
+      "date": "2026-03-11",
+      "completedTasks": [],
+      "notes": "Re-audit complete. All 18 findings verified across 6 repos. PRs raised: planner-frontend #19, workforce-frontend #13, preference-frontend #18, match-backend #4, supabase-receptor #8, receptor-planner #5. re-audit.md written. Registry updated to Closed. Supabase dual-write performed. Audit ready for merge and archive."
+    },
+    {
+      "session": 4,
+      "date": "2026-03-11",
+      "completedTasks": [
+        "NEXT-07-T1",
+        "DEV-01-T1",
+        "NEXT-04-T1",
+        "NEXT-06-T1",
+        "NEXT-08-T1",
+        "MB-04-T1",
+        "CROSS-01-T1"
+      ],
+      "notes": "Phase 5+6 complete. All 18 findings now complete. NEXT-07: pre-push reordered (codegen→tsc→unit→integration) in all 3 frontends. DEV-01: act-local-ci SKILL.md updated (supabase-ci refs removed, port 54321, concurrent-run warning). NEXT-04: browser vitest project with playwright() factory + visual-tests CI job added to preference-frontend. NEXT-06: postcodegen inlined into codegen.ts afterAllFileWrite hook, script removed from package.json. NEXT-08: --coverage flag added to unit-tests CI job in all 3 frontends. MB-04+CROSS-01: test_allocator_integration.py written with skip guard, /solve API test (202), and cross-service pipeline poll test."
+    }
+  ]
+}

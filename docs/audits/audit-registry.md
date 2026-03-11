@@ -31,9 +31,10 @@ sidebar_position: 1
 
 ### 🗓️ 2026-03-11
 
-| Slug                            | Title                        | Scope                                                                                 | Auditor         | Status    | NC Raised | Report                                                                                                                                                          |
-| :------------------------------ | :--------------------------- | :------------------------------------------------------------------------------------ | :-------------- | :-------- | :-------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `260311-about-us-documentation` | About-Us Documentation Audit | `documentation/common-bond` — `docs/about-us/`, `sidebars.ts`, `docusaurus.config.ts` | Ryan Ammendolea | ✅ Closed | —         | [audit.md](../audits/archive/260311-about-us-documentation/audit.md) · [recommendations.md](../audits/archive/260311-about-us-documentation/recommendations.md) |
+| Slug                            | Title                                 | Scope                                                                                                                                                                | Auditor         | Status      | NC Raised | Report                                                                                                                                                          |
+| :------------------------------ | :------------------------------------ | :------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :-------------- | :---------- | :-------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `260311-testing-efficiency`     | Testing Efficiency & Modularity Audit | `backend/receptor-planner`, `backend/match-backend`, `frontend/planner-frontend`, `frontend/workforce-frontend`, `frontend/preference-frontend`, `supabase-receptor` | Ryan Ammendolea | ✅ Closed       | —         | [audit.md](../audits/archive/260311-testing-efficiency/audit.md) · [recommendations.json](../audits/archive/260311-testing-efficiency/recommendations.json)      |
+| `260311-about-us-documentation` | About-Us Documentation Audit          | `documentation/common-bond` — `docs/about-us/`, `sidebars.ts`, `docusaurus.config.ts`                                                                                | Ryan Ammendolea | ✅ Closed   | —         | [audit.md](../audits/archive/260311-about-us-documentation/audit.md) · [recommendations.md](../audits/archive/260311-about-us-documentation/recommendations.md) |
 
 ### 🗓️ 2026-03-10
 
@@ -84,15 +85,15 @@ sidebar_position: 1
 ```
 Repository                   Audits   Last Audit
 ─────────────────────────────────────────────────
-supabase-receptor              2       2026-03-05
-backend/match-backend          1       2026-03-05
-planner-frontend               3       2026-03-06
-workforce-frontend             2       2026-03-06
-preference-frontend            2       2026-03-06
-backend/receptor-planner       0       —
+supabase-receptor              3       2026-03-11
+backend/match-backend          2       2026-03-11
+backend/receptor-planner       1       2026-03-11
+planner-frontend               4       2026-03-11
+workforce-frontend             3       2026-03-11
+preference-frontend            3       2026-03-11
 common-bond (ISMS docs + eng)  5       2026-03-09
 ────────────────────────────────────── ─────────
-Total                          16+     2026-03-10
+Total                          17+     2026-03-11
 ```
 
 > **Coverage gaps addressed:** `workforce-frontend`, `preference-frontend`, and
