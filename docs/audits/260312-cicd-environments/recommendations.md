@@ -24,7 +24,8 @@
 | CI runner type | All repos currently use GitHub-hosted ubuntu-latest runners. Installing a self-hosted runner on the VM is strongly recommended to unlock Docker daemon sharing and eliminate per-job 4-min Supabase cold boots. This is ARCH-03. |
 | pg_cron cleanup | A pg_cron task should clean up stale __test_* orgs on the staging/test instance with a 24-hour TTL. |
 | Key format migration | Supabase key format migration (JWT → sb_publishable_*/sb_secret_*) deadline was October 1 2025 (already passed). preference-frontend already exports dual keys. planner-frontend and workforce-frontend must be audited and fixed (KEY-01). |
-| Kubernetes CI/CD infrastructure | The available Windows 11 Pro workstation (Intel i7-265KF 20-core, 32 GB DDR5, 1 TB NVMe, RTX 5080, Hyper-V) is the proposed host for a k3s Kubernetes cluster. This is the strategic long-term solution for all CI/CD and environment tier hosting (ARCH-04). |
+| Kubernetes CI/CD infrastructure | The available Windows 11 Pro workstation (Intel i7-265KF 20-core, 32 GB DDR5, 1 TB NVMe, RTX 5080, Hyper-V) is the proposed host for a k3s Kubernetes cluster. This is the strategic long-term solution for all CI/CD and environment tier hosting (ARCH-04). ARCH-04 + DOC-03 are the top implementation priority for this audit. |
+| ISO SoA compliance tracking | When SEC-01, SEC-02, ENV-05, and ARCH-04 are implemented, the corresponding ISO 27001 SoA entries (8.3, 8.8, 8.32, and 8.31) must be updated in docs/compliance/iso27001/operations/soa.md and the Supabase audits register. Each relevant finding has a dedicated compliance-update task. |
 
 
 ---
@@ -250,6 +251,8 @@ Affects: `cross-ecosystem` — GitHub Actions permissions
 
 - [ ] Add 'permissions: contents: read' at the top level of all 5 frontend/backend ci.yml files, then add specific write grants only where needed (e.g. pull-requests: write for PR comment steps if added in future).
       ``
+- [ ] Update SoA control 8.3 (Information access restriction) in docs/compliance/iso27001/operations/soa.md from 'Implemented' to reflect that GitHub Actions GITHUB_TOKEN now also enforces least-privilege via explicit permissions blocks. Update implementation notes to reference this audit finding.
+      `/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/compliance/iso27001/operations/soa.md`
 
 ### SEC-02: All CI files reference third-party Actions by tag (e.g. 'actions/checkout@v4', 'supabase/setup-cli@v1') rather than by c
 
@@ -258,6 +261,8 @@ Affects: `cross-ecosystem` — Third-party Action version pinning
 
 - [ ] Pin all third-party GitHub Actions to their full commit SHA (e.g. actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2). Configure Renovate Bot to auto-propose SHA bumps when new versions release.
       ``
+- [ ] Update SoA control 8.8 (Management of technical vulnerabilities) in docs/compliance/iso27001/operations/soa.md. Current status is 'Partial — Dependabot enabled; no formal vulnerability disclosure policy'. Add a note that CI Action SHA pinning + Renovate Bot extends supply-chain vulnerability management to the build toolchain.
+      `/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/compliance/iso27001/operations/soa.md`
 
 ### CICD-05: No ci.yml file in the ecosystem specifies a 'timeout-minutes:' on any job. If a Supabase boot hangs (a known failure mod
 
@@ -272,8 +277,12 @@ Affects: `cross-ecosystem` — CI job timeout configuration
 Affects: `supabase-receptor` — Production database change gate
 
 
-- [ ] Add a GitHub Actions workflow 'prod-deploy.yml' that triggers manually (workflow_dispatch) or on tag push to 'release/*'. The workflow runs 'supabase db diff --schema public' against prod, posts the diff as a PR comment or workflow artifact for human review, and requires manual approval (environment protection rule) before running 'supabase db push'.
+- [ ] Add a GitHub Actions workflow 'prod-deploy.yml' that triggers manually (workflow_dispatch) or on tag push to 'release/*'. The workflow runs 'supabase db diff --schema public' against prod, posts the diff as a workflow artifact for human review, and requires manual approval (GitHub Environment protection rule) before running 'supabase db push'.
       `/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/.github/workflows/prod-deploy.yml`
+- [ ] Update SoA control 8.32 (Change management) in docs/compliance/iso27001/operations/soa.md from 'Implemented — all ISMS document changes via Git PR workflow; infrastructure changes reviewed informally' to 'Implemented' once prod-deploy.yml is active with GitHub Environment protection. Update the implementation notes to cite the prod-deploy.yml workflow as the production DB change gate.
+      `/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/compliance/iso27001/operations/soa.md`
+- [ ] Update Supabase audits table via REST API upsert to note that ENV-05 (production migration gate) addresses ISO 27001 A.8.32. This is a documentation-only update to the governance register — no schema change required.
+      ``
 
 ## 🟢 Low
 
@@ -290,7 +299,7 @@ Affects: `supabase-receptor` — Secrets vault
 Affects: `supabase-receptor` — Kubernetes cluster runbook
 
 
-- [ ] Write docs/infrastructure/environment/kubernetes-cluster.md covering: cluster topology, VM provisioning steps, k3s installation commands, Helm chart deployment for Supabase, Traefik ingress rules, cert-manager DNS-01 challenge config, and disaster recovery procedure.
+- [ ] Write docs/infrastructure/environment/kubernetes-cluster.md covering: cluster topology, VM provisioning steps (Hyper-V + Ubuntu Server 24.04 LTS), k3s installation commands, Helm chart deployment for Supabase, Traefik ingress rules for branch-slug routing, cert-manager DNS-01 challenge config, and disaster recovery procedure.
       `/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/docs/infrastructure/environment/kubernetes-cluster.md`
 
 
@@ -303,12 +312,14 @@ Affects: `supabase-receptor` — Kubernetes cluster runbook
 
 | Phase | Finding IDs | Rationale |
 | :---- | :---------- | :-------- |
-| 1 | KEY-01, CICD-03 | Fix the two security-class CI defects that can cause silent auth failures right now. These are safe to implement immediately — they only change CI variable sourcing. |
-| 2 | CICD-02, CGEN-01, CGEN-02, CICD-04, BACK-01, BACK-02 | Pin Supabase CLI version across all repos, standardise the codegen gate to the git-diff pattern, fix receptor-planner bare pytest, and replace hardcoded JWT stubs. |
-| 3 | ENV-01, ENV-02, KEY-02, DOC-02 | Provision staging, document all 4 environment tiers, write the promotion runbook, update key management docs. These are strategic prerequisites before implementing CI architecture changes. |
-| 4 | ARCH-01, ARCH-02, ARCH-03, ISO-01, ISO-02, ENV-03, ENV-04 | Design and implement the branch-matched CI architecture (ADR + runner decision), add CI mode to setup.sh, implement test data isolation and pg_cron cleanup. |
-| 5 | CICD-01, DOC-01 | Reduce Supabase boots per CI run once architecture decisions from phase 4 are finalised, and resolve the open secrets vault TODO. |
-| 6 | ARCH-04 | Long-term strategic infrastructure investment. Deploy k3s on Windows 11 Pro Hyper-V, provision Supabase via Helm, configure Traefik ingress for branch-slug routing, and install the self-hosted runner. Structurally supersedes CICD-01, ARCH-01, ARCH-02, and ARCH-03. |
+| 1 | ARCH-04, DOC-03 | User-designated top priority for this audit. Design and provision the k3s cluster on Windows 11 Pro Hyper-V — this structurally resolves CICD-01, ARCH-01, ARCH-02, and ARCH-03 at the infrastructure level. Write the cluster runbook in parallel. |
+| 2 | KEY-01, CICD-03 | Fix the two security-class CI defects that cause silent auth failures. These are safe to implement immediately — they only change CI variable sourcing and can proceed in parallel with Phase 1 planning. |
+| 3 | CICD-02, CGEN-01, CGEN-02, CICD-04, CICD-05, BACK-01, BACK-02 | Pin Supabase CLI version across all repos, standardise the codegen gate to the git-diff pattern, fix receptor-planner bare pytest, and replace hardcoded JWT stubs and add job timeouts. |
+| 4 | SEC-01, SEC-02 | Add explicit GITHUB_TOKEN permission blocks and pin all third-party Actions to commit SHAs. Update SoA controls 8.3 and 8.8 upon completion. |
+| 5 | ENV-01, ENV-02, KEY-02, DOC-02 | Provision staging, document all 4 environment tiers, write the promotion runbook, update key management docs. Strategic prerequisites before implementing CI architecture changes in Phase 6. |
+| 6 | ARCH-01, ARCH-02, ARCH-03, ISO-01, ISO-02, ENV-03, ENV-04 | Design and implement the branch-matched CI architecture (ADR + runner decision), add CI mode to setup.sh, implement test data isolation and pg_cron cleanup. May be superseded by Phase 1 k8s namespace-per-branch approach. |
+| 7 | ENV-05 | Add the prod migration gate workflow (ISO 27001 A.8.32) and update SoA upon completion. Update Supabase governance register. |
+| 8 | CICD-01, DOC-01 | Reduce Supabase boots per CI run once architecture decisions from phases 1 and 6 are finalised, and resolve the open secrets vault TODO. |
 
 
 ---
