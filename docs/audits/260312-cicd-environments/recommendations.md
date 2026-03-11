@@ -33,6 +33,9 @@
 | Kubernetes CNI and network policy | k3s will use Calico CNI (ARCH-08) instead of the default Flannel, installed via Tigera Operator Helm chart with --flannel-backend=none. NetworkPolicies isolate supabase, vault, monitoring, and ci-runner namespaces. Documented in ADR-005. |
 | Vault unseal hardware | YubiKey USB-C is the primary Vault unseal mechanism (PKCS#11 HSM via OpenSC/libykcs11 — SEC-06-T1). TPM 2.0 on the Windows 11 Pro machine is the secondary backup seal (SEC-06-T2). Vault root token is stored in a physically-secured offline location (not git). Architecture documented in ADR-006. |
 | Helm chart upgrade cadence | All Helm charts are pinned to exact versions in helmfile.yaml (ARCH-09-T1). A quarterly automated GitHub Actions workflow (ARCH-09-T2) opens an issue listing current vs latest chart versions for review. Upgrades must be tested on dev/staging before applying to production. |
+| Wildcard TLS via DNS-01 | Let's Encrypt + Cloudflare DNS-01 challenge is confirmed to support wildcard certificates (*.commonbond.au). cert-manager-webhook-cloudflare handles DNS-01 automation. This is one of the few ACME challenge types that works for wildcards — HTTP-01 does NOT support wildcards. ARCH-10 implements this. |
+| Slack notification channels | All alerting uses Slack only (no email, no PagerDuty). Two incoming webhooks: (1) incidents channel — P1/P2 Alertmanager alerts, Falco security events; (2) deployments channel — prod deploy approvals (ENV-05), cert renewals, Helm upgrade prompts (ARCH-09). Both webhook URLs stored in Vault KV, not GitHub Secrets. Configured in PROC-02-T1. |
+| Edge Function deployment process | Edge Functions use git-tag-triggered deployment (fn/<name>/vX.Y.Z). Manual 'supabase functions deploy' is prohibited in staging/prod. Rollback is git tag re-push. Full procedure in docs/operations/edge-function-deployment.md (ENV-10-T2) which is mandatory reading linked from ONBOARDING.md. |
 
 
 ---
@@ -174,6 +177,16 @@ Affects: `supabase-receptor` — Vault unseal key security (YubiKey PKCS#11 HSM)
       `/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/docs/infrastructure/disaster-recovery.md`
 - [ ] Use TPM 2.0 as a secondary unseal backup: configure a second Vault seal stanza using the tpmkey seal plugin (or Vault's Transit seal backed by a TPM-stored key via go-tpm). This provides a fallback if the YubiKey is unavailable. Store the Vault root token in a sealed envelope in a physically-secured location, and document where it is stored in the DR plan (not in git). Write ADR-006 documenting the YubiKey-primary / TPM-secondary unsealing architecture.
       `/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/docs/adr/adr-006-vault-unseal-architecture.md`
+
+### ENV-10: Supabase Edge Functions are deployed with 'supabase functions deploy', overwriting the previous version with no rollback
+
+Affects: `supabase-receptor` — Supabase Edge Function versioning and rollback
+
+
+- [ ] Create a versioned Edge Function deployment strategy: tag each function release with git tag format 'fn/<function-name>/v<semver>' (e.g. fn/receptor-allocator/v1.2.3). Create a GitHub Actions workflow '.github/workflows/deploy-function.yml' triggered on matching tags that: (1) runs tests, (2) requires ENV-05 environment approval for production, (3) deploys via 'supabase functions deploy --project-ref <ref>', (4) tags the deployment in the Supabase functions dashboard with the git SHA.
+      `/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/.github/workflows/deploy-function.yml`
+- [ ] Write docs/operations/edge-function-deployment.md with: (1) the tagging convention (fn/<name>/vX.Y.Z); (2) how to deploy (git tag + push, GitHub Actions handles the rest); (3) how to rollback (git checkout <previous-tag>, re-push tag with -f); (4) why manual 'supabase functions deploy' is prohibited in staging/prod; (5) how to find the current deployed version (Supabase dashboard + git log --tags). This document MUST be linked from ONBOARDING.md (DOC-06) and is considered mandatory reading for any engineer with production access.
+      `/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/docs/operations/edge-function-deployment.md`
 
 ## 🟡 Medium
 
@@ -447,6 +460,42 @@ Affects: `cross-ecosystem` — npm and pip dependency caching in CI
 - [ ] Add 'actions/cache' steps to all 3 frontend ci.yml files keyed on 'hashFiles("**/package-lock.json")'. For backend repos (match-backend, receptor-planner) add pip cache steps keyed on 'hashFiles("**/requirements.txt")'. Once running on a self-hosted runner (ARCH-03), switch to a local filesystem cache path (/var/cache/ci/npm, /var/cache/ci/pip) instead of the GitHub-managed cache to eliminate upload/download overhead entirely.
       ``
 
+### ARCH-10: Vault, Grafana, Traefik ingress, and the staging Supabase API all need TLS. Without cert-manager, certificates are self-
+
+Affects: `supabase-receptor` — TLS and cert-manager for k3s (Let's Encrypt wildcard via DNS-01)
+
+
+- [ ] Deploy cert-manager via Helmfile into the 'cert-manager' namespace on the k3s cluster. Configure a ClusterIssuer using Let's Encrypt ACME with Cloudflare DNS-01 challenge (cert-manager-webhook-cloudflare). Issue a wildcard certificate *.commonbond.au covering staging-api-829c83.commonbond.au and any future subdomains. Store the Cloudflare API token for DNS-01 in Vault KV (path: infrastructure/cloudflare-dns01-token) and inject via Vault Secrets Operator into the cert-manager namespace.
+      `/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/k3s/cert-manager/cluster-issuer.yaml`
+- [ ] Document the certificate lifecycle in docs/infrastructure/environment/kubernetes-cluster.md: cert-manager auto-renews 30 days before expiry; renewal requires the Cloudflare API token to be valid in Vault; monitor renewal events in Grafana/Loki. Add a Prometheus alert rule for certificate expiry < 14 days as a safety net.
+      ``
+
+### CICD-08: No repository has GitHub Environments configured. Without them, environment-specific secrets cannot be scoped (staging v
+
+Affects: `cross-ecosystem` — GitHub Environments for deployment tracking and secret scoping
+
+
+- [ ] Create 'staging' and 'production' GitHub Environments in each of the 6 repositories via the GitHub API or UI. Migrate environment-specific secrets (SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, etc.) from repo-level secrets into the appropriate environment secret scope. Update ci.yml deploy steps to reference 'environment: staging' or 'environment: production' so deployments appear in the GitHub deployment history timeline.
+      ``
+
+### SEC-07: Calico (ARCH-08) enforces network-level isolation between pods, but no tool monitors for anomalous behaviour inside runn
+
+Affects: `supabase-receptor` — Falco runtime security on k3s
+
+
+- [ ] Deploy Falco as a DaemonSet on k3s via Helmfile (falcosecurity/falco chart). Enable the default Kubernetes ruleset. Configure falcosidekick to route Falco alerts to Prometheus Alertmanager (ARCH-07), which then routes to Slack (PROC-02). Add a custom Falco rule to alert immediately on any shell spawn inside the 'supabase' or 'vault' namespaces. Document in docs/infrastructure/environment/kubernetes-cluster.md.
+      `/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/k3s/falco/falco-rules.yaml`
+
+### PROC-02: No incident response plan or alert routing exists. ARCH-07 (Grafana/Alertmanager) will generate alerts but there is no d
+
+Affects: `supabase-receptor` — Incident response plan and Slack notification pipeline
+
+
+- [ ] Provision a Slack incoming webhook for incident alerts and a second webhook for deployment/routine notifications (e.g. prod deploy approved, cert renewal). Store both webhook URLs in Vault KV (paths: infrastructure/slack-incidents-webhook, infrastructure/slack-deployments-webhook). Configure Prometheus Alertmanager (ARCH-07) with a receiver pointing to the incidents webhook for P1/P2 alerts and the deployments webhook for informational alerts. Add ENV-05 prod-deploy.yml to post to #deployments on approval.
+      `/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/k3s/monitoring/alertmanager-config.yaml`
+- [ ] Write docs/operations/incident-response.md covering: (1) severity tiers — P1 (production down, data breach), P2 (degraded service), P3 (non-critical); (2) for each tier: who is notified (Slack alert to founder), expected response time, escalation steps; (3) post-mortem template (5-whys, timeline, action items); (4) link to DR plan (DOC-05) and rollback procedure. Update SoA control 5.26 in docs/compliance/iso27001/operations/soa.md to 'Implemented' once this document exists and alerts are live.
+      `/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/docs/operations/incident-response.md`
+
 ## 🟢 Low
 
 ### DOC-01: key-management.md:86-88 has an open TODO block for integrating Bitwarden/Doppler CLI into the deployment workflow. This 
@@ -499,16 +548,18 @@ Affects: `supabase-receptor` — Engineer onboarding guide
 
 | Phase | Finding IDs | Rationale |
 | :---- | :---------- | :-------- |
-| 1 | ARCH-04, DOC-03, ARCH-05, ENV-07, ARCH-07, ARCH-08, ARCH-09, SEC-06 | User-designated top priority. Provision k3s on Hyper-V, deploy HashiCorp Vault OSS (Helm), configure GitHub OIDC federation, write cluster runbook and ADRs. Write Cloudflare Tunnel config for staging ingress (ENV-07). Structurally resolves CICD-01, ARCH-01, ARCH-02, ARCH-03 and eliminates GitHub Secrets dependency long-term. Deploy Calico CNI for network policy enforcement and kube-prometheus-stack for observability. Pin all Helm charts in helmfile.yaml with quarterly upgrade cadence. Configure YubiKey PKCS#11 and TPM 2.0 for Vault auto-unseal. |
-| 2 | KEY-01, CICD-03 | Fix the two security-class CI defects causing silent auth failures. Safe to implement immediately in parallel with Phase 1 planning. |
-| 3 | CICD-02, CGEN-01, CGEN-02, CICD-04, CICD-05, BACK-01, BACK-02, DOC-04, CICD-07 | Pin Supabase CLI, standardise codegen gate, fix receptor-planner pytest, replace hardcoded JWT stubs, add job timeouts, and write the CI troubleshooting runbook documenting the three known failure modes. Add npm/pip dependency caching to all CI jobs. |
-| 4 | SEC-01, SEC-02, CICD-06, SEC-04, SEC-05 | Add GITHUB_TOKEN permission blocks, pin Actions to commit SHAs, configure Dependabot for github-actions ecosystem, and pin Docker image digests. Update SoA controls 8.3 and 8.8 upon completion. Restrict Supabase Studio network binding and place behind Cloudflare Access on k3s. |
-| 5 | ENV-01, ENV-02, KEY-02, DOC-02, ENV-06, ARCH-06, ENV-08, DOC-05, ENV-09 | Provision staging, document all 4 environment tiers, write the promotion runbook, update key management docs and rotation schedule. Configure pull-through container registry cache on the k3s node. Set up automated Cloudflare R2 backups for production Postgres and write the disaster recovery plan. Write the staging-to-production promotion runbook. |
-| 6 | ARCH-01, ARCH-02, ARCH-03, ISO-01, ISO-02, ENV-03, ENV-04 | Design and implement branch-matched CI architecture (ADR + runner decision), add CI mode to setup.sh, implement test data isolation and pg_cron cleanup. May be superseded by Phase 1 k8s namespace-per-branch approach. |
-| 7 | ENV-05 | Add prod migration gate workflow (ISO 27001 A.8.32) and update SoA upon completion. Update Supabase governance register. |
-| 8 | ISO-03, DOC-01 | Review and update ISO 27001 physical security controls (7.1-7.4) post-k3s provisioning. Finalise Vault as the secrets management solution (DOC-01) — document configuration, OIDC setup, and key migration from GitHub Secrets. |
-| 9 | CICD-01, PROC-01, DOC-06 | Reduce Supabase boots per CI run once architecture decisions from phases 1 and 6 are finalised. Document the required status check matrix (prerequisite for branch protection in Phase 10). Write the engineer onboarding guide once the infrastructure is stable. |
-| 10 | SEC-03 | Enable branch protection across all 6 repositories with the required status checks defined in Phase 9 (PROC-01). Fast iteration is the current priority — this is the final hardening step. |
+| 1 | ARCH-05, DOC-03, DOC-04, DOC-05, ENV-09 | All planning documents that must exist before any system is provisioned. No infrastructure changes. Produces: ADR-001 to ADR-004 (k3s, self-hosted runner, isolation strategy, Docker image pinning), cluster runbook template (DOC-03), CI troubleshooting (DOC-04), DR plan (DOC-05), required check matrix (PROC-01), staging-to-prod promotion runbook (ENV-09). These documents gate Phase 3 implementation. |
+| 2 | ARCH-09 | Design tasks with no running system dependency: review ISO 27001 physical security controls (7.1-7.4) and update SoA scope before provisioning hardware (ISO-03); design and commit helmfile.yaml structure with pinned chart versions and quarterly upgrade workflow (ARCH-09). Both outputs are consumed by Phase 3. |
+| 3 | ARCH-04, ARCH-07, ARCH-08, ARCH-10, ENV-07, SEC-05, SEC-06, SEC-07, PROC-02 | The strategic Phase 1 buildout. Provision k3s on Hyper-V, deploy all cluster services via helmfile.yaml: Calico CNI, Vault OSS (YubiKey PKCS#11 primary + TPM 2.0 secondary unseal), kube-prometheus-stack, Loki, Falco, cert-manager (wildcard TLS via DNS-01), Traefik ingress. Provision Cloudflare Tunnel for staging. Bind Supabase Studio to 127.0.0.1. Configure Alertmanager → Slack webhook pipeline. This phase has the most risk and longest duration — all subsequent phases depend on it. |
+| 4 | KEY-01, CICD-03 | Fix the two security-class CI defects (key format mismatch, service role misuse) that cause silent auth failures. These are CI YAML changes only — safe to implement in parallel while Phase 3 is being planned and provisioned. |
+| 5 | CICD-02, CGEN-01, CGEN-02, CICD-04, CICD-05, BACK-01, BACK-02, CICD-07, ENV-10 | Pin Supabase CLI, standardise codegen gate, fix bare pytest, replace JWT stubs, add job timeouts, configure npm/pip caching, and implement the git-tag-triggered Edge Function versioning strategy. All CI YAML and tooling changes. |
+| 6 | SEC-01, SEC-02, CICD-06, SEC-04 | Add GITHUB_TOKEN permission blocks, pin Actions to SHAs, add Dependabot for github-actions ecosystem, pin Docker image digests and add verify-images target. Update SoA controls 8.3 and 8.8. These harden the CI supply chain independently of the cluster. |
+| 7 | ENV-01, ENV-02, KEY-02, DOC-02, ENV-06, ARCH-06, ENV-08, CICD-08 | Provision staging environment, document all 4 tiers, write key management docs, configure GitHub Environments (staging + production) for secret scoping and deployment history, implement Cloudflare R2 backup (pg_dumpall/rclone), add secrets rotation schedule and reminder workflow, and configure the pull-through container registry cache. |
+| 8 | ARCH-01, ARCH-02, ARCH-03, ISO-01, ISO-02, ENV-03, ENV-04, CICD-01 | Design and implement the branch-matched CI architecture (Docker network isolation or k8s namespace-per-branch), add CI mode to setup.sh, implement test data isolation and pg_cron cleanup, migrate to self-hosted runner. Reduce redundant Supabase boots (CICD-01). May be simplified by Phase 3 k8s namespace-per-branch approach. |
+| 9 | ENV-05 | Deploy the prod migration gate workflow (prod-deploy.yml) requiring human approval before any db push. Update SoA control 8.32. Update Supabase governance register. This is gated on Phase 7 (GitHub Environments must exist first for the environment protection rule). |
+| 10 | DOC-01, DOC-06 | With all infrastructure running, write the post-implementation documentation: Vault configuration guide (DOC-01) documenting the OIDC setup, database secrets engine, and VSO CRD patterns; engineer onboarding guide (DOC-06) covering prerequisites, how to connect to each environment, how to run CI locally, and key contacts. These documents require a working system to be accurate. |
+| 11 | PROC-01, ISO-03 | Document the exact GitHub Actions job names required to pass per repo (PROC-01 — this document is a prerequisite for SEC-03 branch protection). Review ISO 27001 physical controls 7.1-7.4 post-provisioning and update the SoA with confirmed compensating controls for the k3s bare-metal node. These are low-risk documentation tasks that can proceed in parallel. |
+| 12 | SEC-03 | The final hardening step, enabled only once CI is stable and all phase 1-11 fixes are complete and verified. Requires the required check matrix from Phase 11 (PROC-01). Enables branch protection rulesets across all 6 repositories with mandatory CI status checks, PR approval, and no force pushes. |
 
 
 ---
@@ -529,6 +580,7 @@ Affects: `supabase-receptor` — Engineer onboarding guide
 | SEC-03 | Branch protection on main | `` | Security | 🟠 High |
 | ENV-07 | Cloudflare Tunnel for staging ingress | `staging.md` | Process Gap | 🟠 High |
 | SEC-06 | Vault unseal key security (YubiKey PKCS#11 HSM) | `disaster-recovery.md` | Security | 🟠 High |
+| ENV-10 | Supabase Edge Function versioning and rollback | `deploy-function.yml` | Process Gap | 🟠 High |
 | CGEN-01 | GraphQL codegen CI gate | `ci.yml` | Architectural Drift | 🟡 Medium |
 | CGEN-02 | GraphQL codegen CI gate | `ci.yml` | Architectural Drift | 🟡 Medium |
 | CICD-04 | supabase-receptor CI robustness | `ci.yml` | Tech Debt | 🟡 Medium |
@@ -559,6 +611,10 @@ Affects: `supabase-receptor` — Engineer onboarding guide
 | ARCH-09 | Helm chart version pinning and upgrade cadence | `helmfile.yaml` | Tech Debt | 🟡 Medium |
 | ENV-09 | Staging to production promotion checklist | `promotion-runbook.md` | Process Gap | 🟡 Medium |
 | CICD-07 | npm and pip dependency caching in CI | `` | Tech Debt | 🟡 Medium |
+| ARCH-10 | TLS and cert-manager for k3s (Let's Encrypt wildcard via DNS-01) | `cluster-issuer.yaml` | Strategic Opportunity | 🟡 Medium |
+| CICD-08 | GitHub Environments for deployment tracking and secret scoping | `` | Process Gap | 🟡 Medium |
+| SEC-07 | Falco runtime security on k3s | `falco-rules.yaml` | Security | 🟡 Medium |
+| PROC-02 | Incident response plan and Slack notification pipeline | `alertmanager-config.yaml` | Process Gap | 🟡 Medium |
 | DOC-01 | Secrets vault | `key-management.md` | Documentation Gap | 🟢 Low |
 | DOC-03 | Kubernetes cluster runbook | `kubernetes-cluster.md` | Documentation Gap | 🟢 Low |
 | DOC-04 | CI troubleshooting runbook | `ci-troubleshooting.md` | Documentation Gap | 🟢 Low |

@@ -9,7 +9,7 @@
 
 ## Executive Summary
 
-**47 findings across 6 repositories and cross-ecosystem CI infrastructure.** The ecosystem's CI/CD pipeline has three compounding structural deficiencies: (1) all Supabase-dependent CI jobs boot an independent ephemeral instance per job with no sharing, consuming approximately 4 minutes of runner time per boot and 12+ minutes per frontend push; (2) a hard Supabase API key format incompatibility between the new `sb_publishable_*` format (used by REST/GraphQL) and the legacy JWT `ANON_KEY` (required by `signInWithPassword`) is undocumented and creates invisible auth failures if the dual-key export workaround is removed; and (3) all three frontend repos pin `version: latest` for the Supabase CLI, creating schema-drift false positives when the upstream CLI changes its output formatting. Beyond CI, no test, staging, or production environment is documented or deployed — only a single dev instance exists. **A new strategic opportunity has been identified**: the available Windows 11 Pro machine (Intel i7-265KF 20-core, 32 GB DDR5, 1 TB NVMe, RTX 5080) with Hyper-V support is capable of running a `k3s`-based Kubernetes cluster that would fundamentally resolve the CI/CD boot-time and isolation problems at the infrastructure level.
+**52 findings across 6 repositories and cross-ecosystem CI infrastructure.** The ecosystem's CI/CD pipeline has three compounding structural deficiencies: (1) all Supabase-dependent CI jobs boot an independent ephemeral instance per job with no sharing, consuming approximately 4 minutes of runner time per boot and 12+ minutes per frontend push; (2) a hard Supabase API key format incompatibility between the new `sb_publishable_*` format (used by REST/GraphQL) and the legacy JWT `ANON_KEY` (required by `signInWithPassword`) is undocumented and creates invisible auth failures if the dual-key export workaround is removed; and (3) all three frontend repos pin `version: latest` for the Supabase CLI, creating schema-drift false positives when the upstream CLI changes its output formatting. Beyond CI, no test, staging, or production environment is documented or deployed — only a single dev instance exists. **A new strategic opportunity has been identified**: the available Windows 11 Pro machine (Intel i7-265KF 20-core, 32 GB DDR5, 1 TB NVMe, RTX 5080) with Hyper-V support is capable of running a `k3s`-based Kubernetes cluster that would fundamentally resolve the CI/CD boot-time and isolation problems at the infrastructure level.
 
 | Repository / Area | Coverage | Issues Found | Overall |
 | --- | --- | --- | --- |
@@ -277,3 +277,105 @@ The available Windows 11 Pro workstation (Intel i7-265KF — 8 P-cores + 12 E-co
 | SEC-06 | supabase-receptor | Vault unseal key storage | Security | 🟠 High |
 | DOC-06 | supabase-receptor | `docs/ONBOARDING.md` (missing) | Documentation Gap | 🟢 Low |
 | CICD-07 | Cross-ecosystem | `actions/cache` (missing in all ci.yml) | Tech Debt | 🟡 Medium |
+| ARCH-10 | supabase-receptor | cert-manager + wildcard TLS (DNS-01) | Strategic Opportunity | 🟡 Medium |
+| CICD-08 | Cross-ecosystem | GitHub Environments (not configured) | Process Gap | 🟡 Medium |
+| SEC-07 | supabase-receptor | Falco runtime security (missing) | Security | 🟡 Medium |
+| ENV-10 | supabase-receptor | Edge Function versioning & rollback | Process Gap | 🟠 High |
+| PROC-02 | supabase-receptor | Incident response plan + Slack alerts | Process Gap | 🟡 Medium |
+
+---
+
+## Implementation Roadmap
+
+:::danger
+**Phase 3 (Core Cluster) is the critical path for this entire audit.** All subsequent implementation phases depend on the k3s cluster being operational with Vault, Calico, and Grafana/Alertmanager running. Phases 1-2 (PLAN) must be completed before Phase 3 begins.
+:::
+
+:::info
+This audit uses a **two-phase model**: `PLAN` phases produce documents and architecture decisions with no system changes. `IMPLEMENT` phases make actual infrastructure or CI changes. This ensures all design decisions are captured in ADRs and runbooks before any provisioning begins.
+:::
+
+### Phase Dependency Flowchart
+
+```mermaid
+flowchart TD
+  P1["🗒️ PLAN 1\nADRs, Runbooks & Docs\n(ARCH-05, DOC-03/04/05, ENV-09)"] --> P2
+  P2["🗒️ PLAN 2\nCompliance Review & Helmfile Design\n(ARCH-09)"] --> P3
+  P3["🏗️ IMPLEMENT 3\nCore Cluster Stack\n(k3s, Vault, Calico, Grafana,\ncert-manager, Falco, Tunnel, Slack)"] --> P4
+  P3 --> P6
+  P4["🔧 IMPLEMENT 4\nCritical CI Auth Fixes\n(KEY-01, CICD-03)"] --> P5
+  P5["🔧 IMPLEMENT 5\nCI Hardening & Edge Functions\n(CICD-02/04/05/07, CGEN, BACK, ENV-10)"] --> P7
+  P6["🔐 IMPLEMENT 6\nSupply-Chain Security\n(SEC-01/02/04, CICD-06)"] --> P7
+  P7["🌐 IMPLEMENT 7\nEnvironment Tiers & Backup\n(ENV-01/02/06/08, KEY-02, CICD-08, ARCH-06)"] --> P8
+  P8["⚙️ IMPLEMENT 8\nCI Architecture & Test Isolation\n(ARCH-01/02/03, ISO-01/02, ENV-03/04, CICD-01)"] --> P9
+  P9["🚀 IMPLEMENT 9\nProduction Gate\n(ENV-05)"] --> P10
+  P10["📚 IMPLEMENT 10\nPost-Build Docs\n(DOC-01, DOC-06)"] --> P11
+  P11["✅ IMPLEMENT 11\nRequired Checks & SoA Update\n(PROC-01, ISO-03)"] --> P12
+  P12["🔒 FINAL GATE 12\nBranch Protection\n(SEC-03)"]
+
+  style P1 fill:#e8f4fd,stroke:#2196F3
+  style P2 fill:#e8f4fd,stroke:#2196F3
+  style P3 fill:#fff3cd,stroke:#FF9800,stroke-width:3px
+  style P12 fill:#d4edda,stroke:#28a745
+```
+
+### k3s Cluster Architecture
+
+```mermaid
+graph TB
+  subgraph host["Windows 11 Pro (Hyper-V) — Intel i7-265KF / 32GB DDR5 / 1TB NVMe"]
+    subgraph k3s["k3s Cluster (Calico CNI + NetworkPolicies)"]
+      subgraph ns_infra["Namespace: infra"]
+        vault["🔐 Vault OSS\n(YubiKey PKCS#11 primary\nTPM 2.0 secondary unseal)"]
+        traefik["🔀 Traefik Ingress"]
+        certmgr["🔑 cert-manager\n(Let's Encrypt DNS-01 wildcard)"]
+      end
+      subgraph ns_supabase["Namespace: supabase"]
+        kong["Kong API Gateway"]
+        pg["Postgres 15"]
+        auth["Auth"]
+        studio["Studio (127.0.0.1 only)"]
+      end
+      subgraph ns_monitoring["Namespace: monitoring"]
+        prom["Prometheus"]
+        grafana["Grafana"]
+        loki["Loki"]
+        alertmgr["Alertmanager → Slack"]
+        falco["Falco Runtime Security"]
+      end
+      subgraph ns_ci["Namespace: ci-runner"]
+        runner["Self-Hosted\nGitHub Runner"]
+        registry["Container Registry\n(pull-through cache)"]
+      end
+    end
+  end
+  cf["☁️ Cloudflare\n(DNS + Tunnel)"] -->|"staging-api-829c83.commonbond.au"| traefik
+  gh["GitHub Actions"] -->|"OIDC token (no static secret)"| vault
+  gh -->|"CI jobs"| runner
+  runner --> vault
+  runner --> kong
+  traefik --> kong
+  traefik --> grafana
+  traefik --> vault
+  prom --> falco
+  alertmgr -->|"#incidents #deployments"| slack["Slack"]
+```
+
+### Vault Unseal Architecture
+
+:::caution
+**The Vault root token must never be stored digitally.** Write it on paper, place it in a sealed envelope in a physically secured location, and document the location in the DR plan (DOC-05) — not in git.
+:::
+
+```mermaid
+flowchart LR
+  yk["YubiKey USB-C\n(PKCS#11 HSM, primary)"] -->|"hardware-sealed master key"| vault["Vault OSS"]
+  tpm["TPM 2.0\n(secondary backup seal)"] -->|"TPM-bound key"| vault
+  vault -->|"OIDC JWT validation"| gh["GitHub Actions"]
+  vault -->|"dynamic Postgres creds\n(per CI run)"| pg["Supabase Postgres"]
+  vault -->|"VSO CRD injection"| pods["k3s Pods"]
+```
+
+:::tip
+**For agents continuing this audit:** The `latestHandover` field in `audit-brief.json` always contains the state summary. The `implementationPhases[]` array in `recommendations.json` is the authoritative source for what belongs in each phase. Always run `validate-recommendations.py` before committing.
+:::

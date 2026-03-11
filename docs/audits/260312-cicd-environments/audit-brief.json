@@ -2,8 +2,8 @@
   "$schema": "../../../dev-environment/.agents/schemas/audit-brief.schema.json",
   "auditSlug": "260312-cicd-environments",
   "status": "drafting",
-  "nextAction": "implement",
-  "openTaskCount": 81,
-  "latestHandover": "47 findings, 81 open tasks, 10 phases. Phase 1: k3s+Vault+Calico+Grafana/Loki+Cloudflare Tunnel+ADRs+Helmfile+YubiKey unseal. Vault unseal: YubiKey USB-C PKCS#11 primary (SEC-06-T1) + TPM 2.0 secondary (SEC-06-T2). Helm charts pinned in helmfile.yaml, quarterly upgrade review workflow (ARCH-09). SEC-03 final gate Phase 10.",
+  "nextAction": "iterate",
+  "openTaskCount": 89,
+  "latestHandover": "52 findings, 89 open tasks, 12 phases (2 PLAN + 9 IMPLEMENT + 1 FINAL). ARCHITECTURE: k3s on Windows 11 Pro Hyper-V (Intel i7-265KF/32GB/1TB). Vault OSS: YubiKey USB-C PKCS#11 primary unseal + TPM 2.0 secondary. Calico CNI, kube-prometheus-stack, Loki, Falco, cert-manager (Let's Encrypt DNS-01 wildcard *.commonbond.au), Traefik, Cloudflare Tunnel. Slack-only notifications (2 webhooks in Vault KV). Edge Functions: git-tag versioning (fn/<name>/vX.Y.Z). Helmfile pins all chart versions with quarterly upgrade review workflow. PHASE ORDER: P1(PLAN:ADRs+Runbooks) → P2(PLAN:Compliance+Helmfile) → P3(k3s cluster) → P4(auth fixes) → P5(CI hardening) → P6(supply-chain) → P7(env tiers+backup) → P8(CI arch) → P9(prod gate) → P10(post-build docs) → P11(required checks+SoA) → P12(branch protection FINAL). Diagrams in audit.md. CONTINUE: propose 5 more improvements — focus areas not yet covered include: k8s RBAC, Windows Update strategy for the host, Supabase pgaudit extension, multi-region R2 replication, or GitHub Actions workflow reusability.",
   "sessionHistory": []
 }
