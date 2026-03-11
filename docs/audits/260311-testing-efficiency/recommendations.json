@@ -222,6 +222,150 @@
         }
       ],
       "severity_history": []
+    },
+    {
+      "id": "NEXT-04",
+      "severity": "medium",
+      "status": "open",
+      "category": "Test Coverage",
+      "repo": "preference-frontend",
+      "area": "src/__tests__/visual/",
+      "description": "preference-frontend contains *.visual.test.tsx files in src/__tests__/visual/ that use vitest-browser-react but are excluded from both the unit and integration vitest projects. They have no automated runner in CI — they provide zero regression coverage and are effectively dead test code.",
+      "tasks": [
+        {
+          "taskId": "NEXT-04-T1",
+          "status": "open",
+          "description": "Either configure a 'browser' vitest project with Playwright browser mode and add it to the CI workflow, or delete the visual test files if browser-mode testing is out of scope. Document the decision in a clarification entry.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/frontend/preference-frontend/vitest.config.ts"
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "NEXT-05",
+      "severity": "high",
+      "status": "open",
+      "category": "Test Isolation",
+      "repo": "planner-frontend, workforce-frontend, preference-frontend",
+      "area": "GitHub Actions secrets",
+      "description": "TEST_ADMIN_EMAIL and TEST_ADMIN_PASSWORD are configured in .env.local for local development but are not available in GitHub Actions for the audit/* branch environment. 9 RLS integration tests in planner-frontend silently skip (describe.skipIf) when these secrets are absent in CI. Security-critical RLS enforcement tests are never exercised in CI on audit branches.",
+      "tasks": [
+        {
+          "taskId": "NEXT-05-T1",
+          "status": "open",
+          "description": "Add TEST_ADMIN_EMAIL (test_user_admin@commonbond.com) and TEST_ADMIN_PASSWORD to GitHub repository secrets for planner-frontend, workforce-frontend, and preference-frontend, and ensure they are available to pull_request triggers on audit/* branches. Verify the RLS tests in planner-frontend/src/test/security/RLS.test.ts no longer report as skipped in CI.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/frontend/planner-frontend/.github/workflows/ci.yml"
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "NEXT-06",
+      "severity": "low",
+      "status": "open",
+      "category": "Hygiene",
+      "repo": "preference-frontend",
+      "area": "codegen.ts postcodegen",
+      "description": "preference-frontend's postcodegen npm script (which prepends // @ts-nocheck to gql.ts) is a separate manual step. A developer running `npm run codegen` without `npm run postcodegen` commits a broken gql.ts that fails tsc due to TS6133 (unused 'types' import). The patch should be applied inline via graphql-codegen's afterAllFileWrite hook, eliminating the separate script.",
+      "tasks": [
+        {
+          "taskId": "NEXT-06-T1",
+          "status": "open",
+          "description": "Move the gql.ts // @ts-nocheck patch from the postcodegen npm script into an afterAllFileWrite hook inside codegen.ts, targeting only src/graphql/gql.ts. Remove the postcodegen script from package.json. This ensures the patch is always applied as part of `npm run codegen`.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/frontend/preference-frontend/codegen.ts"
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "NEXT-07",
+      "severity": "low",
+      "status": "open",
+      "category": "CI Structure",
+      "repo": "planner-frontend, workforce-frontend, preference-frontend",
+      "area": ".husky/pre-push",
+      "description": "The pre-push hook runs checks in this order: tsc → unit tests → codegen --check → integration tests. If graphql-codegen schema has drifted, tsc fails first with confusing type errors that are actually caused by the stale schema rather than code bugs. Codegen check should run first to surface the most actionable failure immediately.",
+      "tasks": [
+        {
+          "taskId": "NEXT-07-T1",
+          "status": "open",
+          "description": "Reorder .husky/pre-push in all three frontends to: (1) codegen --check (if Supabase live), (2) tsc --noEmit, (3) vitest unit, (4) vitest integration (if Supabase live). This ensures schema drift is flagged before tsc errors that are downstream of it.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/frontend/planner-frontend/.husky/pre-push"
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "NEXT-08",
+      "severity": "low",
+      "status": "open",
+      "category": "Test Coverage",
+      "repo": "planner-frontend, workforce-frontend, preference-frontend",
+      "area": "vitest.config.ts coverage thresholds",
+      "description": "Coverage thresholds in vitest.config.ts are measured against mixed unit+integration test runs. The CI split introduced in NEXT-01 runs unit and integration tests as separate jobs, but coverage is only collected in the integration job. Unit-only coverage would be substantially lower. Separate thresholds for the two tiers would make the gate meaningful.",
+      "tasks": [
+        {
+          "taskId": "NEXT-08-T1",
+          "status": "open",
+          "description": "Add a --coverage flag to the DB-free unit-tests CI job in all three frontends. Set a separate, realistic unit-only coverage threshold (e.g. 60% statements) in the Vitest unit project config. The integration job continues to measure combined coverage at the existing threshold.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/frontend/planner-frontend/.github/workflows/ci.yml"
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "MB-04",
+      "severity": "medium",
+      "status": "open",
+      "category": "Test Coverage",
+      "repo": "match-backend",
+      "area": "allocator/tests/integration/",
+      "description": "All existing match-backend tests mock the Supabase client. No test exercises real PostgREST query shapes, RLS enforcement under the service role key, or the func_create_allocation_plan RPC against a live database. A real integration test would have caught the missing Excel fixture file issue earlier, as the test would fail to populate Supabase without it.",
+      "tasks": [
+        {
+          "taskId": "MB-04-T1",
+          "status": "open",
+          "description": "Write at least one pytest integration test in allocator/tests/integration/ that points to a real local Supabase instance. The test should: (1) call the allocator API endpoint with a minimal valid payload, (2) verify the allocation_runs table receives a write-back, and (3) be guarded with pytest.mark.skipif when SUPABASE_URL contains 'test.com' (matching MB-03's existing skip guard pattern).",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/backend/match-backend/allocator/tests/integration/"
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "CROSS-01",
+      "severity": "medium",
+      "status": "open",
+      "category": "Test Coverage",
+      "repo": "match-backend, supabase-receptor",
+      "area": "Cross-service integration",
+      "description": "No test in the ecosystem exercises the full allocation pipeline: seed an allocation plan in Supabase → trigger match-backend allocator → verify allocations are written back to the database. Each component is tested in isolation but the contract between the Python microservice, PostgREST/RPC layer, and Supabase schema is untested as a pipeline. A breaking schema migration or API change would not be caught until a manual deployment.",
+      "tasks": [
+        {
+          "taskId": "CROSS-01-T1",
+          "status": "open",
+          "description": "Write a pytest integration test (or Supabase pgTAP test) that seeds a minimal allocation plan via the Supabase service role, calls the match-backend /allocate endpoint directly (not via Edge Function), and asserts that allocation records appear in the allocation_runs or job_lines tables. Mark skipif no live Supabase. Document the test as the canonical cross-service contract test.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/backend/match-backend/allocator/tests/integration/"
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "DEV-01",
+      "severity": "low",
+      "status": "open",
+      "category": "Hygiene",
+      "repo": "dev-environment",
+      "area": ".agents/skills/act-local-ci/SKILL.md",
+      "description": "The act-local-ci SKILL.md still references supabase-ci/config.toml and port 55321 (the isolated CI supabase project that was deleted in this audit session). The troubleshooting table (L295) documents a symptom about supabase-ci that is no longer relevant. Contributors following the skill will encounter configuration errors.",
+      "tasks": [
+        {
+          "taskId": "DEV-01-T1",
+          "status": "open",
+          "description": "Update act-local-ci/SKILL.md to reflect the current setup: (1) replace all references to supabase-ci/config.toml with supabase/ (main config), (2) replace port 55321 with 54321, (3) update the isolation model diagram and troubleshooting table to remove the supabase-ci row, (4) note that dev and CI Supabase cannot run concurrently on the same machine (supabase stop required before act runs that boot Supabase).",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/dev-environment/.agents/skills/act-local-ci/SKILL.md"
+        }
+      ],
+      "severity_history": []
     }
   ],
   "clarifications": [
@@ -236,6 +380,10 @@
     {
       "item": "act for local CI validation",
       "decision": "act is used for local CI testing (via `act push --job unit-tests`) to avoid consuming GitHub Actions minutes. The .actrc file is committed to match-backend and already exists in the three frontends."
+    },
+    {
+      "item": "Session 3 new findings approval",
+      "decision": "User approved all 8 findings raised in session 3 (NEXT-04 through NEXT-08, MB-04, CROSS-01, DEV-01). All added directly as status open. Severities as proposed: NEXT-05 high, NEXT-04/MB-04/CROSS-01 medium, NEXT-06/NEXT-07/NEXT-08/DEV-01 low."
     }
   ],
   "implementationPhases": [
@@ -280,6 +428,30 @@
         "PL-01"
       ],
       "rationale": "Coverage and hygiene improvements that are lower priority but improve long-term maintainability. Safe to batch as a single small PR per repo."
+    },
+    {
+      "phase": 5,
+      "name": "CI Robustness",
+      "description": "Fix silently-skipping RLS tests, reorder pre-push hook, and update stale act documentation.",
+      "findingIds": [
+        "NEXT-05",
+        "NEXT-07",
+        "DEV-01"
+      ],
+      "rationale": "Quick-win fixes discovered during implementation. NEXT-05 is high severity (security RLS tests silently bypassed). NEXT-07 and DEV-01 are low-effort hygiene that prevent future contributor confusion."
+    },
+    {
+      "phase": 6,
+      "name": "Test Coverage Depth",
+      "description": "Wire visual tests, add match-backend live integration test, write cross-service pipeline test, fix postcodegen fragility, and add integration coverage gate.",
+      "findingIds": [
+        "NEXT-04",
+        "NEXT-06",
+        "NEXT-08",
+        "MB-04",
+        "CROSS-01"
+      ],
+      "rationale": "Deeper coverage improvements surfaced during implementation. These require more effort (new test files, coverage config changes) but close the most significant blind spots in the ecosystem."
     }
   ],
   "deferred": []

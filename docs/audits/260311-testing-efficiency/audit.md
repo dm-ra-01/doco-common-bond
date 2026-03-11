@@ -17,27 +17,30 @@ fast-feedback loops
 
 ## Executive Summary
 
-This audit identifies 9 findings across all six in-scope repositories. The
+This audit identifies 18 findings across all in-scope repositories. The
 primary concern is that CI/CD pipelines are degraded by a structural confusion
 between **unit** tests (which must be DB-free and fast) and **integration/E2E**
-tests (which legitimately require Supabase). All three Next.js frontends boot a
-full Supabase instance inside their `unit-tests` CI job despite having a Vitest
-workspace already configured to separate the two tiers. `match-backend` has no
-CI pipeline at all. Edge function test coverage is effectively zero — one
-fixture file exists but issues no real assertions against the function handler.
-`supabase-receptor`'s pgTAP suite has no CI gate.
+tests (which legitimately require Supabase). Phase 1–4 findings have been
+implemented. Eight additional findings (Phase 5–6) were identified during
+implementation and approved by the auditor: one high-severity finding
+(RLS tests silently skipping in CI due to missing GitHub secrets), three medium
+(visual tests orphaned, match-backend no live integration test, no cross-service
+pipeline test), and four low (postcodegen fragility, pre-push ordering, coverage
+gate, stale act documentation).
 
 | Repository / Area               | Coverage  | Issues Found | Overall |
 | ------------------------------- | --------- | ------------ | ------- |
-| `planner-frontend` (Next.js)    | ⚠️ Hybrid | 2            | ⚠️      |
-| `workforce-frontend` (Next.js)  | ⚠️ Hybrid | 2            | ⚠️      |
-| `preference-frontend` (Next.js) | ⚠️ Hybrid | 2            | ⚠️      |
+| `planner-frontend` (Next.js)    | ⚠️ Hybrid | 5            | ⚠️      |
+| `workforce-frontend` (Next.js)  | ⚠️ Hybrid | 4            | ⚠️      |
+| `preference-frontend` (Next.js) | ⚠️ Hybrid | 6            | ⚠️      |
 | `backend/receptor-planner`      | ✅ Good   | 1            | ✅      |
-| `backend/match-backend`         | ❌ None   | 3            | ❌      |
+| `backend/match-backend`         | ⚠️ Partial | 5            | ⚠️      |
 | `supabase-receptor` (pgTAP)     | ⚠️ Local  | 2            | ⚠️      |
 | `supabase-receptor` (Functions) | ❌ None   | 1            | ❌      |
+| `dev-environment` (tooling)     | ⚠️ Stale  | 1            | ⚠️      |
+| Cross-service pipeline          | ❌ None   | 1            | ❌      |
 
-Severity breakdown: 🟠 High: 3 · 🟡 Medium: 5 · 🟢 Low: 1
+Severity breakdown: 🟠 High: 4 · 🟡 Medium: 8 · 🟢 Low: 6
 
 ---
 
@@ -229,6 +232,92 @@ Vitest workspaces allow targeting a named project:
 
 ---
 
+## 7. Frontend — Implementation-Phase Robustness Gaps
+
+The following gaps were identified during the Phase 1–4 implementation session
+and approved as additional findings.
+
+### 7.1 RLS Tests Silently Skipping in CI
+
+**Gaps:**
+
+- **NEXT-05** [All three frontend repos, `.github/workflows/ci.yml`]
+  `TEST_ADMIN_EMAIL` and `TEST_ADMIN_PASSWORD` are not available in GitHub
+  Actions for `audit/*` branch environments. Nine RLS integration tests in
+  `planner-frontend/src/test/security/RLS.test.ts` silently skip via
+  `describe.skipIf` when these secrets are absent. Security-critical RLS
+  enforcement tests are never exercised in CI for any non-`main` branch.
+
+### 7.2 Visual Tests Orphaned (preference-frontend)
+
+**Gaps:**
+
+- **NEXT-04** [`preference-frontend/src/__tests__/visual/`, `vitest.config.ts`]
+  Visual test files (`*.visual.test.tsx`) use `vitest-browser-react` but are
+  excluded from both the unit and integration vitest projects. No CI job runs
+  them. They provide zero regression coverage and are dead test code.
+
+### 7.3 postcodegen Fragility (preference-frontend)
+
+**Gaps:**
+
+- **NEXT-06** [`preference-frontend/codegen.ts`, `package.json`] The
+  `postcodegen` npm script (prepends `// @ts-nocheck` to `gql.ts`) is a
+  separate manual step. A developer running `npm run codegen` without
+  `npm run postcodegen` commits a broken `gql.ts` that fails `tsc`.
+
+### 7.4 Pre-Push Hook Check Ordering
+
+**Gaps:**
+
+- **NEXT-07** [All three frontend repos, `.husky/pre-push`] The pre-push hook
+  runs `tsc` before `codegen --check`. If the schema has drifted, `tsc` fails
+  first with type errors that are actually downstream of the schema drift,
+  obscuring the root cause.
+
+### 7.5 Coverage Gate Blends Unit and Integration
+
+**Gaps:**
+
+- **NEXT-08** [All three frontend repos, `vitest.config.ts`] Coverage
+  thresholds are measured against mixed unit+integration runs. The CI split
+  from NEXT-01 creates two separate jobs but coverage is only collected in the
+  integration job. A meaningful unit-only coverage threshold is absent.
+
+---
+
+## 8. Cross-Service and Tooling Gaps
+
+### 8.1 match-backend Has No Live Supabase Integration Test
+
+**Gaps:**
+
+- **MB-04** [`match-backend/allocator/tests/integration/`] All existing
+  match-backend tests mock the Supabase client. No test exercises real
+  PostgREST query shapes, RLS enforcement under the service role key, or the
+  `func_create_allocation_plan` RPC against a live database.
+
+### 8.2 No Cross-Service Pipeline Test
+
+**Gaps:**
+
+- **CROSS-01** [Cross-cutting: `match-backend`, `supabase-receptor`] No test
+  exercises the full allocation pipeline: seed plan in Supabase → trigger
+  match-backend allocator → verify write-back. Each component is tested
+  in isolation; the contract between the Python microservice, PostgREST/RPC
+  layer, and Supabase schema is untested end-to-end.
+
+### 8.3 act Skill Documentation Is Stale
+
+**Gaps:**
+
+- **DEV-01** [`dev-environment/.agents/skills/act-local-ci/SKILL.md`] The
+  skill still references `supabase-ci/config.toml` and port `55321`, both
+  removed during this audit's implementation. Contributors following the skill
+  will encounter configuration errors.
+
+---
+
 ## Severity Summary
 
 | Finding ID | Repository / Area                                               | File                                                             | Category          | Severity  |
@@ -236,10 +325,19 @@ Vitest workspaces allow targeting a named project:
 | NEXT-01    | `planner-frontend`, `workforce-frontend`, `preference-frontend` | `.github/workflows/ci.yml` (unit-tests job)                      | Test Isolation    | 🟠 High   |
 | NEXT-02    | All three Next.js frontends                                     | `.github/workflows/ci.yml` (parallel Supabase boots)             | CI Performance    | 🟠 High   |
 | MB-01      | `match-backend`                                                 | No `.github/workflows/` directory                                | Process Gap       | 🟠 High   |
+| NEXT-05    | All three Next.js frontends                                     | GitHub Actions secrets (RLS tests silently skipping)             | Test Isolation    | 🟠 High   |
 | NEXT-03    | All three Next.js frontends                                     | `.github/workflows/ci.yml` (no standalone unit job)              | CI Structure      | 🟡 Medium |
 | MB-02      | `match-backend`                                                 | `allocator/tests/` (flat structure)                              | Test Organization | 🟡 Medium |
-| MB-03      | `match-backend`                                                 | `allocator/tests/test_supabase_integration.py` L14–L29           | Test Isolation    | 🟡 Medium |
+| MB-03      | `match-backend`                                                 | `allocator/tests/integration/test_supabase_integration.py` L14–29 | Test Isolation  | 🟡 Medium |
 | DB-01      | `supabase-receptor`                                             | No `.github/workflows/` directory                                | Process Gap       | 🟡 Medium |
-| EF-01      | `supabase-receptor` (Edge Functions)                            | `supabase/functions/planner-orchestration/index.test.ts` L14–L16 | Test Coverage     | 🟡 Medium |
+| EF-01      | `supabase-receptor` (Edge Functions)                            | `supabase/functions/planner-orchestration/index.test.ts` L14–16  | Test Coverage     | 🟡 Medium |
+| NEXT-04    | `preference-frontend`                                           | `src/__tests__/visual/` (orphaned visual tests)                  | Test Coverage     | 🟡 Medium |
+| MB-04      | `match-backend`                                                 | `allocator/tests/integration/` (no live Supabase test)           | Test Coverage     | 🟡 Medium |
+| CROSS-01   | `match-backend`, `supabase-receptor`                            | Cross-service (no pipeline test)                                 | Test Coverage     | 🟡 Medium |
 | DB-02      | `supabase-receptor`                                             | `supabase/tests/database/11_security_policies.test.sql`          | Test Coverage     | 🟢 Low    |
 | PL-01      | `receptor-planner`                                              | `.github/workflows/ci.yml` L19 vs `pyproject.toml`               | Hygiene           | 🟢 Low    |
+| NEXT-06    | `preference-frontend`                                           | `codegen.ts` / `package.json` (postcodegen fragility)            | Hygiene           | 🟢 Low    |
+| NEXT-07    | All three Next.js frontends                                     | `.husky/pre-push` (check ordering)                               | CI Structure      | 🟢 Low    |
+| NEXT-08    | All three Next.js frontends                                     | `vitest.config.ts` (coverage gate)                               | Test Coverage     | 🟢 Low    |
+| DEV-01     | `dev-environment`                                               | `.agents/skills/act-local-ci/SKILL.md` (stale docs)              | Hygiene           | 🟢 Low    |
+

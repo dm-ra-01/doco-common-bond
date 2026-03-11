@@ -20,6 +20,7 @@
 | Unit vs Integration definition | Unit tests are those with no external service dependency (DB-free, fully mocked). Integration/E2E tests explicitly require a live Supabase instance. The workspace split (*.unit.test.* vs *.test.*) and the Python unit/ vs integration/ folder structure are the canonical boundaries. |
 | E2E testing via Supabase | E2E tests are expected to use Supabase and are accepted as slower. The goal is to ensure the unit-test tier is DB-free and fast, reducing tail latency for every PR. Supabase is not removed from CI — it is moved to the correct tier. |
 | act for local CI validation | act is used for local CI testing (via `act push --job unit-tests`) to avoid consuming GitHub Actions minutes. The .actrc file is committed to match-backend and already exists in the three frontends. |
+| Session 3 new findings approval | User approved all 8 findings raised in session 3 (NEXT-04 through NEXT-08, MB-04, CROSS-01, DEV-01). All added directly as status open. Severities as proposed: NEXT-05 high, NEXT-04/MB-04/CROSS-01 medium, NEXT-06/NEXT-07/NEXT-08/DEV-01 low. |
 
 
 ---
@@ -53,6 +54,14 @@ Affects: `match-backend` — CI pipeline
 
 - [x] Create .github/workflows/ci.yml for match-backend. The unit job runs pytest targeting only allocator/tests/unit/ with stub Supabase env vars and no Docker step.
       `/Users/ryan/development/common_bond/antigravity-environment/backend/match-backend/.github/workflows/ci.yml`
+
+### NEXT-05: TEST_ADMIN_EMAIL and TEST_ADMIN_PASSWORD are configured in .env.local for local development but are not available in Git
+
+Affects: `planner-frontend, workforce-frontend, preference-frontend` — GitHub Actions secrets
+
+
+- [ ] Add TEST_ADMIN_EMAIL (test_user_admin@commonbond.com) and TEST_ADMIN_PASSWORD to GitHub repository secrets for planner-frontend, workforce-frontend, and preference-frontend, and ensure they are available to pull_request triggers on audit/* branches. Verify the RLS tests in planner-frontend/src/test/security/RLS.test.ts no longer report as skipped in CI.
+      `/Users/ryan/development/common_bond/antigravity-environment/frontend/planner-frontend/.github/workflows/ci.yml`
 
 ## 🟡 Medium
 
@@ -104,6 +113,30 @@ Affects: `supabase-receptor` — Edge Functions
       `/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/supabase/functions/auth/`
       _(Completed: 2026-03-11T06:46:25Z)_
 
+### NEXT-04: preference-frontend contains *.visual.test.tsx files in src/__tests__/visual/ that use vitest-browser-react but are excl
+
+Affects: `preference-frontend` — src/__tests__/visual/
+
+
+- [ ] Either configure a 'browser' vitest project with Playwright browser mode and add it to the CI workflow, or delete the visual test files if browser-mode testing is out of scope. Document the decision in a clarification entry.
+      `/Users/ryan/development/common_bond/antigravity-environment/frontend/preference-frontend/vitest.config.ts`
+
+### MB-04: All existing match-backend tests mock the Supabase client. No test exercises real PostgREST query shapes, RLS enforcemen
+
+Affects: `match-backend` — allocator/tests/integration/
+
+
+- [ ] Write at least one pytest integration test in allocator/tests/integration/ that points to a real local Supabase instance. The test should: (1) call the allocator API endpoint with a minimal valid payload, (2) verify the allocation_runs table receives a write-back, and (3) be guarded with pytest.mark.skipif when SUPABASE_URL contains 'test.com' (matching MB-03's existing skip guard pattern).
+      `/Users/ryan/development/common_bond/antigravity-environment/backend/match-backend/allocator/tests/integration/`
+
+### CROSS-01: No test in the ecosystem exercises the full allocation pipeline: seed an allocation plan in Supabase → trigger match-bac
+
+Affects: `match-backend, supabase-receptor` — Cross-service integration
+
+
+- [ ] Write a pytest integration test (or Supabase pgTAP test) that seeds a minimal allocation plan via the Supabase service role, calls the match-backend /allocate endpoint directly (not via Edge Function), and asserts that allocation records appear in the allocation_runs or job_lines tables. Mark skipif no live Supabase. Document the test as the canonical cross-service contract test.
+      `/Users/ryan/development/common_bond/antigravity-environment/backend/match-backend/allocator/tests/integration/`
+
 ## 🟢 Low
 
 ### DB-02: supabase/tests/database/11_security_policies.test.sql is the smallest file in the database test suite at 572 bytes. The 
@@ -124,6 +157,38 @@ Affects: `receptor-planner` — CI Python version
       `/Users/ryan/development/common_bond/antigravity-environment/backend/receptor-planner/.github/workflows/ci.yml`
       _(Completed: 2026-03-11T06:46:25Z)_
 
+### NEXT-06: preference-frontend's postcodegen npm script (which prepends // @ts-nocheck to gql.ts) is a separate manual step. A deve
+
+Affects: `preference-frontend` — codegen.ts postcodegen
+
+
+- [ ] Move the gql.ts // @ts-nocheck patch from the postcodegen npm script into an afterAllFileWrite hook inside codegen.ts, targeting only src/graphql/gql.ts. Remove the postcodegen script from package.json. This ensures the patch is always applied as part of `npm run codegen`.
+      `/Users/ryan/development/common_bond/antigravity-environment/frontend/preference-frontend/codegen.ts`
+
+### NEXT-07: The pre-push hook runs checks in this order: tsc → unit tests → codegen --check → integration tests. If graphql-codegen 
+
+Affects: `planner-frontend, workforce-frontend, preference-frontend` — .husky/pre-push
+
+
+- [ ] Reorder .husky/pre-push in all three frontends to: (1) codegen --check (if Supabase live), (2) tsc --noEmit, (3) vitest unit, (4) vitest integration (if Supabase live). This ensures schema drift is flagged before tsc errors that are downstream of it.
+      `/Users/ryan/development/common_bond/antigravity-environment/frontend/planner-frontend/.husky/pre-push`
+
+### NEXT-08: Coverage thresholds in vitest.config.ts are measured against mixed unit+integration test runs. The CI split introduced i
+
+Affects: `planner-frontend, workforce-frontend, preference-frontend` — vitest.config.ts coverage thresholds
+
+
+- [ ] Add a --coverage flag to the DB-free unit-tests CI job in all three frontends. Set a separate, realistic unit-only coverage threshold (e.g. 60% statements) in the Vitest unit project config. The integration job continues to measure combined coverage at the existing threshold.
+      `/Users/ryan/development/common_bond/antigravity-environment/frontend/planner-frontend/.github/workflows/ci.yml`
+
+### DEV-01: The act-local-ci SKILL.md still references supabase-ci/config.toml and port 55321 (the isolated CI supabase project that
+
+Affects: `dev-environment` — .agents/skills/act-local-ci/SKILL.md
+
+
+- [ ] Update act-local-ci/SKILL.md to reflect the current setup: (1) replace all references to supabase-ci/config.toml with supabase/ (main config), (2) replace port 55321 with 54321, (3) update the isolation model diagram and troubleshooting table to remove the supabase-ci row, (4) note that dev and CI Supabase cannot run concurrently on the same machine (supabase stop required before act runs that boot Supabase).
+      `/Users/ryan/development/common_bond/antigravity-environment/dev-environment/.agents/skills/act-local-ci/SKILL.md`
+
 
 ---
 
@@ -138,6 +203,8 @@ Affects: `receptor-planner` — CI Python version
 | 2 | MB-02, MB-03 | Restructures match-backend test directory and adds skip guards so unit-level tests can run without a live Supabase instance. Unblocks contributors and enables the CI pipeline created in Phase 1. |
 | 3 | DB-01, EF-01 | Adds CI gate for supabase-receptor pgTAP tests and converts placeholder edge function tests to real assertions. Both require a live Supabase so belong in the integration tier of CI. |
 | 4 | DB-02, PL-01 | Coverage and hygiene improvements that are lower priority but improve long-term maintainability. Safe to batch as a single small PR per repo. |
+| 5 | NEXT-05, NEXT-07, DEV-01 | Quick-win fixes discovered during implementation. NEXT-05 is high severity (security RLS tests silently bypassed). NEXT-07 and DEV-01 are low-effort hygiene that prevent future contributor confusion. |
+| 6 | NEXT-04, NEXT-06, NEXT-08, MB-04, CROSS-01 | Deeper coverage improvements surfaced during implementation. These require more effort (new test files, coverage config changes) but close the most significant blind spots in the ecosystem. |
 
 
 ---
@@ -149,11 +216,19 @@ Affects: `receptor-planner` — CI Python version
 | NEXT-01 | CI unit-tests job | `ci.yml` | Test Isolation | 🟠 High |
 | NEXT-02 | CI parallel Supabase boots | `ci.yml` | CI Performance | 🟠 High |
 | MB-01 | CI pipeline | `ci.yml` | Process Gap | 🟠 High |
+| NEXT-05 | GitHub Actions secrets | `ci.yml` | Test Isolation | 🟠 High |
 | NEXT-03 | CI unit job contract | `ci.yml` | CI Structure | 🟡 Medium |
 | MB-02 | allocator/tests/ | `tests` | Test Organization | 🟡 Medium |
 | MB-03 | allocator/tests/integration/test_supabase_integration.py | `test_supabase_integration.py` | Test Isolation | 🟡 Medium |
 | DB-01 | pgTAP test suite | `ci.yml` | Process Gap | 🟡 Medium |
 | EF-01 | Edge Functions | `index.ts` | Test Coverage | 🟡 Medium |
+| NEXT-04 | src/__tests__/visual/ | `vitest.config.ts` | Test Coverage | 🟡 Medium |
+| MB-04 | allocator/tests/integration/ | `integration` | Test Coverage | 🟡 Medium |
+| CROSS-01 | Cross-service integration | `integration` | Test Coverage | 🟡 Medium |
 | DB-02 | pgTAP security suite | `11_security_policies.test.sql` | Test Coverage | 🟢 Low |
 | PL-01 | CI Python version | `ci.yml` | Hygiene | 🟢 Low |
+| NEXT-06 | codegen.ts postcodegen | `codegen.ts` | Hygiene | 🟢 Low |
+| NEXT-07 | .husky/pre-push | `pre-push` | CI Structure | 🟢 Low |
+| NEXT-08 | vitest.config.ts coverage thresholds | `ci.yml` | Test Coverage | 🟢 Low |
+| DEV-01 | .agents/skills/act-local-ci/SKILL.md | `SKILL.md` | Hygiene | 🟢 Low |
 

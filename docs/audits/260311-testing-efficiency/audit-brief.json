@@ -2,9 +2,9 @@
   "$schema": "../../../dev-environment/.agents/schemas/audit-brief.schema.json",
   "auditSlug": "260311-testing-efficiency",
   "status": "implementing",
-  "nextAction": "finalise",
-  "openTaskCount": 0,
-  "latestHandover": "Session 2 complete. All 6 remaining tasks implemented and pushed. supabase-receptor: .github/workflows/ci.yml created (DB-01 database-tests + deno-check jobs), planner-orchestration/index.ts refactored to export named handler() (EF-01-T1), planner-orchestration/index.test.ts rewritten with real handler invocations covering CORS\u2192200, missing auth\u2192401, valid auth\u2192proceeds (EF-01-T2), smoke tests added for invalidate-session and force-refresh-on-role-change (EF-01-T3), 11_security_policies.test.sql expanded to full RLS truth matrix covering anon/non-member/member for workers, orgs, users, allocation_runs, job_lines (DB-02). receptor-planner: CI python-version bumped from 3.9 to 3.11 (PL-01). Also fixed pre-existing session 1 regression: all findings/tasks with status=done normalised to complete per schema. 0 open tasks remain. Proceed with /finalise-global-audit.",
+  "nextAction": "implement",
+  "openTaskCount": 8,
+  "latestHandover": "Session 3 complete. 8 new findings added to the audit (NEXT-04 through NEXT-08, MB-04, CROSS-01, DEV-01) following the iterative improvement protocol. All 8 approved by the auditor and added with status open. Two new implementation phases created: Phase 5 (CI Robustness — NEXT-05, NEXT-07, DEV-01) and Phase 6 (Test Coverage Depth — NEXT-04, NEXT-06, NEXT-08, MB-04, CROSS-01). audit.md updated: executive summary (9→18 findings), new sections 7 and 8, and full 18-row severity table. recommendations.md re-rendered. Proceed with Phase 5 (quick wins) first: NEXT-05 (add GitHub secrets for RLS tests — human action required), NEXT-07 (reorder pre-push hooks), DEV-01 (update act SKILL.md).",
   "sessionHistory": [
     {
       "session": 1,
@@ -32,7 +32,13 @@
         "DB-02-T1",
         "PL-01-T1"
       ],
-      "notes": "supabase-receptor: CI workflow (DB-01), planner-orchestration handler export + test rewrite (EF-01), smoke tests for invalidate-session + force-refresh-on-role-change (EF-01-T3), RLS truth matrix expanded (DB-02). receptor-planner: Python 3.9\u21923.11 (PL-01). Also fixed pre-existing done\u2192complete status normalisation. All 0 open tasks remain."
+      "notes": "supabase-receptor: CI workflow (DB-01), planner-orchestration handler export + test rewrite (EF-01), smoke tests for invalidate-session + force-refresh-on-role-change (EF-01-T3), RLS truth matrix expanded (DB-02). receptor-planner: Python 3.9→3.11 (PL-01). Also fixed pre-existing done→complete status normalisation. All 0 open tasks remain."
+    },
+    {
+      "session": 3,
+      "date": "2026-03-11",
+      "completedTasks": [],
+      "notes": "Iterative improvement round. 8 new findings identified during implementation session (codegen drift fixes, visual test orphaning, RLS secret gap, postcodegen fragility, pre-push ordering, coverage gate, match-backend integration test gap, cross-service pipeline test gap, stale act docs). All approved by auditor. Added as open findings in Phase 5-6. No tasks completed this session — new findings added. Previous Phase 1-4 findings remain complete."
     }
   ]
 }
