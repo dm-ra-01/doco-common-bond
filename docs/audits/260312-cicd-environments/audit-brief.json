@@ -3,7 +3,7 @@
   "auditSlug": "260312-cicd-environments",
   "status": "drafting",
   "nextAction": "implement",
-  "openTaskCount": 65,
-  "latestHandover": "37 findings, 65 open tasks, 10 phases. TOP PRIORITY: Phase 1 — ARCH-04+DOC-03+ARCH-05+ENV-07 (k3s cluster, Vault OSS, runbook, ADRs, Cloudflare Tunnel for staging). Secrets mgmt: HashiCorp Vault OSS on k3s (OIDC GitHub federation, database secrets engine for dynamic Postgres creds, VSO for pod injection). SEC-03 deferred to Phase 10. Reference: preference-frontend ci.yml.",
+  "openTaskCount": 74,
+  "latestHandover": "42 findings, 74 open tasks, 10 phases. Phase 1 (top priority): ARCH-04+DOC-03+ARCH-05+ENV-07+ARCH-07+ARCH-08 — k3s+Vault OSS+Calico CNI+Grafana/Loki+Cloudflare Tunnel+ADRs. Backup: pg_dumpall→Cloudflare R2 via rclone (ENV-08, RTO 4h/RPO 24h). SEC-05: Studio to 127.0.0.1 + Cloudflare Access. NetworkPolicies in ARCH-08-T2. SEC-03 final gate Phase 10.",
   "sessionHistory": []
 }

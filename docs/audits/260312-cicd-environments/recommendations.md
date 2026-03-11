@@ -29,6 +29,8 @@
 | ADR storage strategy | ADRs are stored as markdown files in docs/adr/ within supabase-receptor (ARCH-05-T1). As an interim index, each ADR is registered in the Supabase 'standards' table with document_type='ADR'. A dedicated 'architecture_decisions' Supabase table is a future TODO (ARCH-05-T2). The 'registers' table is not appropriate — it tracks meta governance objects (risk register, asset register), not individual records. |
 | Branch protection timing | Branch protection on main (SEC-03) is intentionally deferred to Phase 10 (the final task). Fast iteration is the current priority. SEC-03 will be enabled only after Phases 1-9 CI fixes are complete and stable. PROC-01 (required check matrix) is a prerequisite for SEC-03. |
 | Secrets management strategy | HashiCorp Vault OSS deployed on k3s as a Helm chart is the target solution (DOC-01). Architecture: GitHub Actions authenticates via OIDC (no long-lived secrets stored in GitHub Secrets); Vault's database secrets engine issues dynamic short-lived Postgres credentials per CI run; Vault Secrets Operator (VSO) injects secrets into k3s pods via CRDs; KV v2 stores static API keys (Cloudflare, Supabase publishable keys). This eliminates KEY-01 and ENV-06 risks structurally. Vault is added to the k3s provisioning task (ARCH-04). |
+| Production backup strategy | Automated daily Postgres backups stream to Cloudflare R2 via rclone (ENV-08). Retention: 30-day daily, 12-month weekly. RTO: 4 hours, RPO: 24 hours. Backup script at scripts/backup-prod.sh. Restore procedure in docs/infrastructure/disaster-recovery.md. ISO 27001 A.8.13 compliance task in ENV-08-T3. |
+| Kubernetes CNI and network policy | k3s will use Calico CNI (ARCH-08) instead of the default Flannel, installed via Tigera Operator Helm chart with --flannel-backend=none. NetworkPolicies isolate supabase, vault, monitoring, and ci-runner namespaces. Documented in ADR-005. |
 
 
 ---
@@ -367,6 +369,46 @@ Affects: `supabase-receptor` — Docker image provenance and digest pinning
 - [ ] Add an ADR (ADR-004) documenting the image pinning decision: why SHA pinning is used, the digest rotation procedure when upstream images update, and the Cosign verification strategy for images that support it. Record in the Supabase 'standards' table with document_type='ADR'.
       `/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/docs/adr/adr-004-docker-image-pinning.md`
 
+### ARCH-07: The k3s cluster has no observability stack. When Supabase or a CI job fails on the cluster there is no visibility into w
+
+Affects: `supabase-receptor` — Observability stack (metrics, logs, traces)
+
+
+- [ ] Deploy the kube-prometheus-stack Helm chart (Prometheus + Grafana + Alertmanager) and Loki + Promtail into a dedicated 'monitoring' namespace on the k3s cluster. Configure Grafana dashboards for: Supabase pod health, CI job duration/failure rate, Vault secret access rate, and k3s node resource utilisation. Document in docs/infrastructure/environment/kubernetes-cluster.md.
+      `/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/docs/infrastructure/environment/kubernetes-cluster.md`
+- [ ] Update SoA control 8.16 (Monitoring activities) in docs/compliance/iso27001/operations/soa.md to reflect that infrastructure monitoring is now implemented via Prometheus/Grafana/Loki on the k3s cluster. Document the alert channels (Alertmanager → email/Slack) and the log retention policy (30-day online, archived to R2).
+      `/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/compliance/iso27001/operations/soa.md`
+
+### ENV-08: The production Supabase instance has no scheduled backup. Self-hosted Supabase relies on postgres WAL or pg_dump — neith
+
+Affects: `supabase-receptor` — Automated Supabase production backup to Cloudflare R2
+
+
+- [ ] Write a backup script (scripts/backup-prod.sh) that runs pg_dumpall against the production Postgres instance and streams the compressed dump to Cloudflare R2 using rclone (configured with a dedicated R2 access key scoped to the backup bucket). Schedule via cron: daily at 02:00 AEST, weekly full dump on Sunday.
+      `/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/scripts/backup-prod.sh`
+- [ ] Document the backup and restore procedure in docs/infrastructure/disaster-recovery.md: backup schedule (daily/weekly), R2 bucket name and retention policy (30 days daily, 12 months weekly), and the full restore procedure ('rclone copy r2:backups/<dump> ./ && pg_restore ...'). Define RTO target (4 hours) and RPO target (24 hours).
+      `/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/docs/infrastructure/disaster-recovery.md`
+- [ ] Update SoA control 8.13 (Information backup) in docs/compliance/iso27001/operations/soa.md from 'Not implemented' to 'Implemented' once the R2 backup schedule is active. Document the backup schedule, retention policy, and last-tested restore date.
+      `/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/compliance/iso27001/operations/soa.md`
+
+### SEC-05: Supabase Studio (port 54323 by default) is bound to all interfaces on the host and is not authenticated at the network l
+
+Affects: `supabase-receptor` — Supabase Studio network exposure
+
+
+- [ ] For staging and production Supabase instances: bind Studio to 127.0.0.1 only in docker-compose.yml ('127.0.0.1:54323:3000'). For k3s deployments, use a NetworkPolicy (ARCH-08) to restrict Studio pod egress to the Traefik ingress pod only, and place the Traefik route for Studio behind Cloudflare Access (Zero Trust) with a Google SSO policy.
+      ``
+
+### ARCH-08: k3s ships with Flannel CNI by default, which does not enforce NetworkPolicy objects. All pods can communicate freely wit
+
+Affects: `supabase-receptor` — Calico CNI and Kubernetes NetworkPolicies
+
+
+- [ ] Install k3s with '--flannel-backend=none --disable-network-policy' flags and deploy Calico via the Tigera Operator Helm chart. Verify NetworkPolicy enforcement with a test deny-all policy. Document the Calico installation in ADR-005 and in docs/infrastructure/environment/kubernetes-cluster.md.
+      `/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/docs/adr/adr-005-calico-cni.md`
+- [ ] Write NetworkPolicy manifests for each namespace: (1) supabase: allow ingress from traefik and ci-runner, deny all other; (2) vault: allow ingress from supabase and ci-runner on port 8200 only; (3) monitoring: allow ingress from all namespaces on scrape ports (9090, 3100), deny egress to prod data; (4) ci-runner: allow egress to supabase and vault only. Store manifests in k3s/network-policies/.
+      ``
+
 ## 🟢 Low
 
 ### DOC-01: key-management.md:86-88 has an open TODO block for integrating Bitwarden/Doppler CLI into the deployment workflow. This 
@@ -393,6 +435,14 @@ Affects: `supabase-receptor` — CI troubleshooting runbook
 - [ ] Write docs/operations/ci-troubleshooting.md with the following sections: (1) Boot hang — signature: step 'Supabase Start' hangs beyond 4 min, fix: add --ignore-health-check flag and timeout-minutes to job; (2) Key format mismatch — signature: auth.signInWithPassword returns 400 in CI only, fix: check dual-key export in ci.yml globalSetup; (3) Codegen false positive — signature: 'GraphQL schema has changed' in CI but not locally, fix: pin supabase-cli version, don't use latest.
       `/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/docs/operations/ci-troubleshooting.md`
 
+### DOC-05: The k3s node is a single point of failure. If the Windows 11 Pro machine fails, recovery time and procedure are undefine
+
+Affects: `supabase-receptor` — Disaster recovery plan
+
+
+- [ ] Write docs/infrastructure/disaster-recovery.md covering: (1) RTO target (4 hours) and RPO target (24 hours); (2) what data lives where — Supabase Postgres volumes (R2 backup via ENV-08), Vault unseal keys and root token (secure offline storage), k3s etcd snapshot (rke2-etcd-snapshots); (3) step-by-step recovery for each component in priority order; (4) contact list for who to notify during an incident. Test the DR procedure quarterly.
+      `/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/docs/infrastructure/disaster-recovery.md`
+
 
 ---
 
@@ -403,11 +453,11 @@ Affects: `supabase-receptor` — CI troubleshooting runbook
 
 | Phase | Finding IDs | Rationale |
 | :---- | :---------- | :-------- |
-| 1 | ARCH-04, DOC-03, ARCH-05, ENV-07 | User-designated top priority. Provision k3s on Hyper-V, deploy HashiCorp Vault OSS (Helm), configure GitHub OIDC federation, write cluster runbook and ADRs. Write Cloudflare Tunnel config for staging ingress (ENV-07). Structurally resolves CICD-01, ARCH-01, ARCH-02, ARCH-03 and eliminates GitHub Secrets dependency long-term. |
+| 1 | ARCH-04, DOC-03, ARCH-05, ENV-07, ARCH-07, ARCH-08 | User-designated top priority. Provision k3s on Hyper-V, deploy HashiCorp Vault OSS (Helm), configure GitHub OIDC federation, write cluster runbook and ADRs. Write Cloudflare Tunnel config for staging ingress (ENV-07). Structurally resolves CICD-01, ARCH-01, ARCH-02, ARCH-03 and eliminates GitHub Secrets dependency long-term. Deploy Calico CNI for network policy enforcement and kube-prometheus-stack for observability. |
 | 2 | KEY-01, CICD-03 | Fix the two security-class CI defects causing silent auth failures. Safe to implement immediately in parallel with Phase 1 planning. |
 | 3 | CICD-02, CGEN-01, CGEN-02, CICD-04, CICD-05, BACK-01, BACK-02, DOC-04 | Pin Supabase CLI, standardise codegen gate, fix receptor-planner pytest, replace hardcoded JWT stubs, add job timeouts, and write the CI troubleshooting runbook documenting the three known failure modes. |
-| 4 | SEC-01, SEC-02, CICD-06, SEC-04 | Add GITHUB_TOKEN permission blocks, pin Actions to commit SHAs, configure Dependabot for github-actions ecosystem, and pin Docker image digests. Update SoA controls 8.3 and 8.8 upon completion. |
-| 5 | ENV-01, ENV-02, KEY-02, DOC-02, ENV-06, ARCH-06 | Provision staging, document all 4 environment tiers, write the promotion runbook, update key management docs and rotation schedule. Configure pull-through container registry cache on the k3s node. |
+| 4 | SEC-01, SEC-02, CICD-06, SEC-04, SEC-05 | Add GITHUB_TOKEN permission blocks, pin Actions to commit SHAs, configure Dependabot for github-actions ecosystem, and pin Docker image digests. Update SoA controls 8.3 and 8.8 upon completion. Restrict Supabase Studio network binding and place behind Cloudflare Access on k3s. |
+| 5 | ENV-01, ENV-02, KEY-02, DOC-02, ENV-06, ARCH-06, ENV-08, DOC-05 | Provision staging, document all 4 environment tiers, write the promotion runbook, update key management docs and rotation schedule. Configure pull-through container registry cache on the k3s node. Set up automated Cloudflare R2 backups for production Postgres and write the disaster recovery plan. |
 | 6 | ARCH-01, ARCH-02, ARCH-03, ISO-01, ISO-02, ENV-03, ENV-04 | Design and implement branch-matched CI architecture (ADR + runner decision), add CI mode to setup.sh, implement test data isolation and pg_cron cleanup. May be superseded by Phase 1 k8s namespace-per-branch approach. |
 | 7 | ENV-05 | Add prod migration gate workflow (ISO 27001 A.8.32) and update SoA upon completion. Update Supabase governance register. |
 | 8 | ISO-03, DOC-01 | Review and update ISO 27001 physical security controls (7.1-7.4) post-k3s provisioning. Finalise Vault as the secrets management solution (DOC-01) — document configuration, OIDC setup, and key migration from GitHub Secrets. |
@@ -455,7 +505,12 @@ Affects: `supabase-receptor` — CI troubleshooting runbook
 | PROC-01 | CI required status checks definition | `ci-required-checks.md` | Process Gap | 🟡 Medium |
 | ARCH-06 | Container image pull-through cache on k3s node | `kubernetes-cluster.md` | Strategic Opportunity | 🟡 Medium |
 | SEC-04 | Docker image provenance and digest pinning | `` | Security | 🟡 Medium |
+| ARCH-07 | Observability stack (metrics, logs, traces) | `kubernetes-cluster.md` | Strategic Opportunity | 🟡 Medium |
+| ENV-08 | Automated Supabase production backup to Cloudflare R2 | `backup-prod.sh` | Process Gap | 🟡 Medium |
+| SEC-05 | Supabase Studio network exposure | `` | Security | 🟡 Medium |
+| ARCH-08 | Calico CNI and Kubernetes NetworkPolicies | `adr-005-calico-cni.md` | Security | 🟡 Medium |
 | DOC-01 | Secrets vault | `key-management.md` | Documentation Gap | 🟢 Low |
 | DOC-03 | Kubernetes cluster runbook | `kubernetes-cluster.md` | Documentation Gap | 🟢 Low |
 | DOC-04 | CI troubleshooting runbook | `ci-troubleshooting.md` | Documentation Gap | 🟢 Low |
+| DOC-05 | Disaster recovery plan | `disaster-recovery.md` | Documentation Gap | 🟢 Low |
 
