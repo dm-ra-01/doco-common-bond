@@ -855,6 +855,122 @@
         }
       ],
       "severity_history": []
+    },
+    {
+      "id": "PROC-01",
+      "severity": "medium",
+      "status": "open",
+      "category": "Process Gap",
+      "repo": "cross-ecosystem",
+      "area": "CI required status checks definition",
+      "description": "No repository has a documented list of which CI jobs constitute a required 'definition of done' for a passing build. Even after branch protection is enabled (SEC-03), the set of required status checks must be explicitly enumerated per repo. Without this, a green badge may mask skipped jobs.",
+      "tasks": [
+        {
+          "taskId": "PROC-01-T1",
+          "status": "open",
+          "description": "Document the required status check matrix per repo in docs/operations/ci-required-checks.md: for each of the 6 repos, list the exact GitHub Actions job names that must pass before merge (e.g. 'test', 'lint', 'codegen-gate', 'build'). This document is consumed by the branch protection ruleset setup in SEC-03-T1.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/docs/operations/ci-required-checks.md",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "ENV-07",
+      "severity": "high",
+      "status": "open",
+      "category": "Process Gap",
+      "repo": "supabase-receptor",
+      "area": "Cloudflare Tunnel for staging ingress",
+      "description": "The staging domain staging-api-829c83.commonbond.au has been assigned but no Cloudflare Tunnel is provisioned or documented. Without a tunnel, the staging Supabase API endpoint has no public ingress and cannot be used by frontend review apps or integration tests.",
+      "tasks": [
+        {
+          "taskId": "ENV-07-T1",
+          "status": "open",
+          "description": "Provision a named Cloudflare Tunnel for the staging Supabase instance: 'cloudflare tunnel create receptor-staging'. Create a tunnel config at ~/.cloudflared/config.yml routing staging-api-829c83.commonbond.au to localhost:54321 (Supabase Kong API). Run 'cloudflare tunnel route dns' and document the full provisioning procedure in docs/infrastructure/environment/staging.md.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/docs/infrastructure/environment/staging.md",
+          "completedAt": null,
+          "completedBy": null
+        },
+        {
+          "taskId": "ENV-07-T2",
+          "status": "open",
+          "description": "Add cloudflared as a systemd service (or k3s DaemonSet once cluster is running) so the tunnel survives reboots. Document the start/stop/restart procedure and add a health check to the staging environment runbook.",
+          "targetFile": "",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "ARCH-06",
+      "severity": "medium",
+      "status": "open",
+      "category": "Strategic Opportunity",
+      "repo": "supabase-receptor",
+      "area": "Container image pull-through cache on k3s node",
+      "description": "Each CI job pulls fresh Docker images for the Supabase stack (postgres, studio, storage, auth, realtime, edge-runtime) on every run. On GitHub-hosted runners this burns minutes and risks Docker Hub rate limits. With a self-hosted runner co-located with the k3s node, a local pull-through registry eliminates redundant pulls and removes the rate-limit risk entirely.",
+      "tasks": [
+        {
+          "taskId": "ARCH-06-T1",
+          "status": "open",
+          "description": "Deploy a local container registry on the k3s node as a pull-through cache for Docker Hub using the distribution/distribution Helm chart or the built-in k3s containerd mirror config (~/.rancher/k3s/registries.yaml). Configure the self-hosted runner to use this registry. Document the configuration in docs/infrastructure/environment/kubernetes-cluster.md.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/docs/infrastructure/environment/kubernetes-cluster.md",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "DOC-04",
+      "severity": "low",
+      "status": "open",
+      "category": "Documentation Gap",
+      "repo": "supabase-receptor",
+      "area": "CI troubleshooting runbook",
+      "description": "The three known CI failure modes (Supabase boot hang, sb_publishable_*/JWT key incompatibility, Supabase CLI codegen false positives from pinning 'latest') are not documented. A new engineer encountering these failures has no reference to diagnose them, leading to repeated investigation time.",
+      "tasks": [
+        {
+          "taskId": "DOC-04-T1",
+          "status": "open",
+          "description": "Write docs/operations/ci-troubleshooting.md with the following sections: (1) Boot hang — signature: step 'Supabase Start' hangs beyond 4 min, fix: add --ignore-health-check flag and timeout-minutes to job; (2) Key format mismatch — signature: auth.signInWithPassword returns 400 in CI only, fix: check dual-key export in ci.yml globalSetup; (3) Codegen false positive — signature: 'GraphQL schema has changed' in CI but not locally, fix: pin supabase-cli version, don't use latest.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/docs/operations/ci-troubleshooting.md",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "SEC-04",
+      "severity": "medium",
+      "status": "open",
+      "category": "Security",
+      "repo": "supabase-receptor",
+      "area": "Docker image provenance and digest pinning",
+      "description": "The self-hosted Supabase stack pulls Docker images by tag (e.g. supabase/postgres:15.1.0.117) without digest pinning or Cosign signature verification. A tag is mutable — it can be repointed to a malicious image silently. This is a supply-chain risk for the infrastructure layer.",
+      "tasks": [
+        {
+          "taskId": "SEC-04-T1",
+          "status": "open",
+          "description": "Audit all Docker image references in docker-compose.yml (and any k3s manifests) and pin each to its immutable digest: 'image: supabase/postgres:15.1.0.117@sha256:<digest>'. Add a comment with the tag for readability. Write a Makefile or script target 'make verify-images' that runs 'docker manifest inspect' to confirm digests match expected values.",
+          "targetFile": "",
+          "completedAt": null,
+          "completedBy": null
+        },
+        {
+          "taskId": "SEC-04-T2",
+          "status": "open",
+          "description": "Add an ADR (ADR-004) documenting the image pinning decision: why SHA pinning is used, the digest rotation procedure when upstream images update, and the Cosign verification strategy for images that support it. Record in the Supabase 'standards' table with document_type='ADR'.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/docs/adr/adr-004-docker-image-pinning.md",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
     }
   ],
   "clarifications": [
@@ -900,71 +1016,74 @@
     },
     {
       "item": "Branch protection timing",
-      "decision": "Branch protection on main (SEC-03) is intentionally deferred to Phase 10 (the final task). Fast iteration is the current priority. SEC-03 will be enabled only after Phases 1-9 CI fixes are complete and stable."
+      "decision": "Branch protection on main (SEC-03) is intentionally deferred to Phase 10 (the final task). Fast iteration is the current priority. SEC-03 will be enabled only after Phases 1-9 CI fixes are complete and stable. PROC-01 (required check matrix) is a prerequisite for SEC-03."
+    },
+    {
+      "item": "Secrets management strategy",
+      "decision": "HashiCorp Vault OSS deployed on k3s as a Helm chart is the target solution (DOC-01). Architecture: GitHub Actions authenticates via OIDC (no long-lived secrets stored in GitHub Secrets); Vault's database secrets engine issues dynamic short-lived Postgres credentials per CI run; Vault Secrets Operator (VSO) injects secrets into k3s pods via CRDs; KV v2 stores static API keys (Cloudflare, Supabase publishable keys). This eliminates KEY-01 and ENV-06 risks structurally. Vault is added to the k3s provisioning task (ARCH-04)."
     }
   ],
   "implementationPhases": [
     {
       "phase": 1,
-      "name": "Strategic Priority: Kubernetes Cluster Planning & Infrastructure",
-      "rationale": "User-designated top priority for this audit. Design and provision the k3s cluster on Windows 11 Pro Hyper-V — this structurally resolves CICD-01, ARCH-01, ARCH-02, and ARCH-03 at the infrastructure level. Write the cluster runbook and ADRs in parallel.",
-      "findingIds": ["ARCH-04", "DOC-03", "ARCH-05"]
+      "name": "Strategic Priority: Kubernetes Cluster, Vault & Infrastructure",
+      "rationale": "User-designated top priority. Provision k3s on Hyper-V, deploy HashiCorp Vault OSS (Helm), configure GitHub OIDC federation, write cluster runbook and ADRs. Write Cloudflare Tunnel config for staging ingress (ENV-07). Structurally resolves CICD-01, ARCH-01, ARCH-02, ARCH-03 and eliminates GitHub Secrets dependency long-term.",
+      "findingIds": ["ARCH-04", "DOC-03", "ARCH-05", "ENV-07"]
     },
     {
       "phase": 2,
       "name": "Critical: Key Format & Service Role Fixes",
-      "rationale": "Fix the two security-class CI defects that cause silent auth failures. Safe to implement immediately in parallel with Phase 1 planning.",
+      "rationale": "Fix the two security-class CI defects causing silent auth failures. Safe to implement immediately in parallel with Phase 1 planning.",
       "findingIds": ["KEY-01", "CICD-03"]
     },
     {
       "phase": 3,
-      "name": "High: CLI Pinning, Codegen Gate & Backend CI Cleanup",
-      "rationale": "Pin Supabase CLI version across all repos, standardise the codegen gate to the git-diff pattern, fix receptor-planner bare pytest, replace hardcoded JWT stubs, and add job timeouts.",
-      "findingIds": ["CICD-02", "CGEN-01", "CGEN-02", "CICD-04", "CICD-05", "BACK-01", "BACK-02"]
+      "name": "High: CLI Pinning, Codegen Gate, Backend CI & Troubleshooting Runbook",
+      "rationale": "Pin Supabase CLI, standardise codegen gate, fix receptor-planner pytest, replace hardcoded JWT stubs, add job timeouts, and write the CI troubleshooting runbook documenting the three known failure modes.",
+      "findingIds": ["CICD-02", "CGEN-01", "CGEN-02", "CICD-04", "CICD-05", "BACK-01", "BACK-02", "DOC-04"]
     },
     {
       "phase": 4,
       "name": "High: CI Security & Supply-Chain Hardening",
-      "rationale": "Add explicit GITHUB_TOKEN permission blocks, pin all third-party Actions to commit SHAs, and configure Dependabot for the github-actions ecosystem. Update SoA controls 8.3 and 8.8 upon completion.",
-      "findingIds": ["SEC-01", "SEC-02", "CICD-06"]
+      "rationale": "Add GITHUB_TOKEN permission blocks, pin Actions to commit SHAs, configure Dependabot for github-actions ecosystem, and pin Docker image digests. Update SoA controls 8.3 and 8.8 upon completion.",
+      "findingIds": ["SEC-01", "SEC-02", "CICD-06", "SEC-04"]
     },
     {
       "phase": 5,
-      "name": "High: Environment Tiers & Documentation",
-      "rationale": "Provision staging, document all 4 environment tiers, write the promotion runbook, update key management docs and rotation schedule.",
-      "findingIds": ["ENV-01", "ENV-02", "KEY-02", "DOC-02", "ENV-06"]
+      "name": "High: Environment Tiers, Documentation & Secrets Rotation",
+      "rationale": "Provision staging, document all 4 environment tiers, write the promotion runbook, update key management docs and rotation schedule. Configure pull-through container registry cache on the k3s node.",
+      "findingIds": ["ENV-01", "ENV-02", "KEY-02", "DOC-02", "ENV-06", "ARCH-06"]
     },
     {
       "phase": 6,
       "name": "High: CI Architecture & Test/Staging Isolation",
-      "rationale": "Design and implement the branch-matched CI architecture (ADR + runner decision), add CI mode to setup.sh, implement test data isolation and pg_cron cleanup. May be superseded by Phase 1 k8s namespace-per-branch approach.",
+      "rationale": "Design and implement branch-matched CI architecture (ADR + runner decision), add CI mode to setup.sh, implement test data isolation and pg_cron cleanup. May be superseded by Phase 1 k8s namespace-per-branch approach.",
       "findingIds": ["ARCH-01", "ARCH-02", "ARCH-03", "ISO-01", "ISO-02", "ENV-03", "ENV-04"]
     },
     {
       "phase": 7,
       "name": "Medium: Production Gate & Compliance Records",
-      "rationale": "Add the prod migration gate workflow (ISO 27001 A.8.32) and update SoA upon completion. Update Supabase governance register.",
+      "rationale": "Add prod migration gate workflow (ISO 27001 A.8.32) and update SoA upon completion. Update Supabase governance register.",
       "findingIds": ["ENV-05"]
     },
     {
       "phase": 8,
-      "name": "Medium: Physical Security Scope Review (k3s node)",
-      "rationale": "Review and update ISO 27001 physical security controls (7.1-7.4) now that a bare-metal node exists. Document compensating physical controls and update SoA.",
-      "findingIds": ["ISO-03"]
+      "name": "Medium: Physical Security Scope Review & Vault DOC-01",
+      "rationale": "Review and update ISO 27001 physical security controls (7.1-7.4) post-k3s provisioning. Finalise Vault as the secrets management solution (DOC-01) — document configuration, OIDC setup, and key migration from GitHub Secrets.",
+      "findingIds": ["ISO-03", "DOC-01"]
     },
     {
       "phase": 9,
-      "name": "Low: Job Consolidation & Secrets Vault",
-      "rationale": "Reduce Supabase boots per CI run once architecture decisions from phases 1 and 6 are finalised, and resolve the open secrets vault TODO.",
-      "findingIds": ["CICD-01", "DOC-01"]
+      "name": "Low: Job Consolidation, Required Checks & CICD-01",
+      "rationale": "Reduce Supabase boots per CI run once architecture decisions from phases 1 and 6 are finalised. Document the required status check matrix (prerequisite for branch protection in Phase 10).",
+      "findingIds": ["CICD-01", "PROC-01"]
     },
     {
       "phase": 10,
       "name": "Final Gate: Branch Protection on Main",
-      "rationale": "Enable branch protection across all 6 repositories only after CI is stable and all previous phases are complete. Fast iteration is the current priority; this is the final hardening step.",
+      "rationale": "Enable branch protection across all 6 repositories with the required status checks defined in Phase 9 (PROC-01). Fast iteration is the current priority — this is the final hardening step.",
       "findingIds": ["SEC-03"]
     }
   ],
   "deferred": []
 }
-

@@ -3,7 +3,7 @@
   "auditSlug": "260312-cicd-environments",
   "status": "drafting",
   "nextAction": "implement",
-  "openTaskCount": 58,
-  "latestHandover": "Initial audit complete. 32 findings across all 6 repos. 10 phases. TOP PRIORITY: Phase 1 — ARCH-04+DOC-03+ARCH-05 (k3s cluster, runbook, ADRs). Phase 2: KEY-01 (critical auth). ADRs stored at docs/adr/ with interim entry in Supabase 'standards' table (document_type=ADR). SEC-03 deferred to Phase 10 (after CI stable). ISO SoA tasks wired in SEC-01/SEC-02/ENV-05/ISO-03. 58 open tasks.",
+  "openTaskCount": 65,
+  "latestHandover": "37 findings, 65 open tasks, 10 phases. TOP PRIORITY: Phase 1 — ARCH-04+DOC-03+ARCH-05+ENV-07 (k3s cluster, Vault OSS, runbook, ADRs, Cloudflare Tunnel for staging). Secrets mgmt: HashiCorp Vault OSS on k3s (OIDC GitHub federation, database secrets engine for dynamic Postgres creds, VSO for pod injection). SEC-03 deferred to Phase 10. Reference: preference-frontend ci.yml.",
   "sessionHistory": []
 }

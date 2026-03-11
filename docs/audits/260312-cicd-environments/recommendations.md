@@ -27,7 +27,8 @@
 | Kubernetes CI/CD infrastructure | The available Windows 11 Pro workstation (Intel i7-265KF 20-core, 32 GB DDR5, 1 TB NVMe, RTX 5080, Hyper-V) is the proposed host for a k3s Kubernetes cluster. This is the strategic long-term solution for all CI/CD and environment tier hosting (ARCH-04). ARCH-04 + DOC-03 are the top implementation priority for this audit. |
 | ISO SoA compliance tracking | When SEC-01, SEC-02, ENV-05, ISO-03, and ARCH-04 are implemented, the corresponding ISO 27001 SoA entries (8.3, 8.8, 8.32, 7.1-7.4, and 8.31) must be updated in docs/compliance/iso27001/operations/soa.md and the Supabase governance registers. Each relevant finding has a dedicated compliance-update task. |
 | ADR storage strategy | ADRs are stored as markdown files in docs/adr/ within supabase-receptor (ARCH-05-T1). As an interim index, each ADR is registered in the Supabase 'standards' table with document_type='ADR'. A dedicated 'architecture_decisions' Supabase table is a future TODO (ARCH-05-T2). The 'registers' table is not appropriate — it tracks meta governance objects (risk register, asset register), not individual records. |
-| Branch protection timing | Branch protection on main (SEC-03) is intentionally deferred to Phase 10 (the final task). Fast iteration is the current priority. SEC-03 will be enabled only after Phases 1-9 CI fixes are complete and stable. |
+| Branch protection timing | Branch protection on main (SEC-03) is intentionally deferred to Phase 10 (the final task). Fast iteration is the current priority. SEC-03 will be enabled only after Phases 1-9 CI fixes are complete and stable. PROC-01 (required check matrix) is a prerequisite for SEC-03. |
+| Secrets management strategy | HashiCorp Vault OSS deployed on k3s as a Helm chart is the target solution (DOC-01). Architecture: GitHub Actions authenticates via OIDC (no long-lived secrets stored in GitHub Secrets); Vault's database secrets engine issues dynamic short-lived Postgres credentials per CI run; Vault Secrets Operator (VSO) injects secrets into k3s pods via CRDs; KV v2 stores static API keys (Cloudflare, Supabase publishable keys). This eliminates KEY-01 and ENV-06 risks structurally. Vault is added to the k3s provisioning task (ARCH-04). |
 
 
 ---
@@ -148,6 +149,16 @@ Affects: `cross-ecosystem` — Branch protection on main
 
 
 - [ ] Enable branch protection on main across all 6 repositories once CI is stable: require PR, require all CI status checks to pass, require at least 1 approval, disallow force pushes and deletions. Use GitHub repository rulesets for cross-org consistency.
+      ``
+
+### ENV-07: The staging domain staging-api-829c83.commonbond.au has been assigned but no Cloudflare Tunnel is provisioned or documen
+
+Affects: `supabase-receptor` — Cloudflare Tunnel for staging ingress
+
+
+- [ ] Provision a named Cloudflare Tunnel for the staging Supabase instance: 'cloudflare tunnel create receptor-staging'. Create a tunnel config at ~/.cloudflared/config.yml routing staging-api-829c83.commonbond.au to localhost:54321 (Supabase Kong API). Run 'cloudflare tunnel route dns' and document the full provisioning procedure in docs/infrastructure/environment/staging.md.
+      `/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/docs/infrastructure/environment/staging.md`
+- [ ] Add cloudflared as a systemd service (or k3s DaemonSet once cluster is running) so the tunnel survives reboots. Document the start/stop/restart procedure and add a health check to the staging environment runbook.
       ``
 
 ## 🟡 Medium
@@ -330,6 +341,32 @@ Affects: `supabase-receptor` — Secrets rotation schedule
 - [ ] Create a GitHub Actions scheduled workflow '.github/workflows/key-rotation-reminder.yml' that runs on the first of each month and posts a Slack/email notification if any key is within 14 days of its rotation due date. Due dates are stored as GitHub Actions variables (not secrets) so they can be read without elevation.
       `/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/.github/workflows/key-rotation-reminder.yml`
 
+### PROC-01: No repository has a documented list of which CI jobs constitute a required 'definition of done' for a passing build. Eve
+
+Affects: `cross-ecosystem` — CI required status checks definition
+
+
+- [ ] Document the required status check matrix per repo in docs/operations/ci-required-checks.md: for each of the 6 repos, list the exact GitHub Actions job names that must pass before merge (e.g. 'test', 'lint', 'codegen-gate', 'build'). This document is consumed by the branch protection ruleset setup in SEC-03-T1.
+      `/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/docs/operations/ci-required-checks.md`
+
+### ARCH-06: Each CI job pulls fresh Docker images for the Supabase stack (postgres, studio, storage, auth, realtime, edge-runtime) o
+
+Affects: `supabase-receptor` — Container image pull-through cache on k3s node
+
+
+- [ ] Deploy a local container registry on the k3s node as a pull-through cache for Docker Hub using the distribution/distribution Helm chart or the built-in k3s containerd mirror config (~/.rancher/k3s/registries.yaml). Configure the self-hosted runner to use this registry. Document the configuration in docs/infrastructure/environment/kubernetes-cluster.md.
+      `/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/docs/infrastructure/environment/kubernetes-cluster.md`
+
+### SEC-04: The self-hosted Supabase stack pulls Docker images by tag (e.g. supabase/postgres:15.1.0.117) without digest pinning or 
+
+Affects: `supabase-receptor` — Docker image provenance and digest pinning
+
+
+- [ ] Audit all Docker image references in docker-compose.yml (and any k3s manifests) and pin each to its immutable digest: 'image: supabase/postgres:15.1.0.117@sha256:<digest>'. Add a comment with the tag for readability. Write a Makefile or script target 'make verify-images' that runs 'docker manifest inspect' to confirm digests match expected values.
+      ``
+- [ ] Add an ADR (ADR-004) documenting the image pinning decision: why SHA pinning is used, the digest rotation procedure when upstream images update, and the Cosign verification strategy for images that support it. Record in the Supabase 'standards' table with document_type='ADR'.
+      `/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/docs/adr/adr-004-docker-image-pinning.md`
+
 ## 🟢 Low
 
 ### DOC-01: key-management.md:86-88 has an open TODO block for integrating Bitwarden/Doppler CLI into the deployment workflow. This 
@@ -348,6 +385,14 @@ Affects: `supabase-receptor` — Kubernetes cluster runbook
 - [ ] Write docs/infrastructure/environment/kubernetes-cluster.md covering: cluster topology, VM provisioning steps (Hyper-V + Ubuntu Server 24.04 LTS), k3s installation commands, Helm chart deployment for Supabase, Traefik ingress rules for branch-slug routing, cert-manager DNS-01 challenge config, and disaster recovery procedure.
       `/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/docs/infrastructure/environment/kubernetes-cluster.md`
 
+### DOC-04: The three known CI failure modes (Supabase boot hang, sb_publishable_*/JWT key incompatibility, Supabase CLI codegen fal
+
+Affects: `supabase-receptor` — CI troubleshooting runbook
+
+
+- [ ] Write docs/operations/ci-troubleshooting.md with the following sections: (1) Boot hang — signature: step 'Supabase Start' hangs beyond 4 min, fix: add --ignore-health-check flag and timeout-minutes to job; (2) Key format mismatch — signature: auth.signInWithPassword returns 400 in CI only, fix: check dual-key export in ci.yml globalSetup; (3) Codegen false positive — signature: 'GraphQL schema has changed' in CI but not locally, fix: pin supabase-cli version, don't use latest.
+      `/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/docs/operations/ci-troubleshooting.md`
+
 
 ---
 
@@ -358,16 +403,16 @@ Affects: `supabase-receptor` — Kubernetes cluster runbook
 
 | Phase | Finding IDs | Rationale |
 | :---- | :---------- | :-------- |
-| 1 | ARCH-04, DOC-03, ARCH-05 | User-designated top priority for this audit. Design and provision the k3s cluster on Windows 11 Pro Hyper-V — this structurally resolves CICD-01, ARCH-01, ARCH-02, and ARCH-03 at the infrastructure level. Write the cluster runbook and ADRs in parallel. |
-| 2 | KEY-01, CICD-03 | Fix the two security-class CI defects that cause silent auth failures. Safe to implement immediately in parallel with Phase 1 planning. |
-| 3 | CICD-02, CGEN-01, CGEN-02, CICD-04, CICD-05, BACK-01, BACK-02 | Pin Supabase CLI version across all repos, standardise the codegen gate to the git-diff pattern, fix receptor-planner bare pytest, replace hardcoded JWT stubs, and add job timeouts. |
-| 4 | SEC-01, SEC-02, CICD-06 | Add explicit GITHUB_TOKEN permission blocks, pin all third-party Actions to commit SHAs, and configure Dependabot for the github-actions ecosystem. Update SoA controls 8.3 and 8.8 upon completion. |
-| 5 | ENV-01, ENV-02, KEY-02, DOC-02, ENV-06 | Provision staging, document all 4 environment tiers, write the promotion runbook, update key management docs and rotation schedule. |
-| 6 | ARCH-01, ARCH-02, ARCH-03, ISO-01, ISO-02, ENV-03, ENV-04 | Design and implement the branch-matched CI architecture (ADR + runner decision), add CI mode to setup.sh, implement test data isolation and pg_cron cleanup. May be superseded by Phase 1 k8s namespace-per-branch approach. |
-| 7 | ENV-05 | Add the prod migration gate workflow (ISO 27001 A.8.32) and update SoA upon completion. Update Supabase governance register. |
-| 8 | ISO-03 | Review and update ISO 27001 physical security controls (7.1-7.4) now that a bare-metal node exists. Document compensating physical controls and update SoA. |
-| 9 | CICD-01, DOC-01 | Reduce Supabase boots per CI run once architecture decisions from phases 1 and 6 are finalised, and resolve the open secrets vault TODO. |
-| 10 | SEC-03 | Enable branch protection across all 6 repositories only after CI is stable and all previous phases are complete. Fast iteration is the current priority; this is the final hardening step. |
+| 1 | ARCH-04, DOC-03, ARCH-05, ENV-07 | User-designated top priority. Provision k3s on Hyper-V, deploy HashiCorp Vault OSS (Helm), configure GitHub OIDC federation, write cluster runbook and ADRs. Write Cloudflare Tunnel config for staging ingress (ENV-07). Structurally resolves CICD-01, ARCH-01, ARCH-02, ARCH-03 and eliminates GitHub Secrets dependency long-term. |
+| 2 | KEY-01, CICD-03 | Fix the two security-class CI defects causing silent auth failures. Safe to implement immediately in parallel with Phase 1 planning. |
+| 3 | CICD-02, CGEN-01, CGEN-02, CICD-04, CICD-05, BACK-01, BACK-02, DOC-04 | Pin Supabase CLI, standardise codegen gate, fix receptor-planner pytest, replace hardcoded JWT stubs, add job timeouts, and write the CI troubleshooting runbook documenting the three known failure modes. |
+| 4 | SEC-01, SEC-02, CICD-06, SEC-04 | Add GITHUB_TOKEN permission blocks, pin Actions to commit SHAs, configure Dependabot for github-actions ecosystem, and pin Docker image digests. Update SoA controls 8.3 and 8.8 upon completion. |
+| 5 | ENV-01, ENV-02, KEY-02, DOC-02, ENV-06, ARCH-06 | Provision staging, document all 4 environment tiers, write the promotion runbook, update key management docs and rotation schedule. Configure pull-through container registry cache on the k3s node. |
+| 6 | ARCH-01, ARCH-02, ARCH-03, ISO-01, ISO-02, ENV-03, ENV-04 | Design and implement branch-matched CI architecture (ADR + runner decision), add CI mode to setup.sh, implement test data isolation and pg_cron cleanup. May be superseded by Phase 1 k8s namespace-per-branch approach. |
+| 7 | ENV-05 | Add prod migration gate workflow (ISO 27001 A.8.32) and update SoA upon completion. Update Supabase governance register. |
+| 8 | ISO-03, DOC-01 | Review and update ISO 27001 physical security controls (7.1-7.4) post-k3s provisioning. Finalise Vault as the secrets management solution (DOC-01) — document configuration, OIDC setup, and key migration from GitHub Secrets. |
+| 9 | CICD-01, PROC-01 | Reduce Supabase boots per CI run once architecture decisions from phases 1 and 6 are finalised. Document the required status check matrix (prerequisite for branch protection in Phase 10). |
+| 10 | SEC-03 | Enable branch protection across all 6 repositories with the required status checks defined in Phase 9 (PROC-01). Fast iteration is the current priority — this is the final hardening step. |
 
 
 ---
@@ -386,6 +431,7 @@ Affects: `supabase-receptor` — Kubernetes cluster runbook
 | ENV-01 | Environment tier documentation | `environment-tiers.md` | Documentation Gap | 🟠 High |
 | ARCH-04 | Kubernetes cluster infrastructure | `kubernetes-cluster.md` | Strategic Opportunity | 🟠 High |
 | SEC-03 | Branch protection on main | `` | Security | 🟠 High |
+| ENV-07 | Cloudflare Tunnel for staging ingress | `staging.md` | Process Gap | 🟠 High |
 | CGEN-01 | GraphQL codegen CI gate | `ci.yml` | Architectural Drift | 🟡 Medium |
 | CGEN-02 | GraphQL codegen CI gate | `ci.yml` | Architectural Drift | 🟡 Medium |
 | CICD-04 | supabase-receptor CI robustness | `ci.yml` | Tech Debt | 🟡 Medium |
@@ -406,6 +452,10 @@ Affects: `supabase-receptor` — Kubernetes cluster runbook
 | CICD-06 | Dependabot for GitHub Actions ecosystem | `` | Tech Debt | 🟡 Medium |
 | ISO-03 | Physical security scope change from k3s bare-metal node | `soa.md` | Compliance | 🟡 Medium |
 | ENV-06 | Secrets rotation schedule | `key-management.md` | Process Gap | 🟡 Medium |
+| PROC-01 | CI required status checks definition | `ci-required-checks.md` | Process Gap | 🟡 Medium |
+| ARCH-06 | Container image pull-through cache on k3s node | `kubernetes-cluster.md` | Strategic Opportunity | 🟡 Medium |
+| SEC-04 | Docker image provenance and digest pinning | `` | Security | 🟡 Medium |
 | DOC-01 | Secrets vault | `key-management.md` | Documentation Gap | 🟢 Low |
 | DOC-03 | Kubernetes cluster runbook | `kubernetes-cluster.md` | Documentation Gap | 🟢 Low |
+| DOC-04 | CI troubleshooting runbook | `ci-troubleshooting.md` | Documentation Gap | 🟢 Low |
 
