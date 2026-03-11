@@ -55,13 +55,14 @@ Affects: `match-backend` — CI pipeline
 - [x] Create .github/workflows/ci.yml for match-backend. The unit job runs pytest targeting only allocator/tests/unit/ with stub Supabase env vars and no Docker step.
       `/Users/ryan/development/common_bond/antigravity-environment/backend/match-backend/.github/workflows/ci.yml`
 
-### NEXT-05: TEST_ADMIN_EMAIL and TEST_ADMIN_PASSWORD are configured in .env.local for local development but are not available in Git
+### NEXT-05: 9 RLS integration tests in planner-frontend/src/test/security/RLS.test.ts silently skip in CI. The skip guard checks `!!
 
 Affects: `planner-frontend, workforce-frontend, preference-frontend` — GitHub Actions secrets
 
 
-- [ ] Add TEST_ADMIN_EMAIL (test_user_admin@commonbond.com) and TEST_ADMIN_PASSWORD to GitHub repository secrets for planner-frontend, workforce-frontend, and preference-frontend, and ensure they are available to pull_request triggers on audit/* branches. Verify the RLS tests in planner-frontend/src/test/security/RLS.test.ts no longer report as skipped in CI.
-      `/Users/ryan/development/common_bond/antigravity-environment/frontend/planner-frontend/.github/workflows/ci.yml`
+- [x] Fix the hasLiveSupabase guard in planner-frontend/src/test/security/RLS.test.ts to check `SUPABASE_SERVICE_ROLE_KEY` instead of `SUPABASE_SERVICE_KEY`. The secrets were confirmed present via `gh secret list` — the bug was a mismatched variable name, not a missing secret. Verify the 9 RLS tests no longer skip in the next CI run.
+      `/Users/ryan/development/common_bond/antigravity-environment/frontend/planner-frontend/src/test/security/RLS.test.ts`
+      _(Completed: 2026-03-11T09:17:00Z)_
 
 ## 🟡 Medium
 
@@ -216,7 +217,7 @@ Affects: `dev-environment` — .agents/skills/act-local-ci/SKILL.md
 | NEXT-01 | CI unit-tests job | `ci.yml` | Test Isolation | 🟠 High |
 | NEXT-02 | CI parallel Supabase boots | `ci.yml` | CI Performance | 🟠 High |
 | MB-01 | CI pipeline | `ci.yml` | Process Gap | 🟠 High |
-| NEXT-05 | GitHub Actions secrets | `ci.yml` | Test Isolation | 🟠 High |
+| NEXT-05 | GitHub Actions secrets | `RLS.test.ts` | Test Isolation | 🟠 High |
 | NEXT-03 | CI unit job contract | `ci.yml` | CI Structure | 🟡 Medium |
 | MB-02 | allocator/tests/ | `tests` | Test Organization | 🟡 Medium |
 | MB-03 | allocator/tests/integration/test_supabase_integration.py | `test_supabase_integration.py` | Test Isolation | 🟡 Medium |
