@@ -31,9 +31,9 @@ sidebar_position: 1
 
 ### 🗓️ 2026-03-11
 
-| Slug                            | Title                        | Scope                                                                                 | Auditor         | Status      | NC Raised | Report                                                                                                                                          |
-| :------------------------------ | :--------------------------- | :------------------------------------------------------------------------------------ | :-------------- | :---------- | :-------- | :---------------------------------------------------------------------------------------------------------------------------------------------- |
-| `260311-about-us-documentation` | About-Us Documentation Audit | `documentation/common-bond` — `docs/about-us/`, `sidebars.ts`, `docusaurus.config.ts` | Ryan Ammendolea | 🔄 Drafting | —         | [audit.md](../audits/260311-about-us-documentation/audit.md) · [recommendations.md](../audits/260311-about-us-documentation/recommendations.md) |
+| Slug                            | Title                        | Scope                                                                                 | Auditor         | Status    | NC Raised | Report                                                                                                                                                          |
+| :------------------------------ | :--------------------------- | :------------------------------------------------------------------------------------ | :-------------- | :-------- | :-------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `260311-about-us-documentation` | About-Us Documentation Audit | `documentation/common-bond` — `docs/about-us/`, `sidebars.ts`, `docusaurus.config.ts` | Ryan Ammendolea | ✅ Closed | —         | [audit.md](../audits/archive/260311-about-us-documentation/audit.md) · [recommendations.md](../audits/archive/260311-about-us-documentation/recommendations.md) |
 
 ### 🗓️ 2026-03-10
 
