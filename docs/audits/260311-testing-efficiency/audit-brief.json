@@ -1,9 +1,16 @@
 {
   "$schema": "../../../dev-environment/.agents/schemas/audit-brief.schema.json",
   "auditSlug": "260311-testing-efficiency",
-  "status": "drafting",
+  "status": "implementing",
   "nextAction": "implement",
-  "openTaskCount": 14,
-  "latestHandover": "Initial audit complete. 10 findings across 6 repositories. Phase 1 priorities: NEXT-01 (split frontend unit-tests CI jobs to be DB-free), MB-01 (create match-backend CI pipeline). The schema fix (null completedAt/completedBy + optional name/description on implementationPhases) was applied to dev-environment/.agents/schemas/recommendations.schema.json as part of this session.",
-  "sessionHistory": []
+  "openTaskCount": 6,
+  "latestHandover": "Session 1 complete. Phase 1 (NEXT-01/02/03, MB-01) and Phase 2 (MB-02, MB-03) implemented and pushed to audit/260311-testing-efficiency branches. Frontend CI split: new DB-free unit-tests job using npx vitest run --project unit (no Supabase) + integration-tests job (keeps Supabase). vitest.config.ts updated to use test.projects (Vitest v4 API) so --project filter resolves. match-backend: tests restructured into unit/ and integration/ subdirs, skip guard added to test_supabase_integration.py, first-ever CI pipeline created targeting allocator/tests/unit/. act verified as working for local CI validation (act push --job unit-tests). Remaining: Phase 3 (DB-01 supabase-receptor pgTAP CI, EF-01 edge function tests) and Phase 4 (DB-02 security matrix, PL-01 Python version fix).",
+  "sessionHistory": [
+    {
+      "session": 1,
+      "date": "2026-03-11",
+      "completedTasks": ["NEXT-01-T1", "NEXT-01-T2", "NEXT-01-T3", "NEXT-02-T1", "NEXT-03-T1", "MB-01-T1", "MB-02-T1", "MB-03-T1"],
+      "notes": "Phase 1+2 merged. Frontend CI split complete across planner, workforce, preference. match-backend CI + test restructure + skip guard implemented. vitest.config.ts uses test.projects (not removed test.workspace). act configured for local CI testing."
+    }
+  ]
 }
