@@ -1,0 +1,9 @@
+{
+  "$schema": "../../../dev-environment/.agents/schemas/audit-brief.schema.json",
+  "auditSlug": "260311-testing-efficiency",
+  "status": "drafting",
+  "nextAction": "implement",
+  "openTaskCount": 14,
+  "latestHandover": "Initial audit complete. 10 findings across 6 repositories. Phase 1 priorities: NEXT-01 (split frontend unit-tests CI jobs to be DB-free), MB-01 (create match-backend CI pipeline). The schema fix (null completedAt/completedBy + optional name/description on implementationPhases) was applied to dev-environment/.agents/schemas/recommendations.schema.json as part of this session.",
+  "sessionHistory": []
+}

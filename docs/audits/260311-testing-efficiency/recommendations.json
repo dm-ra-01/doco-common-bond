@@ -1,0 +1,256 @@
+{
+  "$schema": "../../../dev-environment/.agents/schemas/recommendations.schema.json",
+  "auditSlug": "260311-testing-efficiency",
+  "title": "Testing Efficiency & Modularity Ecosystem Audit",
+  "date": "2026-03-11",
+  "scope": "backend/receptor-planner, backend/match-backend, frontend/planner-frontend, frontend/workforce-frontend, frontend/preference-frontend, supabase-receptor (pgTAP + Edge Functions)",
+  "auditor": "Ryan Ammendolea",
+  "branch": "audit/260311-testing-efficiency",
+  "findings": [
+    {
+      "id": "NEXT-01",
+      "severity": "high",
+      "status": "open",
+      "category": "Test Isolation",
+      "repo": "planner-frontend, workforce-frontend, preference-frontend",
+      "area": "CI unit-tests job",
+      "description": "All three Next.js frontend CI pipelines boot a full Supabase instance inside the unit-tests job. The Vitest workspace correctly separates unit tests (*.unit.test.*) from integration tests, but the CI job runs both tiers in a single npm run test:coverage invocation after starting Supabase. This adds 60-120 s to every PR for tests that have no database dependency.",
+      "tasks": [
+        {
+          "taskId": "NEXT-01-T1",
+          "status": "open",
+          "description": "Split the planner-frontend ci.yml unit-tests job into two jobs: (1) a DB-free 'unit-tests' job that runs `npx vitest run --project unit` with stub env vars and no Supabase step, and (2) an 'integration-tests' job that keeps the existing Supabase-start pattern and runs `npx vitest run --project integration`.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/frontend/planner-frontend/.github/workflows/ci.yml"
+        },
+        {
+          "taskId": "NEXT-01-T2",
+          "status": "open",
+          "description": "Apply the same CI split to workforce-frontend ci.yml.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/frontend/workforce-frontend/.github/workflows/ci.yml"
+        },
+        {
+          "taskId": "NEXT-01-T3",
+          "status": "open",
+          "description": "Apply the same CI split to preference-frontend ci.yml.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/frontend/preference-frontend/.github/workflows/ci.yml"
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "NEXT-02",
+      "severity": "high",
+      "status": "open",
+      "category": "CI Performance",
+      "repo": "planner-frontend, workforce-frontend, preference-frontend",
+      "area": "CI parallel Supabase boots",
+      "description": "All three frontend unit-tests CI jobs run in parallel on every PR, each booting an independent Supabase instance. This triples the runner minutes consumed by Supabase start-up for tests that do not require it. Resolving NEXT-01 (removing Supabase from the unit job) directly resolves this finding.",
+      "tasks": [
+        {
+          "taskId": "NEXT-02-T1",
+          "status": "open",
+          "description": "Verify after the NEXT-01 CI split is applied that the new DB-free unit-tests job in all three frontends contains no Supabase CLI steps, reducing parallel Supabase starts from 3 to 0 for the unit tier.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/frontend/planner-frontend/.github/workflows/ci.yml"
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "MB-01",
+      "severity": "high",
+      "status": "open",
+      "category": "Process Gap",
+      "repo": "match-backend",
+      "area": "CI pipeline",
+      "description": "match-backend has no .github/workflows/ directory. Tests are never run automatically on push or pull request. The allocator core logic (CP-SAT solver, Excel ingestion, preferencer) has no automated regression protection.",
+      "tasks": [
+        {
+          "taskId": "MB-01-T1",
+          "status": "open",
+          "description": "Create .github/workflows/ci.yml for match-backend. The unit job runs pytest targeting only the unit-tier test files (test_solver.py, test_models.py, test_preferences.py, test_api.py, test_service.py) with stub Supabase env vars and no Docker step.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/backend/match-backend/.github/workflows/ci.yml"
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "NEXT-03",
+      "severity": "medium",
+      "status": "open",
+      "category": "CI Structure",
+      "repo": "planner-frontend, workforce-frontend, preference-frontend",
+      "area": "CI unit job contract",
+      "description": "No CI job exists that invokes only the Vitest unit project (npx vitest run --project unit) independently of the integration project. The workspace split exists at the Vitest level but is never exercised in isolation in CI. A standalone DB-free job would provide sub-30-second feedback on logic regressions.",
+      "tasks": [
+        {
+          "taskId": "NEXT-03-T1",
+          "status": "open",
+          "description": "As part of the NEXT-01 split, ensure the new unit-tests job script uses `npx vitest run --project unit` (not `npm run test:coverage`) so only *.unit.test.* files execute. Document the contract in the job step name: 'Run unit tests (DB-free)'.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/frontend/planner-frontend/.github/workflows/ci.yml"
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "MB-02",
+      "severity": "medium",
+      "status": "open",
+      "category": "Test Organization",
+      "repo": "match-backend",
+      "area": "allocator/tests/",
+      "description": "All match-backend tests reside in a flat directory with no unit/, integration/, or e2e/ subdirectories. Logic-only tests (test_solver.py, test_models.py, test_preferences.py) coexist with live-DB tests (test_supabase_integration.py). Running pytest picks up all files indiscriminately.",
+      "tasks": [
+        {
+          "taskId": "MB-02-T1",
+          "status": "open",
+          "description": "Restructure allocator/tests/ to match the receptor-planner pattern: create unit/, integration/, and e2e/ subdirectories. Move test_solver.py, test_models.py, test_preferences.py, test_excel_ingestion.py, test_api.py, test_service.py to unit/. Move test_supabase_integration.py to integration/. Update pyproject.toml testpaths accordingly.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/backend/match-backend/allocator/tests/"
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "MB-03",
+      "severity": "medium",
+      "status": "open",
+      "category": "Test Isolation",
+      "repo": "match-backend",
+      "area": "allocator/tests/test_supabase_integration.py",
+      "description": "test_supabase_end_to_end_integration calls get_supabase_client() and supabase_populator.populate() unconditionally on L14-L29. There is no skip guard (pytest.mark.skipif, importorskip, or env-var check) to deactivate the test when a live Supabase instance is unavailable. This blocks all unit-level test runs for contributors without a running Supabase.",
+      "tasks": [
+        {
+          "taskId": "MB-03-T1",
+          "status": "open",
+          "description": "Add a session-scoped skip guard: `pytest.mark.skipif(not os.getenv('SUPABASE_URL') or 'test.com' in os.getenv('SUPABASE_URL',''), reason='Live Supabase required')`. This mirrors the describe.skipIf(!hasLiveSupabase) pattern used in planner-frontend/src/test/security/RLS.test.ts.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/backend/match-backend/allocator/tests/test_supabase_integration.py"
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "DB-01",
+      "severity": "medium",
+      "status": "open",
+      "category": "Process Gap",
+      "repo": "supabase-receptor",
+      "area": "pgTAP test suite",
+      "description": "supabase-receptor has 18 pgTAP database test files covering structural, referential, functional, security, performance, and quality concerns but no .github/workflows/ directory. The test suite is run locally only. A schema migration could break validated RLS logic, trigger transitions, or delegation constraints with no automated detection.",
+      "tasks": [
+        {
+          "taskId": "DB-01-T1",
+          "status": "open",
+          "description": "Create .github/workflows/ci.yml in supabase-receptor. Add a 'database-tests' job that checks out the repo, installs Supabase CLI, runs `supabase start --ignore-health-check`, then `supabase test db`.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/.github/workflows/ci.yml"
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "EF-01",
+      "severity": "medium",
+      "status": "open",
+      "category": "Test Coverage",
+      "repo": "supabase-receptor",
+      "area": "Edge Functions",
+      "description": "The only edge function test file (supabase/functions/planner-orchestration/index.test.ts) contains 3 placeholder Deno.test blocks that do not import or invoke the actual function handler. The comment on L14-L16 explicitly notes the handler must be refactored to export a named function before it can be tested. Five other edge functions have zero test files.",
+      "tasks": [
+        {
+          "taskId": "EF-01-T1",
+          "status": "open",
+          "description": "Refactor planner-orchestration/index.ts to export a named `handler(req: Request): Promise<Response>` function instead of using an anonymous Deno.serve callback. This enables the existing test file to actually invoke the handler.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/supabase/functions/planner-orchestration/index.ts"
+        },
+        {
+          "taskId": "EF-01-T2",
+          "status": "open",
+          "description": "Rewrite planner-orchestration/index.test.ts to import and invoke the exported handler with mocked Request objects, covering: CORS preflight -> 200, missing Authorization -> 401, valid payload -> handler proceeds past auth gate.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/supabase/functions/planner-orchestration/index.test.ts"
+        },
+        {
+          "taskId": "EF-01-T3",
+          "status": "open",
+          "description": "Add minimal smoke-test files for auth, invalidate-session, and force-refresh-on-role-change edge functions, testing at minimum: missing auth header -> 401, valid structure -> handler doesn't throw.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/supabase/functions/auth/"
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "DB-02",
+      "severity": "low",
+      "status": "open",
+      "category": "Test Coverage",
+      "repo": "supabase-receptor",
+      "area": "pgTAP security suite",
+      "description": "supabase/tests/database/11_security_policies.test.sql is the smallest file in the database test suite at 572 bytes. The bulk of RLS coverage is delegated to functional test files. The security-specific file does not provide an explicit policy-level truth matrix for all tables.",
+      "tasks": [
+        {
+          "taskId": "DB-02-T1",
+          "status": "open",
+          "description": "Expand 11_security_policies.test.sql to serve as an explicit RLS truth matrix for all tables. Each table should have at least one row verifying: anon sees 0 rows, authenticated non-member sees 0 rows, authenticated member sees expected rows.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/supabase/tests/database/11_security_policies.test.sql"
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "PL-01",
+      "severity": "low",
+      "status": "open",
+      "category": "Hygiene",
+      "repo": "receptor-planner",
+      "area": "CI Python version",
+      "description": "receptor-planner/.github/workflows/ci.yml pins Python to 3.9 (L19) but pyproject.toml declares requires-python = '>=3.11'. Mismatched runtimes can mask deprecation warnings or behaviours that only appear in the production-aligned Python version.",
+      "tasks": [
+        {
+          "taskId": "PL-01-T1",
+          "status": "open",
+          "description": "Update receptor-planner CI yml python-version to '3.11' (or '3.12') to align with the pyproject.toml requires-python constraint.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/backend/receptor-planner/.github/workflows/ci.yml"
+        }
+      ],
+      "severity_history": []
+    }
+  ],
+  "clarifications": [
+    {
+      "item": "Unit vs Integration definition",
+      "decision": "Unit tests are those with no external service dependency (DB-free, fully mocked). Integration/E2E tests explicitly require a live Supabase instance. The workspace split (*.unit.test.* vs *.test.*) and the Python unit/ vs integration/ folder structure are the canonical boundaries."
+    },
+    {
+      "item": "E2E testing via Supabase",
+      "decision": "E2E tests are expected to use Supabase and are accepted as slower. The goal is to ensure the unit-test tier is DB-free and fast, reducing tail latency for every PR. Supabase is not removed from CI — it is moved to the correct tier."
+    }
+  ],
+  "implementationPhases": [
+    {
+      "phase": 1,
+      "name": "Fast Unit Test Isolation",
+      "description": "Remove Supabase from the unit-test CI jobs across all frontends and create CI for match-backend.",
+      "findingIds": ["NEXT-01", "NEXT-02", "NEXT-03", "MB-01"],
+      "rationale": "Highest leverage: splits CI unit-test jobs to be DB-free across all three Next.js frontends and creates the missing CI pipeline for match-backend. Directly reduces PR tail latency."
+    },
+    {
+      "phase": 2,
+      "name": "match-backend Test Hygiene",
+      "description": "Restructure flat test directory and add skip guards to isolate live-DB tests.",
+      "findingIds": ["MB-02", "MB-03"],
+      "rationale": "Restructures match-backend test directory and adds skip guards so unit-level tests can run without a live Supabase instance. Unblocks contributors and enables the CI pipeline created in Phase 1."
+    },
+    {
+      "phase": 3,
+      "name": "Supabase Receptor CI Gates",
+      "description": "Add automated CI for pgTAP database tests and fix edge function test coverage.",
+      "findingIds": ["DB-01", "EF-01"],
+      "rationale": "Adds CI gate for supabase-receptor pgTAP tests and converts placeholder edge function tests to real assertions. Both require a live Supabase so belong in the integration tier of CI."
+    },
+    {
+      "phase": 4,
+      "name": "Coverage Quality",
+      "description": "Expand security test coverage and fix Python version hygiene.",
+      "findingIds": ["DB-02", "PL-01"],
+      "rationale": "Coverage and hygiene improvements that are lower priority but improve long-term maintainability. Safe to batch as a single small PR per repo."
+    }
+  ],
+  "deferred": []
+}
