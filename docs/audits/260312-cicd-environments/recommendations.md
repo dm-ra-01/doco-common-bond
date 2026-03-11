@@ -243,6 +243,38 @@ Affects: `match-backend, receptor-planner` — Hardcoded JWT placeholder in CI
 - [ ] Apply the same stub replacement to receptor-planner ci.yml.
       `/Users/ryan/development/common_bond/antigravity-environment/backend/receptor-planner/.github/workflows/ci.yml`
 
+### SEC-01: No frontend or backend ci.yml file includes a top-level 'permissions:' block. Without explicit permissions, workflows in
+
+Affects: `cross-ecosystem` — GitHub Actions permissions
+
+
+- [ ] Add 'permissions: contents: read' at the top level of all 5 frontend/backend ci.yml files, then add specific write grants only where needed (e.g. pull-requests: write for PR comment steps if added in future).
+      ``
+
+### SEC-02: All CI files reference third-party Actions by tag (e.g. 'actions/checkout@v4', 'supabase/setup-cli@v1') rather than by c
+
+Affects: `cross-ecosystem` — Third-party Action version pinning
+
+
+- [ ] Pin all third-party GitHub Actions to their full commit SHA (e.g. actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2). Configure Renovate Bot to auto-propose SHA bumps when new versions release.
+      ``
+
+### CICD-05: No ci.yml file in the ecosystem specifies a 'timeout-minutes:' on any job. If a Supabase boot hangs (a known failure mod
+
+Affects: `cross-ecosystem` — CI job timeout configuration
+
+
+- [ ] Add 'timeout-minutes: 20' to all Supabase-dependent jobs and 'timeout-minutes: 10' to pure unit/lint jobs across all 5 ci.yml files. Set a per-workflow timeout-minutes of 30 as a backstop.
+      ``
+
+### ENV-05: No migration gate exists to prevent unreviewed schema changes from reaching the production Supabase instance. setup.sh a
+
+Affects: `supabase-receptor` — Production database change gate
+
+
+- [ ] Add a GitHub Actions workflow 'prod-deploy.yml' that triggers manually (workflow_dispatch) or on tag push to 'release/*'. The workflow runs 'supabase db diff --schema public' against prod, posts the diff as a PR comment or workflow artifact for human review, and requires manual approval (environment protection rule) before running 'supabase db push'.
+      `/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/.github/workflows/prod-deploy.yml`
+
 ## 🟢 Low
 
 ### DOC-01: key-management.md:86-88 has an open TODO block for integrating Bitwarden/Doppler CLI into the deployment workflow. This 
@@ -252,6 +284,14 @@ Affects: `supabase-receptor` — Secrets vault
 
 - [ ] Either implement Doppler CLI integration in setup.sh (preferred — syncs across dev/test/staging/prod) or close the TODO by documenting a deliberate decision to use GitHub Secrets exclusively and update the key-management doc accordingly.
       `/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/docs/infrastructure/security/key-management.md`
+
+### DOC-03: The ARCH-04 finding identifies a k3s Kubernetes cluster as the strategic infrastructure target, but no documentation exi
+
+Affects: `supabase-receptor` — Kubernetes cluster runbook
+
+
+- [ ] Write docs/infrastructure/environment/kubernetes-cluster.md covering: cluster topology, VM provisioning steps, k3s installation commands, Helm chart deployment for Supabase, Traefik ingress rules, cert-manager DNS-01 challenge config, and disaster recovery procedure.
+      `/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/docs/infrastructure/environment/kubernetes-cluster.md`
 
 
 ---
@@ -298,5 +338,10 @@ Affects: `supabase-receptor` — Secrets vault
 | DOC-02 | Promotion runbook | `promotion-runbook.md` | Documentation Gap | 🟡 Medium |
 | BACK-01 | Backend CI integration test coverage | `ci.yml` | Process Gap | 🟡 Medium |
 | BACK-02 | Hardcoded JWT placeholder in CI | `ci.yml` | Security | 🟡 Medium |
+| SEC-01 | GitHub Actions permissions | `` | Security | 🟡 Medium |
+| SEC-02 | Third-party Action version pinning | `` | Security | 🟡 Medium |
+| CICD-05 | CI job timeout configuration | `` | Process Gap | 🟡 Medium |
+| ENV-05 | Production database change gate | `prod-deploy.yml` | Compliance | 🟡 Medium |
 | DOC-01 | Secrets vault | `key-management.md` | Documentation Gap | 🟢 Low |
+| DOC-03 | Kubernetes cluster runbook | `kubernetes-cluster.md` | Documentation Gap | 🟢 Low |
 

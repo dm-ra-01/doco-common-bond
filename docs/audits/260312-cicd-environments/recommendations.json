@@ -606,6 +606,106 @@
         }
       ],
       "severity_history": []
+    },
+    {
+      "id": "SEC-01",
+      "severity": "medium",
+      "status": "proposed",
+      "category": "Security",
+      "repo": "cross-ecosystem",
+      "area": "GitHub Actions permissions",
+      "description": "No frontend or backend ci.yml file includes a top-level 'permissions:' block. Without explicit permissions, workflows inherit the default GITHUB_TOKEN permissions (read for most scopes, write for contents in some contexts). ISO 27001 A.8.3 (information access restriction) requires least-privilege for automated pipelines.",
+      "tasks": [
+        {
+          "taskId": "SEC-01-T1",
+          "status": "open",
+          "description": "Add 'permissions: contents: read' at the top level of all 5 frontend/backend ci.yml files, then add specific write grants only where needed (e.g. pull-requests: write for PR comment steps if added in future).",
+          "targetFile": "",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "SEC-02",
+      "severity": "medium",
+      "status": "proposed",
+      "category": "Security",
+      "repo": "cross-ecosystem",
+      "area": "Third-party Action version pinning",
+      "description": "All CI files reference third-party Actions by tag (e.g. 'actions/checkout@v4', 'supabase/setup-cli@v1') rather than by commit SHA. A tag can be silently force-pushed to point to malicious code. ISO 27001 A.8.8 (management of technical vulnerabilities) requires awareness of supply-chain risks in build tooling.",
+      "tasks": [
+        {
+          "taskId": "SEC-02-T1",
+          "status": "open",
+          "description": "Pin all third-party GitHub Actions to their full commit SHA (e.g. actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2). Configure Renovate Bot to auto-propose SHA bumps when new versions release.",
+          "targetFile": "",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "CICD-05",
+      "severity": "medium",
+      "status": "proposed",
+      "category": "Process Gap",
+      "repo": "cross-ecosystem",
+      "area": "CI job timeout configuration",
+      "description": "No ci.yml file in the ecosystem specifies a 'timeout-minutes:' on any job. If a Supabase boot hangs (a known failure mode with --ignore-health-check), the job will run until GitHub's hard 6-hour limit, consuming runner minutes and blocking the queue. Reference: GitHub docs recommend always setting job timeouts.",
+      "tasks": [
+        {
+          "taskId": "CICD-05-T1",
+          "status": "open",
+          "description": "Add 'timeout-minutes: 20' to all Supabase-dependent jobs and 'timeout-minutes: 10' to pure unit/lint jobs across all 5 ci.yml files. Set a per-workflow timeout-minutes of 30 as a backstop.",
+          "targetFile": "",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "DOC-03",
+      "severity": "low",
+      "status": "proposed",
+      "category": "Documentation Gap",
+      "repo": "supabase-receptor",
+      "area": "Kubernetes cluster runbook",
+      "description": "The ARCH-04 finding identifies a k3s Kubernetes cluster as the strategic infrastructure target, but no documentation exists for how to provision, update, or recover the cluster. Without runbooks, the cluster becomes a single-engineer knowledge silo.",
+      "tasks": [
+        {
+          "taskId": "DOC-03-T1",
+          "status": "open",
+          "description": "Write docs/infrastructure/environment/kubernetes-cluster.md covering: cluster topology, VM provisioning steps, k3s installation commands, Helm chart deployment for Supabase, Traefik ingress rules, cert-manager DNS-01 challenge config, and disaster recovery procedure.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/docs/infrastructure/environment/kubernetes-cluster.md",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "ENV-05",
+      "severity": "medium",
+      "status": "proposed",
+      "category": "Compliance",
+      "repo": "supabase-receptor",
+      "area": "Production database change gate",
+      "description": "No migration gate exists to prevent unreviewed schema changes from reaching the production Supabase instance. setup.sh allows running 'supabase db push' against prod without a mandatory human approval step or CI check. ISO 27001 A.8.32 (change management) requires documented approval for production changes.",
+      "tasks": [
+        {
+          "taskId": "ENV-05-T1",
+          "status": "open",
+          "description": "Add a GitHub Actions workflow 'prod-deploy.yml' that triggers manually (workflow_dispatch) or on tag push to 'release/*'. The workflow runs 'supabase db diff --schema public' against prod, posts the diff as a PR comment or workflow artifact for human review, and requires manual approval (environment protection rule) before running 'supabase db push'.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/.github/workflows/prod-deploy.yml",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
     }
   ],
   "clarifications": [

@@ -3,7 +3,7 @@
   "auditSlug": "260312-cicd-environments",
   "status": "drafting",
   "nextAction": "implement",
-  "openTaskCount": 30,
-  "latestHandover": "Initial audit complete. 19 findings across preference-frontend, planner-frontend, workforce-frontend, and supabase-receptor. Phase 1 priorities: KEY-01 (critical — JWT/publishable key incompatibility in planner/workforce CI), CICD-03 (high — hardcoded service role key). Phase 2: CICD-02 (CLI version pinning), CGEN-01/CGEN-02 (codegen gate false positives). Approved design decisions recorded in clarifications[]. Reference implementation for CI key handling is preference-frontend ci.yml.",
+  "openTaskCount": 42,
+  "latestHandover": "Initial audit complete. 22 findings across all 6 repos (preference-frontend, planner-frontend, workforce-frontend, supabase-receptor, match-backend, receptor-planner). Phase 1 priorities: KEY-01 (critical — JWT/publishable key incompatibility in planner/workforce CI), CICD-03 (high — hardcoded service role key). Phase 2: CICD-02 (CLI pinning), CGEN-01/CGEN-02 (codegen gate), BACK-01/BACK-02 (backend CI fixes). Phase 6 (strategic): ARCH-04 — k3s Kubernetes cluster on Windows 11 Pro Hyper-V machine. Approved design decisions in clarifications[]. Reference implementation for CI key handling: preference-frontend ci.yml.",
   "sessionHistory": []
 }
