@@ -129,4 +129,3 @@ See [Vision](../strategy/strategy-vision/vision) and
 :::tip[VTO Reference]
 The complete Vision/Traction Organizer — including quarterly rocks for FY2026, 1-year and 3-year plans, and SWOT analysis — is maintained in [VTO](../operations/eos/vto).
 :::
-:::

@@ -47,7 +47,6 @@ building Receptor.
 :::info[Still Practising]
 Ryan continues to work as an Intensive Care Registrar at Monash Health, rotating across Dandenong, Casey, and Latrobe Regional hospitals. This active clinical practice is intentional — it ensures Receptor remains grounded in how healthcare actually works today, not how it worked when a vendor last visited a hospital.
 :::
-:::
 
 ---
 
@@ -139,5 +138,4 @@ Hospital in 2020, reflecting his commitment to equitable care.
 
 :::tip[Full Professional Profile]
 For Ryan's complete professional CV — including publications, service improvement projects, and professional development — see the [Founder Profile in Business Strategy](../strategy/strategy-vision/founder).
-:::
 :::

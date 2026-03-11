@@ -118,4 +118,3 @@ Despite being pre-revenue, we have built a meaningful body of evidence:
 :::tip[For Our Current Roadmap]
 See [Our Aims](./our-aims) for specific 1-year, 3-year, and 10-year goals, and [VTO](../operations/eos/vto) for the full Vision/Traction Organizer including quarterly rocks.
 :::
-:::
