@@ -10,7 +10,7 @@ sidebar_position: 1
 > platform. Each entry links to the source `audit.md` and `recommendations.md`
 > where they live inside the relevant repository's `docs/audits/` folder.
 
-**Last Updated:** 2026-03-11 | **Maintained by:** Engineering Leadership
+**Last Updated:** 2026-03-12 | **Maintained by:** Engineering Leadership
 
 ---
 
@@ -28,6 +28,12 @@ sidebar_position: 1
 ---
 
 ## Active Registry
+
+### 🗓️ 2026-03-12
+
+| Slug | Title | Scope | Auditor | Status | NC Raised | Report |
+| :--- | :---- | :---- | :------ | :----- | :-------- | :----- |
+| `260312-cicd-environments` | CI/CD Infrastructure & Environment Architecture Audit | `supabase-receptor`, `preference-frontend`, `planner-frontend`, `workforce-frontend` — cross-ecosystem | Ryan Ammendolea | 🔄 Drafting | — | [audit.md](../audits/260312-cicd-environments/audit.md) · [recommendations.md](../audits/260312-cicd-environments/recommendations.md) |
 
 ### 🗓️ 2026-03-11
 
@@ -85,15 +91,15 @@ sidebar_position: 1
 ```
 Repository                   Audits   Last Audit
 ─────────────────────────────────────────────────
-supabase-receptor              3       2026-03-11
+supabase-receptor              4       2026-03-12
 backend/match-backend          2       2026-03-11
 backend/receptor-planner       1       2026-03-11
-planner-frontend               4       2026-03-11
-workforce-frontend             3       2026-03-11
-preference-frontend            3       2026-03-11
+planner-frontend               5       2026-03-12
+workforce-frontend             4       2026-03-12
+preference-frontend            4       2026-03-12
 common-bond (ISMS docs + eng)  5       2026-03-09
 ────────────────────────────────────── ─────────
-Total                          17+     2026-03-11
+Total                          18+     2026-03-12
 ```
 
 > **Coverage gaps addressed:** `workforce-frontend`, `preference-frontend`, and

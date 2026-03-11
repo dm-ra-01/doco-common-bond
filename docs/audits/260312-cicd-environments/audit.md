@@ -1,0 +1,161 @@
+# CI/CD Infrastructure & Environment Architecture Audit
+
+**Date:** 2026-03-12\
+**Scope:** All repositories — `supabase-receptor`, `preference-frontend`, `planner-frontend`, `workforce-frontend`, `backend/receptor-planner`, `backend/match-backend`\
+**Auditor:** Ryan Ammendolea\
+**Standard:** ISO 27001 A.8.31 (separation of dev/test/prod), A.8.9 (configuration management), A.8.25 (secure development lifecycle)
+
+---
+
+## Executive Summary
+
+19 findings across 2 repositories and cross-ecosystem CI infrastructure. The ecosystem's CI/CD pipeline has three compounding structural deficiencies: (1) all Supabase-dependent CI jobs boot an independent ephemeral instance per job with no sharing, consuming approximately 4 minutes of runner time per boot and 12+ minutes per frontend push; (2) a hard Supabase API key format incompatibility between the new `sb_publishable_*` format (used by REST/GraphQL) and the legacy JWT `ANON_KEY` (required by `signInWithPassword`) is undocumented and creates invisible auth failures if the dual-key export workaround is removed; and (3) all three frontend repos pin `version: latest` for the Supabase CLI, creating schema-drift false positives when the upstream CLI changes its output formatting. Beyond CI, no test, staging, or production environment is documented or deployed — only a single dev instance exists. The Supabase key format hard-deadline of October 1, 2025 (already passed) requires an urgent migration audit of all four repos.
+
+| Repository / Area | Coverage | Issues Found | Overall |
+| --- | --- | --- | --- |
+| `preference-frontend` CI | ✅ | 5 | ⚠️ Partially compliant |
+| `planner-frontend` CI | ⚠️ | 6 | ❌ Non-compliant |
+| `workforce-frontend` CI | ⚠️ | 5 | ❌ Non-compliant |
+| `supabase-receptor` CI | ❌ | 3 | ❌ Non-compliant |
+| Environment Tiers | ❌ | 4 | ❌ Critical gap |
+| Key Format Migration | ❌ | 1 | 🔴 Critical/Deadline passed |
+
+---
+
+## 1. Environment Tiers
+
+### 1.1 Documented Environment Tier Status
+
+**Strengths:**
+
+- `setup.sh` accepts `--env dev|test|staging|prod` and correctly differentiates secret injection behaviour per tier.
+- `RESET_setup.sh` provides a clean teardown mechanism to complement provisioning.
+- The VM operations runbook (`docs/operations/vm-setup.md`) is comprehensive for initial server setup.
+
+**Gaps:**
+
+- [ENV-01] `docs/infrastructure/environment/supabase-self-hosted.md` and `specs.md` document only a single dev environment. No `test`, `staging`, or `prod` tier is instantiated or documented anywhere in the repository.
+- [ENV-02] `setup.conf.example` lacks any template for non-dev tiers. All URLs are hardcoded to `localhost:8000`/`localhost:3000`, with no placeholder pattern for test/staging sub-domain URLs or port offsets.
+- [ENV-03] `RESET_setup.sh` uses `read -p` (interactive prompt) and cannot be invoked non-interactively by a CI runner. There is no `--yes` / `--force` flag.
+- [ENV-04] No `pg_cron` job exists to purge stale test organisations (i.e. `__test_*` naming convention) from the shared test/staging instance. Test data accumulates indefinitely.
+
+---
+
+## 2. Supabase CI Boot Architecture (Cross-Ecosystem)
+
+### 2.1 Duplicate Supabase Boots per PR
+
+**Strengths:**
+
+- All three frontend repos correctly isolate DB-free unit tests from Supabase-dependent jobs — preventing unnecessary boots for lint/type/unit workloads.
+- `preference-frontend` successfully implemented the dual-key export workaround (JWT + publishable key in separate env vars).
+
+**Gaps:**
+
+- [CICD-01] Each frontend repo runs **3 independent Supabase boots** per CI trigger (`integration-tests`, `codegen-check`, `e2e-axe`), each taking ~4 minutes. A single 3-repo push creates up to 9 parallel Supabase boot events and ≥36 minutes of aggregate runner time, not counting queue time.
+- [CICD-02] All three frontend repos use `version: latest` for `supabase/setup-cli@v1` (`planner-frontend/.github/workflows/ci.yml:82`, `workforce-frontend/.github/workflows/ci.yml:79`, `preference-frontend/.github/workflows/ci.yml:123`). The Supabase CLI is not version-pinned, meaning any upstream CLI breaking change silently propagates without warning.
+
+### 2.2 Service Role Key Handling
+
+**Gaps:**
+
+- [CICD-03] `planner-frontend/.github/workflows/ci.yml:105` and `workforce-frontend/.github/workflows/ci.yml:102` pass `SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.LOCAL_SUPABASE_SECRET_KEY }}` — a hardcoded GitHub Secret — rather than extracting the dynamically generated key from the running CI instance via `supabase status`. This means the key used is the developer's local dev key, not the ephemeral CI instance key. If the local dev key rotates or differs, integration tests will silently fail auth.
+- [CICD-04] `supabase-receptor/.github/workflows/ci.yml:27` runs `supabase start --ignore-health-check` with no `--workdir` flag, meaning it starts against whatever `supabase/config.toml` is found at the invocation directory. The step is fragile to CWD assumptions and any future directory restructure.
+
+---
+
+## 3. Supabase Key Format Migration
+
+### 3.1 JWT vs. Publishable Key Incompatibility
+
+**Strengths:**
+
+- `preference-frontend` correctly exports both `NEXT_PUBLIC_SUPABASE_ANON_KEY` (publishable, for REST/GraphQL) and `NEXT_PUBLIC_SUPABASE_ANON_JWT` (legacy JWT, for `signInWithPassword`) in `.github/workflows/ci.yml:138-143`.
+
+**Gaps:**
+
+- [KEY-01] Supabase migrated from JWT-based keys (`eyJ...`) to `sb_publishable_*` / `sb_secret_*` format with a **hard deadline of October 1, 2025** (already passed). `planner-frontend` and `workforce-frontend` CI jobs do not export `ANON_JWT` — any test that calls `signInWithPassword()` will silently receive an `sb_publishable_*` key that is rejected by the GoTrue auth endpoint. The `globalSetup` files for these repos have not been audited against this requirement.
+- [KEY-02] `key-management.md:33-40` references `npx supabase status` as the way to retrieve `ANON_KEY` and `SERVICE_ROLE_KEY`, using the old key names. The document predates the publishable key migration and does not reflect that `ANON_KEY` is now the legacy JWT and `PUBLISHABLE_KEY` is the new public key. The documentation is actively misleading.
+
+---
+
+## 4. GraphQL Codegen CI Gate
+
+### 4.1 Codegen Gate Standardisation
+
+**Strengths:**
+
+- `preference-frontend` uses the correct `git diff --exit-code` pattern instead of `--check`, avoiding false positives from CLI-version formatting noise (`preference-frontend/.github/workflows/ci.yml:228-233`).
+
+**Gaps:**
+
+- [CGEN-01] `planner-frontend/.github/workflows/ci.yml:180` runs `npx graphql-codegen --config codegen.check.ts --check`. The `--check` flag performs an in-memory comparison that does not account for `postcodegen` hook patching (the `// @ts-nocheck` header prepended by `package.json`). This produces false-positive "drift" failures on any run where the hook-patched committed file differs from the in-memory unpatched output.
+- [CGEN-02] `workforce-frontend/.github/workflows/ci.yml:172` has the same `--check` defect as planner. Both repos should adopt the `regenerate + git diff` pattern already implemented in `preference-frontend`.
+
+---
+
+## 5. Branch-Matched Ephemeral Environments
+
+### 5.1 Architecture Gap
+
+**Gaps:**
+
+- [ARCH-01] No branch-matched ephemeral Supabase environment strategy exists. Every CI run uses a cold-boot ephemeral instance and tears it down after the run. There is no mechanism to reuse a running test instance across related jobs in the same workflow, nor across concurrent PRs.
+- [ARCH-02] The self-hosted Supabase provisioning script (`setup.sh`) has no CI-native invocation mode. It requires interactive prompts for staging/prod, uses `python3 -c yaml` inline patching (requiring PyYAML on the host), and has no idempotent "ensure instance is running" fast-path for CI use.
+- [ARCH-03] No self-hosted GitHub Actions runner is configured on the same VM hosting the Supabase dev instance. All CI jobs use GitHub-hosted `ubuntu-latest` runners, which cannot share the Docker daemon with the self-hosted Supabase stack. This makes branch-matched Docker-network ephemeral instances infeasible without a runner co-location change.
+
+---
+
+## 6. Test Data Isolation
+
+### 6.1 Namespacing and Cleanup
+
+**Gaps:**
+
+- [ISO-01] No test organisation namespacing convention is specified or enforced. All three frontend repos use the same `TEST_ADMIN_EMAIL`/`TEST_WORKER_EMAIL` GitHub Secrets, meaning concurrent CI runs from different branches on the same instance could create or modify the same test data.
+- [ISO-02] The seed data (`seed_acacia.sql`) and test credentials (`test_user_credentials.json`) are configured for a single shared "Acacia Enterprises" org with no run-ID isolation mechanism.
+
+---
+
+## 7. Documentation and Cross-Repo Consistency
+
+### 7.1 Infrastructure Documentation Gaps
+
+**Gaps:**
+
+- [DOC-01] `docs/infrastructure/security/key-management.md:86-88` has an open `TODO` block for integrating Bitwarden/Doppler CLI into the deployment workflow. This was identified in the initial specifications but has never been actioned — there is no secrets vault integration.
+- [DOC-02] No runbook exists for promoting a change through dev → test → staging → prod. The `setup.sh` supports the `--env` flag but there is no documented promotion workflow, rollback procedure, or migration gate.
+
+---
+
+## 8. Cross-Cutting Observations
+
+1. **Reference implementation exists**: `preference-frontend` CI is the most advanced — dual-key export, `git diff` codegen gate, `tr -d '"'` quote-stripping. It should be the canonical reference for upgrading the other two frontend repos.
+2. **`supabase-receptor` CI is the thinnest**: It runs `supabase start` with no workdir and no key extraction, has no integration between `database-tests` and `deno-check` jobs, and does not pin the CLI version.
+3. **Backend repos have no CI**: `receptor-planner` and `match-backend` have no CI files at all (directory search returned 0 results). This is noteworthy as a cross-ecosystem gap; it is tracked in `260311-testing-efficiency` and is deferred from this audit.
+
+---
+
+## Severity Summary
+
+| Finding ID | Repository / Area | File | Category | Severity |
+| --- | --- | --- | --- | --- |
+| CICD-01 | All frontend repos | `.github/workflows/ci.yml` (all 3) | Architectural Drift | 🟠 High |
+| CICD-02 | All frontend repos | `.github/workflows/ci.yml` (all 3) | Tech Debt | 🟠 High |
+| CICD-03 | planner, workforce | `ci.yml:105`, `ci.yml:102` | Security | 🟠 High |
+| CICD-04 | supabase-receptor | `.github/workflows/ci.yml:27` | Tech Debt | 🟡 Medium |
+| KEY-01 | planner, workforce | `ci.yml` (globalSetup not audited) | Security | 🔴 Critical |
+| KEY-02 | supabase-receptor | `docs/infrastructure/security/key-management.md` | Documentation Gap | 🟡 Medium |
+| CGEN-01 | planner-frontend | `.github/workflows/ci.yml:180` | Architectural Drift | 🟡 Medium |
+| CGEN-02 | workforce-frontend | `.github/workflows/ci.yml:172` | Architectural Drift | 🟡 Medium |
+| ARCH-01 | Cross-ecosystem | — | Process Gap | 🟠 High |
+| ARCH-02 | supabase-receptor | `utils/setup.sh` | Process Gap | 🟠 High |
+| ARCH-03 | Cross-ecosystem | — | Process Gap | 🟠 High |
+| ENV-01 | supabase-receptor | `docs/infrastructure/environment/` | Documentation Gap | 🟠 High |
+| ENV-02 | supabase-receptor | `setup.conf.example` | Process Gap | 🟡 Medium |
+| ENV-03 | supabase-receptor | `utils/RESET_setup.sh` | Process Gap | 🟡 Medium |
+| ENV-04 | supabase-receptor | `supabase/` (missing) | Process Gap | 🟡 Medium |
+| ISO-01 | All frontend repos | `ci.yml` (all 3) | Process Gap | 🟡 Medium |
+| ISO-02 | supabase-receptor | `seed_acacia.sql`, `test_user_credentials.json` | Process Gap | 🟡 Medium |
+| DOC-01 | supabase-receptor | `docs/infrastructure/security/key-management.md` | Documentation Gap | 🟢 Low |
+| DOC-02 | supabase-receptor | `docs/operations/` (missing) | Documentation Gap | 🟡 Medium |
