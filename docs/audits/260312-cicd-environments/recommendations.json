@@ -1102,6 +1102,122 @@
         }
       ],
       "severity_history": []
+    },
+    {
+      "id": "ARCH-09",
+      "severity": "medium",
+      "status": "open",
+      "category": "Tech Debt",
+      "repo": "supabase-receptor",
+      "area": "Helm chart version pinning and upgrade cadence",
+      "description": "Helm chart installs (Vault, kube-prometheus-stack, Calico/Tigera Operator, cert-manager, Traefik) are not pinned to exact chart versions. Without version pins a 'helm upgrade' can silently pull a breaking chart version. Approved with the requirement that a routine upgrade review cadence is established alongside the pinning.",
+      "tasks": [
+        {
+          "taskId": "ARCH-09-T1",
+          "status": "open",
+          "description": "Adopt Helmfile (helmfile.yaml) to declare all Helm chart versions declaratively and commit to git. Pin every chart to an exact version (e.g. vault: 0.28.1, kube-prometheus-stack: 58.x.x). Store in k3s/helmfile.yaml. All future upgrades must go through a PR with the chart changelog reviewed.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/k3s/helmfile.yaml",
+          "completedAt": null,
+          "completedBy": null
+        },
+        {
+          "taskId": "ARCH-09-T2",
+          "status": "open",
+          "description": "Establish a quarterly Helm chart upgrade review cadence. Create a GitHub Actions scheduled workflow '.github/workflows/helm-upgrade-check.yml' that runs quarterly (cron: '0 9 1 1,4,7,10 *') and opens an issue listing each chart's current pinned version vs the latest available version. The issue template includes the changelog URL and a checklist for testing the upgrade on dev first.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/.github/workflows/helm-upgrade-check.yml",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "ENV-09",
+      "severity": "medium",
+      "status": "open",
+      "category": "Process Gap",
+      "repo": "supabase-receptor",
+      "area": "Staging to production promotion checklist",
+      "description": "No documented gate exists between staging and production deployments. A developer can manually push a schema migration or code change to production without verifying it on staging first, bypassing the ENV-05 prod migration gate. A formal promotion checklist is required.",
+      "tasks": [
+        {
+          "taskId": "ENV-09-T1",
+          "status": "open",
+          "description": "Write docs/operations/promotion-runbook.md covering the staging-to-production promotion gate: (1) run staging smoke tests (list specific test commands); (2) review 'supabase db diff' output between staging and prod schemas; (3) trigger ENV-05 prod-deploy.yml workflow \u2014 awaits human approval; (4) stakeholder sign-off (who approves and how); (5) post-deploy verification steps; (6) rollback procedure (restore from latest R2 backup, revert migration). Include a checklist template for use in each deployment PR.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/docs/operations/promotion-runbook.md",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "SEC-06",
+      "severity": "high",
+      "status": "open",
+      "category": "Security",
+      "repo": "supabase-receptor",
+      "area": "Vault unseal key security (YubiKey PKCS#11 HSM)",
+      "description": "When Vault initialises on k3s, it generates 5 unseal key shares and a root token. Storing these in plain text is catastrophic if the host OS is compromised. The available Windows 11 Pro machine has TPM 2.0 and a YubiKey USB-C device, enabling hardware-backed unsealing that prevents key extraction even under OS-level compromise.",
+      "tasks": [
+        {
+          "taskId": "SEC-06-T1",
+          "status": "open",
+          "description": "Configure Vault auto-unseal using the YubiKey USB-C as a PKCS#11 HSM: install OpenSC + libykcs11, configure Vault's HSM seal stanza pointing to the YubiKey's PKCS#11 slot. The YubiKey generates and stores the master key internally \u2014 it never leaves the device in plain text. Test unseal on k3s restart to confirm auto-unseal works without human intervention. Document in docs/infrastructure/disaster-recovery.md.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/docs/infrastructure/disaster-recovery.md",
+          "completedAt": null,
+          "completedBy": null
+        },
+        {
+          "taskId": "SEC-06-T2",
+          "status": "open",
+          "description": "Use TPM 2.0 as a secondary unseal backup: configure a second Vault seal stanza using the tpmkey seal plugin (or Vault's Transit seal backed by a TPM-stored key via go-tpm). This provides a fallback if the YubiKey is unavailable. Store the Vault root token in a sealed envelope in a physically-secured location, and document where it is stored in the DR plan (not in git). Write ADR-006 documenting the YubiKey-primary / TPM-secondary unsealing architecture.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/docs/adr/adr-006-vault-unseal-architecture.md",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "DOC-06",
+      "severity": "low",
+      "status": "open",
+      "category": "Documentation Gap",
+      "repo": "supabase-receptor",
+      "area": "Engineer onboarding guide",
+      "description": "The infrastructure being built in Phase 1 (k3s, Vault, Calico, Grafana, Cloudflare Tunnel, ADRs) is complex and undocumented from an onboarding perspective. A new engineer has no single starting point to understand how to run the dev environment, connect to staging, or run CI locally.",
+      "tasks": [
+        {
+          "taskId": "DOC-06-T1",
+          "status": "open",
+          "description": "Write docs/ONBOARDING.md covering: (1) Prerequisites \u2014 WSL2/Linux, Docker, kubectl, k3s kubeconfig, Helmfile, Vault CLI, cloudflared, Supabase CLI, act (for local CI); (2) Dev environment setup \u2014 clone supabase-receptor, run setup.sh, verify Supabase starts; (3) Connecting to staging \u2014 Cloudflare Tunnel URL, Vault login via OIDC; (4) Running CI locally \u2014 see .agents/skills/act-local-ci/SKILL.md; (5) Key contacts \u2014 who owns prod, who owns Vault unseal key; (6) ADR index link.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/docs/ONBOARDING.md",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "CICD-07",
+      "severity": "medium",
+      "status": "open",
+      "category": "Tech Debt",
+      "repo": "cross-ecosystem",
+      "area": "npm and pip dependency caching in CI",
+      "description": "No ci.yml file in the ecosystem uses 'actions/cache' for node_modules or Python virtualenvs. Each CI run performs a full cold install of all dependencies (~30 seconds per job, ~2.5 minutes across 5 repos per push). With a self-hosted runner this cold install time is unnecessary once the cache warms.",
+      "tasks": [
+        {
+          "taskId": "CICD-07-T1",
+          "status": "open",
+          "description": "Add 'actions/cache' steps to all 3 frontend ci.yml files keyed on 'hashFiles(\"**/package-lock.json\")'. For backend repos (match-backend, receptor-planner) add pip cache steps keyed on 'hashFiles(\"**/requirements.txt\")'. Once running on a self-hosted runner (ARCH-03), switch to a local filesystem cache path (/var/cache/ci/npm, /var/cache/ci/pip) instead of the GitHub-managed cache to eliminate upload/download overhead entirely.",
+          "targetFile": "",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
     }
   ],
   "clarifications": [
@@ -1160,20 +1276,30 @@
     {
       "item": "Kubernetes CNI and network policy",
       "decision": "k3s will use Calico CNI (ARCH-08) instead of the default Flannel, installed via Tigera Operator Helm chart with --flannel-backend=none. NetworkPolicies isolate supabase, vault, monitoring, and ci-runner namespaces. Documented in ADR-005."
+    },
+    {
+      "item": "Vault unseal hardware",
+      "decision": "YubiKey USB-C is the primary Vault unseal mechanism (PKCS#11 HSM via OpenSC/libykcs11 \u2014 SEC-06-T1). TPM 2.0 on the Windows 11 Pro machine is the secondary backup seal (SEC-06-T2). Vault root token is stored in a physically-secured offline location (not git). Architecture documented in ADR-006."
+    },
+    {
+      "item": "Helm chart upgrade cadence",
+      "decision": "All Helm charts are pinned to exact versions in helmfile.yaml (ARCH-09-T1). A quarterly automated GitHub Actions workflow (ARCH-09-T2) opens an issue listing current vs latest chart versions for review. Upgrades must be tested on dev/staging before applying to production."
     }
   ],
   "implementationPhases": [
     {
       "phase": 1,
       "name": "Strategic Priority: Kubernetes Cluster, Vault & Infrastructure",
-      "rationale": "User-designated top priority. Provision k3s on Hyper-V, deploy HashiCorp Vault OSS (Helm), configure GitHub OIDC federation, write cluster runbook and ADRs. Write Cloudflare Tunnel config for staging ingress (ENV-07). Structurally resolves CICD-01, ARCH-01, ARCH-02, ARCH-03 and eliminates GitHub Secrets dependency long-term. Deploy Calico CNI for network policy enforcement and kube-prometheus-stack for observability.",
+      "rationale": "User-designated top priority. Provision k3s on Hyper-V, deploy HashiCorp Vault OSS (Helm), configure GitHub OIDC federation, write cluster runbook and ADRs. Write Cloudflare Tunnel config for staging ingress (ENV-07). Structurally resolves CICD-01, ARCH-01, ARCH-02, ARCH-03 and eliminates GitHub Secrets dependency long-term. Deploy Calico CNI for network policy enforcement and kube-prometheus-stack for observability. Pin all Helm charts in helmfile.yaml with quarterly upgrade cadence. Configure YubiKey PKCS#11 and TPM 2.0 for Vault auto-unseal.",
       "findingIds": [
         "ARCH-04",
         "DOC-03",
         "ARCH-05",
         "ENV-07",
         "ARCH-07",
-        "ARCH-08"
+        "ARCH-08",
+        "ARCH-09",
+        "SEC-06"
       ]
     },
     {
@@ -1188,7 +1314,7 @@
     {
       "phase": 3,
       "name": "High: CLI Pinning, Codegen Gate, Backend CI & Troubleshooting Runbook",
-      "rationale": "Pin Supabase CLI, standardise codegen gate, fix receptor-planner pytest, replace hardcoded JWT stubs, add job timeouts, and write the CI troubleshooting runbook documenting the three known failure modes.",
+      "rationale": "Pin Supabase CLI, standardise codegen gate, fix receptor-planner pytest, replace hardcoded JWT stubs, add job timeouts, and write the CI troubleshooting runbook documenting the three known failure modes. Add npm/pip dependency caching to all CI jobs.",
       "findingIds": [
         "CICD-02",
         "CGEN-01",
@@ -1197,7 +1323,8 @@
         "CICD-05",
         "BACK-01",
         "BACK-02",
-        "DOC-04"
+        "DOC-04",
+        "CICD-07"
       ]
     },
     {
@@ -1215,7 +1342,7 @@
     {
       "phase": 5,
       "name": "High: Environment Tiers, Documentation & Secrets Rotation",
-      "rationale": "Provision staging, document all 4 environment tiers, write the promotion runbook, update key management docs and rotation schedule. Configure pull-through container registry cache on the k3s node. Set up automated Cloudflare R2 backups for production Postgres and write the disaster recovery plan.",
+      "rationale": "Provision staging, document all 4 environment tiers, write the promotion runbook, update key management docs and rotation schedule. Configure pull-through container registry cache on the k3s node. Set up automated Cloudflare R2 backups for production Postgres and write the disaster recovery plan. Write the staging-to-production promotion runbook.",
       "findingIds": [
         "ENV-01",
         "ENV-02",
@@ -1224,7 +1351,8 @@
         "ENV-06",
         "ARCH-06",
         "ENV-08",
-        "DOC-05"
+        "DOC-05",
+        "ENV-09"
       ]
     },
     {
@@ -1261,10 +1389,11 @@
     {
       "phase": 9,
       "name": "Low: Job Consolidation, Required Checks & CICD-01",
-      "rationale": "Reduce Supabase boots per CI run once architecture decisions from phases 1 and 6 are finalised. Document the required status check matrix (prerequisite for branch protection in Phase 10).",
+      "rationale": "Reduce Supabase boots per CI run once architecture decisions from phases 1 and 6 are finalised. Document the required status check matrix (prerequisite for branch protection in Phase 10). Write the engineer onboarding guide once the infrastructure is stable.",
       "findingIds": [
         "CICD-01",
-        "PROC-01"
+        "PROC-01",
+        "DOC-06"
       ]
     },
     {

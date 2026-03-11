@@ -31,6 +31,8 @@
 | Secrets management strategy | HashiCorp Vault OSS deployed on k3s as a Helm chart is the target solution (DOC-01). Architecture: GitHub Actions authenticates via OIDC (no long-lived secrets stored in GitHub Secrets); Vault's database secrets engine issues dynamic short-lived Postgres credentials per CI run; Vault Secrets Operator (VSO) injects secrets into k3s pods via CRDs; KV v2 stores static API keys (Cloudflare, Supabase publishable keys). This eliminates KEY-01 and ENV-06 risks structurally. Vault is added to the k3s provisioning task (ARCH-04). |
 | Production backup strategy | Automated daily Postgres backups stream to Cloudflare R2 via rclone (ENV-08). Retention: 30-day daily, 12-month weekly. RTO: 4 hours, RPO: 24 hours. Backup script at scripts/backup-prod.sh. Restore procedure in docs/infrastructure/disaster-recovery.md. ISO 27001 A.8.13 compliance task in ENV-08-T3. |
 | Kubernetes CNI and network policy | k3s will use Calico CNI (ARCH-08) instead of the default Flannel, installed via Tigera Operator Helm chart with --flannel-backend=none. NetworkPolicies isolate supabase, vault, monitoring, and ci-runner namespaces. Documented in ADR-005. |
+| Vault unseal hardware | YubiKey USB-C is the primary Vault unseal mechanism (PKCS#11 HSM via OpenSC/libykcs11 — SEC-06-T1). TPM 2.0 on the Windows 11 Pro machine is the secondary backup seal (SEC-06-T2). Vault root token is stored in a physically-secured offline location (not git). Architecture documented in ADR-006. |
+| Helm chart upgrade cadence | All Helm charts are pinned to exact versions in helmfile.yaml (ARCH-09-T1). A quarterly automated GitHub Actions workflow (ARCH-09-T2) opens an issue listing current vs latest chart versions for review. Upgrades must be tested on dev/staging before applying to production. |
 
 
 ---
@@ -162,6 +164,16 @@ Affects: `supabase-receptor` — Cloudflare Tunnel for staging ingress
       `/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/docs/infrastructure/environment/staging.md`
 - [ ] Add cloudflared as a systemd service (or k3s DaemonSet once cluster is running) so the tunnel survives reboots. Document the start/stop/restart procedure and add a health check to the staging environment runbook.
       ``
+
+### SEC-06: When Vault initialises on k3s, it generates 5 unseal key shares and a root token. Storing these in plain text is catastr
+
+Affects: `supabase-receptor` — Vault unseal key security (YubiKey PKCS#11 HSM)
+
+
+- [ ] Configure Vault auto-unseal using the YubiKey USB-C as a PKCS#11 HSM: install OpenSC + libykcs11, configure Vault's HSM seal stanza pointing to the YubiKey's PKCS#11 slot. The YubiKey generates and stores the master key internally — it never leaves the device in plain text. Test unseal on k3s restart to confirm auto-unseal works without human intervention. Document in docs/infrastructure/disaster-recovery.md.
+      `/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/docs/infrastructure/disaster-recovery.md`
+- [ ] Use TPM 2.0 as a secondary unseal backup: configure a second Vault seal stanza using the tpmkey seal plugin (or Vault's Transit seal backed by a TPM-stored key via go-tpm). This provides a fallback if the YubiKey is unavailable. Store the Vault root token in a sealed envelope in a physically-secured location, and document where it is stored in the DR plan (not in git). Write ADR-006 documenting the YubiKey-primary / TPM-secondary unsealing architecture.
+      `/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/docs/adr/adr-006-vault-unseal-architecture.md`
 
 ## 🟡 Medium
 
@@ -409,6 +421,32 @@ Affects: `supabase-receptor` — Calico CNI and Kubernetes NetworkPolicies
 - [ ] Write NetworkPolicy manifests for each namespace: (1) supabase: allow ingress from traefik and ci-runner, deny all other; (2) vault: allow ingress from supabase and ci-runner on port 8200 only; (3) monitoring: allow ingress from all namespaces on scrape ports (9090, 3100), deny egress to prod data; (4) ci-runner: allow egress to supabase and vault only. Store manifests in k3s/network-policies/.
       ``
 
+### ARCH-09: Helm chart installs (Vault, kube-prometheus-stack, Calico/Tigera Operator, cert-manager, Traefik) are not pinned to exac
+
+Affects: `supabase-receptor` — Helm chart version pinning and upgrade cadence
+
+
+- [ ] Adopt Helmfile (helmfile.yaml) to declare all Helm chart versions declaratively and commit to git. Pin every chart to an exact version (e.g. vault: 0.28.1, kube-prometheus-stack: 58.x.x). Store in k3s/helmfile.yaml. All future upgrades must go through a PR with the chart changelog reviewed.
+      `/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/k3s/helmfile.yaml`
+- [ ] Establish a quarterly Helm chart upgrade review cadence. Create a GitHub Actions scheduled workflow '.github/workflows/helm-upgrade-check.yml' that runs quarterly (cron: '0 9 1 1,4,7,10 *') and opens an issue listing each chart's current pinned version vs the latest available version. The issue template includes the changelog URL and a checklist for testing the upgrade on dev first.
+      `/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/.github/workflows/helm-upgrade-check.yml`
+
+### ENV-09: No documented gate exists between staging and production deployments. A developer can manually push a schema migration o
+
+Affects: `supabase-receptor` — Staging to production promotion checklist
+
+
+- [ ] Write docs/operations/promotion-runbook.md covering the staging-to-production promotion gate: (1) run staging smoke tests (list specific test commands); (2) review 'supabase db diff' output between staging and prod schemas; (3) trigger ENV-05 prod-deploy.yml workflow — awaits human approval; (4) stakeholder sign-off (who approves and how); (5) post-deploy verification steps; (6) rollback procedure (restore from latest R2 backup, revert migration). Include a checklist template for use in each deployment PR.
+      `/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/docs/operations/promotion-runbook.md`
+
+### CICD-07: No ci.yml file in the ecosystem uses 'actions/cache' for node_modules or Python virtualenvs. Each CI run performs a full
+
+Affects: `cross-ecosystem` — npm and pip dependency caching in CI
+
+
+- [ ] Add 'actions/cache' steps to all 3 frontend ci.yml files keyed on 'hashFiles("**/package-lock.json")'. For backend repos (match-backend, receptor-planner) add pip cache steps keyed on 'hashFiles("**/requirements.txt")'. Once running on a self-hosted runner (ARCH-03), switch to a local filesystem cache path (/var/cache/ci/npm, /var/cache/ci/pip) instead of the GitHub-managed cache to eliminate upload/download overhead entirely.
+      ``
+
 ## 🟢 Low
 
 ### DOC-01: key-management.md:86-88 has an open TODO block for integrating Bitwarden/Doppler CLI into the deployment workflow. This 
@@ -443,6 +481,14 @@ Affects: `supabase-receptor` — Disaster recovery plan
 - [ ] Write docs/infrastructure/disaster-recovery.md covering: (1) RTO target (4 hours) and RPO target (24 hours); (2) what data lives where — Supabase Postgres volumes (R2 backup via ENV-08), Vault unseal keys and root token (secure offline storage), k3s etcd snapshot (rke2-etcd-snapshots); (3) step-by-step recovery for each component in priority order; (4) contact list for who to notify during an incident. Test the DR procedure quarterly.
       `/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/docs/infrastructure/disaster-recovery.md`
 
+### DOC-06: The infrastructure being built in Phase 1 (k3s, Vault, Calico, Grafana, Cloudflare Tunnel, ADRs) is complex and undocume
+
+Affects: `supabase-receptor` — Engineer onboarding guide
+
+
+- [ ] Write docs/ONBOARDING.md covering: (1) Prerequisites — WSL2/Linux, Docker, kubectl, k3s kubeconfig, Helmfile, Vault CLI, cloudflared, Supabase CLI, act (for local CI); (2) Dev environment setup — clone supabase-receptor, run setup.sh, verify Supabase starts; (3) Connecting to staging — Cloudflare Tunnel URL, Vault login via OIDC; (4) Running CI locally — see .agents/skills/act-local-ci/SKILL.md; (5) Key contacts — who owns prod, who owns Vault unseal key; (6) ADR index link.
+      `/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/docs/ONBOARDING.md`
+
 
 ---
 
@@ -453,15 +499,15 @@ Affects: `supabase-receptor` — Disaster recovery plan
 
 | Phase | Finding IDs | Rationale |
 | :---- | :---------- | :-------- |
-| 1 | ARCH-04, DOC-03, ARCH-05, ENV-07, ARCH-07, ARCH-08 | User-designated top priority. Provision k3s on Hyper-V, deploy HashiCorp Vault OSS (Helm), configure GitHub OIDC federation, write cluster runbook and ADRs. Write Cloudflare Tunnel config for staging ingress (ENV-07). Structurally resolves CICD-01, ARCH-01, ARCH-02, ARCH-03 and eliminates GitHub Secrets dependency long-term. Deploy Calico CNI for network policy enforcement and kube-prometheus-stack for observability. |
+| 1 | ARCH-04, DOC-03, ARCH-05, ENV-07, ARCH-07, ARCH-08, ARCH-09, SEC-06 | User-designated top priority. Provision k3s on Hyper-V, deploy HashiCorp Vault OSS (Helm), configure GitHub OIDC federation, write cluster runbook and ADRs. Write Cloudflare Tunnel config for staging ingress (ENV-07). Structurally resolves CICD-01, ARCH-01, ARCH-02, ARCH-03 and eliminates GitHub Secrets dependency long-term. Deploy Calico CNI for network policy enforcement and kube-prometheus-stack for observability. Pin all Helm charts in helmfile.yaml with quarterly upgrade cadence. Configure YubiKey PKCS#11 and TPM 2.0 for Vault auto-unseal. |
 | 2 | KEY-01, CICD-03 | Fix the two security-class CI defects causing silent auth failures. Safe to implement immediately in parallel with Phase 1 planning. |
-| 3 | CICD-02, CGEN-01, CGEN-02, CICD-04, CICD-05, BACK-01, BACK-02, DOC-04 | Pin Supabase CLI, standardise codegen gate, fix receptor-planner pytest, replace hardcoded JWT stubs, add job timeouts, and write the CI troubleshooting runbook documenting the three known failure modes. |
+| 3 | CICD-02, CGEN-01, CGEN-02, CICD-04, CICD-05, BACK-01, BACK-02, DOC-04, CICD-07 | Pin Supabase CLI, standardise codegen gate, fix receptor-planner pytest, replace hardcoded JWT stubs, add job timeouts, and write the CI troubleshooting runbook documenting the three known failure modes. Add npm/pip dependency caching to all CI jobs. |
 | 4 | SEC-01, SEC-02, CICD-06, SEC-04, SEC-05 | Add GITHUB_TOKEN permission blocks, pin Actions to commit SHAs, configure Dependabot for github-actions ecosystem, and pin Docker image digests. Update SoA controls 8.3 and 8.8 upon completion. Restrict Supabase Studio network binding and place behind Cloudflare Access on k3s. |
-| 5 | ENV-01, ENV-02, KEY-02, DOC-02, ENV-06, ARCH-06, ENV-08, DOC-05 | Provision staging, document all 4 environment tiers, write the promotion runbook, update key management docs and rotation schedule. Configure pull-through container registry cache on the k3s node. Set up automated Cloudflare R2 backups for production Postgres and write the disaster recovery plan. |
+| 5 | ENV-01, ENV-02, KEY-02, DOC-02, ENV-06, ARCH-06, ENV-08, DOC-05, ENV-09 | Provision staging, document all 4 environment tiers, write the promotion runbook, update key management docs and rotation schedule. Configure pull-through container registry cache on the k3s node. Set up automated Cloudflare R2 backups for production Postgres and write the disaster recovery plan. Write the staging-to-production promotion runbook. |
 | 6 | ARCH-01, ARCH-02, ARCH-03, ISO-01, ISO-02, ENV-03, ENV-04 | Design and implement branch-matched CI architecture (ADR + runner decision), add CI mode to setup.sh, implement test data isolation and pg_cron cleanup. May be superseded by Phase 1 k8s namespace-per-branch approach. |
 | 7 | ENV-05 | Add prod migration gate workflow (ISO 27001 A.8.32) and update SoA upon completion. Update Supabase governance register. |
 | 8 | ISO-03, DOC-01 | Review and update ISO 27001 physical security controls (7.1-7.4) post-k3s provisioning. Finalise Vault as the secrets management solution (DOC-01) — document configuration, OIDC setup, and key migration from GitHub Secrets. |
-| 9 | CICD-01, PROC-01 | Reduce Supabase boots per CI run once architecture decisions from phases 1 and 6 are finalised. Document the required status check matrix (prerequisite for branch protection in Phase 10). |
+| 9 | CICD-01, PROC-01, DOC-06 | Reduce Supabase boots per CI run once architecture decisions from phases 1 and 6 are finalised. Document the required status check matrix (prerequisite for branch protection in Phase 10). Write the engineer onboarding guide once the infrastructure is stable. |
 | 10 | SEC-03 | Enable branch protection across all 6 repositories with the required status checks defined in Phase 9 (PROC-01). Fast iteration is the current priority — this is the final hardening step. |
 
 
@@ -482,6 +528,7 @@ Affects: `supabase-receptor` — Disaster recovery plan
 | ARCH-04 | Kubernetes cluster infrastructure | `kubernetes-cluster.md` | Strategic Opportunity | 🟠 High |
 | SEC-03 | Branch protection on main | `` | Security | 🟠 High |
 | ENV-07 | Cloudflare Tunnel for staging ingress | `staging.md` | Process Gap | 🟠 High |
+| SEC-06 | Vault unseal key security (YubiKey PKCS#11 HSM) | `disaster-recovery.md` | Security | 🟠 High |
 | CGEN-01 | GraphQL codegen CI gate | `ci.yml` | Architectural Drift | 🟡 Medium |
 | CGEN-02 | GraphQL codegen CI gate | `ci.yml` | Architectural Drift | 🟡 Medium |
 | CICD-04 | supabase-receptor CI robustness | `ci.yml` | Tech Debt | 🟡 Medium |
@@ -509,8 +556,12 @@ Affects: `supabase-receptor` — Disaster recovery plan
 | ENV-08 | Automated Supabase production backup to Cloudflare R2 | `backup-prod.sh` | Process Gap | 🟡 Medium |
 | SEC-05 | Supabase Studio network exposure | `` | Security | 🟡 Medium |
 | ARCH-08 | Calico CNI and Kubernetes NetworkPolicies | `adr-005-calico-cni.md` | Security | 🟡 Medium |
+| ARCH-09 | Helm chart version pinning and upgrade cadence | `helmfile.yaml` | Tech Debt | 🟡 Medium |
+| ENV-09 | Staging to production promotion checklist | `promotion-runbook.md` | Process Gap | 🟡 Medium |
+| CICD-07 | npm and pip dependency caching in CI | `` | Tech Debt | 🟡 Medium |
 | DOC-01 | Secrets vault | `key-management.md` | Documentation Gap | 🟢 Low |
 | DOC-03 | Kubernetes cluster runbook | `kubernetes-cluster.md` | Documentation Gap | 🟢 Low |
 | DOC-04 | CI troubleshooting runbook | `ci-troubleshooting.md` | Documentation Gap | 🟢 Low |
 | DOC-05 | Disaster recovery plan | `disaster-recovery.md` | Documentation Gap | 🟢 Low |
+| DOC-06 | Engineer onboarding guide | `ONBOARDING.md` | Documentation Gap | 🟢 Low |
 
