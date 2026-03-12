@@ -1342,6 +1342,146 @@
         }
       ],
       "severity_history": []
+    },
+    {
+      "id": "SEC-08",
+      "severity": "high",
+      "status": "open",
+      "category": "Security",
+      "repo": "supabase-receptor",
+      "area": "Kubernetes RBAC \u2014 ServiceAccounts and least-privilege RoleBindings",
+      "description": "The k3s cluster plan (ARCH-04) deploys Supabase, Vault, Grafana, Falco, and the GitHub Actions self-hosted runner as workloads in distinct namespaces. Without explicit ServiceAccount, Role, and RoleBinding manifests, all pods inherit the default ServiceAccount \u2014 which in k3s defaults to cluster-admin-equivalent API server access. A compromised Supabase pod could list secrets across all namespaces; the GitHub Actions runner could kubectl delete production pods. Calico NetworkPolicy (ARCH-08) isolates network traffic but does not restrict API server access \u2014 RBAC is the complementary control. ISO 27001 A.8.3 (Information access restriction), A.8.18 (Use of privileged utility programs).",
+      "tasks": [
+        {
+          "taskId": "SEC-08-T1",
+          "status": "open",
+          "description": "Create a dedicated ServiceAccount per workload in each namespace: sa-supabase-kong, sa-vault, sa-grafana, sa-falco, sa-github-runner. Bind each to a minimal Role or ClusterRole: (1) sa-github-runner: get/list/watch pods in supabase-* namespaces; create/delete namespaces prefixed 'receptor-ci-*' for ephemeral branch environments; no cluster-admin. (2) sa-supabase-*: no API server role binding at all \u2014 default deny. (3) sa-grafana: get/list pods and nodes for Prometheus scrape path only. (4) sa-vault: get on secrets in the 'vault' namespace only, no cross-namespace access. Store all manifests in k3s/rbac/. Apply via helmfile or kubectl apply -f k3s/rbac/ as part of Phase 3 cluster provisioning.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/k3s/rbac/serviceaccounts.yaml",
+          "completedAt": null,
+          "completedBy": null
+        },
+        {
+          "taskId": "SEC-08-T2",
+          "status": "open",
+          "description": "Document the RBAC model in docs/infrastructure/environment/kubernetes-cluster.md under a 'RBAC Architecture' section. Write ADR-007 at docs/adr/adr-007-k3s-rbac.md documenting: (1) why each ServiceAccount has its specific permissions; (2) why the default ServiceAccount is explicitly not used; (3) how to add permissions for new workloads (PR-gated Role change). Update SoA A.8.3 implementation notes to cite k3s RBAC as the cluster-level access restriction control alongside Vault dynamic credentials.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/docs/adr/adr-007-k3s-rbac.md",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "OPS-01",
+      "severity": "medium",
+      "status": "open",
+      "category": "Process Gap",
+      "repo": "supabase-receptor",
+      "area": "Windows 11 Pro host OS patch management and reboot recovery",
+      "description": "The k3s cluster runs on Hyper-V VMs hosted on a Windows 11 Pro machine. Windows Update can forcibly reboot the host without warning, taking down all three Hyper-V VMs and the entire k3s cluster \u2014 a P1 production incident. Windows 11 Pro defaults to automatic restarts after update installation. Additionally, updates may alter Hyper-V configuration, virtual switch networking, or driver state, requiring manual intervention post-reboot. The Vault auto-unseal via YubiKey (SEC-06) covers the unseal flow but the full boot sequence (Hyper-V \u2192 Ubuntu VMs \u2192 k3s \u2192 Vault \u2192 Supabase \u2192 Cloudflare Tunnel \u2192 Falco) must be documented and tested after a host reboot. ISO 27001 A.8.8 (Management of technical vulnerabilities), A.8.14 (Redundancy of information processing facilities).",
+      "tasks": [
+        {
+          "taskId": "OPS-01-T1",
+          "status": "open",
+          "description": "Configure Windows Update on the k3s host: (1) Set Active Hours to 08:00-02:00 AEST in Settings > Windows Update > Active Hours to prevent automatic restarts during working/production hours. (2) Enable 'Notify to schedule restart' policy via gpedit.msc (Computer Configuration > Administrative Templates > Windows Components > Windows Update > Configure automatic updating: set to '2 - Notify for download and auto install'). (3) Document this configuration in docs/infrastructure/environment/kubernetes-cluster.md under 'Host OS Maintenance'. The goal is that Windows Update downloads and installs patches but requires a manually-triggered restart window.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/docs/infrastructure/environment/kubernetes-cluster.md",
+          "completedAt": null,
+          "completedBy": null
+        },
+        {
+          "taskId": "OPS-01-T2",
+          "status": "open",
+          "description": "Write docs/operations/host-reboot-recovery.md \u2014 a step-by-step recovery checklist to run after any host reboot (planned or unplanned): (1) Verify all 3 Hyper-V VMs are running: 'Get-VM | Select Name, State' (PowerShell on host). (2) Confirm k3s cluster is healthy: 'kubectl get nodes' \u2014 all nodes should be Ready within ~60 seconds. (3) Confirm Vault unsealed: 'vault status' \u2014 YubiKey auto-unseal should trigger automatically (SEC-06); if not, document manual unseal procedure. (4) Confirm Supabase pods ready: 'kubectl get pods -n supabase' \u2014 all Running. (5) Verify Cloudflare Tunnel reconnected: 'cloudflared tunnel info receptor-staging'. (6) Send a Slack deployment-channel notification confirming recovery. Link this checklist from PROC-02 (incident response) and ONBOARDING.md (DOC-06). Add a Grafana/Loki alert rule for cluster node NotReady > 2 minutes as an automated recovery notification trigger.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/docs/operations/host-reboot-recovery.md",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "SEC-09",
+      "severity": "high",
+      "status": "open",
+      "category": "Security",
+      "repo": "supabase-receptor",
+      "area": "Supabase PostgreSQL pgaudit extension for database-level audit logging",
+      "description": "The self-hosted Supabase PostgreSQL instance has no database-level audit log. Without pgaudit, there is no record of: which service account ran a DELETE or TRUNCATE on production tables; schema-changing DDL operations (ALTER TABLE, DROP INDEX) run outside the migration workflow; or GRANT/REVOKE privilege changes. If a compromised API key or rogue migration executes destructive SQL, the only forensic evidence is Supabase table-level data (from backups) \u2014 no tamper-resistant event log survives at the database layer. pgaudit runs inside PostgreSQL and persists to the WAL, making it tamper-resistant from the application layer. ISO 27001 A.8.15 (Logging), A.5.28 (Collection of evidence \u2014 forensic audit trail). This is a hard non-conformance finding against A.8.15 for any ISO 27001 readiness review.",
+      "tasks": [
+        {
+          "taskId": "SEC-09-T1",
+          "status": "open",
+          "description": "Enable the pgaudit extension in the self-hosted Supabase PostgreSQL config. Add 'pgaudit' to extensions.sql: 'CREATE EXTENSION IF NOT EXISTS pgaudit;'. For Docker Compose: add to postgresql.conf via the Supabase config: shared_preload_libraries = 'supabase_auth_admin,pgaudit' and set pgaudit.log = 'ddl, role, write' (captures DDL statements, privilege changes, and data-modifying DML). For k3s Helm chart deployments: add these parameters to the postgresql.postgresqlExtendedConfiguration Helm values. Ensure pgaudit output routes to the PostgreSQL log stream, which Loki/Promtail (ARCH-07) then scrapes into the observability stack. Add the extension to supabase/schemas/extensions.sql so it survives supabase db reset.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/supabase/schemas/extensions.sql",
+          "completedAt": null,
+          "completedBy": null
+        },
+        {
+          "taskId": "SEC-09-T2",
+          "status": "open",
+          "description": "Document pgaudit scope and querying in docs/infrastructure/security/audit-logging.md: (1) what events are logged (DDL, ROLE, WRITE \u2014 not SELECT by default to avoid log volume explosion); (2) how to query audit events in Grafana/Loki using the 'pgaudit' label filter; (3) log retention policy: audit logs stream to Loki, then archived to Cloudflare R2 primary bucket (ENV-08) \u2014 90-day retention; (4) ISO 27001 A.8.15 and A.5.28 control mapping. Link audit-logging.md from ONBOARDING.md (DOC-06) as mandatory security reading for engineers with DB access. Update SoA A.8.15 (Logging) from 'Partial' to 'Implemented' once pgaudit is live.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/docs/infrastructure/security/audit-logging.md",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "ENV-11",
+      "severity": "medium",
+      "status": "open",
+      "category": "Process Gap",
+      "repo": "supabase-receptor",
+      "area": "R2 backup secondary copy \u2014 Australian data residency with provider redundancy",
+      "description": "ENV-08 implements automated daily Postgres backups to Cloudflare R2 (APAC bucket, Sydney region). R2 does not natively replicate cross-region, and the APAC bucket is not guaranteed to persist to a second independent infrastructure provider. For Australian data residency compliance, all backup copies must remain on Australian-hosted storage \u2014 EU or ENAM R2 jurisdiction hints are not acceptable. Backblaze B2 operates an Australian datacenter (ap-southeast aka Sydney, SYD region) that is a separate infrastructure provider from Cloudflare, satisfying both residency and provider-redundancy requirements. Risk: if the primary R2 APAC bucket is unavailable during a recovery, no off-site copy exists. ISO 27001 A.8.13 (Information backup \u2014 off-site storage requirement), A.5.30 (ICT readiness for business continuity). Australian Privacy Principle 8 (cross-border disclosure) \u2014 data must not leave Australia.",
+      "tasks": [
+        {
+          "taskId": "ENV-11-T1",
+          "status": "open",
+          "description": "Extend the backup script (scripts/backup-prod.sh from ENV-08-T1) to write to a second rclone destination after the primary R2 upload completes. Configure an rclone remote 'b2-aus' pointing to Backblaze B2 Australian region bucket ('receptor-backups-b2-aus'). The backup script pipeline becomes: pg_dumpall | gzip | tee >(rclone rcat r2-apac:receptor-backups/<filename>.gz) >(rclone rcat b2-aus:receptor-backups-b2-aus/<filename>.gz). Both uploads are required to succeed for the backup job to report success \u2014 a Slack alert fires if either fails. Backblaze B2 API key to be stored in Vault KV (path: infrastructure/backblaze-b2-aus-key) and injected as an environment variable. Verify Backblaze B2 SYD region availability at https://www.backblaze.com/docs/cloud-storage-data-center-locations before provisioning.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/scripts/backup-prod.sh",
+          "completedAt": null,
+          "completedBy": null
+        },
+        {
+          "taskId": "ENV-11-T2",
+          "status": "open",
+          "description": "Update docs/infrastructure/disaster-recovery.md to document the two-provider backup topology: (1) Primary: Cloudflare R2 APAC (Sydney) \u2014 restore source; (2) Secondary: Backblaze B2 Australian region \u2014 failover restore source if R2 APAC is unavailable. Document the restore procedure for each source. Add a data residency statement confirming both storage providers are Australian-hosted and no data crosses international borders. Update SoA A.8.13 implementation notes to cite dual-provider Australian backup as the off-site control. Add a Grafana/Loki alert for backup script failure (either destination) within 1 hour of the scheduled backup window.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/docs/infrastructure/disaster-recovery.md",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "CICD-09",
+      "severity": "medium",
+      "status": "open",
+      "category": "Tech Debt",
+      "repo": "cross-ecosystem",
+      "area": "GitHub Actions composite action for Supabase start and key extraction",
+      "description": "Each of the 4 repos that boot Supabase in CI (preference-frontend, planner-frontend, workforce-frontend, supabase-receptor) maintains its own hand-copied Supabase start + key extraction steps in ci.yml. When the reference implementation changes (e.g. adding a new key export, changing the CLI version pin), the change must be manually mirrored to all other repos \u2014 this is structurally how KEY-01 (missing ANON_JWT export) and CICD-02 (unpinned CLI) drifted in the first place. GitHub Actions composite actions allow encapsulating a multi-step sequence as a single 'uses:' reference, so a single update propagates to all consumers. This is the structural fix for the drift problem.",
+      "tasks": [
+        {
+          "taskId": "CICD-09-T1",
+          "status": "open",
+          "description": "Create a composite action at supabase-receptor/.github/actions/supabase-start/action.yml with inputs: supabase-version (string, required \u2014 the pinned CLI version). Steps: (1) uses: supabase/setup-cli@<pinned-SHA> with: version: ${{ inputs.supabase-version }}; (2) run: supabase start --ignore-health-check; (3) run: extract PUBLISHABLE_KEY, ANON_KEY (JWT), SERVICE_ROLE_KEY from 'supabase status -o env' using the tr -d quotes pattern from preference-frontend; (4) echo each extracted key to $GITHUB_ENV and as a named step output. Update all 4 ci.yml files to replace their existing Supabase start + key extraction steps with 'uses: ./.github/actions/supabase-start' (for supabase-receptor, which owns the action) or reference the shared action from the organisation's .github repo once it is established there.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/.github/actions/supabase-start/action.yml",
+          "completedAt": null,
+          "completedBy": null
+        },
+        {
+          "taskId": "CICD-09-T2",
+          "status": "open",
+          "description": "Evaluate whether a reusable workflow (.github/workflows/supabase-ci-base.yml with 'on: workflow_call:') would further reduce the 3-boot-per-repo pattern (CICD-01). Document the evaluation as an ADR note in the ARCH-01 finding's cicd-architecture.md doc: if a shared workflow is adopted, the 3 frontend repos call it via 'uses: <org>/<repo>/.github/workflows/supabase-ci-base.yml@main' with a matrix strategy for their test suites. Note: this T2 task is contingent on the ARCH-01/ARCH-03 CI architecture decision from Phase 8 \u2014 complete T1 regardless, then assess T2 once the runner strategy is finalised.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/.github/actions/supabase-start/action.yml",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
     }
   ],
   "clarifications": [
@@ -1420,33 +1560,55 @@
     {
       "item": "Edge Function deployment process",
       "decision": "Edge Functions use git-tag-triggered deployment (fn/<name>/vX.Y.Z). Manual 'supabase functions deploy' is prohibited in staging/prod. Rollback is git tag re-push. Full procedure in docs/operations/edge-function-deployment.md (ENV-10-T2) which is mandatory reading linked from ONBOARDING.md."
+    },
+    {
+      "item": "Australian data residency for backups",
+      "decision": "All backup copies must remain on Australian-hosted infrastructure. Cloudflare R2 APAC (Sydney) is the primary backup destination (ENV-08). Backblaze B2 Australian region (SYD) is the secondary backup destination (ENV-11). No EU, ENAM, or other non-Australian storage is acceptable \u2014 Australian Privacy Principle 8 prohibits cross-border disclosure. Both rclone destinations are written in a single backup run; failure of either triggers a Slack alert."
+    },
+    {
+      "item": "Kubernetes RBAC model",
+      "decision": "Every workload on k3s must use a dedicated ServiceAccount with a minimal Role/RoleBinding. The default ServiceAccount must not be used for any production workload. The GitHub Actions self-hosted runner ServiceAccount (sa-github-runner) is the only account permitted to create/delete 'reactor-ci-*' namespaces. Supabase pods have no API server bindings \u2014 default deny. ADR-007 documents the full RBAC model. Manifests in k3s/rbac/."
+    },
+    {
+      "item": "Windows host OS update policy",
+      "decision": "Windows Update on the k3s Hyper-V host is configured to require manually-triggered restarts (Active Hours 08:00-02:00 AEST, notify-only restart policy via gpedit.msc). Planned maintenance windows are Sundays 02:00-06:00 AEST. After any host reboot (planned or unplanned), the host-reboot-recovery.md checklist (OPS-01-T2) must be completed before the cluster is considered operational."
+    },
+    {
+      "item": "pgaudit scope",
+      "decision": "pgaudit is configured with pgaudit.log = 'ddl, role, write' \u2014 capturing DDL statements (CREATE/ALTER/DROP), privilege changes (GRANT/REVOKE), and data-modifying DML (INSERT/UPDATE/DELETE). SELECT logging is deliberately excluded to avoid log volume explosion in a production OLTP system. pgaudit output streams to Loki via Promtail for querying in Grafana. ISO 27001 A.8.15 control status updated to Implemented once live."
+    },
+    {
+      "item": "GitHub Actions composite action location",
+      "decision": "The Supabase start composite action (CICD-09) is initially created in supabase-receptor/.github/actions/supabase-start/. Frontend repos reference it via a relative path or (once stable) via the organisation .github repo. This enables a single point of CLI version pinning and key extraction logic update across all 4 Supabase-dependent CI workflows."
     }
   ],
   "implementationPhases": [
     {
       "phase": 1,
       "name": "PLAN \u2014 Architecture Design, ADRs & Pre-Implementation Documents",
-      "rationale": "All planning documents that must exist before any system is provisioned. No infrastructure changes. Produces: ADR-001 to ADR-004 (k3s, self-hosted runner, isolation strategy, Docker image pinning), cluster runbook template (DOC-03), CI troubleshooting (DOC-04), DR plan (DOC-05), required check matrix (PROC-01), staging-to-prod promotion runbook (ENV-09). These documents gate Phase 3 implementation.",
+      "rationale": "All planning documents that must exist before any system is provisioned. No infrastructure changes. Produces: ADR-001 to ADR-004 (k3s, self-hosted runner, isolation strategy, Docker image pinning), cluster runbook template (DOC-03), CI troubleshooting (DOC-04), DR plan (DOC-05), required check matrix (PROC-01 \u2014 moved here from Phase 11 as it gates Phase 12 branch protection), staging-to-prod promotion runbook (ENV-09), and Windows host reboot recovery checklist (OPS-01). These documents gate Phase 3 implementation.",
       "findingIds": [
         "ARCH-05",
         "DOC-03",
         "DOC-04",
         "DOC-05",
-        "ENV-09"
+        "ENV-09",
+        "OPS-01"
       ]
     },
     {
       "phase": 2,
-      "name": "PLAN \u2014 Compliance Scope Review, Security Architecture & Helmfile Design",
-      "rationale": "Design tasks with no running system dependency: review ISO 27001 physical security controls (7.1-7.4) and update SoA scope before provisioning hardware (ISO-03); design and commit helmfile.yaml structure with pinned chart versions and quarterly upgrade workflow (ARCH-09). Both outputs are consumed by Phase 3.",
+      "name": "PLAN \u2014 Compliance Scope Review, Helmfile Design & Required Check Matrix",
+      "rationale": "Design tasks with no running system dependency: review ISO 27001 physical security controls (7.1-7.4) and update SoA scope before provisioning hardware (ISO-03); design and commit helmfile.yaml structure with pinned chart versions and quarterly upgrade workflow (ARCH-09); document the required CI status check matrix per repo (PROC-01) which gates Phase 12 branch protection. All three outputs are consumed by Phase 3 and Phase 12.",
       "findingIds": [
-        "ARCH-09"
+        "ARCH-09",
+        "PROC-01"
       ]
     },
     {
       "phase": 3,
-      "name": "IMPLEMENT \u2014 Core Cluster Stack (k3s, Vault, Calico, Grafana, cert-manager, Falco, Tunnel, Slack)",
-      "rationale": "The strategic Phase 1 buildout. Provision k3s on Hyper-V, deploy all cluster services via helmfile.yaml: Calico CNI, Vault OSS (YubiKey PKCS#11 primary + TPM 2.0 secondary unseal), kube-prometheus-stack, Loki, Falco, cert-manager (wildcard TLS via DNS-01), Traefik ingress. Provision Cloudflare Tunnel for staging. Bind Supabase Studio to 127.0.0.1. Configure Alertmanager \u2192 Slack webhook pipeline. This phase has the most risk and longest duration \u2014 all subsequent phases depend on it.",
+      "name": "IMPLEMENT \u2014 Core Cluster Stack (k3s, Vault, Calico, RBAC, Grafana, cert-manager, Falco, Tunnel, Slack)",
+      "rationale": "The strategic Phase 1 buildout. Provision k3s on Hyper-V, deploy all cluster services via helmfile.yaml: Calico CNI, Vault OSS (YubiKey PKCS#11 primary + TPM 2.0 secondary unseal), kube-prometheus-stack, Loki, Falco, cert-manager (wildcard TLS via DNS-01), Traefik ingress. Configure RBAC ServiceAccounts and RoleBindings for all workloads (SEC-08 \u2014 must be done at provisioning time, not retrofitted). Provision Cloudflare Tunnel for staging. Bind Supabase Studio to 127.0.0.1. Configure Alertmanager \u2192 Slack webhook pipeline. This phase has the most risk and longest duration \u2014 all subsequent phases depend on it.",
       "findingIds": [
         "ARCH-04",
         "ARCH-07",
@@ -1456,7 +1618,8 @@
         "SEC-05",
         "SEC-06",
         "SEC-07",
-        "PROC-02"
+        "PROC-02",
+        "SEC-08"
       ]
     },
     {
@@ -1470,8 +1633,8 @@
     },
     {
       "phase": 5,
-      "name": "IMPLEMENT \u2014 CI Hardening, Caching, Edge Function Versioning & Backend Fixes",
-      "rationale": "Pin Supabase CLI, standardise codegen gate, fix bare pytest, replace JWT stubs, add job timeouts, configure npm/pip caching, and implement the git-tag-triggered Edge Function versioning strategy. All CI YAML and tooling changes.",
+      "name": "IMPLEMENT \u2014 CI Hardening, Caching, Composite Actions, Edge Function Versioning & Backend Fixes",
+      "rationale": "Pin Supabase CLI, standardise codegen gate, fix bare pytest, replace JWT stubs, add job timeouts, configure npm/pip caching, implement the composite action for Supabase start + key extraction (CICD-09 \u2014 structurally prevents future drift like KEY-01/CICD-02), and implement the git-tag-triggered Edge Function versioning strategy. All CI YAML and tooling changes.",
       "findingIds": [
         "CICD-02",
         "CGEN-01",
@@ -1481,7 +1644,8 @@
         "BACK-01",
         "BACK-02",
         "CICD-07",
-        "ENV-10"
+        "ENV-10",
+        "CICD-09"
       ]
     },
     {
@@ -1497,8 +1661,8 @@
     },
     {
       "phase": 7,
-      "name": "IMPLEMENT \u2014 Environment Tiers, GitHub Environments, Backup & Key Rotation",
-      "rationale": "Provision staging environment, document all 4 tiers, write key management docs, configure GitHub Environments (staging + production) for secret scoping and deployment history, implement Cloudflare R2 backup (pg_dumpall/rclone), add secrets rotation schedule and reminder workflow, and configure the pull-through container registry cache.",
+      "name": "IMPLEMENT \u2014 Environment Tiers, GitHub Environments, Backup, Key Rotation, pgaudit & R2 Redundancy",
+      "rationale": "Provision staging environment, document all 4 tiers, write key management docs, configure GitHub Environments (staging + production) for secret scoping and deployment history, implement Cloudflare R2 backup (pg_dumpall/rclone) with secondary Backblaze B2 Australian region copy (ENV-11 \u2014 Australian data residency), enable pgaudit extension for database-level forensic audit logging (SEC-09), add secrets rotation schedule and reminder workflow, and configure the pull-through container registry cache. pgaudit requires Supabase (Phase 3) and Loki (Phase 3) to be running.",
       "findingIds": [
         "ENV-01",
         "ENV-02",
@@ -1507,7 +1671,9 @@
         "ENV-06",
         "ARCH-06",
         "ENV-08",
-        "CICD-08"
+        "CICD-08",
+        "SEC-09",
+        "ENV-11"
       ]
     },
     {
@@ -1544,17 +1710,16 @@
     },
     {
       "phase": 11,
-      "name": "IMPLEMENT \u2014 Required Check Matrix & Physical Security SoA Update",
-      "rationale": "Document the exact GitHub Actions job names required to pass per repo (PROC-01 \u2014 this document is a prerequisite for SEC-03 branch protection). Review ISO 27001 physical controls 7.1-7.4 post-provisioning and update the SoA with confirmed compensating controls for the k3s bare-metal node. These are low-risk documentation tasks that can proceed in parallel.",
+      "name": "IMPLEMENT \u2014 Physical Security SoA Update (post-provisioning)",
+      "rationale": "Review ISO 27001 physical controls 7.1-7.4 post-provisioning and update the SoA with confirmed compensating controls for the k3s bare-metal node. This is a low-risk documentation task that requires the physical node to be in its final configured state before the SoA entry can be confirmed accurate.",
       "findingIds": [
-        "PROC-01",
         "ISO-03"
       ]
     },
     {
       "phase": 12,
       "name": "FINAL GATE \u2014 Branch Protection on Main (all repos)",
-      "rationale": "The final hardening step, enabled only once CI is stable and all phase 1-11 fixes are complete and verified. Requires the required check matrix from Phase 11 (PROC-01). Enables branch protection rulesets across all 6 repositories with mandatory CI status checks, PR approval, and no force pushes.",
+      "rationale": "The final hardening step, enabled only once CI is stable and all phase 1-11 fixes are complete and verified. Requires the required check matrix from Phase 2 (PROC-01). Enables branch protection rulesets across all 6 repositories with mandatory CI status checks, PR approval, and no force pushes.",
       "findingIds": [
         "SEC-03"
       ]

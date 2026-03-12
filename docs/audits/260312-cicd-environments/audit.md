@@ -9,7 +9,7 @@
 
 ## Executive Summary
 
-**52 findings across 6 repositories and cross-ecosystem CI infrastructure.** The ecosystem's CI/CD pipeline has three compounding structural deficiencies: (1) all Supabase-dependent CI jobs boot an independent ephemeral instance per job with no sharing, consuming approximately 4 minutes of runner time per boot and 12+ minutes per frontend push; (2) a hard Supabase API key format incompatibility between the new `sb_publishable_*` format (used by REST/GraphQL) and the legacy JWT `ANON_KEY` (required by `signInWithPassword`) is undocumented and creates invisible auth failures if the dual-key export workaround is removed; and (3) all three frontend repos pin `version: latest` for the Supabase CLI, creating schema-drift false positives when the upstream CLI changes its output formatting. Beyond CI, no test, staging, or production environment is documented or deployed — only a single dev instance exists. **A new strategic opportunity has been identified**: the available Windows 11 Pro machine (Intel i7-265KF 20-core, 32 GB DDR5, 1 TB NVMe, RTX 5080) with Hyper-V support is capable of running a `k3s`-based Kubernetes cluster that would fundamentally resolve the CI/CD boot-time and isolation problems at the infrastructure level.
+**57 findings across 6 repositories and cross-ecosystem CI infrastructure.** The ecosystem's CI/CD pipeline has three compounding structural deficiencies: (1) all Supabase-dependent CI jobs boot an independent ephemeral instance per job with no sharing, consuming approximately 4 minutes of runner time per boot and 12+ minutes per frontend push; (2) a hard Supabase API key format incompatibility between the new `sb_publishable_*` format (used by REST/GraphQL) and the legacy JWT `ANON_KEY` (required by `signInWithPassword`) is undocumented and creates invisible auth failures if the dual-key export workaround is removed; and (3) all three frontend repos pin `version: latest` for the Supabase CLI, creating schema-drift false positives when the upstream CLI changes its output formatting. Beyond CI, no test, staging, or production environment is documented or deployed — only a single dev instance exists. **A new strategic opportunity has been identified**: the available Windows 11 Pro machine (Intel i7-265KF 20-core, 32 GB DDR5, 1 TB NVMe, RTX 5080) with Hyper-V support is capable of running a `k3s`-based Kubernetes cluster that would fundamentally resolve the CI/CD boot-time and isolation problems at the infrastructure level.
 
 | Repository / Area | Coverage | Issues Found | Overall |
 | --- | --- | --- | --- |
@@ -223,6 +223,9 @@ The available Windows 11 Pro workstation (Intel i7-265KF — 8 P-cores + 12 E-co
 2. **`supabase-receptor` CI is the thinnest**: Runs `supabase start` with no workdir, no key extraction, no job dependencies, and no CLI pinning.
 3. **`receptor-planner` CI is the weakest overall**: Bare `pytest` with no path scoping, no coverage, and hardcoded JWT stubs. Oldest CI file in the ecosystem.
 4. **Kubernetes cluster is the strategic long-term solution**: The available hardware (32 GB DDR5, 20-core i7-265KF, Windows 11 Pro + Hyper-V) makes a k3s cluster viable with comfortable headroom. ARCH-04 resolves CICD-01, ARCH-01, ARCH-02, and ARCH-03 structurally.
+5. **Homelab-as-production is a deliberate architectural choice**: The Windows 11 Pro machine is on the same power grid as a tertiary hospital, served by 500/50 Mbps fibre. Hosting production here until meaningful customer scale is a rational cost decision for a single-operator startup — the operational complexity is correctly offset by the k3s cluster's Vault/YubiKey/Calico/Falco hardening stack.
+6. **SEC-08 (RBAC) and SEC-09 (pgaudit) are elevated**: k3s RBAC defaults expose cluster-admin to all pods; pgaudit is the only tamper-resistant forensic trail for production DDL/DML. Both are High severity — do not defer past Phase 3 and Phase 7 respectively.
+7. **CICD-09 composite action is the structural fix for drift**: KEY-01 and CICD-02 were caused by maintaining 4 copies of the same CI pattern. A shared composite action at `supabase-start` eliminates the source of drift permanently.
 
 ---
 
@@ -282,6 +285,11 @@ The available Windows 11 Pro workstation (Intel i7-265KF — 8 P-cores + 12 E-co
 | SEC-07 | supabase-receptor | Falco runtime security (missing) | Security | 🟡 Medium |
 | ENV-10 | supabase-receptor | Edge Function versioning & rollback | Process Gap | 🟠 High |
 | PROC-02 | supabase-receptor | Incident response plan + Slack alerts | Process Gap | 🟡 Medium |
+| SEC-08 | supabase-receptor | k3s RBAC — no least-privilege ServiceAccounts | Security | 🟠 High |
+| OPS-01 | supabase-receptor | Windows 11 host OS update & reboot recovery | Process Gap | 🟡 Medium |
+| SEC-09 | supabase-receptor | Supabase `pgaudit` extension not enabled | Security | 🟠 High |
+| ENV-11 | supabase-receptor | R2 backup — no secondary Australian provider copy | Process Gap | 🟡 Medium |
+| CICD-09 | Cross-ecosystem | No composite action for Supabase start + key extraction | Tech Debt | 🟡 Medium |
 
 ---
 
@@ -300,7 +308,7 @@ This audit uses a **two-phase model**: `PLAN` phases produce documents and archi
 ```mermaid
 flowchart TD
   P1["🗒️ PLAN 1\nADRs, Runbooks & Docs\n(ARCH-05, DOC-03/04/05, ENV-09)"] --> P2
-  P2["🗒️ PLAN 2\nCompliance Review & Helmfile Design\n(ARCH-09)"] --> P3
+  P2["🗒️ PLAN 2\nCompliance Review, Helmfile Design & Required Checks\n(ARCH-09, PROC-01)"] --> P3
   P3["🏗️ IMPLEMENT 3\nCore Cluster Stack\n(k3s, Vault, Calico, Grafana,\ncert-manager, Falco, Tunnel, Slack)"] --> P4
   P3 --> P6
   P4["🔧 IMPLEMENT 4\nCritical CI Auth Fixes\n(KEY-01, CICD-03)"] --> P5
@@ -310,7 +318,7 @@ flowchart TD
   P8["⚙️ IMPLEMENT 8\nCI Architecture & Test Isolation\n(ARCH-01/02/03, ISO-01/02, ENV-03/04, CICD-01)"] --> P9
   P9["🚀 IMPLEMENT 9\nProduction Gate\n(ENV-05)"] --> P10
   P10["📚 IMPLEMENT 10\nPost-Build Docs\n(DOC-01, DOC-06)"] --> P11
-  P11["✅ IMPLEMENT 11\nRequired Checks & SoA Update\n(PROC-01, ISO-03)"] --> P12
+  P11["✅ IMPLEMENT 11\nPhysical Security SoA Update\n(ISO-03)"] --> P12
   P12["🔒 FINAL GATE 12\nBranch Protection\n(SEC-03)"]
 
   style P1 fill:#e8f4fd,stroke:#2196F3
