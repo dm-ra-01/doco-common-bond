@@ -808,3 +808,15 @@ Affects: `supabase-receptor` — Post-deploy smoke tests for staging and product
 | DOC-06 | Engineer onboarding guide | `ONBOARDING.md` | Documentation Gap | 🟢 Low |
 | CICD-10 | Post-deploy smoke tests for staging and production | `action.yml` | Process Gap | 🟢 Low |
 
+
+## Session Close — 2026-03-13
+
+**Completed:** ARCH-02-T1, ARCH-02-T2, ENV-03-T1, ISO-02-T1, ENV-04-T1, ENV-04-T2 (confirmed already implemented — close-outs only), BACK-01-T1, BACK-01-T2, DOC-06-T1, CICD-09-T1
+
+**Remaining:** 22 open tasks. Key open items: CICD-09-T2a (ADR note: composite action vs reusable workflow), SEC-03-T0/T1 (branch protection — blocked on PROC-01-T2 ✓ now clear), ENV-05 (staging deploy gates), ARCH-01/ARCH-03 (runner migration — blocked on live k3s cluster), ARCH-05-T2, BACK-01 (only T1/T2 done), ISO-03-T1, ENV-08-T1/T3 (backup script — blocked on k3s), ENV-11-T1, DOC-01-T1, CICD-01-T1/T2/T3.
+
+**Blocked:** ARCH-03-T2 (runner install), ARCH-01-T1/T2/T3 (runner migration), ENV-05-T0/T1/T2/T3 (staging deploy gates — need k3s Ready), ENV-08-T1 / ENV-11-T1 (backup script — need k3s), ISO-03-T1 (physical security — need provisioned k3s node). User is provisioning k3s cluster now.
+
+**PR order note:** All changes are in repo-specific audit branches. No inter-repo dependency for this session's changes. Merge order for the eventual PR wave: supabase-receptor → frontends → backends → common-bond.
+
+**Brief for next agent:** k3s cluster provisioning is underway by the user. Gate 8C (ARCH-03-T2 runner install + ARCH-01 migration) becomes unblocked when `kubectl get nodes` shows a Ready node. Start next session with CICD-09-T2a (ADR note) and SEC-03-T0/T1 (branch protection) which have no k3s dependency. ISO-02-T1, ENV-04-T1/T2, ARCH-02-T1/T2, ENV-03-T1 were all already implemented from prior sessions — do not re-implement. CICD-09-T1 composite action is in supabase-receptor/.github/actions/supabase-start/action.yml; future sessions can reference it when updating frontend ci.yml files to call it.
