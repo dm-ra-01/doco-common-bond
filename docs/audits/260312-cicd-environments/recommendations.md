@@ -777,3 +777,18 @@ Affects: `supabase-receptor` — Post-deploy smoke tests for staging and product
 **Branches pushed:** All 6 repos on `audit/260312-cicd-environments`. preference-frontend now included.
 
 **Next session focus (Phase 6):** CICD-02 (pin Supabase CLI version), CICD-09 (composite action for Supabase start), CICD-08 (GitHub Environments), ENV-05 (prod-deploy.yml migration workflow), SEC-01, SEC-02.
+
+### ENV-10 Amendment (post-session)
+
+`deploy-function.yml` was rewritten to target the **self-hosted k3s cluster** (not Supabase Cloud). The amended workflow uses `runs-on: self-hosted`, `kubectl cp` to push function files into the `supabase-edge-runtime` pod, a rolling restart via `kubectl rollout restart`, and an in-cluster Kong smoke test. No `SUPABASE_ACCESS_TOKEN` or `--project-ref` required; the runner's in-cluster RBAC (SEC-08) is used instead.
+
+### Open PRs after Phase 5
+
+| Repo | PR |
+|:--|:--|
+| planner-frontend | open (from Phase 4) |
+| workforce-frontend | open (from Phase 4) |
+| preference-frontend | [PR#19](https://github.com/dm-ra-01/preference-frontend/pull/19) |
+| supabase-receptor | open (from Phase 1) |
+| match-backend | [PR#5](https://github.com/dm-ra-01/match-backend/pull/5) |
+| receptor-planner | [PR#6](https://github.com/dm-ra-01/receptor-planner/pull/6) |
