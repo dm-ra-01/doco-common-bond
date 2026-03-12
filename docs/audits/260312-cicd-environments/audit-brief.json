@@ -3,8 +3,8 @@
   "auditSlug": "260312-cicd-environments",
   "status": "implementing",
   "nextAction": "implement",
-  "openTaskCount": 33,
-  "latestHandover": "SESSION 10 COMPLETE (2026-03-13) \u2014 Phase 7.5 PRE-FLIGHT gate fully implemented. 10 tasks completed: ARCH-11-T1 (ADR-008-vault-ci-oidc-bridge.md \u2014 new numbering, ADR-005 was taken by network-policy), ARCH-02-T0 (setup.sh idempotency contract comment + --force-reset guard + supabase status -o env PUBLISHABLE_KEY health gate replacing docker compose ps poll), ARCH-03-T0 (cicd-architecture.md 7-run trial protocol + rollback escape hatch + alertmanager runner-unavailable alert; supabase-receptor ci.yml commented [self-hosted, k3s] escape hatch), CICD-10-T1 (.github/actions/smoke-test/action.yml \u2014 5-check composite: Kong health, PostgREST liveness, Auth liveness, DB canary, Storage liveness + Slack pass/fail), CICD-10-T2 (.github/workflows/staging-smoke.yml + supabase-receptor ci.yml boot gate replacing --ignore-health-check workaround), CICD-10-T3 (ci-troubleshooting.md Failure Mode 4 section \u2014 5-check table, failure signatures, manual re-run, Vault login failure, ADR-008 cross-link), PROC-01-T2 (ci-required-checks.md v2 production-accurate \u2014 job names verified from live ci.yml files: database-tests, deno-check for supabase-receptor; lint-and-type, unit-tests, visual-tests, integration-tests, build, codegen-check for frontends), ISO-01-T1/T2/T3 (CI_RUN_ID env var propagated to integration-tests job in all 3 frontends; ci-cleanup always-on job added to all 3 frontends for two-layer cleanup model: always() job = primary, pg_cron ENV-04 = safety net). Open task count: 33. NEXT SESSION: Begin Phase 8 Gate 8A \u2014 supabase-receptor ci.yml migrations to composite actions (CICD-09-T0, CICD-09-T1), ARCH-02-T1 (setup.sh --ci flag formalization), ARCH-02-T2 (RESET_setup.sh --teardown flag).",
+  "openTaskCount": 22,
+  "latestHandover": "SESSION 11 COMPLETE (2026-03-13) — Phase 8 Gate 8A + BACK-01 + Gate 8B close-out. 10 tasks marked complete. Close-outs (already implemented, confirmed in code): ARCH-02-T1 (--ci flag in setup.sh), ARCH-02-T2 (--teardown in RESET_setup.sh), ENV-03-T1 (--force guard in RESET_setup.sh), ISO-02-T1 (seeds already split: seed_acacia.sql/seed_monash.sql/seed_test_framework.sql in /seeds/), ENV-04-T1 (test_cleanup.sql + pg_cron already implemented), ENV-04-T2 (__test_{run-id} convention already in testing-guide.md). New implementations: BACK-01-T1 (receptor-planner ci.yml scoped to pytest tests/unit/ -m unit), BACK-01-T2 (match-backend ci.yml new integration-tests job with Supabase boot + health poll), DOC-06-T1 (supabase-receptor docs/ONBOARDING.md written), CICD-09-T1 (supabase-receptor .github/actions/supabase-start/action.yml composite action — installs CLI, boots Supabase, polls PUBLISHABLE_KEY health gate, exports keys to GITHUB_ENV and step outputs). Open tasks: 22. NEXT SESSION: CICD-09-T2a (ADR note: composite action vs reusable workflow), SEC-03-T0/T1 (branch protection), BACK-01 remaining, ENV-05 staging deploy gates, plus k3s cluster provisioning is underway (user building live). Gate 8C (ARCH-03-T2 runner install) will be possible once 'kubectl get nodes' shows a Ready node.",
   "sessionHistory": [
     {
       "date": "2026-03-12",
@@ -189,11 +189,22 @@
       ],
       "openTaskCountAfter": 33,
       "summary": "Phase 7.5 gate: ADR-008 Vault OIDC bridge, setup.sh idempotency + health gate, 7-run runner trial protocol, smoke-test composite action + staging workflow, ci-required-checks v2, ISO-01 test org cleanup in all 3 frontends"
+    },
+    {
+      "date": "2026-03-13",
+      "completedFindingIds": ["ARCH-02", "ENV-03", "ISO-02", "ENV-04", "BACK-01", "DOC-06"],
+      "completedTaskIds": [
+        "ARCH-02-T1", "ARCH-02-T2", "ENV-03-T1",
+        "ISO-02-T1", "ENV-04-T1", "ENV-04-T2",
+        "BACK-01-T1", "BACK-01-T2", "DOC-06-T1", "CICD-09-T1"
+      ],
+      "openTaskCountAfter": 22,
+      "summary": "Session 11 (Phase 8 Gate 8A+8B). 10 tasks completed. Gate 8A/8B close-outs confirmed already implemented: --ci/--teardown/--force in setup scripts, seed files already split, test_cleanup.sql + pg_cron live, __test_* convention in testing-guide.md. New code: BACK-01-T1 (receptor-planner pytest scoped), BACK-01-T2 (match-backend integration-tests job with Supabase boot), DOC-06-T1 (ONBOARDING.md), CICD-09-T1 (supabase-start composite action with health poll + masked key outputs). All 3 repos pushed. Open tasks: 22."
     }
   ],
   "sessionGates": [
-    "Gate 8A: ARCH-02-T1 + ENV-03 \u2014 setup.sh CI-native mode + RESET --force flag (supabase-receptor only)",
-    "Gate 8B: ISO-01-T1 + ISO-01-T2 + ISO-02-T1 + ENV-04-T1 \u2014 test isolation + seed namespacing (supabase-receptor + 3 frontends)",
-    "Gate 8C: ARCH-03-T0 verified \u2192 ARCH-01-T1 + ARCH-03-T1 + CICD-01-T1 + CICD-09-T1 \u2014 runner migration + composite action (all 6 repos, CICD-09 prerequisite in place)"
+    "Gate 8A: ARCH-02-T1 + ENV-03 — setup.sh CI-native mode + RESET --force flag (supabase-receptor only)",
+    "Gate 8B: ISO-01-T1 + ISO-01-T2 + ISO-02-T1 + ENV-04-T1 — test isolation + seed namespacing (supabase-receptor + 3 frontends)",
+    "Gate 8C: ARCH-03-T0 verified → ARCH-01-T1 + ARCH-03-T1 + CICD-01-T1 + CICD-09-T1 — runner migration + composite action (all 6 repos, CICD-09 prerequisite in place)"
   ]
 }
