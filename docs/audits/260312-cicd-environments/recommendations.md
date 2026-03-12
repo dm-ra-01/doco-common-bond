@@ -6,10 +6,11 @@
 **Auditor:** Ryan Ammendolea\
 **Date:** 2026-03-12
 
-> [!NOTE]
-> This file is **auto-generated** from `recommendations.json`.
-> Do not edit it directly — edit the JSON source and re-run
-> `python .agents/scripts/render-recommendations.py recommendations.json`.
+:::note
+This file is **auto-generated** from `recommendations.json`.
+Do not edit it directly — edit the JSON source and re-run
+`python .agents/scripts/render-recommendations.py recommendations.json`.
+:::
 
 ---
 
@@ -548,18 +549,18 @@ Affects: `supabase-receptor` — Engineer onboarding guide
 
 | Phase | Finding IDs | Rationale |
 | :---- | :---------- | :-------- |
-| 1 | ARCH-05, DOC-03, DOC-04, DOC-05, ENV-09 | All planning documents that must exist before any system is provisioned. No infrastructure changes. Produces: ADR-001 to ADR-004 (k3s, self-hosted runner, isolation strategy, Docker image pinning), cluster runbook template (DOC-03), CI troubleshooting (DOC-04), DR plan (DOC-05), required check matrix (PROC-01), staging-to-prod promotion runbook (ENV-09). These documents gate Phase 3 implementation. |
-| 2 | ARCH-09 | Design tasks with no running system dependency: review ISO 27001 physical security controls (7.1-7.4) and update SoA scope before provisioning hardware (ISO-03); design and commit helmfile.yaml structure with pinned chart versions and quarterly upgrade workflow (ARCH-09). Both outputs are consumed by Phase 3. |
-| 3 | ARCH-04, ARCH-07, ARCH-08, ARCH-10, ENV-07, SEC-05, SEC-06, SEC-07, PROC-02 | The strategic Phase 1 buildout. Provision k3s on Hyper-V, deploy all cluster services via helmfile.yaml: Calico CNI, Vault OSS (YubiKey PKCS#11 primary + TPM 2.0 secondary unseal), kube-prometheus-stack, Loki, Falco, cert-manager (wildcard TLS via DNS-01), Traefik ingress. Provision Cloudflare Tunnel for staging. Bind Supabase Studio to 127.0.0.1. Configure Alertmanager → Slack webhook pipeline. This phase has the most risk and longest duration — all subsequent phases depend on it. |
-| 4 | KEY-01, CICD-03 | Fix the two security-class CI defects (key format mismatch, service role misuse) that cause silent auth failures. These are CI YAML changes only — safe to implement in parallel while Phase 3 is being planned and provisioned. |
-| 5 | CICD-02, CGEN-01, CGEN-02, CICD-04, CICD-05, BACK-01, BACK-02, CICD-07, ENV-10 | Pin Supabase CLI, standardise codegen gate, fix bare pytest, replace JWT stubs, add job timeouts, configure npm/pip caching, and implement the git-tag-triggered Edge Function versioning strategy. All CI YAML and tooling changes. |
-| 6 | SEC-01, SEC-02, CICD-06, SEC-04 | Add GITHUB_TOKEN permission blocks, pin Actions to SHAs, add Dependabot for github-actions ecosystem, pin Docker image digests and add verify-images target. Update SoA controls 8.3 and 8.8. These harden the CI supply chain independently of the cluster. |
-| 7 | ENV-01, ENV-02, KEY-02, DOC-02, ENV-06, ARCH-06, ENV-08, CICD-08 | Provision staging environment, document all 4 tiers, write key management docs, configure GitHub Environments (staging + production) for secret scoping and deployment history, implement Cloudflare R2 backup (pg_dumpall/rclone), add secrets rotation schedule and reminder workflow, and configure the pull-through container registry cache. |
-| 8 | ARCH-01, ARCH-02, ARCH-03, ISO-01, ISO-02, ENV-03, ENV-04, CICD-01 | Design and implement the branch-matched CI architecture (Docker network isolation or k8s namespace-per-branch), add CI mode to setup.sh, implement test data isolation and pg_cron cleanup, migrate to self-hosted runner. Reduce redundant Supabase boots (CICD-01). May be simplified by Phase 3 k8s namespace-per-branch approach. |
-| 9 | ENV-05 | Deploy the prod migration gate workflow (prod-deploy.yml) requiring human approval before any db push. Update SoA control 8.32. Update Supabase governance register. This is gated on Phase 7 (GitHub Environments must exist first for the environment protection rule). |
-| 10 | DOC-01, DOC-06 | With all infrastructure running, write the post-implementation documentation: Vault configuration guide (DOC-01) documenting the OIDC setup, database secrets engine, and VSO CRD patterns; engineer onboarding guide (DOC-06) covering prerequisites, how to connect to each environment, how to run CI locally, and key contacts. These documents require a working system to be accurate. |
-| 11 | PROC-01, ISO-03 | Document the exact GitHub Actions job names required to pass per repo (PROC-01 — this document is a prerequisite for SEC-03 branch protection). Review ISO 27001 physical controls 7.1-7.4 post-provisioning and update the SoA with confirmed compensating controls for the k3s bare-metal node. These are low-risk documentation tasks that can proceed in parallel. |
-| 12 | SEC-03 | The final hardening step, enabled only once CI is stable and all phase 1-11 fixes are complete and verified. Requires the required check matrix from Phase 11 (PROC-01). Enables branch protection rulesets across all 6 repositories with mandatory CI status checks, PR approval, and no force pushes. |
+| 1 | ARCH-05, DOC-03, DOC-04, DOC-05, ENV-09, OPS-01 | All planning documents that must exist before any system is provisioned. No infrastructure changes. Produces: ADR-001 to ADR-004 (k3s, self-hosted runner, isolation strategy, Docker image pinning), cluster runbook template (DOC-03), CI troubleshooting (DOC-04), DR plan (DOC-05), staging-to-prod promotion runbook (ENV-09), Windows host reboot recovery checklist (OPS-01). These documents gate Phase 3 implementation. |
+| 2 | ARCH-09, PROC-01 | Design tasks with no running system dependency: design and commit helmfile.yaml structure with pinned chart versions and quarterly upgrade workflow (ARCH-09); document the required CI status check matrix per repo (PROC-01) which gates Phase 12 branch protection. Both outputs are consumed by Phase 3 and Phase 12. |
+| 3 | ARCH-04, ARCH-07, ARCH-08, ARCH-10, ENV-07, SEC-05, SEC-06, SEC-07, PROC-02, SEC-08 | The strategic buildout. Provision k3s on Hyper-V, deploy all cluster services via helmfile.yaml: Calico CNI, Vault OSS (YubiKey PKCS#11 primary + TPM 2.0 secondary unseal), kube-prometheus-stack, Loki, Falco, cert-manager (wildcard TLS via DNS-01), Traefik ingress. Configure RBAC ServiceAccounts and RoleBindings for all workloads (SEC-08 — must be done at provisioning time). Provision Cloudflare Tunnel for staging. Bind Supabase Studio to 127.0.0.1. Configure Alertmanager → Slack webhook pipeline. |
+| 4 | KEY-01, CICD-03 | Fix the two security-class CI defects (key format mismatch, service role misuse) that cause silent auth failures. CI YAML changes only — safe to implement in parallel while Phase 3 is being planned and provisioned. |
+| 5 | CICD-02, CGEN-01, CGEN-02, CICD-04, CICD-05, BACK-01, BACK-02, CICD-07, ENV-10, CICD-09 | Pin Supabase CLI, standardise codegen gate, fix bare pytest, replace JWT stubs, add job timeouts, configure npm/pip caching, implement the composite action for Supabase start + key extraction (CICD-09 — structural fix for drift), and implement the git-tag-triggered Edge Function versioning strategy. All CI YAML and tooling changes. |
+| 6 | SEC-01, SEC-02, CICD-06, SEC-04 | Add GITHUB_TOKEN permission blocks, pin Actions to SHAs, add Dependabot for github-actions ecosystem, pin Docker image digests and add verify-images target. Update SoA controls 8.3 and 8.8. |
+| 7 | ENV-01, ENV-02, KEY-02, DOC-02, ENV-06, ARCH-06, ENV-08, CICD-08, SEC-09, ENV-11 | Provision staging environment, document all 4 tiers, write key management docs, configure GitHub Environments, implement Cloudflare R2 backup with secondary Backblaze B2 AUS copy (ENV-11 — Australian data residency), enable pgaudit forensic audit logging (SEC-09), add secrets rotation schedule and reminder workflow, configure pull-through container registry. |
+| 8 | ARCH-01, ARCH-02, ARCH-03, ISO-01, ISO-02, ENV-03, ENV-04, CICD-01 | Design and implement the branch-matched CI architecture, add CI mode to setup.sh, implement test data isolation and pg_cron cleanup, migrate to self-hosted runner. Reduce redundant Supabase boots (CICD-01). |
+| 9 | ENV-05, CICD-10 | Deploy the prod migration gate workflow (prod-deploy.yml) requiring human approval before any db push. Integrate the 5-layer post-deploy smoke test (CICD-10) into prod-deploy.yml and create the standalone staging-smoke.yml workflow. Gated on Phase 7 (GitHub Environments must exist first). |
+| 10 | DOC-01, DOC-06 | With all infrastructure running, write the post-implementation documentation: Vault configuration guide (DOC-01) and engineer onboarding guide (DOC-06). These documents require a working system to be accurate. |
+| 11 | ISO-03 | Review ISO 27001 physical controls 7.1–7.4 post-provisioning and update the SoA with confirmed compensating controls for the k3s bare-metal node. |
+| 12 | SEC-03 | The final hardening step, enabled only once CI is stable and all phase 1–11 fixes are complete and verified. Requires the required check matrix from Phase 2 (PROC-01, with the post-Phase 5 refresh per PROC-01-T2). Enables branch protection rulesets across all 6 repositories. |
 
 
 ---
@@ -615,9 +616,15 @@ Affects: `supabase-receptor` — Engineer onboarding guide
 | CICD-08 | GitHub Environments for deployment tracking and secret scoping | `` | Process Gap | 🟡 Medium |
 | SEC-07 | Falco runtime security on k3s | `falco-rules.yaml` | Security | 🟡 Medium |
 | PROC-02 | Incident response plan and Slack notification pipeline | `alertmanager-config.yaml` | Process Gap | 🟡 Medium |
-| DOC-01 | Secrets vault | `key-management.md` | Documentation Gap | 🟢 Low |
+| DOC-01 | Secrets vault (Vault OSS configuration guide) | `key-management.md` | Documentation Gap | 🟢 Low |
 | DOC-03 | Kubernetes cluster runbook | `kubernetes-cluster.md` | Documentation Gap | 🟢 Low |
 | DOC-04 | CI troubleshooting runbook | `ci-troubleshooting.md` | Documentation Gap | 🟢 Low |
 | DOC-05 | Disaster recovery plan | `disaster-recovery.md` | Documentation Gap | 🟢 Low |
 | DOC-06 | Engineer onboarding guide | `ONBOARDING.md` | Documentation Gap | 🟢 Low |
+| SEC-08 | k3s RBAC — no least-privilege ServiceAccounts | `k3s/rbac/serviceaccounts.yaml` | Security | 🟠 High |
+| OPS-01 | Windows 11 host OS update &amp; reboot recovery | `host-reboot-recovery.md` | Process Gap | 🟡 Medium |
+| SEC-09 | Supabase `pgaudit` extension not enabled | `supabase/schemas/extensions.sql` | Security | 🟠 High |
+| ENV-11 | R2 backup — no secondary Australian provider copy | `scripts/backup-prod.sh` | Process Gap | 🟡 Medium |
+| CICD-09 | No composite action for Supabase start + key extraction | `.github/actions/supabase-start/action.yml` | Tech Debt | 🟡 Medium |
+| CICD-10 | No post-deploy smoke test (prod + staging) | `.github/actions/smoke-test/action.yml` | Process Gap | 🟢 Low |
 

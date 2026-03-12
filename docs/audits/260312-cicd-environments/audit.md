@@ -308,19 +308,19 @@ This audit uses a **two-phase model**: `PLAN` phases produce documents and archi
 
 ```mermaid
 flowchart TD
-  P1["🗒️ PLAN 1\nADRs, Runbooks & Docs\n(ARCH-05, DOC-03/04/05, ENV-09)"] --> P2
-  P2["🗒️ PLAN 2\nCompliance Review, Helmfile Design & Required Checks\n(ARCH-09, PROC-01)"] --> P3
-  P3["🏗️ IMPLEMENT 3\nCore Cluster Stack\n(k3s, Vault, Calico, Grafana,\ncert-manager, Falco, Tunnel, Slack)"] --> P4
+  P1["🗒️ PLAN 1<br/>ADRs, Runbooks &amp; Docs<br/>(ARCH-05, DOC-03/04/05, ENV-09, OPS-01)"] --> P2
+  P2["🗒️ PLAN 2<br/>Compliance Review, Helmfile Design &amp; Required Checks<br/>(ARCH-09, PROC-01)"] --> P3
+  P3["🏗️ IMPLEMENT 3<br/>Core Cluster Stack<br/>(k3s, Vault, Calico, Grafana,<br/>cert-manager, Falco, Tunnel, Slack, RBAC)"] --> P4
   P3 --> P6
-  P4["🔧 IMPLEMENT 4\nCritical CI Auth Fixes\n(KEY-01, CICD-03)"] --> P5
-  P5["🔧 IMPLEMENT 5\nCI Hardening & Edge Functions\n(CICD-02/04/05/07, CGEN, BACK, ENV-10)"] --> P7
-  P6["🔐 IMPLEMENT 6\nSupply-Chain Security\n(SEC-01/02/04, CICD-06)"] --> P7
-  P7["🌐 IMPLEMENT 7\nEnvironment Tiers & Backup\n(ENV-01/02/06/08, KEY-02, CICD-08, ARCH-06)"] --> P8
-  P8["⚙️ IMPLEMENT 8\nCI Architecture & Test Isolation\n(ARCH-01/02/03, ISO-01/02, ENV-03/04, CICD-01)"] --> P9
-  P9["🚀 IMPLEMENT 9\nProduction Gate + Smoke Tests\n(ENV-05, CICD-10)"] --> P10
-  P10["📚 IMPLEMENT 10\nPost-Build Docs\n(DOC-01, DOC-06)"] --> P11
-  P11["✅ IMPLEMENT 11\nPhysical Security SoA Update\n(ISO-03)"] --> P12
-  P12["🔒 FINAL GATE 12\nBranch Protection\n(SEC-03)"]
+  P4["🔧 IMPLEMENT 4<br/>Critical CI Auth Fixes<br/>(KEY-01, CICD-03)"] --> P5
+  P5["🔧 IMPLEMENT 5<br/>CI Hardening &amp; Edge Functions<br/>(CICD-02/04/05/07/09, CGEN, BACK, ENV-10)"] --> P7
+  P6["🔐 IMPLEMENT 6<br/>Supply-Chain Security<br/>(SEC-01/02/04, CICD-06)"] --> P7
+  P7["🌐 IMPLEMENT 7<br/>Environment Tiers &amp; Backup<br/>(ENV-01/02/06/08, KEY-02, CICD-08, ARCH-06,<br/>SEC-09, ENV-11)"] --> P8
+  P8["⚙️ IMPLEMENT 8<br/>CI Architecture &amp; Test Isolation<br/>(ARCH-01/02/03, ISO-01/02, ENV-03/04, CICD-01)"] --> P9
+  P9["🚀 IMPLEMENT 9<br/>Production Gate + Smoke Tests<br/>(ENV-05, CICD-10)"] --> P10
+  P10["📚 IMPLEMENT 10<br/>Post-Build Docs<br/>(DOC-01, DOC-06)"] --> P11
+  P11["✅ IMPLEMENT 11<br/>Physical Security SoA Update<br/>(ISO-03)"] --> P12
+  P12["🔒 FINAL GATE 12<br/>Branch Protection<br/>(SEC-03)"]
 
   style P1 fill:#e8f4fd,stroke:#2196F3
   style P2 fill:#e8f4fd,stroke:#2196F3
@@ -335,9 +335,9 @@ graph TB
   subgraph host["Windows 11 Pro (Hyper-V) — Intel i7-265KF / 32GB DDR5 / 1TB NVMe"]
     subgraph k3s["k3s Cluster (Calico CNI + NetworkPolicies)"]
       subgraph ns_infra["Namespace: infra"]
-        vault["🔐 Vault OSS\n(YubiKey PKCS#11 primary\nTPM 2.0 secondary unseal)"]
+        vault["🔐 Vault OSS<br/>(YubiKey PKCS#11 primary<br/>TPM 2.0 secondary unseal)"]
         traefik["🔀 Traefik Ingress"]
-        certmgr["🔑 cert-manager\n(Let's Encrypt DNS-01 wildcard)"]
+        certmgr["🔑 cert-manager<br/>(Let's Encrypt DNS-01 wildcard)"]
       end
       subgraph ns_supabase["Namespace: supabase"]
         kong["Kong API Gateway"]
@@ -353,12 +353,12 @@ graph TB
         falco["Falco Runtime Security"]
       end
       subgraph ns_ci["Namespace: ci-runner"]
-        runner["Self-Hosted\nGitHub Runner"]
-        registry["Container Registry\n(pull-through cache)"]
+        runner["Self-Hosted<br/>GitHub Runner"]
+        registry["Container Registry<br/>(pull-through cache)"]
       end
     end
   end
-  cf["☁️ Cloudflare\n(DNS + Tunnel)"] -->|"staging-api-829c83.commonbond.au"| traefik
+  cf["☁️ Cloudflare<br/>(DNS + Tunnel)"] -->|"staging-api-829c83.commonbond.au"| traefik
   gh["GitHub Actions"] -->|"OIDC token (no static secret)"| vault
   gh -->|"CI jobs"| runner
   runner --> vault
@@ -378,12 +378,14 @@ graph TB
 
 ```mermaid
 flowchart LR
-  yk["YubiKey USB-C\n(PKCS#11 HSM, primary)"] -->|"hardware-sealed master key"| vault["Vault OSS"]
-  tpm["TPM 2.0\n(secondary backup seal)"] -->|"TPM-bound key"| vault
+  yk["YubiKey USB-C<br/>(PKCS#11 HSM, primary)"] -->|"hardware-sealed master key"| vault["Vault OSS"]
+  tpm["TPM 2.0<br/>(secondary backup seal)"] -->|"TPM-bound key"| vault
   vault -->|"OIDC JWT validation"| gh["GitHub Actions"]
-  vault -->|"dynamic Postgres creds\n(per CI run)"| pg["Supabase Postgres"]
+  vault -->|"dynamic Postgres creds<br/>(per CI run)"| pg["Supabase Postgres"]
   vault -->|"VSO CRD injection"| pods["k3s Pods"]
 ```
+
+
 
 :::tip
 **For agents continuing this audit:** The `latestHandover` field in `audit-brief.json` always contains the state summary. The `implementationPhases[]` array in `recommendations.json` is the authoritative source for what belongs in each phase. Always run `validate-recommendations.py` before committing.
