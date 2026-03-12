@@ -4,7 +4,7 @@
   "status": "implementing",
   "nextAction": "implement",
   "openTaskCount": 22,
-  "latestHandover": "SESSION 11 COMPLETE (2026-03-13) — 10 tasks closed (33→22 open). See sessionHistory for detail. NEXT SESSION FOCUS: Guided k3s cluster provisioning — the user wants to be walked through the full installation from scratch, step-by-step, in the same session. Architecture is documented in docs/infrastructure/environment/kubernetes-cluster.md (§'Provisioning Sequence ARCH-04-T2'). Key steps: (1) 3 Ubuntu Server 24.04 LTS Hyper-V VMs provisioned and linux-azure kernel installed; (2) k3s control-plane init with --flannel-backend=none --disable-network-policy; (3) Worker nodes joined; (4) Calico via Tigera Operator — MUST be done before workloads; (5) NetworkPolicies + RBAC applied (k3s/network-policies/, k3s/rbac/); (6) helmfile sync — provisions Vault, Supabase, cert-manager, Falco, monitoring, Zot; (7) Vault init + unseal + OIDC bridge setup (ADR-008). Once 'kubectl get nodes' shows all 3 nodes Ready, unlock Gate 8C: install GitHub Actions runner (ARCH-03-T2) and migrate CI jobs. Do NOT start CICD-09-T2a or SEC-03 until k3s is live — user priority is the cluster first. Check docs/operations/vm-setup.md for VM configuration detail (may need to be created if missing). Use the browser tool to help the user navigate any web-based steps (Hyper-V, GitHub Actions runner registration, Cloudflare Tunnel config).",
+  "latestHandover": "SESSION 12 SCOPING ONLY (2026-03-13) — 0 tasks closed, 22 remain open. NEXT SESSION FOCUS: Guided Hyper-V + k3s cluster provisioning from scratch. USER WILL RUN THE NEXT SESSION ON THE WINDOWS HOST (not Mac/WSL). START THERE. Key facts confirmed this session: (A) No Hyper-V VMs exist yet — all 3 must be created from scratch; (B) WSL2 toolchain (kubectl, helm, helmfile, vault, supabase CLI) not yet installed; (C) External Hyper-V virtual switch IS already configured. ENVIRONMENT SPLIT: VM creation steps (New-VM, Hyper-V Manager, SSH into VMs) are done from the Windows host — PowerShell access is available there. WSL2 toolchain installation and all kubectl/helmfile commands happen inside the WSL2 Ubuntu environment — call this out explicitly when transitioning. TARGET ARCHITECTURE (kubernetes-cluster.md): receptor-ctrl-01 (6 GB RAM, 4 vCPU, control plane), receptor-work-01 (12 GB RAM, 8 vCPU, persistent worker — Supabase/Vault/monitoring), receptor-work-02 (8 GB RAM, 6 vCPU, ephemeral worker — CI runner/Traefik/Falco). All VMs: Ubuntu Server 24.04 LTS + linux-azure kernel. PROVISIONING ORDER: (1) Download Ubuntu 24.04 ISO to Windows host; (2) Create 3 VMs in Hyper-V Manager (use PowerShell New-VM for speed); (3) Install Ubuntu on each — minimal server install, static hostname, SSH key; (4) Install linux-azure kernel on each; (5) Install WSL2 toolchain; (6) k3s on ctrl-01 with --flannel-backend=none --disable-network-policy; (7) Join work-01 and work-02; (8) Calico via Tigera Operator BEFORE any workloads; (9) Apply k3s/network-policies/ and k3s/rbac/; (10) helmfile sync; (11) Vault init + unseal; (12) ARCH-03-T2 GitHub Actions runner. vm-setup.md in supabase-receptor/docs/operations/ is STALE — rewrite it as you go. Use browser tool to open Hyper-V Manager and guide through GUI steps. Do NOT proceed to any other audit tasks until kubectl get nodes shows 3x Ready.",
   "sessionHistory": [
     {
       "date": "2026-03-12",
@@ -200,6 +200,14 @@
       ],
       "openTaskCountAfter": 22,
       "summary": "Session 11 (Phase 8 Gate 8A+8B). 10 tasks completed. Gate 8A/8B close-outs confirmed already implemented: --ci/--teardown/--force in setup scripts, seed files already split, test_cleanup.sql + pg_cron live, __test_* convention in testing-guide.md. New code: BACK-01-T1 (receptor-planner pytest scoped), BACK-01-T2 (match-backend integration-tests job with Supabase boot), DOC-06-T1 (ONBOARDING.md), CICD-09-T1 (supabase-start composite action with health poll + masked key outputs). All 3 repos pushed. Open tasks: 22."
+    }
+  ,
+    {
+      "date": "2026-03-13",
+      "completedFindingIds": [],
+      "completedTaskIds": [],
+      "openTaskCountAfter": 22,
+      "summary": "Session 12 (scoping only). 0 tasks completed. Confirmed starting state: no Hyper-V VMs exist, WSL2 toolchain not installed, external Hyper-V switch configured. User moving provisioning session to Windows host (PowerShell access needed for Hyper-V). Handover brief updated with full provisioning order and environment split (Windows host for VM creation, WSL2 for cluster toolchain and kubectl). vm-setup.md flagged as stale — rewrite during provisioning session."
     }
   ],
   "sessionGates": [
