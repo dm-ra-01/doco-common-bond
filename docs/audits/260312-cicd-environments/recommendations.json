@@ -282,11 +282,11 @@
       "tasks": [
         {
           "taskId": "CGEN-01-T1",
-          "status": "open",
+          "status": "complete",
           "description": "Replace '--check' with 'npm run codegen && git diff --exit-code' in planner-frontend codegen-check step, mirroring preference-frontend pattern. Add the specific error message annotation for developer guidance.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/frontend/planner-frontend/.github/workflows/ci.yml",
-          "completedAt": null,
-          "completedBy": null
+          "completedAt": "2026-03-12T08:40:48Z",
+          "completedBy": "session-5-260312"
         }
       ],
       "severity_history": []
@@ -302,11 +302,11 @@
       "tasks": [
         {
           "taskId": "CGEN-02-T1",
-          "status": "open",
+          "status": "complete",
           "description": "Replace '--check' with 'npm run codegen && git diff --exit-code' in workforce-frontend codegen-check step.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/frontend/workforce-frontend/.github/workflows/ci.yml",
-          "completedAt": null,
-          "completedBy": null
+          "completedAt": "2026-03-12T08:40:48Z",
+          "completedBy": "session-5-260312"
         }
       ],
       "severity_history": []
@@ -322,11 +322,11 @@
       "tasks": [
         {
           "taskId": "CICD-04-T1",
-          "status": "open",
+          "status": "complete",
           "description": "Add '--workdir supabase/' to the supabase start and supabase test db commands in supabase-receptor ci.yml to make the working directory explicit and refactor-safe.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/.github/workflows/ci.yml",
-          "completedAt": null,
-          "completedBy": null
+          "completedAt": "2026-03-12T08:40:48Z",
+          "completedBy": "session-5-260312"
         }
       ],
       "severity_history": []
@@ -538,19 +538,19 @@
       "tasks": [
         {
           "taskId": "BACK-02-T1",
-          "status": "open",
+          "status": "complete",
           "description": "Replace the hardcoded JWT placeholder in both ci.yml files with a clearly non-JWT stub value such as 'stub-service-role-key-not-real' that will not trigger credential scanner heuristics.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/backend/match-backend/.github/workflows/ci.yml",
-          "completedAt": null,
-          "completedBy": null
+          "completedAt": "2026-03-12T08:40:48Z",
+          "completedBy": "session-5-260312"
         },
         {
           "taskId": "BACK-02-T2",
-          "status": "open",
+          "status": "complete",
           "description": "Apply the same stub replacement to receptor-planner ci.yml.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/backend/receptor-planner/.github/workflows/ci.yml",
-          "completedAt": null,
-          "completedBy": null
+          "completedAt": "2026-03-12T08:40:48Z",
+          "completedBy": "session-5-260312"
         }
       ],
       "severity_history": []
@@ -674,11 +674,11 @@
       "tasks": [
         {
           "taskId": "CICD-05-T1",
-          "status": "open",
+          "status": "complete",
           "description": "Add 'timeout-minutes: 20' to all Supabase-dependent jobs and 'timeout-minutes: 10' to pure unit/lint jobs across all 5 ci.yml files. Set a per-workflow timeout-minutes of 30 as a backstop.",
           "targetFile": "",
-          "completedAt": null,
-          "completedBy": null
+          "completedAt": "2026-03-12T08:40:48Z",
+          "completedBy": "session-5-260312"
         }
       ],
       "severity_history": []
@@ -1218,11 +1218,11 @@
       "tasks": [
         {
           "taskId": "CICD-07-T1",
-          "status": "open",
+          "status": "complete",
           "description": "Add 'actions/cache' steps to all 3 frontend ci.yml files keyed on 'hashFiles(\"**/package-lock.json\")'. For backend repos (match-backend, receptor-planner) add pip cache steps keyed on 'hashFiles(\"**/requirements.txt\")'. Once running on a self-hosted runner (ARCH-03), switch to a local filesystem cache path (/var/cache/ci/npm, /var/cache/ci/pip) instead of the GitHub-managed cache to eliminate upload/download overhead entirely.",
           "targetFile": "",
-          "completedAt": null,
-          "completedBy": null
+          "completedAt": "2026-03-12T08:40:48Z",
+          "completedBy": "session-5-260312"
         }
       ],
       "severity_history": []
@@ -1306,19 +1306,19 @@
       "tasks": [
         {
           "taskId": "ENV-10-T1",
-          "status": "open",
+          "status": "complete",
           "description": "Create a versioned Edge Function deployment strategy: tag each function release with git tag format 'fn/<function-name>/v<semver>' (e.g. fn/receptor-allocator/v1.2.3). Create a GitHub Actions workflow '.github/workflows/deploy-function.yml' triggered on matching tags that: (1) runs tests, (2) requires ENV-05 environment approval for production, (3) deploys via 'supabase functions deploy --project-ref <ref>', (4) tags the deployment in the Supabase functions dashboard with the git SHA.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/.github/workflows/deploy-function.yml",
-          "completedAt": null,
-          "completedBy": null
+          "completedAt": "2026-03-12T08:40:48Z",
+          "completedBy": "session-5-260312"
         },
         {
           "taskId": "ENV-10-T2",
-          "status": "open",
+          "status": "complete",
           "description": "Write docs/operations/edge-function-deployment.md with: (1) the tagging convention (fn/<name>/vX.Y.Z); (2) how to deploy (git tag + push, GitHub Actions handles the rest); (3) how to rollback (git checkout <previous-tag>, re-push tag with -f); (4) why manual 'supabase functions deploy' is prohibited in staging/prod; (5) how to find the current deployed version (Supabase dashboard + git log --tags). This document MUST be linked from ONBOARDING.md (DOC-06) and is considered mandatory reading for any engineer with production access.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/docs/operations/edge-function-deployment.md",
-          "completedAt": null,
-          "completedBy": null
+          "completedAt": "2026-03-12T08:40:48Z",
+          "completedBy": "session-5-260312"
         }
       ],
       "severity_history": []

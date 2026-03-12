@@ -751,3 +751,29 @@ Affects: `supabase-receptor` — Post-deploy smoke tests for staging and product
 **PR order note:** planner-frontend and workforce-frontend audit branches are independent of each other and can be merged in any order. No schema changes this session.
 
 **Brief for next agent:** Phase 5 is next. It covers CICD-02 (parallel Supabase boots across all 4 repos), CGEN-01/CGEN-02 (codegen check fixes for planner/workforce), CICD-04 (supabase-receptor ci.yml pinned CLI version), CICD-05 (cross-ecosystem Supabase CLI version consistency), BACK-01/BACK-02 (match-backend and receptor-planner CI), CICD-07 (dependency review action), ENV-10 (Edge Function deployment workflow), CICD-09 (composite action). KEY CLARIFICATION RECORDED: publishable key IS valid for signInWithPassword on cloud-hosted GoTrue; however local CLI supabase status -o env still outputs legacy ANON_KEY (JWT) and preference-frontend uses that for local CI compatibility — follow the same pattern. LOCAL_SUPABASE_SECRET_KEY has been deleted from planner-frontend and workforce-frontend GitHub Secrets.
+
+---
+
+## Session Close — Phase 5 (2026-03-12)
+
+**Tasks completed this session:** 9 tasks across 7 findings
+
+| Finding | Task | Repo(s) | Change |
+|:--|:--|:--|:--|
+| CGEN-01 | CGEN-01-T1 | planner-frontend | codegen check: `git diff --exit-code` instead of `--check` |
+| CGEN-02 | CGEN-02-T1 | workforce-frontend | same codegen fix |
+| CICD-04 | CICD-04-T1 | supabase-receptor | `--workdir supabase/` added to `supabase start` + `test db` |
+| BACK-02 | BACK-02-T1 | match-backend | JWT stub → `stub-service-role-key-not-real` |
+| BACK-02 | BACK-02-T2 | receptor-planner | same stub replacement |
+| CICD-05 | CICD-05-T1 | all 6 repos | `timeout-minutes` on all jobs (10/20) |
+| CICD-07 | CICD-07-T1 | all 6 repos | `actions/cache` for npm (`~/.npm`) and pip (`~/.cache/pip`) |
+| ENV-10 | ENV-10-T1 | supabase-receptor | `deploy-function.yml` tag-driven workflow created |
+| ENV-10 | ENV-10-T2 | supabase-receptor | `docs/operations/edge-function-deployment.md` created |
+
+**Open task count:** 56 (was 65)
+
+**Verification:** `npx tsc --noEmit` passed on all 3 frontends; Deno type check clean; `pytest` clean on both backends.
+
+**Branches pushed:** All 6 repos on `audit/260312-cicd-environments`. preference-frontend now included.
+
+**Next session focus (Phase 6):** CICD-02 (pin Supabase CLI version), CICD-09 (composite action for Supabase start), CICD-08 (GitHub Environments), ENV-05 (prod-deploy.yml migration workflow), SEC-01, SEC-02.

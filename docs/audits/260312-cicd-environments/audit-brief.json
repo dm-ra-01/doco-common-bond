@@ -3,8 +3,8 @@
   "auditSlug": "260312-cicd-environments",
   "status": "implementing",
   "nextAction": "implement",
-  "openTaskCount": 65,
-  "latestHandover": "SESSION 3 COMPLETE (2026-03-12). Phase 4 done. Completed: KEY-01-T1–T4 (planner-frontend + workforce-frontend globalSetup.ts updated to use NEXT_PUBLIC_SUPABASE_ANON_JWT ?? ANON_KEY fallback for signInWithPassword; CI Start Supabase steps updated to export ANON_KEY as ANON_JWT matching preference-frontend reference), CICD-03-T1+T2 (planner-frontend + workforce-frontend ci.yml — SERVICE_ROLE_KEY now dynamically extracted from supabase status -o env instead of LOCAL_SUPABASE_SECRET_KEY static secret), CICD-03-T3 (LOCAL_SUPABASE_SECRET_KEY GitHub Secret deleted from both repos). RESEARCH NOTE: Web search confirmed publishable key (sb_publishable_*) is the official replacement for anon JWT for cloud-hosted GoTrue auth ops; however supabase status -o env still outputs ANON_KEY (legacy JWT) in addition to PUBLISHABLE_KEY. The preference-frontend reference implementation already exports ANON_KEY as ANON_JWT for local CI GoTrue compatibility. New branches: planner-frontend audit/260312-cicd-environments (07dc9c5), workforce-frontend audit/260312-cicd-environments (07ceaa3). Both tsc --noEmit passed; lint-staged eslint also passed. NEXT SESSION: Phase 5 — CICD Pipeline (CICD-02, CGEN-01, CGEN-02, CICD-04, CICD-05, BACK-01, BACK-02, CICD-07, ENV-10, CICD-09). These span supabase-receptor, planner-frontend, workforce-frontend, match-backend, receptor-planner.",
+  "openTaskCount": 56,
+  "latestHandover": "SESSION 5 COMPLETE (2026-03-12). Phase 5 done. 9 tasks marked complete across 6 repos. CGEN-01+02: codegen-check in planner-frontend and workforce-frontend now uses 'npx graphql-codegen --config codegen.check.ts && git diff --exit-code src/graphql/schema.json' instead of --check flag, mirroring preference-frontend. CICD-04: supabase start + supabase test db in supabase-receptor ci.yml now include '--workdir supabase/'. BACK-02: JWT placeholder in match-backend and receptor-planner ci.yml replaced with 'stub-service-role-key-not-real'. CICD-05: timeout-minutes added to all jobs across all 6 repos (10 for lint/unit/build, 20 for Supabase/codegen/e2e). CICD-07: actions/cache for npm (frontends, keyed on package-lock.json) and pip (backends, keyed on requirements.txt) added to all container-based jobs. ENV-10: deploy-function.yml workflow (tag-driven, fn/name/vX.Y.Z) + docs/operations/edge-function-deployment.md created in supabase-receptor. All 6 repos on audit/260312-cicd-environments branch — pushed. All tsc and pytest gates passed. NEXT SESSION: Phase 6 — CICD-02 (pin Supabase CLI version), CICD-09 (composite action), CICD-08 (GitHub Environments), ENV-05 (prod-deploy.yml schema migration workflow), SEC-01, SEC-02, and remaining high/medium priority findings.",
   "sessionHistory": [
     {
       "date": "2026-03-12",
@@ -23,6 +23,12 @@
       "completedFindingIds": ["KEY-01", "CICD-03"],
       "completedTaskIds": ["KEY-01-T1", "KEY-01-T2", "KEY-01-T3", "KEY-01-T4", "CICD-03-T1", "CICD-03-T2", "CICD-03-T3"],
       "summary": "Phase 4 (CI Keys) completed. 7 tasks marked complete across planner-frontend and workforce-frontend. Changes: ANON_JWT export added to ci.yml Start Supabase step; SERVICE_ROLE_KEY now dynamically extracted (CICD-03); globalSetup.ts updated to use ANON_JWT for signInWithPassword; LOCAL_SUPABASE_SECRET_KEY GitHub Secret deleted from both repos (CICD-03-T3)."
+    },
+    {
+      "date": "2026-03-12",
+      "completedFindingIds": ["CGEN-01", "CGEN-02", "CICD-04", "BACK-02", "CICD-05", "CICD-07", "ENV-10"],
+      "completedTaskIds": ["CGEN-01-T1", "CGEN-02-T1", "CICD-04-T1", "BACK-02-T1", "BACK-02-T2", "CICD-05-T1", "CICD-07-T1", "ENV-10-T1", "ENV-10-T2"],
+      "summary": "Phase 5 (CI Pipeline Hardening) completed. 9 tasks marked complete across 6 repos. Changes: CGEN-01/02 codegen gate now uses git diff instead of --check; CICD-04 --workdir supabase/ added; BACK-02 JWT stubs replaced; CICD-05 timeouts on all jobs; CICD-07 npm/pip cache; ENV-10 deploy-function.yml + edge-function-deployment.md. preference-frontend included for CICD-05/07. 4 new audit branches: planner-frontend, workforce-frontend, preference-frontend, match-backend, receptor-planner all pushed."
     }
   ]
 }
