@@ -3,15 +3,20 @@
   "auditSlug": "260312-cicd-environments",
   "status": "implementing",
   "nextAction": "implement",
-  "openTaskCount": 93,
-  "latestHandover": "SESSION 1 COMPLETE (2026-03-12). Phases 1 & 2 done. Completed: ARCH-05-T1 (ADR directory + 7 ADRs in supabase-receptor/docs/adr/), DOC-03-T1 (kubernetes-cluster.md), DOC-04-T1 (ci-troubleshooting.md), DOC-05-T1 (disaster-recovery.md), ENV-09-T1 (promotion-runbook.md), OPS-01-T1+T2 (host-reboot-recovery.md + Windows Update config), ARCH-09-T1 (k3s/helmfile.yaml — all 8 charts pinned), ARCH-09-T2 (.github/workflows/helm-upgrade-check.yml — quarterly cron), PROC-01-T1 (docs/operations/ci-required-checks.md — planning doc, to be refreshed post-Phase 5 per PROC-01-T2). vault-architecture.md also created as pre-draft for DOC-01 (Phase 10). NOTES: PROC-01-T2 deliberately deferred until after Phase 5. ARCH-05-T2 (register ADRs in Supabase standards table) still open — was planned but deprioritised in favour of actual ADR creation. NEXT SESSION: Phase 3 — IMPLEMENT Core Cluster Stack (ARCH-04, ARCH-07, ARCH-08, ARCH-10, ENV-07, SEC-05, SEC-06, SEC-07, PROC-02, SEC-08) — all in supabase-receptor. These involve creating k3s manifests and Kubernetes config YAMLs, not code changes.",
+  "openTaskCount": 72,
+  "latestHandover": "SESSION 2 COMPLETE (2026-03-12). Phase 3 done. Completed: ARCH-04-T1 through T5 (kubernetes-cluster.md expanded with full topology, Supabase k8s deploy, Traefik routing, GitHub runner), ENV-07-T1+T2 (staging.md — Cloudflare Tunnel provisioning), ARCH-07-T1+T2 (monitoring stack docs + SoA 8.16 updated to Implemented in common-bond), ARCH-08-T1+T2 (ADR-005 already existed; k3s/network-policies/network-policies.yaml created), ARCH-10-T1+T2 (k3s/cert-manager/cluster-issuer.yaml + cert lifecycle in kubernetes-cluster.md), SEC-05-T1 (Studio restriction in Supabase values + NetworkPolicy note in kubernetes-cluster.md), SEC-06-T1+T2 (disaster-recovery.md expanded with YubiKey PKCS#11 + TPM 2.0 unseal; ADR-006 already existed from Session 1), SEC-07-T1 (k3s/falco/falco-rules.yaml), SEC-08-T1+T2 (k3s/rbac/serviceaccounts.yaml; ADR-007 already existed), PROC-02-T1+T2 (k3s/monitoring/alertmanager-config.yaml + docs/operations/incident-response.md). NOTES: ADRs 005, 006, 007 were pre-created in Session 1 — Session 2 completed the corresponding implementation tasks. SoA 8.16 updated in documentation/common-bond (ARCH-07-T2) — committed to common-bond audit branch. NEXT SESSION: Phase 4 — CICD Pipeline & Keys (KEY-01, CICD-01, CICD-02, CICD-03, CICD-04, ENV-01, ENV-02, ENV-03, ENV-04, CICD-05). These target ci.yml workflow files across multiple repos (supabase-receptor, planner-frontend, workforce-frontend, preference-frontend).",
   "sessionHistory": [
     {
       "date": "2026-03-12",
       "completedFindingIds": ["ARCH-05", "DOC-03", "DOC-04", "DOC-05", "ENV-09", "OPS-01", "ARCH-09", "PROC-01"],
       "completedTaskIds": ["ARCH-05-T1", "DOC-03-T1", "DOC-04-T1", "DOC-05-T1", "ENV-09-T1", "OPS-01-T1", "OPS-01-T2", "ARCH-09-T1", "ARCH-09-T2", "PROC-01-T1"],
       "summary": "Phase 1 (ADRs + pre-implementation docs) and Phase 2 (Helmfile + CI required check matrix) completed. 10 tasks marked complete. supabase-receptor audit branch created and pushed."
+    },
+    {
+      "date": "2026-03-12",
+      "completedFindingIds": ["ARCH-04", "ENV-07", "ARCH-07", "ARCH-08", "ARCH-10", "SEC-05", "SEC-06", "SEC-07", "SEC-08", "PROC-02"],
+      "completedTaskIds": ["ARCH-04-T1", "ARCH-04-T2", "ARCH-04-T3", "ARCH-04-T4", "ARCH-04-T5", "ENV-07-T1", "ENV-07-T2", "ARCH-07-T1", "ARCH-07-T2", "ARCH-08-T1", "ARCH-08-T2", "ARCH-10-T1", "ARCH-10-T2", "SEC-05-T1", "SEC-06-T1", "SEC-06-T2", "SEC-07-T1", "SEC-08-T1", "SEC-08-T2", "PROC-02-T1", "PROC-02-T2"],
+      "summary": "Phase 3 (Core Cluster Stack) completed. 21 tasks marked complete across supabase-receptor (9 files created/expanded) and common-bond (SoA 8.16 updated). New files: staging.md, incident-response.md, network-policies.yaml, serviceaccounts.yaml, falco-rules.yaml, cluster-issuer.yaml, alertmanager-config.yaml."
     }
   ]
 }
-
