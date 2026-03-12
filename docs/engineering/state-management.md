@@ -144,7 +144,7 @@ export const client = createClient({
             addAuthToOperation: (op) =>
                 utils.appendHeaders(op, {
                     Authorization: `Bearer ${session?.access_token}`,
-                    apikey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+                    apikey: process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
                 }),
             refreshAuth: async () => {
                 await supabase.auth.refreshSession();

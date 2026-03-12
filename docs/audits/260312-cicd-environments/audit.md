@@ -73,7 +73,7 @@
 
 **Strengths:**
 
-- `preference-frontend` correctly exports both `NEXT_PUBLIC_SUPABASE_ANON_KEY` (publishable, for REST/GraphQL) and `NEXT_PUBLIC_SUPABASE_ANON_JWT` (legacy JWT, for `signInWithPassword`) in `.github/workflows/ci.yml:138-143`.
+- `preference-frontend` correctly exports both `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` (publishable, for REST/GraphQL) and `NEXT_PUBLIC_SUPABASE_ANON_JWT` (legacy JWT, for `signInWithPassword`) in `.github/workflows/ci.yml:138-143`.
 
 **Gaps:**
 
