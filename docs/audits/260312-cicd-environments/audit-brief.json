@@ -3,8 +3,8 @@
   "auditSlug": "260312-cicd-environments",
   "status": "implementing",
   "nextAction": "implement",
-  "openTaskCount": 42,
-  "latestHandover": "SESSION 9 COMPLETE (2026-03-13) \u2014 Comprehensive review #3 accepted. 10 amendments applied to recommendations.json (5 gaps + 5 enhancements). NEW TASKS: ENV-05-T0 (pre-deploy backup gate + migration-rollback.md), ISO-01-T3 (extend test isolation to backend repos), SEC-03-T0 (branch protection dry-run validation script), CICD-09-T2b (conditional reusable workflow implementation). AMENDED TASKS: CICD-09-T2 \u2192 CICD-09-T2a (evaluation-only with acceptance criteria), DOC-01-T1 (cross-reference ARCH-11 ADR), ARCH-05-T2 (use existing standards table, not new architecture_decisions table), ENV-08-T1 and ENV-11-T1 (explicit k3s blocker notes \u2014 ARCH-04 completed manifests only, cluster not provisioned). NEW CLARIFICATIONS: Phase 8 Gate 8C cross-repo verification protocol, phase completion checklist for 7.5\u201312, ARCH-03-T0 parallel trial scoped to preference-frontend + match-backend. ISO-01 scope expanded to include match-backend and receptor-planner. Open task count: 42. NEXT SESSION: Implement Phase 7.5 tasks \u2014 start with ARCH-11-T1 (ADR-005) and ARCH-02-T0 (setup.sh health gate + idempotency), which are prerequisites for all Phase 8 work. Then ARCH-03-T0 (runner trial protocol doc). After all 7.5 tasks are done, begin Phase 8 Gate 8A.",
+  "openTaskCount": 33,
+  "latestHandover": "SESSION 10 COMPLETE (2026-03-13) \u2014 Phase 7.5 PRE-FLIGHT gate fully implemented. 10 tasks completed: ARCH-11-T1 (ADR-008-vault-ci-oidc-bridge.md \u2014 new numbering, ADR-005 was taken by network-policy), ARCH-02-T0 (setup.sh idempotency contract comment + --force-reset guard + supabase status -o env PUBLISHABLE_KEY health gate replacing docker compose ps poll), ARCH-03-T0 (cicd-architecture.md 7-run trial protocol + rollback escape hatch + alertmanager runner-unavailable alert; supabase-receptor ci.yml commented [self-hosted, k3s] escape hatch), CICD-10-T1 (.github/actions/smoke-test/action.yml \u2014 5-check composite: Kong health, PostgREST liveness, Auth liveness, DB canary, Storage liveness + Slack pass/fail), CICD-10-T2 (.github/workflows/staging-smoke.yml + supabase-receptor ci.yml boot gate replacing --ignore-health-check workaround), CICD-10-T3 (ci-troubleshooting.md Failure Mode 4 section \u2014 5-check table, failure signatures, manual re-run, Vault login failure, ADR-008 cross-link), PROC-01-T2 (ci-required-checks.md v2 production-accurate \u2014 job names verified from live ci.yml files: database-tests, deno-check for supabase-receptor; lint-and-type, unit-tests, visual-tests, integration-tests, build, codegen-check for frontends), ISO-01-T1/T2/T3 (CI_RUN_ID env var propagated to integration-tests job in all 3 frontends; ci-cleanup always-on job added to all 3 frontends for two-layer cleanup model: always() job = primary, pg_cron ENV-04 = safety net). Open task count: 33. NEXT SESSION: Begin Phase 8 Gate 8A \u2014 supabase-receptor ci.yml migrations to composite actions (CICD-09-T0, CICD-09-T1), ARCH-02-T1 (setup.sh --ci flag formalization), ARCH-02-T2 (RESET_setup.sh --teardown flag).",
   "sessionHistory": [
     {
       "date": "2026-03-12",
@@ -171,6 +171,24 @@
       "completedFindingIds": [],
       "completedTaskIds": [],
       "summary": "Phase 7.5 pre-flight interval gate created. 5 gaps and 5 enhancements from comprehensive audit review accepted. recommendations.json amended: ARCH-11 finding added, ARCH-02-T0 / ARCH-03-T0 / ISO-01-T2 tasks added, CICD-10 task descriptions fixed (removed CICD-08 dep), CICD-09 moved Phase 5\u21928, Phase 7.5 inserted. Slack app created and credentials stored in Vault. Open task count: 38."
+    },
+    {
+      "date": "2026-03-13",
+      "completedFindingIds": [],
+      "completedTaskIds": [
+        "ARCH-11-T1",
+        "ARCH-02-T0",
+        "ARCH-03-T0",
+        "CICD-10-T1",
+        "CICD-10-T2",
+        "CICD-10-T3",
+        "PROC-01-T2",
+        "ISO-01-T1",
+        "ISO-01-T2",
+        "ISO-01-T3"
+      ],
+      "openTaskCountAfter": 33,
+      "summary": "Phase 7.5 gate: ADR-008 Vault OIDC bridge, setup.sh idempotency + health gate, 7-run runner trial protocol, smoke-test composite action + staging workflow, ci-required-checks v2, ISO-01 test org cleanup in all 3 frontends"
     }
   ],
   "sessionGates": [
