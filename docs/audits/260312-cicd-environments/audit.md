@@ -9,7 +9,7 @@
 
 ## Executive Summary
 
-**57 findings across 6 repositories and cross-ecosystem CI infrastructure.** The ecosystem's CI/CD pipeline has three compounding structural deficiencies: (1) all Supabase-dependent CI jobs boot an independent ephemeral instance per job with no sharing, consuming approximately 4 minutes of runner time per boot and 12+ minutes per frontend push; (2) a hard Supabase API key format incompatibility between the new `sb_publishable_*` format (used by REST/GraphQL) and the legacy JWT `ANON_KEY` (required by `signInWithPassword`) is undocumented and creates invisible auth failures if the dual-key export workaround is removed; and (3) all three frontend repos pin `version: latest` for the Supabase CLI, creating schema-drift false positives when the upstream CLI changes its output formatting. Beyond CI, no test, staging, or production environment is documented or deployed — only a single dev instance exists. **A new strategic opportunity has been identified**: the available Windows 11 Pro machine (Intel i7-265KF 20-core, 32 GB DDR5, 1 TB NVMe, RTX 5080) with Hyper-V support is capable of running a `k3s`-based Kubernetes cluster that would fundamentally resolve the CI/CD boot-time and isolation problems at the infrastructure level.
+**58 findings across 6 repositories and cross-ecosystem CI infrastructure.** The ecosystem's CI/CD pipeline has three compounding structural deficiencies: (1) all Supabase-dependent CI jobs boot an independent ephemeral instance per job with no sharing, consuming approximately 4 minutes of runner time per boot and 12+ minutes per frontend push; (2) a hard Supabase API key format incompatibility between the new `sb_publishable_*` format (used by REST/GraphQL) and the legacy JWT `ANON_KEY` (required by `signInWithPassword`) is undocumented and creates invisible auth failures if the dual-key export workaround is removed; and (3) all three frontend repos pin `version: latest` for the Supabase CLI, creating schema-drift false positives when the upstream CLI changes its output formatting. Beyond CI, no test, staging, or production environment is documented or deployed — only a single dev instance exists. **A new strategic opportunity has been identified**: the available Windows 11 Pro machine (Intel i7-265KF 20-core, 32 GB DDR5, 1 TB NVMe, RTX 5080) with Hyper-V support is capable of running a `k3s`-based Kubernetes cluster that would fundamentally resolve the CI/CD boot-time and isolation problems at the infrastructure level.
 
 | Repository / Area | Coverage | Issues Found | Overall |
 | --- | --- | --- | --- |
@@ -290,6 +290,7 @@ The available Windows 11 Pro workstation (Intel i7-265KF — 8 P-cores + 12 E-co
 | SEC-09 | supabase-receptor | Supabase `pgaudit` extension not enabled | Security | 🟠 High |
 | ENV-11 | supabase-receptor | R2 backup — no secondary Australian provider copy | Process Gap | 🟡 Medium |
 | CICD-09 | Cross-ecosystem | No composite action for Supabase start + key extraction | Tech Debt | 🟡 Medium |
+| CICD-10 | supabase-receptor | No post-deploy smoke test (prod + staging) | Process Gap | 🟢 Low |
 
 ---
 
@@ -316,7 +317,7 @@ flowchart TD
   P6["🔐 IMPLEMENT 6\nSupply-Chain Security\n(SEC-01/02/04, CICD-06)"] --> P7
   P7["🌐 IMPLEMENT 7\nEnvironment Tiers & Backup\n(ENV-01/02/06/08, KEY-02, CICD-08, ARCH-06)"] --> P8
   P8["⚙️ IMPLEMENT 8\nCI Architecture & Test Isolation\n(ARCH-01/02/03, ISO-01/02, ENV-03/04, CICD-01)"] --> P9
-  P9["🚀 IMPLEMENT 9\nProduction Gate\n(ENV-05)"] --> P10
+  P9["🚀 IMPLEMENT 9\nProduction Gate + Smoke Tests\n(ENV-05, CICD-10)"] --> P10
   P10["📚 IMPLEMENT 10\nPost-Build Docs\n(DOC-01, DOC-06)"] --> P11
   P11["✅ IMPLEMENT 11\nPhysical Security SoA Update\n(ISO-03)"] --> P12
   P12["🔒 FINAL GATE 12\nBranch Protection\n(SEC-03)"]
