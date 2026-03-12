@@ -9,7 +9,7 @@ sidebar_label: Audit
 **Scope:** `planner-frontend`, `workforce-frontend`, `preference-frontend`\
 **Auditor:** Ryan Ammendolea\
 **Standard:**
-[Frontend Engineering Standards](../../engineering/frontend-standards-overview.md)
+[Frontend Engineering Standards](../../../engineering/frontend-standards-overview.md)
 (`260306-frontend-standards`)
 
 ---

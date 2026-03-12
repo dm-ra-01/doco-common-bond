@@ -104,7 +104,7 @@ Total                          18+     2026-03-12
 
 > **Coverage gaps addressed:** `workforce-frontend`, `preference-frontend`, and
 > `receptor-planner` now have fully operational audit workflows (implemented via
-> [REC-14](../audits/audit-process-audit/recommendations.md)).
+> [REC-14](../audits/archive/260306-audit-process/recommendations.md)).
 
 ---
 

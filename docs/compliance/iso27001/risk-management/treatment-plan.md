@@ -25,7 +25,7 @@ or Accept per the [Risk Methodology](./methodology.md).
 | R-009   | Lack of Incident Response     | Draft and test Incident Response Plan; establish formal escalation path. See `operations/incident-response.md`       | Ryan Ammendolea (CEO) | Q2 2026  | 📅 Planned     |
 | R-010   | Business Continuity Failure   | Draft Business Continuity Plan; confirm RTO target of 4 hours in documented runbook                                  | Ryan Ammendolea (CEO) | Q3 2026  | 📅 Planned     |
 | R-011   | Data Retention Non-Compliance | Develop formal data retention and deletion schedule; obtain customer consent terms; seek legal advice on APP erasure obligations vs statutory retention | Ryan Ammendolea (CEO) | Q2 2026  | 📅 Planned     |
-| R-012   | Insufficient Audit Coverage   | Implement global audit registry (PROC-03), dedicated workflows for workforce-frontend and preference-frontend (PROC-14), PR merge gate (PROC-01). See [CA-005](../assurance/corrective-actions.md#ca-005-audit-process-governance) | Ryan Ammendolea (CEO) | Q2 2026  | 🔄 In Progress |
+| R-012   | Insufficient Audit Coverage   | Implement global audit registry (PROC-03), dedicated workflows for workforce-frontend and preference-frontend (PROC-14), PR merge gate (PROC-01). See [CA-005](../assurance/corrective-actions.mdx#ca-005-audit-process-governance) | Ryan Ammendolea (CEO) | Q2 2026  | 🔄 In Progress |
 
 ## Completed Treatments
 
