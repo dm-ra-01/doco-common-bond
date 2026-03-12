@@ -737,3 +737,17 @@ Affects: `supabase-receptor` — Post-deploy smoke tests for staging and product
 | DOC-06 | Engineer onboarding guide | `ONBOARDING.md` | Documentation Gap | 🟢 Low |
 | CICD-10 | Post-deploy smoke tests for staging and production | `action.yml` | Process Gap | 🟢 Low |
 
+
+---
+
+## Session Close — 2026-03-12
+
+**Completed:** KEY-01 (T1–T4), CICD-03 (T1–T3)
+
+**Remaining:** 65 open tasks across Phases 5–12 (CICD-02, CGEN-01, CGEN-02, CICD-04, CICD-05, BACK-01, BACK-02, CICD-07, ENV-10, CICD-09, SEC-01, SEC-02, CICD-06, SEC-04, ENV-01, ENV-02, KEY-02, DOC-02, ENV-06, ARCH-06, ENV-08, CICD-08, SEC-09, ENV-11, ARCH-01, ARCH-02, ARCH-03, ISO-01, ISO-02, ENV-03, ENV-04, CICD-01, ENV-05, CICD-10, DOC-01, DOC-06, ISO-03, SEC-03, ARCH-05-T2, DOC-01, DOC-06, ENV-10, PROC-01-T2, CGEN-01, CGEN-02, BACK-01, BACK-02)
+
+**Blocked:** None
+
+**PR order note:** planner-frontend and workforce-frontend audit branches are independent of each other and can be merged in any order. No schema changes this session.
+
+**Brief for next agent:** Phase 5 is next. It covers CICD-02 (parallel Supabase boots across all 4 repos), CGEN-01/CGEN-02 (codegen check fixes for planner/workforce), CICD-04 (supabase-receptor ci.yml pinned CLI version), CICD-05 (cross-ecosystem Supabase CLI version consistency), BACK-01/BACK-02 (match-backend and receptor-planner CI), CICD-07 (dependency review action), ENV-10 (Edge Function deployment workflow), CICD-09 (composite action). KEY CLARIFICATION RECORDED: publishable key IS valid for signInWithPassword on cloud-hosted GoTrue; however local CLI supabase status -o env still outputs legacy ANON_KEY (JWT) and preference-frontend uses that for local CI compatibility — follow the same pattern. LOCAL_SUPABASE_SECRET_KEY has been deleted from planner-frontend and workforce-frontend GitHub Secrets.
