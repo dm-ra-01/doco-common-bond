@@ -1,10 +1,17 @@
 {
   "$schema": "../../../dev-environment/.agents/schemas/audit-brief.schema.json",
   "auditSlug": "260312-cicd-environments",
-  "status": "drafting",
+  "status": "implementing",
   "nextAction": "implement",
-  "openTaskCount": 103,
-  "latestHandover": "58 findings, 103 open tasks, 12 phases (2 PLAN + 9 IMPLEMENT + 1 FINAL). ARCHITECTURE: k3s on Windows 11 Pro Hyper-V (Intel i7-265KF/32GB/1TB) — homelab-as-production deliberate choice (hospital power grid, 500/50 Mbps fibre). Vault OSS: YubiKey USB-C PKCS#11 primary unseal + TPM 2.0 secondary. Calico CNI, kube-prometheus-stack, Loki, Falco, cert-manager (Let's Encrypt DNS-01 wildcard *.commonbond.au), Traefik, Cloudflare Tunnel. Slack-only notifications (2 webhooks in Vault KV). Edge Functions: git-tag versioning (fn/<name>/vX.Y.Z). Helmfile pins all chart versions with quarterly upgrade review workflow. ROUND 8 (final consistency pass): CICD-10 (Low: 5-layer post-deploy smoke test — Kong, PostgREST, Auth, DB canary, Storage — composite action at .github/actions/smoke-test, integrated in prod-deploy.yml + staging-smoke.yml + CI health gate; replaces --ignore-health-check workaround; Phase 9). PROC-01-T2 added (mandatory check matrix refresh after Phase 5, before Phase 12). DOC-02-T1 updated to extend ENV-09 doc rather than replace. ARCH-07-T2 corrected to Slack-only. ENV-08-T1 specifies VM crontab (not k3s CronJob). DOC-01 description updated to Vault guide (Bitwarden/Doppler TODO closed). ARCH-05-T1 includes community Helm chart caveat + DooD fallback for ADR-001. Phase 2 rationale cleaned (ISO-03 removed). DATA RESIDENCY: All backup storage must remain in Australia — Cloudflare R2 APAC (primary) + Backblaze B2 SYD (secondary). PHASE ORDER: P1(PLAN:ADRs+OPS-01) → P2(PLAN:Helmfile+PROC-01) → P3(k3s+RBAC) → P4(auth fixes) → P5(CI hardening+CICD-09) → P6(supply-chain) → P7(env tiers+backup+SEC-09+ENV-11) → P8(CI arch) → P9(prod gate+CICD-10) → P10(docs) → P11(ISO-03 SoA) → P12(branch protection FINAL). AUDIT COMPLETE — proceed to implementation.",
-  "sessionHistory": []
+  "openTaskCount": 93,
+  "latestHandover": "SESSION 1 COMPLETE (2026-03-12). Phases 1 & 2 done. Completed: ARCH-05-T1 (ADR directory + 7 ADRs in supabase-receptor/docs/adr/), DOC-03-T1 (kubernetes-cluster.md), DOC-04-T1 (ci-troubleshooting.md), DOC-05-T1 (disaster-recovery.md), ENV-09-T1 (promotion-runbook.md), OPS-01-T1+T2 (host-reboot-recovery.md + Windows Update config), ARCH-09-T1 (k3s/helmfile.yaml — all 8 charts pinned), ARCH-09-T2 (.github/workflows/helm-upgrade-check.yml — quarterly cron), PROC-01-T1 (docs/operations/ci-required-checks.md — planning doc, to be refreshed post-Phase 5 per PROC-01-T2). vault-architecture.md also created as pre-draft for DOC-01 (Phase 10). NOTES: PROC-01-T2 deliberately deferred until after Phase 5. ARCH-05-T2 (register ADRs in Supabase standards table) still open — was planned but deprioritised in favour of actual ADR creation. NEXT SESSION: Phase 3 — IMPLEMENT Core Cluster Stack (ARCH-04, ARCH-07, ARCH-08, ARCH-10, ENV-07, SEC-05, SEC-06, SEC-07, PROC-02, SEC-08) — all in supabase-receptor. These involve creating k3s manifests and Kubernetes config YAMLs, not code changes.",
+  "sessionHistory": [
+    {
+      "date": "2026-03-12",
+      "completedFindingIds": ["ARCH-05", "DOC-03", "DOC-04", "DOC-05", "ENV-09", "OPS-01", "ARCH-09", "PROC-01"],
+      "completedTaskIds": ["ARCH-05-T1", "DOC-03-T1", "DOC-04-T1", "DOC-05-T1", "ENV-09-T1", "OPS-01-T1", "OPS-01-T2", "ARCH-09-T1", "ARCH-09-T2", "PROC-01-T1"],
+      "summary": "Phase 1 (ADRs + pre-implementation docs) and Phase 2 (Helmfile + CI required check matrix) completed. 10 tasks marked complete. supabase-receptor audit branch created and pushed."
+    }
+  ]
 }
 

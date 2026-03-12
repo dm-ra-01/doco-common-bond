@@ -33,7 +33,7 @@ sidebar_position: 1
 
 | Slug | Title | Scope | Auditor | Status | NC Raised | Report |
 | :--- | :---- | :---- | :------ | :----- | :-------- | :----- |
-| `260312-cicd-environments` | CI/CD Infrastructure & Environment Architecture Audit | `supabase-receptor`, `preference-frontend`, `planner-frontend`, `workforce-frontend`, `match-backend`, `receptor-planner` — cross-ecosystem | Ryan Ammendolea | 📋 Findings Issued | — | [audit.md](../audits/260312-cicd-environments/audit.md) · [recommendations.md](../audits/260312-cicd-environments/recommendations.md) |
+| `260312-cicd-environments` | CI/CD Infrastructure & Environment Architecture Audit | `supabase-receptor`, `preference-frontend`, `planner-frontend`, `workforce-frontend`, `match-backend`, `receptor-planner` — cross-ecosystem | Ryan Ammendolea | 🔧 Implementing | — | [audit.md](../audits/260312-cicd-environments/audit.md) · [recommendations.md](../audits/260312-cicd-environments/recommendations.md) |
 
 ### 🗓️ 2026-03-11
 
