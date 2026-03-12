@@ -211,6 +211,14 @@
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/utils/RESET_setup.sh",
           "completedAt": null,
           "completedBy": null
+        },
+        {
+          "taskId": "ARCH-02-T0",
+          "status": "open",
+          "description": "PREREQUISITE before ARCH-02-T1: Document and enforce the idempotency contract for setup.sh in a short inline comment block at the top of utils/setup.sh. The contract must specify: (a) which steps are safe to re-run (docker network create is guarded; git clone has a reset fallback); (b) which steps are NOT idempotent (cp -rf at line 129 will silently overwrite an in-progress Supabase instance's config); (c) a --force-reset guard: if the project directory already exists and --force-reset is not passed, setup.sh must print an error and exit 1 rather than silently overwriting. Additionally fix the --ci health gate (lines 373-388): replace the 'docker compose ps | grep supabase-db running' poll with a loop that calls 'supabase status -o env' and waits until PUBLISHABLE_KEY is non-empty (with a 120-second timeout and 5-second sleep interval). This is the root cause of GAP-1 (setup.sh exits 0 before Kong/Auth/PostgREST are ready, causing intermittent empty key extraction in ARCH-02-T1 and CICD-09-T1). Both the idempotency contract and the health gate fix must land in the same commit before any other ARCH-02 tasks run.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/utils/setup.sh",
+          "completedAt": null,
+          "completedBy": null
         }
       ],
       "severity_history": []
@@ -224,6 +232,14 @@
       "area": "CI runner strategy",
       "description": "All frontend repos use GitHub-hosted ubuntu-latest runners. This prevents Docker daemon sharing and makes branch-matched ephemeral instances via Docker networks infeasible (Option A in ARCH-01). A self-hosted runner on the VM would enable shared Docker, warm Supabase sidecars (~30 sec vs ~4 min cold boot), and full network isolation between branches.",
       "tasks": [
+        {
+          "taskId": "ARCH-03-T0",
+          "status": "open",
+          "description": "PREREQUISITE before ARCH-03-T1: establish a 7-run parallel trial protocol before switching any repo to k3s-only CI. Steps: (1) Verify the self-hosted runner pod is healthy: 'kubectl get pods -n ci-runner' must show Running. (2) Run a no-op workflow_dispatch job ('echo runner online') on supabase-receptor's audit branch and confirm end-to-end completion in under 30 seconds. (3) Configure ci.yml in supabase-receptor to use 'runs-on: [self-hosted, k3s]' while keeping 'runs-on: ubuntu-latest' in a commented-out line immediately above it \u2014 this provides a one-line rollback escape hatch. (4) Run CI 7 consecutive times with green results before removing the ubuntu-latest commented line and before applying the runner migration to any other repo. (5) Add a Slack alert (via PROC-02 Alertmanager or direct webhook) for runner unavailability: if a self-hosted job is queued for > 5 minutes with no runner pickup, post to #incidents. Do not proceed with ARCH-03-T1 until the 7-run gate passes.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/.github/workflows/ci.yml",
+          "completedAt": null,
+          "completedBy": null
+        },
         {
           "taskId": "ARCH-03-T1",
           "status": "open",
@@ -432,6 +448,14 @@
           "taskId": "ISO-01-T1",
           "status": "open",
           "description": "Define and document a __test_{GITHUB_RUN_ID} org naming convention. Update all three frontend repos' globalSetup to create test orgs using this prefix, and teardown in globalTeardown.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/frontend/preference-frontend/src/__tests__/globalSetup.ts",
+          "completedAt": null,
+          "completedBy": null
+        },
+        {
+          "taskId": "ISO-01-T2",
+          "status": "open",
+          "description": "Add an explicit cleanup trigger for the run-ID-scoped test org created in ISO-01-T1. In each frontend repo's ci.yml, add a cleanup job with 'if: always()' that runs after integration-tests: the job calls 'supabase db execute' (or a REST DELETE against the organisations endpoint using SERVICE_ROLE_KEY) to delete any org matching '__ci_{GITHUB_RUN_ID}_%'. This ensures cleanup fires even on test failure or job cancellation. The ENV-04 pg_cron job (DELETE WHERE name LIKE '__ci_%' AND created_at < now() - interval 24h) is the safety net for runner-crash leaked orgs only \u2014 it must NOT be treated as the primary cleanup mechanism. Document this two-layer cleanup model (always() job = primary; pg_cron = safety net) in a comment in each ci.yml above the cleanup job definition.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/frontend/preference-frontend/src/__tests__/globalSetup.ts",
           "completedAt": null,
           "completedBy": null
@@ -875,7 +899,7 @@
         {
           "taskId": "PROC-01-T2",
           "status": "open",
-          "description": "LIVING DOCUMENT REFRESH (mandatory before Phase 12): After Phase 5 CI hardening is complete (CICD-02 CLI pin, CICD-05 timeouts, CICD-09 composite action, CGEN-01/02 codegen gate fixes, BACK-01 backend test scoping), review and update the required check matrix in docs/operations/ci-required-checks.md for any new, renamed, or removed GitHub Actions job names introduced during Phases 4 and 5. The check matrix written in Phase 2 is a planning document \u2014 this T2 task produces the production-accurate version that is actually used to configure branch protection rules in SEC-03-T1 (Phase 12). Do not enable branch protection until this refresh is complete and verified against a live CI run showing all listed job names in the GitHub Actions tab.",
+          "description": "[Phase 7.5 gate: verify this task is scheduled in Phase 11, not Phase 2 only] LIVING DOCUMENT REFRESH (mandatory before Phase 12): After Phase 5 CI hardening is complete (CICD-02 CLI pin, CICD-05 timeouts, CICD-09 composite action, CGEN-01/02 codegen gate fixes, BACK-01 backend test scoping), review and update the required check matrix in docs/operations/ci-required-checks.md for any new, renamed, or removed GitHub Actions job names introduced during Phases 4 and 5. The check matrix written in Phase 2 is a planning document \u2014 this T2 task produces the production-accurate version that is actually used to configure branch protection rules in SEC-03-T1 (Phase 12). Do not enable branch protection until this refresh is complete and verified against a live CI run showing all listed job names in the GitHub Actions tab.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/docs/operations/ci-required-checks.md",
           "completedAt": null,
           "completedBy": null
@@ -1503,7 +1527,7 @@
         {
           "taskId": "CICD-10-T1",
           "status": "open",
-          "description": "Create a reusable composite action at supabase-receptor/.github/actions/smoke-test/action.yml with inputs: base-url (the Cloudflare Tunnel or production URL) and slack-webhook-url (injected from Vault via CICD-08 environment). The action performs the following checks IN ORDER, failing fast on the first failure: (1) Kong API health \u2014 'curl -f --retry 3 --retry-delay 5 --retry-all-errors --max-time 10 ${base-url}/health' \u2014 expects 200 with body containing 'ok'. (2) PostgREST liveness \u2014 'curl -f --retry 3 --retry-delay 5 --max-time 10 -H \"apikey: ${ANON_KEY}\" ${base-url}/rest/v1/' \u2014 expects 200 with a JSON array body (not an error). (3) Auth endpoint liveness \u2014 'curl -f --retry 3 --retry-delay 5 --max-time 10 ${base-url}/auth/v1/health' \u2014 expects 200. (4) DB canary query \u2014 'curl -f --retry 2 --max-time 15 -H \"apikey: ${ANON_KEY}\" -H \"Authorization: Bearer ${ANON_JWT}\" ${base-url}/rest/v1/organisations?select=id&limit=1' \u2014 expects 200 with a JSON array (empty is acceptable; a 404 or 5xx indicates schema drift or DB unavailability). (5) Storage liveness \u2014 'curl -f --max-time 10 ${base-url}/storage/v1/status' \u2014 expects 200. On ALL checks passing: post a Slack message to the deployments webhook: ':white_check_mark: Smoke test PASSED for ${base-url} \u2014 Kong, PostgREST, Auth, DB canary, Storage all healthy.' On ANY check failing: post to the incidents webhook: ':fire: SMOKE TEST FAILED for ${base-url} \u2014 step N (description) returned HTTP ${status_code}. Halt deployment and investigate.' Set exit code 1 so the calling workflow job fails and any subsequent deploy steps are blocked.",
+          "description": "Create a reusable composite action at supabase-receptor/.github/actions/smoke-test/action.yml with inputs: base-url (the Cloudflare Tunnel or production URL) and slack-webhook-url (injected from Vault KV path infrastructure/slack-webhook-incidents and infrastructure/slack-webhook-deployments via the Vault OIDC bridge established in ARCH-03; CICD-08 GitHub Environments are deferred \u2014 do not reference them here). The action performs the following checks IN ORDER, failing fast on the first failure: (1) Kong API health \u2014 'curl -f --retry 3 --retry-delay 5 --retry-all-errors --max-time 10 ${base-url}/health' \u2014 expects 200 with body containing 'ok'. (2) PostgREST liveness \u2014 'curl -f --retry 3 --retry-delay 5 --max-time 10 -H \"apikey: ${ANON_KEY}\" ${base-url}/rest/v1/' \u2014 expects 200 with a JSON array body (not an error). (3) Auth endpoint liveness \u2014 'curl -f --retry 3 --retry-delay 5 --max-time 10 ${base-url}/auth/v1/health' \u2014 expects 200. (4) DB canary query \u2014 'curl -f --retry 2 --max-time 15 -H \"apikey: ${ANON_KEY}\" -H \"Authorization: Bearer ${ANON_JWT}\" ${base-url}/rest/v1/organisations?select=id&limit=1' \u2014 expects 200 with a JSON array (empty is acceptable; a 404 or 5xx indicates schema drift or DB unavailability). (5) Storage liveness \u2014 'curl -f --max-time 10 ${base-url}/storage/v1/status' \u2014 expects 200. On ALL checks passing: post a Slack message to the deployments webhook: ':white_check_mark: Smoke test PASSED for ${base-url} \u2014 Kong, PostgREST, Auth, DB canary, Storage all healthy.' On ANY check failing: post to the incidents webhook: ':fire: SMOKE TEST FAILED for ${base-url} \u2014 step N (description) returned HTTP ${status_code}. Halt deployment and investigate.' Set exit code 1 so the calling workflow job fails and any subsequent deploy steps are blocked.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/.github/actions/smoke-test/action.yml",
           "completedAt": null,
           "completedBy": null
@@ -1511,7 +1535,7 @@
         {
           "taskId": "CICD-10-T2",
           "status": "open",
-          "description": "Integrate the smoke-test composite action into two workflows: (A) prod-deploy.yml (ENV-05): add a 'smoke-test-prod' job that runs immediately after the 'deploy' job succeeds, using base-url: https://api.commonbond.au and the production ANON_KEY from the 'production' GitHub Environment (CICD-08). The job must complete before the workflow is marked successful. (B) Create a new workflow '.github/workflows/staging-smoke.yml' triggered on: push to main (post-migration to staging) and workflow_dispatch (for manual re-runs). Uses base-url: https://staging-api-829c83.commonbond.au and the staging ANON_KEY from the 'staging' GitHub Environment (CICD-08). Also integrate a lightweight version (Kong health + PostgREST only) as a post-step in the self-hosted runner CI job after each ephemeral branch Supabase boot, to confirm the instance is truly healthy before tests run \u2014 replacing the current '--ignore-health-check' workaround with a real health gate.",
+          "description": "Integrate the smoke-test composite action into two workflows: (A) prod-deploy.yml (ENV-05): add a 'smoke-test-prod' job that runs immediately after the 'deploy' job succeeds, using base-url: https://api.commonbond.au and the production ANON_KEY injected by Vault via the self-hosted runner OIDC bridge (ARCH-03). The job must complete before the workflow is marked successful. (B) Create a new workflow '.github/workflows/staging-smoke.yml' triggered on: push to main (post-migration to staging) and workflow_dispatch (for manual re-runs). Uses base-url: https://staging-api-829c83.commonbond.au and the staging ANON_KEY injected by Vault via the self-hosted runner OIDC bridge (ARCH-03). Also integrate a lightweight version (Kong health + PostgREST only) as a post-step in the self-hosted runner CI job after each ephemeral branch Supabase boot, to confirm the instance is truly healthy before tests run \u2014 replacing the current '--ignore-health-check' workaround with a real health gate.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/.github/workflows/staging-smoke.yml",
           "completedAt": null,
           "completedBy": null
@@ -1521,6 +1545,26 @@
           "status": "open",
           "description": "Document the smoke test architecture in docs/operations/ci-troubleshooting.md (DOC-04): (1) What each of the 5 checks validates and why; (2) Common failure signatures \u2014 Kong 503 (Traefik routing issue), PostgREST 404 (schema cache not initialised), Auth 500 (GoTrue startup failure), DB canary 401 (ANON_KEY mismatch), Storage 503 (S3-compatible storage pod not ready); (3) How to re-run the smoke test manually ('gh workflow run staging-smoke.yml'); (4) How to interpret Slack notifications \u2014 pass format, fail format, which channel each routes to. Add this section under a new '## Smoke Test Failures' heading in the existing DOC-04 troubleshooting doc.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/docs/operations/ci-troubleshooting.md",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "ARCH-11",
+      "severity": "medium",
+      "status": "open",
+      "category": "Documentation Gap",
+      "repo": "supabase-receptor",
+      "area": "Vault CI OIDC bridge \u2014 missing ADR",
+      "description": "Phase 8 (ARCH-03) requires the self-hosted GitHub Actions runner to authenticate to Vault via GitHub OIDC JWT to receive Supabase keys and Slack webhook URLs at runtime. This Vault trust relationship has no Architecture Decision Record documenting: which Vault auth method is used (jwt vs github), what bound claims are configured (sub, repository, ref), which Vault policies are attached to the CI token, and what the Vault KV paths look like for runner-accessible secrets. Without this ADR, Phase 8 implementors must re-derive these decisions during execution, risking inconsistency with the Phase 3 Vault setup.",
+      "tasks": [
+        {
+          "taskId": "ARCH-11-T1",
+          "status": "open",
+          "description": "Write docs/adr/ADR-005-vault-ci-oidc-bridge.md documenting the GitHub Actions to Vault OIDC authentication flow for the self-hosted runner. Must cover: (1) Vault auth method selection \u2014 jwt auth method bound to the GitHub OIDC issuer (https://token.actions.githubusercontent.com); (2) Bound claims \u2014 'sub' bound to 'repo:dm-ra-01/supabase-receptor:ref:refs/heads/*' and 'repository' bound to 'dm-ra-01/supabase-receptor'; (3) Vault policy attached to the CI role \u2014 read-only access to KV paths: infrastructure/slack-webhook-incidents, infrastructure/slack-webhook-deployments, infrastructure/supabase-anon-key, infrastructure/supabase-service-role-key; (4) How the runner retrieves secrets: 'vault kv get -field=url infrastructure/slack-webhook-incidents'; (5) Token TTL \u2014 15 minutes (sufficient for a CI job, short enough to limit blast radius); (6) Why GitHub Environments (CICD-08) were deferred and how Vault replaces them for secret scoping. Link this ADR from ci-troubleshooting.md (DOC-04) and key-management.md (KEY-02).",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/docs/adr/ADR-005-vault-ci-oidc-bridge.md",
           "completedAt": null,
           "completedBy": null
         }
@@ -1694,7 +1738,7 @@
     {
       "phase": 5,
       "name": "IMPLEMENT \u2014 CI Hardening, Caching, Composite Actions, Edge Function Versioning & Backend Fixes",
-      "rationale": "Pin Supabase CLI, standardise codegen gate, fix bare pytest, replace JWT stubs, add job timeouts, configure npm/pip caching, implement the composite action for Supabase start + key extraction (CICD-09 \u2014 structurally prevents future drift like KEY-01/CICD-02), and implement the git-tag-triggered Edge Function versioning strategy. All CI YAML and tooling changes.",
+      "rationale": "Pin Supabase CLI, standardise codegen gate, fix bare pytest, replace JWT stubs, add job timeouts, configure npm/pip caching, implement the git-tag-triggered Edge Function versioning strategy. All CI YAML and tooling changes.",
       "findingIds": [
         "CICD-02",
         "CGEN-01",
@@ -1704,8 +1748,7 @@
         "BACK-01",
         "BACK-02",
         "CICD-07",
-        "ENV-10",
-        "CICD-09"
+        "ENV-10"
       ]
     },
     {
@@ -1737,9 +1780,22 @@
       ]
     },
     {
+      "phase": 7.5,
+      "name": "PRE-FLIGHT \u2014 Phase 8 Blockers (Interval Gate)",
+      "rationale": "A mandatory interval gate identified during a comprehensive pre-Phase-8 review (2026-03-13). Five critical gaps and five enhancements were accepted before Phase 8 may begin. This phase contains no external infrastructure changes \u2014 all tasks are documentation, contract definitions, ADRs, and task amendments that must be committed to the audit branch before any Phase 8 CI YAML is written. The three sub-sessions for Phase 8 are also defined here as sessionGates: (8A) setup.sh + RESET; (8B) test isolation; (8C) runner migration. Phase 8 MUST NOT begin until all Phase 7.5 tasks are complete.",
+      "findingIds": [
+        "ARCH-11",
+        "ARCH-02",
+        "ARCH-03",
+        "ISO-01",
+        "PROC-01",
+        "CICD-10"
+      ]
+    },
+    {
       "phase": 8,
       "name": "IMPLEMENT \u2014 CI Architecture, Test Isolation & Branch Management",
-      "rationale": "Design and implement the branch-matched CI architecture (Docker network isolation or k8s namespace-per-branch), add CI mode to setup.sh, implement test data isolation and pg_cron cleanup, migrate to self-hosted runner. Reduce redundant Supabase boots (CICD-01). May be simplified by Phase 3 k8s namespace-per-branch approach.",
+      "rationale": "Design and implement the branch-matched CI architecture (Docker network isolation or k8s namespace-per-branch), add CI mode to setup.sh, implement test data isolation and pg_cron cleanup, migrate to self-hosted runner. Reduce redundant Supabase boots (CICD-01). May be simplified by Phase 3 k8s namespace-per-branch approach. CICD-09 (composite supabase-start action) is implemented here as the output of ARCH-02 \u2014 it encapsulates the CI-native key extraction and prevents the pattern from diverging across repos again.",
       "findingIds": [
         "ARCH-01",
         "ARCH-02",
@@ -1748,7 +1804,8 @@
         "ISO-02",
         "ENV-03",
         "ENV-04",
-        "CICD-01"
+        "CICD-01",
+        "CICD-09"
       ]
     },
     {
@@ -1786,5 +1843,6 @@
       ]
     }
   ],
-  "deferred": []
+  "deferred": [],
+  "openTaskCount": 38
 }

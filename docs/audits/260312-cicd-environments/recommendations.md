@@ -792,3 +792,46 @@ Affects: `supabase-receptor` — Post-deploy smoke tests for staging and product
 | supabase-receptor | open (from Phase 1) |
 | match-backend | [PR#5](https://github.com/dm-ra-01/match-backend/pull/5) |
 | receptor-planner | [PR#6](https://github.com/dm-ra-01/receptor-planner/pull/6) |
+
+---
+
+## Session Close — 2026-03-13 (Phase 7.5 Pre-flight Interval Gate)
+
+### Completed This Session
+- Phase 7.5 PRE-FLIGHT interval gate inserted as a mandatory blocker before Phase 8
+- All 5 critical gaps and 5 critical enhancements from comprehensive review accepted
+- `ARCH-11` finding added — Vault CI OIDC bridge ADR (ADR-005) prerequisite to Phase 8
+- `ARCH-02-T0` added — `setup.sh` idempotency contract + CI health gate fix (poll `supabase status` until `PUBLISHABLE_KEY` non-empty)
+- `ARCH-03-T0` added — 7-run parallel trial protocol with `ubuntu-latest` fallback before k3s-only runner switch
+- `ISO-01-T2` added — `if: always()` primary cleanup trigger for run-ID test orgs; `pg_cron` demoted to safety net
+- `CICD-10-T1` / `CICD-10-T2` descriptions corrected — removed broken `CICD-08` dependency reference; replaced with Vault OIDC bridge via `ARCH-03`
+- `CICD-09` moved from Phase 5 → Phase 8 (it is the output of `ARCH-02`, not a Phase 5 cleanup)
+- `audit-brief.json` updated with `sessionGates[]` decomposing Phase 8 into three explicitly scoped sub-sessions
+- Slack app created (`slack-app-manifest.yaml`); credentials stored in Vault at `infrastructure/slack-webhook-incidents` / `infrastructure/slack-webhook-deployments`
+
+### Remaining Open Tasks (38)
+Phase 7.5 (all open): `ARCH-11-T1`, `ARCH-02-T0`, `ARCH-03-T0`, `ISO-01-T2`  
+Phase 8: `ARCH-01`, `ARCH-02-T1`, `ARCH-03-T1`, `CICD-01`, `CICD-09`, `ENV-03`, `ENV-04`, `ISO-01-T1`, `ISO-02`  
+Phase 9+: `ENV-05`, `CICD-10`, `DOC-01`, `DOC-06`, `ISO-03`, `PROC-01-T2`, `SEC-03`, `BACK-01`, `ENV-08-T1`, `ENV-11-T1`
+
+### Blocked / Deferred
+- `CICD-08` — formally accepted/deferred; Vault OIDC bridge via `ARCH-03` supersedes GitHub Environments for secret scoping
+- `ENV-08-T1` / `ENV-11-T1` (backup scripts) — deferred until k3s provisioned
+- `SEC-03` (branch protection) — Phase 12, gates on `PROC-01-T2` refresh
+
+### PR Order Note
+No PRs to raise this session — all changes are in `/docs/audits/260312-cicd-environments/` on the `common-bond` audit branch.
+
+### Brief for Next Agent
+Phase 7.5 must be completed before touching any Phase 8 CI YAML. Start with:
+1. `ARCH-11-T1` — write `docs/adr/ADR-005-vault-ci-oidc-bridge.md` (supabase-receptor). This is documentation only, 1-2 hours.
+2. `ARCH-02-T0` — fix `setup.sh` health gate + document idempotency contract (supabase-receptor). This is infrastructure-safe (no running system changes).
+3. `ARCH-03-T0` — document and verify the 7-run k3s runner trial protocol.
+4. `ISO-01-T2` — add `if: always()` cleanup jobs to frontend ci.yml files.
+
+Phase 8 session decomposition (see `sessionGates` in `audit-brief.json`):
+- **8A**: `ARCH-02-T1` + `ENV-03` — `setup.sh` CI mode + `RESET --force` (supabase-receptor only)
+- **8B**: `ISO-01-T1` + `ISO-01-T2` + `ISO-02` + `ENV-04` — test isolation (supabase-receptor + 3 frontends)
+- **8C**: Verify `ARCH-03-T0` gate passed → `ARCH-01` + `ARCH-03-T1` + `CICD-01` + `CICD-09-T1` — runner migration (all 6 repos)
+
+Read `latestHandover` in `audit-brief.json` for full context. Run `jq '[.findings[] | {id, tasks: [.tasks[] | select(.status=="open")]}] | map(select(.tasks | length > 0))' recommendations.json` to confirm open tasks before starting.

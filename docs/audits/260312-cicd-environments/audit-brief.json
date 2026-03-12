@@ -3,45 +3,179 @@
   "auditSlug": "260312-cicd-environments",
   "status": "implementing",
   "nextAction": "implement",
-  "openTaskCount": 34,
-  "latestHandover": "SESSION 7 COMPLETE (2026-03-12). Phase 7 environment tiers, backup, pgaudit, key rotation, ARCH-06, DOC-02 done. 13 tasks marked complete in supabase-receptor + common-bond. CICD-08 formally deferred (Vault supersedes GitHub Environments for secret scoping — see new clarification in recommendations.json). KEY-02-T1: key-management.md rewritten to document sb_publishable_* format, PUBLISHABLE_KEY vs ANON_KEY JWT distinction, Vault KV path structure, and 90/180-day rotation schedule table. ENV-06-T1: rotation schedule table in key-management.md. ENV-06-T2: key-rotation-reminder.yml workflow added to supabase-receptor. ENV-01: environment-tiers.md created covering dev/test/staging/prod tiers with Cloudflare Tunnel URLs and Vault injection notes. ENV-02: setup.conf.staging.example + setup.conf.prod.example created. DOC-02-T1: promotion-runbook.md updated with actual Cloudflare Tunnel URLs (staging-api-829c83.commonbond.au), DB canary query, and schema diff instructions. ARCH-06-T1: pull-through Zot registry section added to kubernetes-cluster.md. ENV-08-T2: disaster-recovery.md extended with backup schedule, retention policy, and restore procedure (R2 APAC primary + B2 SYD failover). ENV-11-T2: dual-provider topology section + Australian data residency statement added to disaster-recovery.md. SEC-09-T1: supabase/schemas/12_extensions/pgaudit.sql created. SEC-09-T2: docs/infrastructure/security/audit-logging.md created with Loki query patterns, retention, and ISO 27001 mapping. common-bond soa.md: 8.13 updated to dual-provider backup, 8.15 updated to Implemented (pgaudit), 5.28 updated to Partial (pgaudit WAL trail). CLI NOTE: use git -C <path> not cd+git. NEXT SESSION: Phase 8 — ARCH-01, ARCH-02, ARCH-03, CICD-01, ENV-03, ENV-04, ISO-01, ISO-02 (CI architecture, test isolation, self-hosted runner migration).",
+  "openTaskCount": 38,
+  "latestHandover": "SESSION 8 COMPLETE (2026-03-13) \u2014 Phase 7.5 PRE-FLIGHT interval gate inserted as a mandatory blocker before Phase 8 begins. All 5 critical gaps and 5 enhancements from the comprehensive pre-Phase-8 review accepted by the user. Changes to recommendations.json: (1) NEW finding ARCH-11 added (Vault CI OIDC bridge ADR \u2014 ADR-005-vault-ci-oidc-bridge.md) with task ARCH-11-T1; (2) ARCH-02-T0 added \u2014 setup.sh idempotency contract + health gate fix (poll supabase status until PUBLISHABLE_KEY non-empty instead of docker compose ps); (3) ARCH-03-T0 added \u2014 7-run parallel trial protocol before k3s-only runner switch, with ubuntu-latest commented fallback and Slack alert for runner unavailability; (4) ISO-01-T2 added \u2014 explicit always() cleanup trigger for run-ID test orgs, with pg_cron as safety net only; (5) CICD-10-T1 and CICD-10-T2 task descriptions updated \u2014 removed CICD-08 (deferred) as prerequisite, replaced with Vault OIDC bridge via ARCH-03; (6) PROC-01-T2 preserved and Phase 7.5 gate note prepended; (7) CICD-09 moved from Phase 5 to Phase 8 (it is the output of ARCH-02, not a separate cleanup task); (8) Phase 7.5 PRE-FLIGHT inserted between Phase 7 and Phase 8. Open task count: 38. Slack app created: credentials stored in Vault at infrastructure/slack-webhook-incidents and infrastructure/slack-webhook-deployments. Manifest saved at supabase-receptor/docs/infrastructure/slack-app-manifest.yaml. NEXT SESSION: Implement Phase 7.5 tasks \u2014 start with ARCH-11-T1 (ADR-005) and ARCH-02-T0 (setup.sh health gate + idempotency), which are prerequisites for all Phase 8 work. Then ARCH-03-T0 (runner trial protocol doc). Then verify CICD-10 task descriptions are accurate. After all 7.5 tasks are done, begin Phase 8 Gate 8A: ARCH-02-T1 + ENV-03 (setup.sh CI mode + RESET --force flag, supabase-receptor only).",
   "sessionHistory": [
     {
       "date": "2026-03-12",
-      "completedFindingIds": ["ARCH-05", "DOC-03", "DOC-04", "DOC-05", "ENV-09", "OPS-01", "ARCH-09", "PROC-01"],
-      "completedTaskIds": ["ARCH-05-T1", "DOC-03-T1", "DOC-04-T1", "DOC-05-T1", "ENV-09-T1", "OPS-01-T1", "OPS-01-T2", "ARCH-09-T1", "ARCH-09-T2", "PROC-01-T1"],
+      "completedFindingIds": [
+        "ARCH-05",
+        "DOC-03",
+        "DOC-04",
+        "DOC-05",
+        "ENV-09",
+        "OPS-01",
+        "ARCH-09",
+        "PROC-01"
+      ],
+      "completedTaskIds": [
+        "ARCH-05-T1",
+        "DOC-03-T1",
+        "DOC-04-T1",
+        "DOC-05-T1",
+        "ENV-09-T1",
+        "OPS-01-T1",
+        "OPS-01-T2",
+        "ARCH-09-T1",
+        "ARCH-09-T2",
+        "PROC-01-T1"
+      ],
       "summary": "Phase 1 (ADRs + pre-implementation docs) and Phase 2 (Helmfile + CI required check matrix) completed. 10 tasks marked complete. supabase-receptor audit branch created and pushed."
     },
     {
       "date": "2026-03-12",
-      "completedFindingIds": ["ARCH-04", "ENV-07", "ARCH-07", "ARCH-08", "ARCH-10", "SEC-05", "SEC-06", "SEC-07", "SEC-08", "PROC-02"],
-      "completedTaskIds": ["ARCH-04-T1", "ARCH-04-T2", "ARCH-04-T3", "ARCH-04-T4", "ARCH-04-T5", "ENV-07-T1", "ENV-07-T2", "ARCH-07-T1", "ARCH-07-T2", "ARCH-08-T1", "ARCH-08-T2", "ARCH-10-T1", "ARCH-10-T2", "SEC-05-T1", "SEC-06-T1", "SEC-06-T2", "SEC-07-T1", "SEC-08-T1", "SEC-08-T2", "PROC-02-T1", "PROC-02-T2"],
+      "completedFindingIds": [
+        "ARCH-04",
+        "ENV-07",
+        "ARCH-07",
+        "ARCH-08",
+        "ARCH-10",
+        "SEC-05",
+        "SEC-06",
+        "SEC-07",
+        "SEC-08",
+        "PROC-02"
+      ],
+      "completedTaskIds": [
+        "ARCH-04-T1",
+        "ARCH-04-T2",
+        "ARCH-04-T3",
+        "ARCH-04-T4",
+        "ARCH-04-T5",
+        "ENV-07-T1",
+        "ENV-07-T2",
+        "ARCH-07-T1",
+        "ARCH-07-T2",
+        "ARCH-08-T1",
+        "ARCH-08-T2",
+        "ARCH-10-T1",
+        "ARCH-10-T2",
+        "SEC-05-T1",
+        "SEC-06-T1",
+        "SEC-06-T2",
+        "SEC-07-T1",
+        "SEC-08-T1",
+        "SEC-08-T2",
+        "PROC-02-T1",
+        "PROC-02-T2"
+      ],
       "summary": "Phase 3 (Core Cluster Stack) completed. 21 tasks marked complete across supabase-receptor (9 files created/expanded) and common-bond (SoA 8.16 updated). New files: staging.md, incident-response.md, network-policies.yaml, serviceaccounts.yaml, falco-rules.yaml, cluster-issuer.yaml, alertmanager-config.yaml."
     },
     {
       "date": "2026-03-12",
-      "completedFindingIds": ["KEY-01", "CICD-03"],
-      "completedTaskIds": ["KEY-01-T1", "KEY-01-T2", "KEY-01-T3", "KEY-01-T4", "CICD-03-T1", "CICD-03-T2", "CICD-03-T3"],
+      "completedFindingIds": [
+        "KEY-01",
+        "CICD-03"
+      ],
+      "completedTaskIds": [
+        "KEY-01-T1",
+        "KEY-01-T2",
+        "KEY-01-T3",
+        "KEY-01-T4",
+        "CICD-03-T1",
+        "CICD-03-T2",
+        "CICD-03-T3"
+      ],
       "summary": "Phase 4 (CI Keys) completed. 7 tasks marked complete across planner-frontend and workforce-frontend. Changes: ANON_JWT export added to ci.yml Start Supabase step; SERVICE_ROLE_KEY now dynamically extracted (CICD-03); globalSetup.ts updated to use ANON_JWT for signInWithPassword; LOCAL_SUPABASE_SECRET_KEY GitHub Secret deleted from both repos (CICD-03-T3)."
     },
     {
       "date": "2026-03-12",
-      "completedFindingIds": ["CGEN-01", "CGEN-02", "CICD-04", "BACK-02", "CICD-05", "CICD-07", "ENV-10"],
-      "completedTaskIds": ["CGEN-01-T1", "CGEN-02-T1", "CICD-04-T1", "BACK-02-T1", "BACK-02-T2", "CICD-05-T1", "CICD-07-T1", "ENV-10-T1", "ENV-10-T2"],
+      "completedFindingIds": [
+        "CGEN-01",
+        "CGEN-02",
+        "CICD-04",
+        "BACK-02",
+        "CICD-05",
+        "CICD-07",
+        "ENV-10"
+      ],
+      "completedTaskIds": [
+        "CGEN-01-T1",
+        "CGEN-02-T1",
+        "CICD-04-T1",
+        "BACK-02-T1",
+        "BACK-02-T2",
+        "CICD-05-T1",
+        "CICD-07-T1",
+        "ENV-10-T1",
+        "ENV-10-T2"
+      ],
       "summary": "Phase 5 (CI Pipeline Hardening) completed. 9 tasks marked complete across 6 repos. Changes: CGEN-01/02 codegen gate now uses git diff instead of --check; CICD-04 --workdir supabase/ added; BACK-02 JWT stubs replaced; CICD-05 timeouts on all jobs; CICD-07 npm/pip cache; ENV-10 deploy-function.yml + edge-function-deployment.md. preference-frontend included for CICD-05/07. 4 new audit branches: planner-frontend, workforce-frontend, preference-frontend, match-backend, receptor-planner all pushed."
     },
     {
       "date": "2026-03-12",
-      "completedFindingIds": ["CICD-02", "SEC-01", "SEC-02", "CICD-06", "SEC-04"],
-      "completedTaskIds": ["CICD-02-T1", "CICD-02-T2", "SEC-01-T1", "SEC-01-T2", "SEC-02-T1", "SEC-02-T2", "CICD-06-T1", "SEC-04-T1", "SEC-04-T2"],
+      "completedFindingIds": [
+        "CICD-02",
+        "SEC-01",
+        "SEC-02",
+        "CICD-06",
+        "SEC-04"
+      ],
+      "completedTaskIds": [
+        "CICD-02-T1",
+        "CICD-02-T2",
+        "SEC-01-T1",
+        "SEC-01-T2",
+        "SEC-02-T1",
+        "SEC-02-T2",
+        "CICD-06-T1",
+        "SEC-04-T1",
+        "SEC-04-T2"
+      ],
       "summary": "Phase 6 (Supply-Chain & Runtime Security) completed. 9 tasks marked complete across 6 repos. Changes: SEC-01 permissions blocks added to all 6 ci.yml; SEC-02 all Actions SHA-pinned; CICD-02 Supabase CLI pinned to 2.75.0; CICD-06 dependabot.yml added to all 6 repos; Renovate github-actions manager added/created in all 6 repos; SEC-04 ADR-004-docker-image-digest-pinning.md added to supabase-receptor; soa.md 8.3 and 8.8 updated."
     },
     {
       "date": "2026-03-12",
-      "completedFindingIds": ["ENV-01", "ENV-02", "KEY-02", "DOC-02", "ENV-06", "ARCH-06", "ENV-08", "SEC-09", "ENV-11"],
-      "completedTaskIds": ["ENV-01-T1", "ENV-01-T2", "ENV-02-T1", "KEY-02-T1", "DOC-02-T1", "ENV-06-T1", "ENV-06-T2", "ARCH-06-T1", "ENV-08-T2", "ENV-11-T2", "SEC-09-T1", "SEC-09-T2"],
-      "deferredFindingIds": ["CICD-08"],
+      "completedFindingIds": [
+        "ENV-01",
+        "ENV-02",
+        "KEY-02",
+        "DOC-02",
+        "ENV-06",
+        "ARCH-06",
+        "ENV-08",
+        "SEC-09",
+        "ENV-11"
+      ],
+      "completedTaskIds": [
+        "ENV-01-T1",
+        "ENV-01-T2",
+        "ENV-02-T1",
+        "KEY-02-T1",
+        "DOC-02-T1",
+        "ENV-06-T1",
+        "ENV-06-T2",
+        "ARCH-06-T1",
+        "ENV-08-T2",
+        "ENV-11-T2",
+        "SEC-09-T1",
+        "SEC-09-T2"
+      ],
+      "deferredFindingIds": [
+        "CICD-08"
+      ],
       "summary": "Phase 7 (Environment Tiers, Backup, pgaudit, Key Rotation, ARCH-06) completed. 12 tasks marked complete; CICD-08 deferred (Vault supersedes GitHub Environments secret scoping). New files: environment-tiers.md, setup.conf.staging.example, setup.conf.prod.example, supabase/schemas/12_extensions/pgaudit.sql, docs/infrastructure/security/audit-logging.md, .github/workflows/key-rotation-reminder.yml. Updated: key-management.md (rewritten), disaster-recovery.md (backup + dual-provider topology), promotion-runbook.md (live URLs), kubernetes-cluster.md (Zot pull-through cache). common-bond soa.md: 8.13 dual-provider backup, 8.15 Implemented (pgaudit), 5.28 Partial. Open tasks: 34."
+    },
+    {
+      "date": "2026-03-13",
+      "completedFindingIds": [],
+      "completedTaskIds": [],
+      "summary": "Phase 7.5 pre-flight interval gate created. 5 gaps and 5 enhancements from comprehensive audit review accepted. recommendations.json amended: ARCH-11 finding added, ARCH-02-T0 / ARCH-03-T0 / ISO-01-T2 tasks added, CICD-10 task descriptions fixed (removed CICD-08 dep), CICD-09 moved Phase 5\u21928, Phase 7.5 inserted. Slack app created and credentials stored in Vault. Open task count: 38."
     }
+  ],
+  "sessionGates": [
+    "Gate 8A: ARCH-02-T1 + ENV-03 \u2014 setup.sh CI-native mode + RESET --force flag (supabase-receptor only)",
+    "Gate 8B: ISO-01-T1 + ISO-01-T2 + ISO-02-T1 + ENV-04-T1 \u2014 test isolation + seed namespacing (supabase-receptor + 3 frontends)",
+    "Gate 8C: ARCH-03-T0 verified \u2192 ARCH-01-T1 + ARCH-03-T1 + CICD-01-T1 + CICD-09-T1 \u2014 runner migration + composite action (all 6 repos, CICD-09 prerequisite in place)"
   ]
 }
