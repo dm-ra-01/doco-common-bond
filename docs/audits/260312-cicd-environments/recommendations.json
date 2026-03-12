@@ -18,35 +18,35 @@
       "tasks": [
         {
           "taskId": "KEY-01-T1",
-          "status": "open",
+          "status": "complete",
           "description": "Audit globalSetup.ts in planner-frontend for any signInWithPassword() calls and confirm whether ANON_JWT is required.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/frontend/planner-frontend/src/__tests__/globalSetup.ts",
-          "completedAt": null,
-          "completedBy": null
+          "completedAt": "2026-03-12T08:00:19Z",
+          "completedBy": "session-3-260312"
         },
         {
           "taskId": "KEY-01-T2",
-          "status": "open",
+          "status": "complete",
           "description": "Audit globalSetup.ts in workforce-frontend for any signInWithPassword() calls and confirm whether ANON_JWT is required.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/frontend/workforce-frontend/src/__tests__/globalSetup.ts",
-          "completedAt": null,
-          "completedBy": null
+          "completedAt": "2026-03-12T08:00:20Z",
+          "completedBy": "session-3-260312"
         },
         {
           "taskId": "KEY-01-T3",
-          "status": "open",
+          "status": "complete",
           "description": "Add ANON_JWT export to planner-frontend ci.yml Start Supabase step, mirroring the preference-frontend pattern (grep '^ANON_KEY=' | sed + tr -d quotes).",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/frontend/planner-frontend/.github/workflows/ci.yml",
-          "completedAt": null,
-          "completedBy": null
+          "completedAt": "2026-03-12T08:00:20Z",
+          "completedBy": "session-3-260312"
         },
         {
           "taskId": "KEY-01-T4",
-          "status": "open",
+          "status": "complete",
           "description": "Add ANON_JWT export to workforce-frontend ci.yml Start Supabase step, mirroring the preference-frontend pattern.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/frontend/workforce-frontend/.github/workflows/ci.yml",
-          "completedAt": null,
-          "completedBy": null
+          "completedAt": "2026-03-12T08:00:20Z",
+          "completedBy": "session-3-260312"
         }
       ],
       "severity_history": []
@@ -126,27 +126,27 @@
       "tasks": [
         {
           "taskId": "CICD-03-T1",
-          "status": "open",
+          "status": "complete",
           "description": "Update planner-frontend ci.yml Start Supabase step to extract SERVICE_ROLE_KEY from 'supabase status -o env' and export it as SUPABASE_SERVICE_ROLE_KEY, matching the preference-frontend pattern (grep '^SERVICE_ROLE_KEY=' | tr -d quotes).",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/frontend/planner-frontend/.github/workflows/ci.yml",
-          "completedAt": null,
-          "completedBy": null
+          "completedAt": "2026-03-12T08:00:20Z",
+          "completedBy": "session-3-260312"
         },
         {
           "taskId": "CICD-03-T2",
-          "status": "open",
+          "status": "complete",
           "description": "Apply the same SERVICE_ROLE_KEY extraction fix to workforce-frontend ci.yml.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/frontend/workforce-frontend/.github/workflows/ci.yml",
-          "completedAt": null,
-          "completedBy": null
+          "completedAt": "2026-03-12T08:00:20Z",
+          "completedBy": "session-3-260312"
         },
         {
           "taskId": "CICD-03-T3",
-          "status": "open",
+          "status": "complete",
           "description": "Remove LOCAL_SUPABASE_SECRET_KEY from GitHub Secrets for planner-frontend and workforce-frontend once dynamic extraction is confirmed working.",
           "targetFile": "",
-          "completedAt": null,
-          "completedBy": null
+          "completedAt": "2026-03-12T08:00:21Z",
+          "completedBy": "session-3-260312"
         }
       ],
       "severity_history": []

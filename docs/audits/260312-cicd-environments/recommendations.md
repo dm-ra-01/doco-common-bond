@@ -55,14 +55,18 @@
 Affects: `planner-frontend, workforce-frontend` — CI key handling
 
 
-- [ ] Audit globalSetup.ts in planner-frontend for any signInWithPassword() calls and confirm whether ANON_JWT is required.
+- [x] Audit globalSetup.ts in planner-frontend for any signInWithPassword() calls and confirm whether ANON_JWT is required.
       `/Users/ryan/development/common_bond/antigravity-environment/frontend/planner-frontend/src/__tests__/globalSetup.ts`
-- [ ] Audit globalSetup.ts in workforce-frontend for any signInWithPassword() calls and confirm whether ANON_JWT is required.
+      _(Completed: 2026-03-12T08:00:19Z)_
+- [x] Audit globalSetup.ts in workforce-frontend for any signInWithPassword() calls and confirm whether ANON_JWT is required.
       `/Users/ryan/development/common_bond/antigravity-environment/frontend/workforce-frontend/src/__tests__/globalSetup.ts`
-- [ ] Add ANON_JWT export to planner-frontend ci.yml Start Supabase step, mirroring the preference-frontend pattern (grep '^ANON_KEY=' | sed + tr -d quotes).
+      _(Completed: 2026-03-12T08:00:20Z)_
+- [x] Add ANON_JWT export to planner-frontend ci.yml Start Supabase step, mirroring the preference-frontend pattern (grep '^ANON_KEY=' | sed + tr -d quotes).
       `/Users/ryan/development/common_bond/antigravity-environment/frontend/planner-frontend/.github/workflows/ci.yml`
-- [ ] Add ANON_JWT export to workforce-frontend ci.yml Start Supabase step, mirroring the preference-frontend pattern.
+      _(Completed: 2026-03-12T08:00:20Z)_
+- [x] Add ANON_JWT export to workforce-frontend ci.yml Start Supabase step, mirroring the preference-frontend pattern.
       `/Users/ryan/development/common_bond/antigravity-environment/frontend/workforce-frontend/.github/workflows/ci.yml`
+      _(Completed: 2026-03-12T08:00:20Z)_
 
 ## 🟠 High
 
@@ -93,12 +97,15 @@ Affects: `preference-frontend, planner-frontend, workforce-frontend, supabase-re
 Affects: `planner-frontend, workforce-frontend` — Service role key sourcing
 
 
-- [ ] Update planner-frontend ci.yml Start Supabase step to extract SERVICE_ROLE_KEY from 'supabase status -o env' and export it as SUPABASE_SERVICE_ROLE_KEY, matching the preference-frontend pattern (grep '^SERVICE_ROLE_KEY=' | tr -d quotes).
+- [x] Update planner-frontend ci.yml Start Supabase step to extract SERVICE_ROLE_KEY from 'supabase status -o env' and export it as SUPABASE_SERVICE_ROLE_KEY, matching the preference-frontend pattern (grep '^SERVICE_ROLE_KEY=' | tr -d quotes).
       `/Users/ryan/development/common_bond/antigravity-environment/frontend/planner-frontend/.github/workflows/ci.yml`
-- [ ] Apply the same SERVICE_ROLE_KEY extraction fix to workforce-frontend ci.yml.
+      _(Completed: 2026-03-12T08:00:20Z)_
+- [x] Apply the same SERVICE_ROLE_KEY extraction fix to workforce-frontend ci.yml.
       `/Users/ryan/development/common_bond/antigravity-environment/frontend/workforce-frontend/.github/workflows/ci.yml`
-- [ ] Remove LOCAL_SUPABASE_SECRET_KEY from GitHub Secrets for planner-frontend and workforce-frontend once dynamic extraction is confirmed working.
+      _(Completed: 2026-03-12T08:00:20Z)_
+- [x] Remove LOCAL_SUPABASE_SECRET_KEY from GitHub Secrets for planner-frontend and workforce-frontend once dynamic extraction is confirmed working.
       ``
+      _(Completed: 2026-03-12T08:00:21Z)_
 
 ### ARCH-01: No branch-matched ephemeral Supabase environment strategy exists. Every CI run cold-boots an independent instance. Two a
 
@@ -730,22 +737,3 @@ Affects: `supabase-receptor` — Post-deploy smoke tests for staging and product
 | DOC-06 | Engineer onboarding guide | `ONBOARDING.md` | Documentation Gap | 🟢 Low |
 | CICD-10 | Post-deploy smoke tests for staging and production | `action.yml` | Process Gap | 🟢 Low |
 
-
----
-
-## Session Close — 2026-03-12
-
-**Completed:** ARCH-04 (T1–T5), ENV-07 (T1–T2), ARCH-07 (T1–T2), ARCH-08 (T1–T2), ARCH-10 (T1–T2), SEC-05 (T1), SEC-06 (T1–T2), SEC-07 (T1), SEC-08 (T1–T2), PROC-02 (T1–T2) — 21 tasks across 10 findings
-
-**Remaining:** 72 open tasks across KEY-01, CICD-01–10, ARCH-01–03, ARCH-06, ENV-01–06, ENV-08, ENV-10, ENV-11, ISO-01–03, DOC-01–02, DOC-06, BACK-01–02, SEC-01–04, SEC-09, CGEN-01–02, CICD-07–08, ARCH-05-T2, PROC-01-T2. Primary repo: supabase-receptor. Cross-ecosystem CI repos: planner-frontend, workforce-frontend, preference-frontend, match-backend, receptor-planner.
-
-**Blocked:** None
-
-**PR order note:** supabase-receptor CI workflow changes (Phase 4) should be merged before frontend repos that consume the shared Supabase composite action (CICD-09). All Phase 3 changes are doc-only — no merge ordering required.
-
-**Brief for next agent:** Session 2 completed all Phase 3 (Core Cluster Stack) tasks. Key decisions made:
-- ADRs 005, 006, 007 already existed from Session 1 — Phase 3 completed the corresponding implementation tasks (manifests and docs)
-- SoA 8.16 status updated from "Partial" to "Implemented" in `documentation/common-bond` — committed to common-bond audit branch
-- ARCH-07-T2 target was in common-bond (`docs/compliance/iso27001/operations/soa.md`) — handled in the same session as supabase-receptor changes
-- SEC-06-T2 notes that the TPM 2.0 secondary configuration is documented as part of disaster-recovery.md (SEC-06-T1); ADR-006 was the T2 deliverable and already existed from Session 1
-- Phase 4 next: KEY-01 (GitHub Secrets audit), CICD-01–03 (CI workflow standardisation), ENV-01–04 (environment variables), CICD-04–05. These touch multiple repos — propose cross-repo scope before implementing.

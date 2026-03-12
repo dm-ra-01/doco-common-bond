@@ -3,8 +3,8 @@
   "auditSlug": "260312-cicd-environments",
   "status": "implementing",
   "nextAction": "implement",
-  "openTaskCount": 72,
-  "latestHandover": "SESSION 2 COMPLETE (2026-03-12). Phase 3 done. Completed: ARCH-04-T1 through T5 (kubernetes-cluster.md expanded with full topology, Supabase k8s deploy, Traefik routing, GitHub runner), ENV-07-T1+T2 (staging.md — Cloudflare Tunnel provisioning), ARCH-07-T1+T2 (monitoring stack docs + SoA 8.16 updated to Implemented in common-bond), ARCH-08-T1+T2 (ADR-005 already existed; k3s/network-policies/network-policies.yaml created), ARCH-10-T1+T2 (k3s/cert-manager/cluster-issuer.yaml + cert lifecycle in kubernetes-cluster.md), SEC-05-T1 (Studio restriction in Supabase values + NetworkPolicy note in kubernetes-cluster.md), SEC-06-T1+T2 (disaster-recovery.md expanded with YubiKey PKCS#11 + TPM 2.0 unseal; ADR-006 already existed from Session 1), SEC-07-T1 (k3s/falco/falco-rules.yaml), SEC-08-T1+T2 (k3s/rbac/serviceaccounts.yaml; ADR-007 already existed), PROC-02-T1+T2 (k3s/monitoring/alertmanager-config.yaml + docs/operations/incident-response.md). NOTES: ADRs 005, 006, 007 were pre-created in Session 1 — Session 2 completed the corresponding implementation tasks. SoA 8.16 updated in documentation/common-bond (ARCH-07-T2) — committed to common-bond audit branch. NEXT SESSION: Phase 4 — CICD Pipeline & Keys (KEY-01, CICD-01, CICD-02, CICD-03, CICD-04, ENV-01, ENV-02, ENV-03, ENV-04, CICD-05). These target ci.yml workflow files across multiple repos (supabase-receptor, planner-frontend, workforce-frontend, preference-frontend).",
+  "openTaskCount": 65,
+  "latestHandover": "SESSION 3 COMPLETE (2026-03-12). Phase 4 done. Completed: KEY-01-T1–T4 (planner-frontend + workforce-frontend globalSetup.ts updated to use NEXT_PUBLIC_SUPABASE_ANON_JWT ?? ANON_KEY fallback for signInWithPassword; CI Start Supabase steps updated to export ANON_KEY as ANON_JWT matching preference-frontend reference), CICD-03-T1+T2 (planner-frontend + workforce-frontend ci.yml — SERVICE_ROLE_KEY now dynamically extracted from supabase status -o env instead of LOCAL_SUPABASE_SECRET_KEY static secret), CICD-03-T3 (LOCAL_SUPABASE_SECRET_KEY GitHub Secret deleted from both repos). RESEARCH NOTE: Web search confirmed publishable key (sb_publishable_*) is the official replacement for anon JWT for cloud-hosted GoTrue auth ops; however supabase status -o env still outputs ANON_KEY (legacy JWT) in addition to PUBLISHABLE_KEY. The preference-frontend reference implementation already exports ANON_KEY as ANON_JWT for local CI GoTrue compatibility. New branches: planner-frontend audit/260312-cicd-environments (07dc9c5), workforce-frontend audit/260312-cicd-environments (07ceaa3). Both tsc --noEmit passed; lint-staged eslint also passed. NEXT SESSION: Phase 5 — CICD Pipeline (CICD-02, CGEN-01, CGEN-02, CICD-04, CICD-05, BACK-01, BACK-02, CICD-07, ENV-10, CICD-09). These span supabase-receptor, planner-frontend, workforce-frontend, match-backend, receptor-planner.",
   "sessionHistory": [
     {
       "date": "2026-03-12",
@@ -17,6 +17,12 @@
       "completedFindingIds": ["ARCH-04", "ENV-07", "ARCH-07", "ARCH-08", "ARCH-10", "SEC-05", "SEC-06", "SEC-07", "SEC-08", "PROC-02"],
       "completedTaskIds": ["ARCH-04-T1", "ARCH-04-T2", "ARCH-04-T3", "ARCH-04-T4", "ARCH-04-T5", "ENV-07-T1", "ENV-07-T2", "ARCH-07-T1", "ARCH-07-T2", "ARCH-08-T1", "ARCH-08-T2", "ARCH-10-T1", "ARCH-10-T2", "SEC-05-T1", "SEC-06-T1", "SEC-06-T2", "SEC-07-T1", "SEC-08-T1", "SEC-08-T2", "PROC-02-T1", "PROC-02-T2"],
       "summary": "Phase 3 (Core Cluster Stack) completed. 21 tasks marked complete across supabase-receptor (9 files created/expanded) and common-bond (SoA 8.16 updated). New files: staging.md, incident-response.md, network-policies.yaml, serviceaccounts.yaml, falco-rules.yaml, cluster-issuer.yaml, alertmanager-config.yaml."
+    },
+    {
+      "date": "2026-03-12",
+      "completedFindingIds": ["KEY-01", "CICD-03"],
+      "completedTaskIds": ["KEY-01-T1", "KEY-01-T2", "KEY-01-T3", "KEY-01-T4", "CICD-03-T1", "CICD-03-T2", "CICD-03-T3"],
+      "summary": "Phase 4 (CI Keys) completed. 7 tasks marked complete across planner-frontend and workforce-frontend. Changes: ANON_JWT export added to ci.yml Start Supabase step; SERVICE_ROLE_KEY now dynamically extracted (CICD-03); globalSetup.ts updated to use ANON_JWT for signInWithPassword; LOCAL_SUPABASE_SECRET_KEY GitHub Secret deleted from both repos (CICD-03-T3)."
     }
   ]
 }
