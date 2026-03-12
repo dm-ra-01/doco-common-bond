@@ -3,8 +3,8 @@
   "auditSlug": "260312-cicd-environments",
   "status": "implementing",
   "nextAction": "implement",
-  "openTaskCount": 56,
-  "latestHandover": "SESSION 5 COMPLETE (2026-03-12). Phase 5 done. 9 tasks marked complete across 6 repos. CGEN-01+02: codegen-check in planner-frontend and workforce-frontend now uses 'npx graphql-codegen --config codegen.check.ts && git diff --exit-code src/graphql/schema.json' instead of --check flag, mirroring preference-frontend. CICD-04: supabase start + supabase test db in supabase-receptor ci.yml now include '--workdir supabase/'. BACK-02: JWT placeholder in match-backend and receptor-planner ci.yml replaced with 'stub-service-role-key-not-real'. CICD-05: timeout-minutes added to all jobs across all 6 repos (10 for lint/unit/build, 20 for Supabase/codegen/e2e). CICD-07: actions/cache for npm (frontends, keyed on package-lock.json) and pip (backends, keyed on requirements.txt) added to all container-based jobs. ENV-10: deploy-function.yml workflow (tag-driven, fn/name/vX.Y.Z) + docs/operations/edge-function-deployment.md created in supabase-receptor. All 6 repos on audit/260312-cicd-environments branch — pushed. All tsc and pytest gates passed. NEXT SESSION: Phase 6 — CICD-02 (pin Supabase CLI version), CICD-09 (composite action), CICD-08 (GitHub Environments), ENV-05 (prod-deploy.yml schema migration workflow), SEC-01, SEC-02, and remaining high/medium priority findings.",
+  "openTaskCount": 47,
+  "latestHandover": "SESSION 6 COMPLETE (2026-03-12). Phase 6 supply-chain hardening done. 9 tasks marked complete across 6 repos + common-bond docs. SEC-01: permissions: contents: read top-level block added to all 6 CI workflows. SEC-02: all GitHub Actions SHA-pinned in all 6 repos (checkout@11bd719, cache@0057852, setup-node@cdca736, upload-artifact@ea165f8, setup-cli@b60b589, setup-deno@e95548e, codecov-action@671740a, test-results-action@0fa95f0). CICD-02: supabase/setup-cli version pinned to 2.75.0 in 4 repos that use it. CICD-06: .github/dependabot.yml added to all 6 repos with github-actions ecosystem (+ npm for frontends, pip for backends). CICD-02/CICD-06: Renovate github-actions manager added/created in all 6 repos. SEC-04: ADR-004-docker-image-digest-pinning.md added to supabase-receptor (k3s manifests use Helm charts with no direct image refs yet). common-bond soa.md: 8.3 updated for SEC-01 GITHUB_TOKEN enforcement; 8.8 updated for SEC-02 SHA pinning + Dependabot+Renovate. CLI NOTE: use git -C <path> not cd+git for receptor-planner (shell hook causes hang). NEXT SESSION: Phase 7 — CICD-01 (branch protection), CICD-09 (composite reusable action), CICD-08 (GitHub Environments), ENV-05 (prod-deploy.yml schema migration), ARCH-01, ARCH-02, ARCH-03.",
   "sessionHistory": [
     {
       "date": "2026-03-12",
@@ -29,6 +29,12 @@
       "completedFindingIds": ["CGEN-01", "CGEN-02", "CICD-04", "BACK-02", "CICD-05", "CICD-07", "ENV-10"],
       "completedTaskIds": ["CGEN-01-T1", "CGEN-02-T1", "CICD-04-T1", "BACK-02-T1", "BACK-02-T2", "CICD-05-T1", "CICD-07-T1", "ENV-10-T1", "ENV-10-T2"],
       "summary": "Phase 5 (CI Pipeline Hardening) completed. 9 tasks marked complete across 6 repos. Changes: CGEN-01/02 codegen gate now uses git diff instead of --check; CICD-04 --workdir supabase/ added; BACK-02 JWT stubs replaced; CICD-05 timeouts on all jobs; CICD-07 npm/pip cache; ENV-10 deploy-function.yml + edge-function-deployment.md. preference-frontend included for CICD-05/07. 4 new audit branches: planner-frontend, workforce-frontend, preference-frontend, match-backend, receptor-planner all pushed."
+    },
+    {
+      "date": "2026-03-12",
+      "completedFindingIds": ["CICD-02", "SEC-01", "SEC-02", "CICD-06", "SEC-04"],
+      "completedTaskIds": ["CICD-02-T1", "CICD-02-T2", "SEC-01-T1", "SEC-01-T2", "SEC-02-T1", "SEC-02-T2", "CICD-06-T1", "SEC-04-T1", "SEC-04-T2"],
+      "summary": "Phase 6 (Supply-Chain & Runtime Security) completed. 9 tasks marked complete across 6 repos. Changes: SEC-01 permissions blocks added to all 6 ci.yml; SEC-02 all Actions SHA-pinned; CICD-02 Supabase CLI pinned to 2.75.0; CICD-06 dependabot.yml added to all 6 repos; Renovate github-actions manager added/created in all 6 repos; SEC-04 ADR-004-docker-image-digest-pinning.md added to supabase-receptor; soa.md 8.3 and 8.8 updated."
     }
   ]
 }
