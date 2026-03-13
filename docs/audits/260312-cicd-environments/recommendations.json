@@ -20,7 +20,7 @@
           "taskId": "KEY-01-T1",
           "status": "complete",
           "description": "Audit globalSetup.ts in planner-frontend for any signInWithPassword() calls and confirm whether ANON_JWT is required.",
-          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/frontend/planner-frontend/src/__tests__/globalSetup.ts",
+          "targetFile": "/home/ryana/development/common-bond/frontend/planner-frontend/src/__tests__/globalSetup.ts",
           "completedAt": "2026-03-12T08:00:19Z",
           "completedBy": "session-3-260312"
         },
@@ -28,7 +28,7 @@
           "taskId": "KEY-01-T2",
           "status": "complete",
           "description": "Audit globalSetup.ts in workforce-frontend for any signInWithPassword() calls and confirm whether ANON_JWT is required.",
-          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/frontend/workforce-frontend/src/__tests__/globalSetup.ts",
+          "targetFile": "/home/ryana/development/common-bond/frontend/workforce-frontend/src/__tests__/globalSetup.ts",
           "completedAt": "2026-03-12T08:00:20Z",
           "completedBy": "session-3-260312"
         },
@@ -36,7 +36,7 @@
           "taskId": "KEY-01-T3",
           "status": "complete",
           "description": "Add ANON_JWT export to planner-frontend ci.yml Start Supabase step, mirroring the preference-frontend pattern (grep '^ANON_KEY=' | sed + tr -d quotes).",
-          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/frontend/planner-frontend/.github/workflows/ci.yml",
+          "targetFile": "/home/ryana/development/common-bond/frontend/planner-frontend/.github/workflows/ci.yml",
           "completedAt": "2026-03-12T08:00:20Z",
           "completedBy": "session-3-260312"
         },
@@ -44,7 +44,7 @@
           "taskId": "KEY-01-T4",
           "status": "complete",
           "description": "Add ANON_JWT export to workforce-frontend ci.yml Start Supabase step, mirroring the preference-frontend pattern.",
-          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/frontend/workforce-frontend/.github/workflows/ci.yml",
+          "targetFile": "/home/ryana/development/common-bond/frontend/workforce-frontend/.github/workflows/ci.yml",
           "completedAt": "2026-03-12T08:00:20Z",
           "completedBy": "session-3-260312"
         }
@@ -64,19 +64,19 @@
           "taskId": "CICD-01-T1",
           "status": "open",
           "description": "Design a reusable CI job structure: a single 'supabase-boot' job that starts Supabase, extracts and caches keys, then is referenced as a service by all downstream jobs that depend on it.",
-          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/frontend/preference-frontend/.github/workflows/ci.yml"
+          "targetFile": "/home/ryana/development/common-bond/frontend/preference-frontend/.github/workflows/ci.yml"
         },
         {
           "taskId": "CICD-01-T2",
           "status": "open",
           "description": "Evaluate feasibility of installing a self-hosted GitHub Actions runner on the VM (14 GB RAM, 16 GB swap) to enable Docker daemon sharing, reducing per-boot time from ~4 min cold to ~30 sec warm sidecar start.",
-          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/docs/operations/vm-setup.md"
+          "targetFile": "/home/ryana/development/common-bond/supabase-receptor/docs/operations/vm-setup.md"
         },
         {
           "taskId": "CICD-01-T3",
           "status": "open",
           "description": "Alternatively, establish a persistent Supabase staging instance that CI jobs hit without booting. Document the tradeoffs vs. per-boot ephemeral approach.",
-          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/docs/infrastructure/environment/supabase-self-hosted.md"
+          "targetFile": "/home/ryana/development/common-bond/supabase-receptor/docs/infrastructure/environment/supabase-self-hosted.md"
         }
       ],
       "severity_history": []
@@ -94,13 +94,13 @@
           "taskId": "CICD-02-T1",
           "status": "complete",
           "description": "Determine current Supabase CLI version in use and pin version: in all four ci.yml files to that specific version string (e.g. '2.x.y').",
-          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/frontend/preference-frontend/.github/workflows/ci.yml"
+          "targetFile": "/home/ryana/development/common-bond/frontend/preference-frontend/.github/workflows/ci.yml"
         },
         {
           "taskId": "CICD-02-T2",
           "status": "complete",
           "description": "Add Renovate Bot configuration to auto-propose Supabase CLI version bumps as PRs, enabling controlled upgrades after human review.",
-          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/dev-environment/renovate.json"
+          "targetFile": "/home/ryana/development/common-bond/dev-environment/renovate.json"
         }
       ],
       "severity_history": []
@@ -118,7 +118,7 @@
           "taskId": "CICD-03-T1",
           "status": "complete",
           "description": "Update planner-frontend ci.yml Start Supabase step to extract SERVICE_ROLE_KEY from 'supabase status -o env' and export it as SUPABASE_SERVICE_ROLE_KEY, matching the preference-frontend pattern (grep '^SERVICE_ROLE_KEY=' | tr -d quotes).",
-          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/frontend/planner-frontend/.github/workflows/ci.yml",
+          "targetFile": "/home/ryana/development/common-bond/frontend/planner-frontend/.github/workflows/ci.yml",
           "completedAt": "2026-03-12T08:00:20Z",
           "completedBy": "session-3-260312"
         },
@@ -126,7 +126,7 @@
           "taskId": "CICD-03-T2",
           "status": "complete",
           "description": "Apply the same SERVICE_ROLE_KEY extraction fix to workforce-frontend ci.yml.",
-          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/frontend/workforce-frontend/.github/workflows/ci.yml",
+          "targetFile": "/home/ryana/development/common-bond/frontend/workforce-frontend/.github/workflows/ci.yml",
           "completedAt": "2026-03-12T08:00:20Z",
           "completedBy": "session-3-260312"
         },
@@ -152,21 +152,27 @@
       "tasks": [
         {
           "taskId": "ARCH-01-T1",
-          "status": "open",
+          "status": "complete",
           "description": "Document the two architectural options (A: Docker-network-per-branch on self-hosted runner; B: persistent staging with run-ID namespacing) in a new ADR at docs/infrastructure/environment/cicd-architecture.md in supabase-receptor.",
-          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/docs/infrastructure/environment/cicd-architecture.md"
+          "targetFile": "/home/ryana/development/common-bond/supabase-receptor/docs/infrastructure/environment/cicd-architecture.md",
+          "completedAt": "2026-03-13T12:00:00Z",
+          "completedBy": "session-19-260313"
         },
         {
           "taskId": "ARCH-01-T2",
-          "status": "open",
+          "status": "complete",
           "description": "If Option A chosen: extend setup.sh with a --ci flag that (1) skips interactive prompts, (2) accepts project-name as the Docker network/compose project, and (3) adds a --teardown flag for post-run cleanup. No external tunnel required for CI-internal access.",
-          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/utils/setup.sh"
+          "targetFile": "/home/ryana/development/common-bond/supabase-receptor/utils/setup.sh",
+          "completedAt": "2026-03-13T11:15:42Z",
+          "completedBy": "e6969860-51e0-4977-9d09-c134ab3f9d04"
         },
         {
           "taskId": "ARCH-01-T3",
-          "status": "open",
+          "status": "complete",
           "description": "If Option B chosen: implement a pg_cron job on the staging instance that deletes orgs, users, and associated data where org_name LIKE '__test_%' AND created_at < NOW() - INTERVAL '24 hours'.",
-          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/supabase/schemas/operations/test_cleanup.sql"
+          "targetFile": "/home/ryana/development/common-bond/supabase-receptor/supabase/schemas/operations/test_cleanup.sql",
+          "completedAt": "2026-03-13T11:15:42Z",
+          "completedBy": "e6969860-51e0-4977-9d09-c134ab3f9d04"
         }
       ],
       "severity_history": []
@@ -184,7 +190,7 @@
           "taskId": "ARCH-02-T1",
           "status": "complete",
           "description": "Add --ci flag to setup.sh that skips all interactive read prompts, fails loudly if required env vars are unset, and exits 0 only when the instance is confirmed healthy (docker compose ps check).",
-          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/utils/setup.sh",
+          "targetFile": "/home/ryana/development/common-bond/supabase-receptor/utils/setup.sh",
           "completedAt": "2026-03-12T22:47:09Z",
           "completedBy": "session-8-260313"
         },
@@ -192,7 +198,7 @@
           "taskId": "ARCH-02-T2",
           "status": "complete",
           "description": "Add --teardown flag to RESET_setup.sh (or create a new teardown.sh) that is fully non-interactive, suitable for CI post-run cleanup.",
-          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/utils/RESET_setup.sh",
+          "targetFile": "/home/ryana/development/common-bond/supabase-receptor/utils/RESET_setup.sh",
           "completedAt": "2026-03-12T22:47:09Z",
           "completedBy": "session-8-260313"
         },
@@ -200,7 +206,7 @@
           "taskId": "ARCH-02-T0",
           "status": "complete",
           "description": "PREREQUISITE before ARCH-02-T1: Document and enforce the idempotency contract for setup.sh in a short inline comment block at the top of utils/setup.sh. The contract must specify: (a) which steps are safe to re-run (docker network create is guarded; git clone has a reset fallback); (b) which steps are NOT idempotent (cp -rf at line 129 will silently overwrite an in-progress Supabase instance's config); (c) a --force-reset guard: if the project directory already exists and --force-reset is not passed, setup.sh must print an error and exit 1 rather than silently overwriting. Additionally fix the --ci health gate (lines 373-388): replace the 'docker compose ps | grep supabase-db running' poll with a loop that calls 'supabase status -o env' and waits until PUBLISHABLE_KEY is non-empty (with a 120-second timeout and 5-second sleep interval). This is the root cause of GAP-1 (setup.sh exits 0 before Kong/Auth/PostgREST are ready, causing intermittent empty key extraction in ARCH-02-T1 and CICD-09-T1). Both the idempotency contract and the health gate fix must land in the same commit before any other ARCH-02 tasks run.",
-          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/utils/setup.sh",
+          "targetFile": "/home/ryana/development/common-bond/supabase-receptor/utils/setup.sh",
           "completedAt": "2026-03-12T22:12:49Z",
           "completedBy": "session-7-260312"
         }
@@ -220,7 +226,7 @@
           "taskId": "ARCH-03-T0",
           "status": "complete",
           "description": "PREREQUISITE before ARCH-03-T1: establish a 7-run parallel trial protocol before switching any repo to k3s-only CI. Steps: (1) Verify the self-hosted runner pod is healthy: 'kubectl get pods -n ci-runner' must show Running. (2) Run a no-op workflow_dispatch job ('echo runner online') on supabase-receptor's audit branch and confirm end-to-end completion in under 30 seconds. (3) Configure ci.yml in supabase-receptor to use 'runs-on: [self-hosted, k3s]' while keeping 'runs-on: ubuntu-latest' in a commented-out line immediately above it \u2014 this provides a one-line rollback escape hatch. (4) Run CI 7 consecutive times with green results before removing the ubuntu-latest commented line and before applying the runner migration to any other repo. (5) Add a Slack alert (via PROC-02 Alertmanager or direct webhook) for runner unavailability: if a self-hosted job is queued for > 5 minutes with no runner pickup, post to #incidents. Do not proceed with ARCH-03-T1 until the 7-run gate passes.",
-          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/.github/workflows/ci.yml",
+          "targetFile": "/home/ryana/development/common-bond/supabase-receptor/.github/workflows/ci.yml",
           "completedAt": "2026-03-12T22:12:49Z",
           "completedBy": "session-7-260312"
         },
@@ -228,15 +234,17 @@
           "taskId": "ARCH-03-T1",
           "status": "complete",
           "description": "Evaluate self-hosted runner installation on the VM (14 GB RAM, 16 GB swap). Document memory requirements: a single Supabase stack uses ~3-4 GB. Analysis: Host physical RAM is 32GB; cluster downsized to 2GB/4GB/2GB (8GB total) to maintain host stability. Support for 1-2 concurrent branch test instances is feasible if swap is utilized.",
-          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/docs/infrastructure/environment/cicd-architecture.md",
+          "targetFile": "/home/ryana/development/common-bond/supabase-receptor/docs/infrastructure/environment/cicd-architecture.md",
           "completedAt": "2026-03-13T11:00:00Z",
           "completedBy": "session-13-260313"
         },
         {
           "taskId": "ARCH-03-T2",
-          "status": "open",
+          "status": "complete",
           "description": "If self-hosted runner is approved: install GitHub Actions runner on VM, configure as runs-on: [self-hosted, linux], and update all three frontend ci.yml files.",
-          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/docs/operations/vm-setup.md"
+          "targetFile": "/home/ryana/development/common-bond/supabase-receptor/docs/operations/vm-setup.md",
+          "completedAt": "2026-03-13T11:15:42Z",
+          "completedBy": "e6969860-51e0-4977-9d09-c134ab3f9d04"
         }
       ],
       "severity_history": []
@@ -254,7 +262,7 @@
           "taskId": "ENV-01-T1",
           "status": "complete",
           "description": "Write docs/infrastructure/environment/environment-tiers.md defining the 4 tiers: dev (local), test (ephemeral CI), staging (persistent, staging-api-829c83.commonbond.au), and prod (api.commonbond.au). Include provisioning command, Cloudflare tunnel config, and data residency for each.",
-          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/docs/infrastructure/environment/environment-tiers.md",
+          "targetFile": "/home/ryana/development/common-bond/supabase-receptor/docs/infrastructure/environment/environment-tiers.md",
           "completedAt": "2026-03-12T09:45:00Z",
           "completedBy": "session-7-260312"
         },
@@ -262,7 +270,7 @@
           "taskId": "ENV-01-T2",
           "status": "complete",
           "description": "Provision the staging environment using setup.sh --env staging --project-name receptor-staging. Configure Cloudflare tunnel to staging-api-829c83.commonbond.au.",
-          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/setup.conf.example",
+          "targetFile": "/home/ryana/development/common-bond/supabase-receptor/setup.conf.example",
           "completedAt": "2026-03-12T09:45:00Z",
           "completedBy": "session-7-260312"
         }
@@ -282,7 +290,7 @@
           "taskId": "CGEN-01-T1",
           "status": "complete",
           "description": "Replace '--check' with 'npm run codegen && git diff --exit-code' in planner-frontend codegen-check step, mirroring preference-frontend pattern. Add the specific error message annotation for developer guidance.",
-          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/frontend/planner-frontend/.github/workflows/ci.yml",
+          "targetFile": "/home/ryana/development/common-bond/frontend/planner-frontend/.github/workflows/ci.yml",
           "completedAt": "2026-03-12T08:40:48Z",
           "completedBy": "session-5-260312"
         }
@@ -302,7 +310,7 @@
           "taskId": "CGEN-02-T1",
           "status": "complete",
           "description": "Replace '--check' with 'npm run codegen && git diff --exit-code' in workforce-frontend codegen-check step.",
-          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/frontend/workforce-frontend/.github/workflows/ci.yml",
+          "targetFile": "/home/ryana/development/common-bond/frontend/workforce-frontend/.github/workflows/ci.yml",
           "completedAt": "2026-03-12T08:40:48Z",
           "completedBy": "session-5-260312"
         }
@@ -322,7 +330,7 @@
           "taskId": "CICD-04-T1",
           "status": "complete",
           "description": "Add '--workdir supabase/' to the supabase start and supabase test db commands in supabase-receptor ci.yml to make the working directory explicit and refactor-safe.",
-          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/.github/workflows/ci.yml",
+          "targetFile": "/home/ryana/development/common-bond/supabase-receptor/.github/workflows/ci.yml",
           "completedAt": "2026-03-12T08:40:48Z",
           "completedBy": "session-5-260312"
         }
@@ -342,7 +350,7 @@
           "taskId": "KEY-02-T1",
           "status": "complete",
           "description": "Update key-management.md to reflect the new publishable key format: document PUBLISHABLE_KEY (sb_publishable_*) for REST/GraphQL client use, ANON_KEY (JWT, eyJ...) for signInWithPassword auth calls, and SERVICE_ROLE_KEY for server-side operations. Add a warning about the October 2025 migration deadline.",
-          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/docs/infrastructure/security/key-management.md",
+          "targetFile": "/home/ryana/development/common-bond/supabase-receptor/docs/infrastructure/security/key-management.md",
           "completedAt": "2026-03-12T09:45:00Z",
           "completedBy": "session-7-260312"
         }
@@ -362,7 +370,7 @@
           "taskId": "ENV-02-T1",
           "status": "complete",
           "description": "Create setup.conf.staging.example and setup.conf.prod.example with correct public URLs, tunnel tokens (redacted), and non-localhost settings for each tier.",
-          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/setup.conf.example",
+          "targetFile": "/home/ryana/development/common-bond/supabase-receptor/setup.conf.example",
           "completedAt": "2026-03-12T09:45:00Z",
           "completedBy": "session-7-260312"
         }
@@ -382,7 +390,7 @@
           "taskId": "ENV-03-T1",
           "status": "complete",
           "description": "Add --force flag to RESET_setup.sh that skips the 'Are you sure?' prompt. Gate it behind a guard: if TARGET_ENV is staging or prod, require --force to be explicitly passed (refuse to teardown prod without explicit flag).",
-          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/utils/RESET_setup.sh",
+          "targetFile": "/home/ryana/development/common-bond/supabase-receptor/utils/RESET_setup.sh",
           "completedAt": "2026-03-12T22:47:09Z",
           "completedBy": "session-8-260313"
         }
@@ -402,7 +410,7 @@
           "taskId": "ENV-04-T1",
           "status": "complete",
           "description": "Create supabase/schemas/operations/test_cleanup.sql: a pg_cron job that deletes organisations WHERE name LIKE '__test_%' AND created_at < NOW() - INTERVAL '24 hours', cascading to related user_orgs, job_lines, etc. via FK constraints.",
-          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/supabase/schemas/operations/test_cleanup.sql",
+          "targetFile": "/home/ryana/development/common-bond/supabase-receptor/supabase/schemas/operations/test_cleanup.sql",
           "completedAt": "2026-03-12T22:47:09Z",
           "completedBy": "session-8-260313"
         },
@@ -410,7 +418,7 @@
           "taskId": "ENV-04-T2",
           "status": "complete",
           "description": "Document the __test_{run-id} namespacing convention in the testing guide and require all integration test setup code to prefix created orgs with this pattern.",
-          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/docs/infrastructure/operations/testing-guide.md",
+          "targetFile": "/home/ryana/development/common-bond/supabase-receptor/docs/infrastructure/operations/testing-guide.md",
           "completedAt": "2026-03-12T22:47:09Z",
           "completedBy": "session-8-260313"
         }
@@ -430,7 +438,7 @@
           "taskId": "ISO-01-T1",
           "status": "complete",
           "description": "Define and document a __test_{GITHUB_RUN_ID} org naming convention. Update all three frontend repos' globalSetup to create test orgs using this prefix, and teardown in globalTeardown.",
-          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/frontend/preference-frontend/src/__tests__/globalSetup.ts",
+          "targetFile": "/home/ryana/development/common-bond/frontend/preference-frontend/src/__tests__/globalSetup.ts",
           "completedAt": "2026-03-12T22:12:49Z",
           "completedBy": "session-7-260312"
         },
@@ -438,7 +446,7 @@
           "taskId": "ISO-01-T2",
           "status": "complete",
           "description": "Add an explicit cleanup trigger for the run-ID-scoped test org created in ISO-01-T1. In each frontend repo's ci.yml, add a cleanup job with 'if: always()' that runs after integration-tests: the job calls 'supabase db execute' (or a REST DELETE against the organisations endpoint using SERVICE_ROLE_KEY) to delete any org matching '__ci_{GITHUB_RUN_ID}_%'. This ensures cleanup fires even on test failure or job cancellation. The ENV-04 pg_cron job (DELETE WHERE name LIKE '__ci_%' AND created_at < now() - interval 24h) is the safety net for runner-crash leaked orgs only \u2014 it must NOT be treated as the primary cleanup mechanism. Document this two-layer cleanup model (always() job = primary; pg_cron = safety net) in a comment in each ci.yml above the cleanup job definition.",
-          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/frontend/preference-frontend/src/__tests__/globalSetup.ts",
+          "targetFile": "/home/ryana/development/common-bond/frontend/preference-frontend/src/__tests__/globalSetup.ts",
           "completedAt": "2026-03-12T22:12:49Z",
           "completedBy": "session-7-260312"
         },
@@ -466,7 +474,7 @@
           "taskId": "ISO-02-T1",
           "status": "complete",
           "description": "Refactor seed.sql to seed a minimal base dataset only (no named org). Move the Acacia Enterprises dataset to seed_acacia.sql as a developer-only convenience seed. Update documentation to reflect this separation.",
-          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/supabase/seed.sql",
+          "targetFile": "/home/ryana/development/common-bond/supabase-receptor/supabase/seed.sql",
           "completedAt": "2026-03-12T22:47:09Z",
           "completedBy": "session-8-260313"
         }
@@ -486,7 +494,7 @@
           "taskId": "DOC-02-T1",
           "status": "complete",
           "description": "Extend the staging-to-prod promotion runbook already created by ENV-09-T1 (docs/operations/promotion-runbook.md). Add the following post-provisioning sections that can only be written once the real infrastructure is running: (1) Staging smoke test commands \u2014 exact curl/supabase invocations for the Cloudflare Tunnel URL staging-api-829c83.commonbond.au (reference CICD-10 for the automated check); (2) Live ENV-05 prod-deploy.yml approval workflow link; (3) Actual Supabase project-ref values for staging and prod; (4) DB diff review procedure using 'supabase db diff --schema public' against the live instances. This task must NOT create a new file \u2014 it updates promotion-runbook.md in-place.",
-          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/docs/operations/promotion-runbook.md",
+          "targetFile": "/home/ryana/development/common-bond/supabase-receptor/docs/operations/promotion-runbook.md",
           "completedAt": "2026-03-12T09:45:00Z",
           "completedBy": "session-7-260312"
         }
@@ -506,7 +514,7 @@
           "taskId": "DOC-01-T1",
           "status": "complete",
           "description": "[comprehensive_review_3 GAP-3 cross-reference gate] This guide MUST cross-reference ADR-005-vault-ci-oidc-bridge.md (ARCH-11) for all OIDC architecture decisions. Do not re-derive Vault auth method, bound claims, or policy names \u2014 import them from the ADR. ORIGINAL TASK: Write docs/infrastructure/security/vault-configuration.md covering: (1) OIDC JWT auth \u2014 how GitHub Actions authenticates via OIDC token to Vault without long-lived secrets; (2) Database secrets engine \u2014 how Vault issues dynamic short-lived Postgres credentials per CI run and the lease TTL configuration; (3) Vault Secrets Operator (VSO) CRD patterns \u2014 how k3s pods consume secrets via VaultStaticSecret and VaultDynamicSecret CRDs; (4) KV v2 path structure \u2014 canonical paths for all static secrets (infrastructure/cloudflare-dns01-token, infrastructure/slack-incidents-webhook, infrastructure/slack-deployments-webhook, infrastructure/backblaze-b2-aus-key); (5) Renewal and rotation procedure for each secret category. Update the key-management.md TODO block (line 86-88) to close it with a reference to this new document. Link from ONBOARDING.md (DOC-06).",
-          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/docs/infrastructure/security/key-management.md",
+          "targetFile": "/home/ryana/development/common-bond/supabase-receptor/docs/infrastructure/security/key-management.md",
           "completedAt": "2026-03-13T07:17:50.645408Z",
           "completedBy": "session-18-260313"
         }
@@ -526,7 +534,7 @@
           "taskId": "BACK-01-T1",
           "status": "complete",
           "description": "Add pytest path scoping to receptor-planner ci.yml: replace bare 'pytest' with 'pytest tests/unit/ -m unit' (or equivalent). Add a --co flag dryrun first to enumerate what's currently being collected.",
-          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/backend/receptor-planner/.github/workflows/ci.yml",
+          "targetFile": "/home/ryana/development/common-bond/backend/receptor-planner/.github/workflows/ci.yml",
           "completedAt": "2026-03-12T22:47:09Z",
           "completedBy": "session-8-260313"
         },
@@ -534,7 +542,7 @@
           "taskId": "BACK-01-T2",
           "status": "complete",
           "description": "Add an integration-tests job to match-backend ci.yml that boots a Supabase instance (using supabase/setup-cli@v1) and runs pytest allocator/tests/integration/ with real Supabase credentials extracted from supabase status -o env.",
-          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/backend/match-backend/.github/workflows/ci.yml",
+          "targetFile": "/home/ryana/development/common-bond/backend/match-backend/.github/workflows/ci.yml",
           "completedAt": "2026-03-12T22:47:10Z",
           "completedBy": "session-8-260313"
         }
@@ -554,7 +562,7 @@
           "taskId": "BACK-02-T1",
           "status": "complete",
           "description": "Replace the hardcoded JWT placeholder in both ci.yml files with a clearly non-JWT stub value such as 'stub-service-role-key-not-real' that will not trigger credential scanner heuristics.",
-          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/backend/match-backend/.github/workflows/ci.yml",
+          "targetFile": "/home/ryana/development/common-bond/backend/match-backend/.github/workflows/ci.yml",
           "completedAt": "2026-03-12T08:40:48Z",
           "completedBy": "session-5-260312"
         },
@@ -562,7 +570,7 @@
           "taskId": "BACK-02-T2",
           "status": "complete",
           "description": "Apply the same stub replacement to receptor-planner ci.yml.",
-          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/backend/receptor-planner/.github/workflows/ci.yml",
+          "targetFile": "/home/ryana/development/common-bond/backend/receptor-planner/.github/workflows/ci.yml",
           "completedAt": "2026-03-12T08:40:48Z",
           "completedBy": "session-5-260312"
         }
@@ -582,7 +590,7 @@
           "taskId": "ARCH-04-T1",
           "status": "complete",
           "description": "Design the k3s cluster topology: 3 Hyper-V VMs (control plane: 4 cores/6 GB, worker-1: 6 cores/10 GB for persistent envs, worker-2: 6 cores/10 GB for ephemeral branch CI). Document in docs/infrastructure/environment/kubernetes-cluster.md.",
-          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/docs/infrastructure/environment/kubernetes-cluster.md",
+          "targetFile": "/home/ryana/development/common-bond/supabase-receptor/docs/infrastructure/environment/kubernetes-cluster.md",
           "completedAt": "2026-03-12T04:33:33Z",
           "completedBy": "session-2-phase3-2026-03-12"
         },
@@ -590,7 +598,7 @@
           "taskId": "ARCH-04-T2",
           "status": "complete",
           "description": "Provision a k3s cluster on the Windows 11 Pro machine using Hyper-V VMs running Ubuntu Server 24.04 LTS. Install k3s on the control plane and join the two worker nodes.",
-          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/docs/operations/vm-setup.md",
+          "targetFile": "/home/ryana/development/common-bond/supabase-receptor/docs/operations/vm-setup.md",
           "completedAt": "2026-03-13T11:00:00Z",
           "completedBy": "session-13-260313"
         },
@@ -598,7 +606,7 @@
           "taskId": "ARCH-04-T3",
           "status": "complete",
           "description": "Deploy Supabase to the k3s cluster using the community Helm chart (https://github.com/supabase-community/supabase-kubernetes). Create namespaces: supabase-dev, supabase-staging, supabase-prod with separate PVCs per namespace.",
-          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/docs/infrastructure/environment/kubernetes-cluster.md",
+          "targetFile": "/home/ryana/development/common-bond/supabase-receptor/docs/infrastructure/environment/kubernetes-cluster.md",
           "completedAt": "2026-03-12T04:33:33Z",
           "completedBy": "session-2-phase3-2026-03-12"
         },
@@ -606,7 +614,7 @@
           "taskId": "ARCH-04-T4",
           "status": "complete",
           "description": "Configure Traefik ingress rules to route <branch-slug>.ci.commonbond.local to the corresponding supabase-ci-<branch-slug> namespace. This replaces the port-juggling / Docker network isolation approach.",
-          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/docs/infrastructure/environment/kubernetes-cluster.md",
+          "targetFile": "/home/ryana/development/common-bond/supabase-receptor/docs/infrastructure/environment/kubernetes-cluster.md",
           "completedAt": "2026-03-12T04:33:33Z",
           "completedBy": "session-2-phase3-2026-03-12"
         },
@@ -614,7 +622,7 @@
           "taskId": "ARCH-04-T5",
           "status": "complete",
           "description": "Install a GitHub Actions self-hosted runner as a Deployment in the control-plane namespace. Update all frontend ci.yml files to use runs-on: [self-hosted, linux, k3s] for Supabase-dependent jobs.",
-          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/docs/infrastructure/environment/kubernetes-cluster.md",
+          "targetFile": "/home/ryana/development/common-bond/supabase-receptor/docs/infrastructure/environment/kubernetes-cluster.md",
           "completedAt": "2026-03-12T04:33:33Z",
           "completedBy": "session-2-phase3-2026-03-12"
         }
@@ -640,7 +648,7 @@
           "taskId": "SEC-01-T2",
           "status": "complete",
           "description": "Update SoA control 8.3 (Information access restriction) in docs/compliance/iso27001/operations/soa.md from 'Implemented' to reflect that GitHub Actions GITHUB_TOKEN now also enforces least-privilege via explicit permissions blocks. Update implementation notes to reference this audit finding.",
-          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/compliance/iso27001/operations/soa.md"
+          "targetFile": "/home/ryana/development/common-bond/documentation/common-bond/docs/compliance/iso27001/operations/soa.md"
         }
       ],
       "severity_history": []
@@ -664,7 +672,7 @@
           "taskId": "SEC-02-T2",
           "status": "complete",
           "description": "Update SoA control 8.8 (Management of technical vulnerabilities) in docs/compliance/iso27001/operations/soa.md. Current status is 'Partial \u2014 Dependabot enabled; no formal vulnerability disclosure policy'. Add a note that CI Action SHA pinning + Renovate Bot extends supply-chain vulnerability management to the build toolchain.",
-          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/compliance/iso27001/operations/soa.md"
+          "targetFile": "/home/ryana/development/common-bond/documentation/common-bond/docs/compliance/iso27001/operations/soa.md"
         }
       ],
       "severity_history": []
@@ -702,7 +710,7 @@
           "taskId": "DOC-03-T1",
           "status": "complete",
           "description": "Write docs/infrastructure/environment/kubernetes-cluster.md covering: cluster topology, VM provisioning steps (Hyper-V + Ubuntu Server 24.04 LTS), k3s installation commands, Helm chart deployment for Supabase, Traefik ingress rules for branch-slug routing, cert-manager DNS-01 challenge config, and disaster recovery procedure.",
-          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/docs/infrastructure/environment/kubernetes-cluster.md",
+          "targetFile": "/home/ryana/development/common-bond/supabase-receptor/docs/infrastructure/environment/kubernetes-cluster.md",
           "completedAt": "2026-03-12T04:13:37Z",
           "completedBy": "1f057739-dd49-4553-9a66-cf607aebf04f"
         }
@@ -722,7 +730,7 @@
           "taskId": "ENV-05-T0",
           "status": "complete",
           "description": "[Phase 7.5 gate \u2014 comprehensive_review_3 GAP-1] PRE-DEPLOY BACKUP GATE: In prod-deploy.yml (ENV-05-T1), add a mandatory pre-migration step that invokes scripts/backup-prod.sh (or a lightweight pg_dump --schema-only + pg_dump --data-only) before any supabase db push. The deploy job MUST fail if the backup step exits non-zero. This converts the RPO for botched migrations from 'time since last cron backup' (up to 15h) to 'time since deploy started' (\u22480). Additionally, create docs/operations/migration-rollback.md documenting: (1) how to restore from the pre-deploy backup; (2) supabase db diff reverse-migration generation; (3) when to use point-in-time recovery vs full restore; (4) communication protocol for failed production deploys.",
-          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/.github/workflows/prod-deploy.yml",
+          "targetFile": "/home/ryana/development/common-bond/supabase-receptor/.github/workflows/prod-deploy.yml",
           "completedAt": "2026-03-13T02:58:00Z",
           "completedBy": "session-15-260313"
         },
@@ -730,7 +738,7 @@
           "taskId": "ENV-05-T1",
           "status": "complete",
           "description": "Add a GitHub Actions workflow 'prod-deploy.yml' that triggers manually (workflow_dispatch) or on tag push to 'release/*'. The workflow runs 'supabase db diff --schema public' against prod, posts the diff as a workflow artifact for human review, and requires manual approval (GitHub Environment protection rule) before running 'supabase db push'.",
-          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/.github/workflows/prod-deploy.yml",
+          "targetFile": "/home/ryana/development/common-bond/supabase-receptor/.github/workflows/prod-deploy.yml",
           "completedAt": "2026-03-13T02:58:00Z",
           "completedBy": "session-15-260313"
         },
@@ -738,15 +746,17 @@
           "taskId": "ENV-05-T2",
           "status": "complete",
           "description": "Update SoA control 8.32 (Change management) in docs/compliance/iso27001/operations/soa.md from 'Implemented \u2014 all ISMS document changes via Git PR workflow; infrastructure changes reviewed informally' to 'Implemented' once prod-deploy.yml is active with GitHub Environment protection. Update the implementation notes to cite the prod-deploy.yml workflow as the production DB change gate.",
-          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/compliance/iso27001/operations/soa.md",
+          "targetFile": "/home/ryana/development/common-bond/documentation/common-bond/docs/compliance/iso27001/operations/soa.md",
           "completedAt": "2026-03-13T02:58:00Z",
           "completedBy": "session-15-260313"
         },
         {
           "taskId": "ENV-05-T3",
-          "status": "open",
+          "status": "complete",
           "description": "Update Supabase audits table via REST API upsert to note that ENV-05 (production migration gate) addresses ISO 27001 A.8.32. This is a documentation-only update to the governance register \u2014 no schema change required.",
-          "targetFile": ""
+          "targetFile": "",
+          "completedAt": "2026-03-13T11:15:42Z",
+          "completedBy": "e6969860-51e0-4977-9d09-c134ab3f9d04"
         }
       ],
       "severity_history": []
@@ -764,15 +774,17 @@
           "taskId": "ARCH-05-T1",
           "status": "complete",
           "description": "Create docs/adr/ directory in supabase-receptor. Write ADR-001 (k3s cluster selection rationale over Docker Compose/Swarm/Nomad), ADR-002 (self-hosted runner vs GitHub-hosted), ADR-003 (Docker network isolation vs k8s namespace isolation). Use standard ADR template: Context, Decision, Consequences. ADR-001 MUST include the following Helm chart caveat in its Consequences section: 'The Supabase community Helm chart (supabase-community/supabase-kubernetes) is not officially maintained by Supabase and may lag Docker Compose feature releases by weeks-to-months. Mitigation: pin the chart to a known-working version (ARCH-09 Helmfile). Fallback if chart falls significantly behind: run Supabase as Docker Compose inside a k3s Pod using a Docker-out-of-Docker (DooD) sidecar with the host Docker socket mounted, or accept delayed upgrades on the Helm chart until it catches up. This fallback must be re-evaluated at each quarterly Helm upgrade review (ARCH-09-T2) \u2014 if the chart lags by more than one minor Supabase version, escalate to the DooD fallback.'",
-          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/docs/adr/README.md",
+          "targetFile": "/home/ryana/development/common-bond/supabase-receptor/docs/adr/README.md",
           "completedAt": "2026-03-12T04:13:37Z",
           "completedBy": "1f057739-dd49-4553-9a66-cf607aebf04f"
         },
         {
           "taskId": "ARCH-05-T2",
-          "status": "open",
+          "status": "complete",
           "description": "[comprehensive_review_3 ENH-4 \u2014 amended] Register each ADR as an entry in the existing 'standards' table in supabase-common-bond with category='adr'. Add a 'document_path' column if not already present. Do NOT create a separate architecture_decisions table \u2014 use the existing governance schema to avoid unnecessary schema proliferation. The standards table already has columns for reference, status, and owner which map directly to ADR metadata.",
-          "targetFile": ""
+          "targetFile": "",
+          "completedAt": "2026-03-13T11:15:42Z",
+          "completedBy": "e6969860-51e0-4977-9d09-c134ab3f9d04"
         }
       ],
       "severity_history": []
@@ -790,7 +802,7 @@
           "taskId": "SEC-03-T0",
           "status": "open",
           "description": "[comprehensive_review_3 ENH-5] PRE-CHECK before SEC-03-T1: Create a dry-run validation script (scripts/validate-branch-protection.sh) that: (1) reads the check matrix from ci-required-checks.md (PROC-01); (2) for each repo, queries the GitHub API for the most recent main branch CI run; (3) compares actual job names against the matrix; (4) exits non-zero if any matrix entry doesn't match an actual job name. SEC-03-T1 (branch protection) MUST NOT be executed until this script passes. This converts the highest-risk task in the audit from a one-shot operation to a validated, pre-checked process.",
-          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/scripts/validate-branch-protection.sh"
+          "targetFile": "/home/ryana/development/common-bond/supabase-receptor/scripts/validate-branch-protection.sh"
         },
         {
           "taskId": "SEC-03-T1",
@@ -832,7 +844,7 @@
           "taskId": "ISO-03-T1",
           "status": "open",
           "description": "Review SoA controls 7.1, 7.2, 7.3, and 7.4 for applicability once the k3s node is provisioned. At minimum, document compensating physical controls: machine location (locked room or secured area), screen lock policy, cable lock, OS-level full disk encryption (BitLocker), and access restriction. Update the SoA exclusion block in docs/compliance/iso27001/operations/soa.md to reflect any newly applicable controls.",
-          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/compliance/iso27001/operations/soa.md"
+          "targetFile": "/home/ryana/development/common-bond/documentation/common-bond/docs/compliance/iso27001/operations/soa.md"
         }
       ],
       "severity_history": []
@@ -850,7 +862,7 @@
           "taskId": "ENV-06-T1",
           "status": "complete",
           "description": "Add a rotation schedule table to docs/infrastructure/security/key-management.md: service_role key (180-day), anon/publishable test key (90-day), staging keys (90-day). Document the rotation procedure: 1) generate new key in Supabase dashboard, 2) update GitHub Secret via 'gh secret set', 3) update dev-environment/.env, 4) verify CI passes.",
-          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/docs/infrastructure/security/key-management.md",
+          "targetFile": "/home/ryana/development/common-bond/supabase-receptor/docs/infrastructure/security/key-management.md",
           "completedAt": "2026-03-12T09:45:00Z",
           "completedBy": "session-7-260312"
         },
@@ -858,7 +870,7 @@
           "taskId": "ENV-06-T2",
           "status": "complete",
           "description": "Create a GitHub Actions scheduled workflow '.github/workflows/key-rotation-reminder.yml' that runs on the first of each month and posts a Slack/email notification if any key is within 14 days of its rotation due date. Due dates are stored as GitHub Actions variables (not secrets) so they can be read without elevation.",
-          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/.github/workflows/key-rotation-reminder.yml",
+          "targetFile": "/home/ryana/development/common-bond/supabase-receptor/.github/workflows/key-rotation-reminder.yml",
           "completedAt": "2026-03-12T09:45:00Z",
           "completedBy": "session-7-260312"
         }
@@ -878,7 +890,7 @@
           "taskId": "PROC-01-T1",
           "status": "complete",
           "description": "Document the required status check matrix per repo in docs/operations/ci-required-checks.md: for each of the 6 repos, list the exact GitHub Actions job names that must pass before merge (e.g. 'test', 'lint', 'codegen-gate', 'build'). This document is consumed by the branch protection ruleset setup in SEC-03-T1.",
-          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/docs/operations/ci-required-checks.md",
+          "targetFile": "/home/ryana/development/common-bond/supabase-receptor/docs/operations/ci-required-checks.md",
           "completedAt": "2026-03-12T04:13:38Z",
           "completedBy": "1f057739-dd49-4553-9a66-cf607aebf04f"
         },
@@ -886,7 +898,7 @@
           "taskId": "PROC-01-T2",
           "status": "complete",
           "description": "[Phase 7.5 gate: verify this task is scheduled in Phase 11, not Phase 2 only] LIVING DOCUMENT REFRESH (mandatory before Phase 12): After Phase 5 CI hardening is complete (CICD-02 CLI pin, CICD-05 timeouts, CICD-09 composite action, CGEN-01/02 codegen gate fixes, BACK-01 backend test scoping), review and update the required check matrix in docs/operations/ci-required-checks.md for any new, renamed, or removed GitHub Actions job names introduced during Phases 4 and 5. The check matrix written in Phase 2 is a planning document \u2014 this T2 task produces the production-accurate version that is actually used to configure branch protection rules in SEC-03-T1 (Phase 12). Do not enable branch protection until this refresh is complete and verified against a live CI run showing all listed job names in the GitHub Actions tab.",
-          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/docs/operations/ci-required-checks.md",
+          "targetFile": "/home/ryana/development/common-bond/supabase-receptor/docs/operations/ci-required-checks.md",
           "completedAt": "2026-03-12T22:12:49Z",
           "completedBy": "session-7-260312"
         }
@@ -906,7 +918,7 @@
           "taskId": "ENV-07-T1",
           "status": "complete",
           "description": "Provision a named Cloudflare Tunnel for the staging Supabase instance: 'cloudflare tunnel create receptor-staging'. Create a tunnel config at ~/.cloudflared/config.yml routing staging-api-829c83.commonbond.au to localhost:54321 (Supabase Kong API). Run 'cloudflare tunnel route dns' and document the full provisioning procedure in docs/infrastructure/environment/staging.md.",
-          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/docs/infrastructure/environment/staging.md",
+          "targetFile": "/home/ryana/development/common-bond/supabase-receptor/docs/infrastructure/environment/staging.md",
           "completedAt": "2026-03-12T04:33:33Z",
           "completedBy": "session-2-phase3-2026-03-12"
         },
@@ -934,7 +946,7 @@
           "taskId": "ARCH-06-T1",
           "status": "complete",
           "description": "Deploy a local container registry on the k3s node as a pull-through cache for Docker Hub using the distribution/distribution Helm chart or the built-in k3s containerd mirror config (~/.rancher/k3s/registries.yaml). Configure the self-hosted runner to use this registry. Document the configuration in docs/infrastructure/environment/kubernetes-cluster.md.",
-          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/docs/infrastructure/environment/kubernetes-cluster.md",
+          "targetFile": "/home/ryana/development/common-bond/supabase-receptor/docs/infrastructure/environment/kubernetes-cluster.md",
           "completedAt": "2026-03-12T09:45:00Z",
           "completedBy": "session-7-260312"
         }
@@ -954,7 +966,7 @@
           "taskId": "DOC-04-T1",
           "status": "complete",
           "description": "Write docs/operations/ci-troubleshooting.md with the following sections: (1) Boot hang \u2014 signature: step 'Supabase Start' hangs beyond 4 min, fix: add --ignore-health-check flag and timeout-minutes to job; (2) Key format mismatch \u2014 signature: auth.signInWithPassword returns 400 in CI only, fix: check dual-key export in ci.yml globalSetup; (3) Codegen false positive \u2014 signature: 'GraphQL schema has changed' in CI but not locally, fix: pin supabase-cli version, don't use latest.",
-          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/docs/operations/ci-troubleshooting.md",
+          "targetFile": "/home/ryana/development/common-bond/supabase-receptor/docs/operations/ci-troubleshooting.md",
           "completedAt": "2026-03-12T04:13:37Z",
           "completedBy": "1f057739-dd49-4553-9a66-cf607aebf04f"
         }
@@ -980,7 +992,7 @@
           "taskId": "SEC-04-T2",
           "status": "complete",
           "description": "Add an ADR (ADR-004) documenting the image pinning decision: why SHA pinning is used, the digest rotation procedure when upstream images update, and the Cosign verification strategy for images that support it. Record in the Supabase 'standards' table with document_type='ADR'.",
-          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/docs/adr/adr-004-docker-image-pinning.md"
+          "targetFile": "/home/ryana/development/common-bond/supabase-receptor/docs/adr/adr-004-docker-image-pinning.md"
         }
       ],
       "severity_history": []
@@ -998,7 +1010,7 @@
           "taskId": "ARCH-07-T1",
           "status": "complete",
           "description": "Deploy the kube-prometheus-stack Helm chart (Prometheus + Grafana + Alertmanager) and Loki + Promtail into a dedicated 'monitoring' namespace on the k3s cluster. Configure Grafana dashboards for: Supabase pod health, CI job duration/failure rate, Vault secret access rate, and k3s node resource utilisation. Document in docs/infrastructure/environment/kubernetes-cluster.md.",
-          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/docs/infrastructure/environment/kubernetes-cluster.md",
+          "targetFile": "/home/ryana/development/common-bond/supabase-receptor/docs/infrastructure/environment/kubernetes-cluster.md",
           "completedAt": "2026-03-12T04:33:33Z",
           "completedBy": "session-2-phase3-2026-03-12"
         },
@@ -1006,7 +1018,7 @@
           "taskId": "ARCH-07-T2",
           "status": "complete",
           "description": "Update SoA control 8.16 (Monitoring activities) in docs/compliance/iso27001/operations/soa.md to reflect that infrastructure monitoring is now implemented via Prometheus/Grafana/Loki on the k3s cluster. Document the alert channel (Alertmanager \u2192 Slack only \u2014 two webhooks: #incidents for P1/P2 alerts, #deployments for informational events; no email or PagerDuty) and the log retention policy (30-day online Loki, archived to Cloudflare R2 APAC). Cite PROC-02 clarification confirming Slack-only policy.",
-          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/compliance/iso27001/operations/soa.md",
+          "targetFile": "/home/ryana/development/common-bond/documentation/common-bond/docs/compliance/iso27001/operations/soa.md",
           "completedAt": "2026-03-12T04:33:33Z",
           "completedBy": "session-2-phase3-2026-03-12"
         }
@@ -1026,13 +1038,13 @@
           "taskId": "ENV-08-T1",
           "status": "open",
           "description": "[comprehensive_review_3 ENH-3 BLOCKER] Requires a running k3s cluster with Postgres accessible via kubectl port-forward. ARCH-04 completed the manifests and documentation only \u2014 physical cluster provisioning is an operational step that must be completed before this task can execute. Do not attempt until 'kubectl get nodes' shows a Ready node. ORIGINAL TASK: Write a backup script (scripts/backup-prod.sh) that runs pg_dumpall against the production Postgres pod and streams the compressed dump to Cloudflare R2 using rclone (configured with a dedicated R2 access key scoped to the backup bucket). Schedule EXCLUSIVELY via crontab in the control-plane Ubuntu VM (NOT as a k3s CronJob) \u2014 this ensures backups run regardless of k3s cluster health during a disaster recovery scenario. The VM must have pg_dumpall, rclone, and kubectl installed; access the Postgres pod via 'kubectl port-forward svc/supabase-db 5432:5432 -n supabase' run as a background step in the script before the pg_dumpall call. Cron schedule: daily at 02:00 AEST ('0 15 * * * AEST'), weekly full dump on Sunday at 01:00 AEST ('0 14 * * 0 AEST'). Store the rclone config and R2 access key in the VM's ~/.config/rclone/rclone.conf (populated from Vault KV at VM boot via a systemd oneshot service). The ENV-11 secondary Backblaze B2 upload is also triggered from this same script \u2014 see ENV-11-T1.",
-          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/scripts/backup-prod.sh"
+          "targetFile": "/home/ryana/development/common-bond/supabase-receptor/scripts/backup-prod.sh"
         },
         {
           "taskId": "ENV-08-T2",
           "status": "complete",
           "description": "Document the backup and restore procedure in docs/infrastructure/disaster-recovery.md: backup schedule (daily/weekly), R2 bucket name and retention policy (30 days daily, 12 months weekly), and the full restore procedure ('rclone copy r2:backups/<dump> ./ && pg_restore ...'). Define RTO target (4 hours) and RPO target (24 hours).",
-          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/docs/infrastructure/disaster-recovery.md",
+          "targetFile": "/home/ryana/development/common-bond/supabase-receptor/docs/infrastructure/disaster-recovery.md",
           "completedAt": "2026-03-12T09:45:00Z",
           "completedBy": "session-7-260312"
         },
@@ -1040,7 +1052,7 @@
           "taskId": "ENV-08-T3",
           "status": "open",
           "description": "Update SoA control 8.13 (Information backup) in docs/compliance/iso27001/operations/soa.md from 'Not implemented' to 'Implemented' once the R2 backup schedule is active. Document the backup schedule, retention policy, and last-tested restore date.",
-          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/compliance/iso27001/operations/soa.md"
+          "targetFile": "/home/ryana/development/common-bond/documentation/common-bond/docs/compliance/iso27001/operations/soa.md"
         }
       ],
       "severity_history": []
@@ -1078,7 +1090,7 @@
           "taskId": "DOC-05-T1",
           "status": "complete",
           "description": "Write docs/infrastructure/disaster-recovery.md covering: (1) RTO target (4 hours) and RPO target (24 hours); (2) what data lives where \u2014 Supabase Postgres volumes (R2 backup via ENV-08), Vault unseal keys and root token (secure offline storage), k3s etcd snapshot (rke2-etcd-snapshots); (3) step-by-step recovery for each component in priority order; (4) contact list for who to notify during an incident. Test the DR procedure quarterly.",
-          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/docs/infrastructure/disaster-recovery.md",
+          "targetFile": "/home/ryana/development/common-bond/supabase-receptor/docs/infrastructure/disaster-recovery.md",
           "completedAt": "2026-03-12T04:13:37Z",
           "completedBy": "1f057739-dd49-4553-9a66-cf607aebf04f"
         }
@@ -1098,7 +1110,7 @@
           "taskId": "ARCH-08-T1",
           "status": "complete",
           "description": "Install k3s with '--flannel-backend=none --disable-network-policy' flags and deploy Calico via the Tigera Operator Helm chart. Verify NetworkPolicy enforcement with a test deny-all policy. Document the Calico installation in ADR-005 and in docs/infrastructure/environment/kubernetes-cluster.md.",
-          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/docs/adr/adr-005-calico-cni.md",
+          "targetFile": "/home/ryana/development/common-bond/supabase-receptor/docs/adr/adr-005-calico-cni.md",
           "completedAt": "2026-03-12T04:33:34Z",
           "completedBy": "session-2-phase3-2026-03-12"
         },
@@ -1126,7 +1138,7 @@
           "taskId": "ARCH-09-T1",
           "status": "complete",
           "description": "Adopt Helmfile (helmfile.yaml) to declare all Helm chart versions declaratively and commit to git. Pin every chart to an exact version (e.g. vault: 0.28.1, kube-prometheus-stack: 58.x.x). Store in k3s/helmfile.yaml. All future upgrades must go through a PR with the chart changelog reviewed.",
-          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/k3s/helmfile.yaml",
+          "targetFile": "/home/ryana/development/common-bond/supabase-receptor/k3s/helmfile.yaml",
           "completedAt": "2026-03-12T04:13:37Z",
           "completedBy": "1f057739-dd49-4553-9a66-cf607aebf04f"
         },
@@ -1134,7 +1146,7 @@
           "taskId": "ARCH-09-T2",
           "status": "complete",
           "description": "Establish a quarterly Helm chart upgrade review cadence. Create a GitHub Actions scheduled workflow '.github/workflows/helm-upgrade-check.yml' that runs quarterly (cron: '0 9 1 1,4,7,10 *') and opens an issue listing each chart's current pinned version vs the latest available version. The issue template includes the changelog URL and a checklist for testing the upgrade on dev first.",
-          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/.github/workflows/helm-upgrade-check.yml",
+          "targetFile": "/home/ryana/development/common-bond/supabase-receptor/.github/workflows/helm-upgrade-check.yml",
           "completedAt": "2026-03-12T04:13:38Z",
           "completedBy": "1f057739-dd49-4553-9a66-cf607aebf04f"
         }
@@ -1154,7 +1166,7 @@
           "taskId": "ENV-09-T1",
           "status": "complete",
           "description": "Write docs/operations/promotion-runbook.md covering the staging-to-production promotion gate: (1) run staging smoke tests (list specific test commands); (2) review 'supabase db diff' output between staging and prod schemas; (3) trigger ENV-05 prod-deploy.yml workflow \u2014 awaits human approval; (4) stakeholder sign-off (who approves and how); (5) post-deploy verification steps; (6) rollback procedure (restore from latest R2 backup, revert migration). Include a checklist template for use in each deployment PR.",
-          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/docs/operations/promotion-runbook.md",
+          "targetFile": "/home/ryana/development/common-bond/supabase-receptor/docs/operations/promotion-runbook.md",
           "completedAt": "2026-03-12T04:13:37Z",
           "completedBy": "1f057739-dd49-4553-9a66-cf607aebf04f"
         }
@@ -1193,7 +1205,7 @@
           "taskId": "DOC-06-T1",
           "status": "complete",
           "description": "Write docs/ONBOARDING.md covering: (1) Prerequisites \u2014 WSL2/Linux, Docker, kubectl, k3s kubeconfig, Helmfile, Vault CLI, cloudflared, Supabase CLI, act (for local CI); (2) Dev environment setup \u2014 clone supabase-receptor, run setup.sh, verify Supabase starts; (3) Connecting to staging \u2014 Cloudflare Tunnel URL, Vault login via OIDC; (4) Running CI locally \u2014 see .agents/skills/act-local-ci/SKILL.md; (5) Key contacts \u2014 who owns prod, who owns Vault unseal key; (6) ADR index link.",
-          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/docs/ONBOARDING.md",
+          "targetFile": "/home/ryana/development/common-bond/supabase-receptor/docs/ONBOARDING.md",
           "completedAt": "2026-03-12T22:47:10Z",
           "completedBy": "session-8-260313"
         }
@@ -1233,7 +1245,7 @@
           "taskId": "ARCH-10-T1",
           "status": "complete",
           "description": "Deploy cert-manager via Helmfile into the 'cert-manager' namespace on the k3s cluster. Configure a ClusterIssuer using Let's Encrypt ACME with Cloudflare DNS-01 challenge (cert-manager-webhook-cloudflare). Issue a wildcard certificate *.commonbond.au covering staging-api-829c83.commonbond.au and any future subdomains. Store the Cloudflare API token for DNS-01 in Vault KV (path: infrastructure/cloudflare-dns01-token) and inject via Vault Secrets Operator into the cert-manager namespace.",
-          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/k3s/cert-manager/cluster-issuer.yaml",
+          "targetFile": "/home/ryana/development/common-bond/supabase-receptor/k3s/cert-manager/cluster-issuer.yaml",
           "completedAt": "2026-03-12T04:33:34Z",
           "completedBy": "session-2-phase3-2026-03-12"
         },
@@ -1271,7 +1283,7 @@
     {
       "id": "SEC-07",
       "severity": "medium",
-      "status": "complete",
+      "status": "deferred",
       "category": "Security",
       "repo": "supabase-receptor",
       "area": "Falco runtime security on k3s",
@@ -1281,7 +1293,7 @@
           "taskId": "SEC-07-T1",
           "status": "complete",
           "description": "Deploy Falco as a DaemonSet on k3s via Helmfile (falcosecurity/falco chart). Enable the default Kubernetes ruleset. Configure falcosidekick to route Falco alerts to Prometheus Alertmanager (ARCH-07), which then routes to Slack (PROC-02). Add a custom Falco rule to alert immediately on any shell spawn inside the 'supabase' or 'vault' namespaces. Document in docs/infrastructure/environment/kubernetes-cluster.md.",
-          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/k3s/falco/falco-rules.yaml",
+          "targetFile": "/home/ryana/development/common-bond/supabase-receptor/k3s/falco/falco-rules.yaml",
           "completedAt": "2026-03-12T04:33:34Z",
           "completedBy": "session-2-phase3-2026-03-12"
         }
@@ -1301,7 +1313,7 @@
           "taskId": "ENV-10-T1",
           "status": "complete",
           "description": "Create a versioned Edge Function deployment strategy: tag each function release with git tag format 'fn/<function-name>/v<semver>' (e.g. fn/receptor-allocator/v1.2.3). Create a GitHub Actions workflow '.github/workflows/deploy-function.yml' triggered on matching tags that: (1) runs tests, (2) requires ENV-05 environment approval for production, (3) deploys via 'supabase functions deploy --project-ref <ref>', (4) tags the deployment in the Supabase functions dashboard with the git SHA.",
-          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/.github/workflows/deploy-function.yml",
+          "targetFile": "/home/ryana/development/common-bond/supabase-receptor/.github/workflows/deploy-function.yml",
           "completedAt": "2026-03-12T08:40:48Z",
           "completedBy": "session-5-260312"
         },
@@ -1309,7 +1321,7 @@
           "taskId": "ENV-10-T2",
           "status": "complete",
           "description": "Write docs/operations/edge-function-deployment.md with: (1) the tagging convention (fn/<name>/vX.Y.Z); (2) how to deploy (git tag + push, GitHub Actions handles the rest); (3) how to rollback (git checkout <previous-tag>, re-push tag with -f); (4) why manual 'supabase functions deploy' is prohibited in staging/prod; (5) how to find the current deployed version (Supabase dashboard + git log --tags). This document MUST be linked from ONBOARDING.md (DOC-06) and is considered mandatory reading for any engineer with production access.",
-          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/docs/operations/edge-function-deployment.md",
+          "targetFile": "/home/ryana/development/common-bond/supabase-receptor/docs/operations/edge-function-deployment.md",
           "completedAt": "2026-03-12T08:40:48Z",
           "completedBy": "session-5-260312"
         }
@@ -1329,7 +1341,7 @@
           "taskId": "PROC-02-T1",
           "status": "complete",
           "description": "Provision a Slack incoming webhook for incident alerts and a second webhook for deployment/routine notifications (e.g. prod deploy approved, cert renewal). Store both webhook URLs in Vault KV (paths: infrastructure/slack-incidents-webhook, infrastructure/slack-deployments-webhook). Configure Prometheus Alertmanager (ARCH-07) with a receiver pointing to the incidents webhook for P1/P2 alerts and the deployments webhook for informational alerts. Add ENV-05 prod-deploy.yml to post to #deployments on approval.",
-          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/k3s/monitoring/alertmanager-config.yaml",
+          "targetFile": "/home/ryana/development/common-bond/supabase-receptor/k3s/monitoring/alertmanager-config.yaml",
           "completedAt": "2026-03-12T04:33:35Z",
           "completedBy": "session-2-phase3-2026-03-12"
         },
@@ -1337,7 +1349,7 @@
           "taskId": "PROC-02-T2",
           "status": "complete",
           "description": "Write docs/operations/incident-response.md covering: (1) severity tiers \u2014 P1 (production down, data breach), P2 (degraded service), P3 (non-critical); (2) for each tier: who is notified (Slack alert to founder), expected response time, escalation steps; (3) post-mortem template (5-whys, timeline, action items); (4) link to DR plan (DOC-05) and rollback procedure. Update SoA control 5.26 in docs/compliance/iso27001/operations/soa.md to 'Implemented' once this document exists and alerts are live.",
-          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/docs/operations/incident-response.md",
+          "targetFile": "/home/ryana/development/common-bond/supabase-receptor/docs/operations/incident-response.md",
           "completedAt": "2026-03-12T04:33:35Z",
           "completedBy": "session-2-phase3-2026-03-12"
         }
@@ -1357,7 +1369,7 @@
           "taskId": "SEC-08-T1",
           "status": "complete",
           "description": "Create a dedicated ServiceAccount per workload in each namespace: sa-supabase-kong, sa-vault, sa-grafana, sa-falco, sa-github-runner. Bind each to a minimal Role or ClusterRole: (1) sa-github-runner: get/list/watch pods in supabase-* namespaces; create/delete namespaces prefixed 'receptor-ci-*' for ephemeral branch environments; no cluster-admin. (2) sa-supabase-*: no API server role binding at all \u2014 default deny. (3) sa-grafana: get/list pods and nodes for Prometheus scrape path only. (4) sa-vault: get on secrets in the 'vault' namespace only, no cross-namespace access. Store all manifests in k3s/rbac/. Apply via helmfile or kubectl apply -f k3s/rbac/ as part of Phase 3 cluster provisioning.",
-          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/k3s/rbac/serviceaccounts.yaml",
+          "targetFile": "/home/ryana/development/common-bond/supabase-receptor/k3s/rbac/serviceaccounts.yaml",
           "completedAt": "2026-03-12T04:33:34Z",
           "completedBy": "session-2-phase3-2026-03-12"
         },
@@ -1365,7 +1377,7 @@
           "taskId": "SEC-08-T2",
           "status": "complete",
           "description": "Document the RBAC model in docs/infrastructure/environment/kubernetes-cluster.md under a 'RBAC Architecture' section. Write ADR-007 at docs/adr/adr-007-k3s-rbac.md documenting: (1) why each ServiceAccount has its specific permissions; (2) why the default ServiceAccount is explicitly not used; (3) how to add permissions for new workloads (PR-gated Role change). Update SoA A.8.3 implementation notes to cite k3s RBAC as the cluster-level access restriction control alongside Vault dynamic credentials.",
-          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/docs/adr/adr-007-k3s-rbac.md",
+          "targetFile": "/home/ryana/development/common-bond/supabase-receptor/docs/adr/adr-007-k3s-rbac.md",
           "completedAt": "2026-03-12T04:33:34Z",
           "completedBy": "session-2-phase3-2026-03-12"
         }
@@ -1385,7 +1397,7 @@
           "taskId": "OPS-01-T1",
           "status": "complete",
           "description": "Configure Windows Update on the k3s host: (1) Set Active Hours to 08:00-02:00 AEST in Settings > Windows Update > Active Hours to prevent automatic restarts during working/production hours. (2) Enable 'Notify to schedule restart' policy via gpedit.msc (Computer Configuration > Administrative Templates > Windows Components > Windows Update > Configure automatic updating: set to '2 - Notify for download and auto install'). (3) Document this configuration in docs/infrastructure/environment/kubernetes-cluster.md under 'Host OS Maintenance'. The goal is that Windows Update downloads and installs patches but requires a manually-triggered restart window.",
-          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/docs/infrastructure/environment/kubernetes-cluster.md",
+          "targetFile": "/home/ryana/development/common-bond/supabase-receptor/docs/infrastructure/environment/kubernetes-cluster.md",
           "completedAt": "2026-03-12T04:13:37Z",
           "completedBy": "1f057739-dd49-4553-9a66-cf607aebf04f"
         },
@@ -1393,7 +1405,7 @@
           "taskId": "OPS-01-T2",
           "status": "complete",
           "description": "Write docs/operations/host-reboot-recovery.md \u2014 a step-by-step recovery checklist to run after any host reboot (planned or unplanned): (1) Verify all 3 Hyper-V VMs are running: 'Get-VM | Select Name, State' (PowerShell on host). (2) Confirm k3s cluster is healthy: 'kubectl get nodes' \u2014 all nodes should be Ready within ~60 seconds. (3) Confirm Vault unsealed: 'vault status' \u2014 YubiKey auto-unseal should trigger automatically (SEC-06); if not, document manual unseal procedure. (4) Confirm Supabase pods ready: 'kubectl get pods -n supabase' \u2014 all Running. (5) Verify Cloudflare Tunnel reconnected: 'cloudflared tunnel info receptor-staging'. (6) Send a Slack deployment-channel notification confirming recovery. Link this checklist from PROC-02 (incident response) and ONBOARDING.md (DOC-06). Add a Grafana/Loki alert rule for cluster node NotReady > 2 minutes as an automated recovery notification trigger.",
-          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/docs/operations/host-reboot-recovery.md",
+          "targetFile": "/home/ryana/development/common-bond/supabase-receptor/docs/operations/host-reboot-recovery.md",
           "completedAt": "2026-03-12T04:13:37Z",
           "completedBy": "1f057739-dd49-4553-9a66-cf607aebf04f"
         }
@@ -1413,7 +1425,7 @@
           "taskId": "SEC-09-T1",
           "status": "complete",
           "description": "Enable the pgaudit extension in the self-hosted Supabase PostgreSQL config. Add 'pgaudit' to extensions.sql: 'CREATE EXTENSION IF NOT EXISTS pgaudit;'. For Docker Compose: add to postgresql.conf via the Supabase config: shared_preload_libraries = 'supabase_auth_admin,pgaudit' and set pgaudit.log = 'ddl, role, write' (captures DDL statements, privilege changes, and data-modifying DML). For k3s Helm chart deployments: add these parameters to the postgresql.postgresqlExtendedConfiguration Helm values. Ensure pgaudit output routes to the PostgreSQL log stream, which Loki/Promtail (ARCH-07) then scrapes into the observability stack. Add the extension to supabase/schemas/extensions.sql so it survives supabase db reset.",
-          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/supabase/schemas/extensions.sql",
+          "targetFile": "/home/ryana/development/common-bond/supabase-receptor/supabase/schemas/extensions.sql",
           "completedAt": "2026-03-12T09:45:00Z",
           "completedBy": "session-7-260312"
         },
@@ -1421,7 +1433,7 @@
           "taskId": "SEC-09-T2",
           "status": "complete",
           "description": "Document pgaudit scope and querying in docs/infrastructure/security/audit-logging.md: (1) what events are logged (DDL, ROLE, WRITE \u2014 not SELECT by default to avoid log volume explosion); (2) how to query audit events in Grafana/Loki using the 'pgaudit' label filter; (3) log retention policy: audit logs stream to Loki, then archived to Cloudflare R2 primary bucket (ENV-08) \u2014 90-day retention; (4) ISO 27001 A.8.15 and A.5.28 control mapping. Link audit-logging.md from ONBOARDING.md (DOC-06) as mandatory security reading for engineers with DB access. Update SoA A.8.15 (Logging) from 'Partial' to 'Implemented' once pgaudit is live.",
-          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/docs/infrastructure/security/audit-logging.md",
+          "targetFile": "/home/ryana/development/common-bond/supabase-receptor/docs/infrastructure/security/audit-logging.md",
           "completedAt": "2026-03-12T09:45:00Z",
           "completedBy": "session-7-260312"
         }
@@ -1441,13 +1453,13 @@
           "taskId": "ENV-11-T1",
           "status": "open",
           "description": "[comprehensive_review_3 ENH-3 BLOCKER] Requires a running k3s cluster with Postgres accessible via kubectl port-forward. ARCH-04 completed the manifests and documentation only \u2014 physical cluster provisioning is an operational step that must be completed before this task can execute. Do not attempt until 'kubectl get nodes' shows a Ready node. ORIGINAL TASK: Extend the backup script (scripts/backup-prod.sh from ENV-08-T1) to write to a second rclone destination after the primary R2 upload completes. Configure an rclone remote 'b2-aus' pointing to Backblaze B2 Australian region bucket ('receptor-backups-b2-aus'). The backup script pipeline becomes: pg_dumpall | gzip | tee >(rclone rcat r2-apac:receptor-backups/<filename>.gz) >(rclone rcat b2-aus:receptor-backups-b2-aus/<filename>.gz). Both uploads are required to succeed for the backup job to report success \u2014 a Slack alert fires if either fails. Backblaze B2 API key to be stored in Vault KV (path: infrastructure/backblaze-b2-aus-key) and injected as an environment variable. Verify Backblaze B2 SYD region availability at https://www.backblaze.com/docs/cloud-storage-data-center-locations before provisioning.",
-          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/scripts/backup-prod.sh"
+          "targetFile": "/home/ryana/development/common-bond/supabase-receptor/scripts/backup-prod.sh"
         },
         {
           "taskId": "ENV-11-T2",
           "status": "complete",
           "description": "Update docs/infrastructure/disaster-recovery.md to document the two-provider backup topology: (1) Primary: Cloudflare R2 APAC (Sydney) \u2014 restore source; (2) Secondary: Backblaze B2 Australian region \u2014 failover restore source if R2 APAC is unavailable. Document the restore procedure for each source. Add a data residency statement confirming both storage providers are Australian-hosted and no data crosses international borders. Update SoA A.8.13 implementation notes to cite dual-provider Australian backup as the off-site control. Add a Grafana/Loki alert for backup script failure (either destination) within 1 hour of the scheduled backup window.",
-          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/docs/infrastructure/disaster-recovery.md",
+          "targetFile": "/home/ryana/development/common-bond/supabase-receptor/docs/infrastructure/disaster-recovery.md",
           "completedAt": "2026-03-12T09:45:00Z",
           "completedBy": "session-7-260312"
         }
@@ -1467,7 +1479,7 @@
           "taskId": "CICD-09-T1",
           "status": "complete",
           "description": "Create a composite action at supabase-receptor/.github/actions/supabase-start/action.yml with inputs: supabase-version (string, required \u2014 the pinned CLI version). Steps: (1) uses: supabase/setup-cli@<pinned-SHA> with: version: ${{ inputs.supabase-version }}; (2) run: supabase start --ignore-health-check; (3) run: extract PUBLISHABLE_KEY, ANON_KEY (JWT), SERVICE_ROLE_KEY from 'supabase status -o env' using the tr -d quotes pattern from preference-frontend; (4) echo each extracted key to $GITHUB_ENV and as a named step output. Update all 4 ci.yml files to replace their existing Supabase start + key extraction steps with 'uses: ./.github/actions/supabase-start' (for supabase-receptor, which owns the action) or reference the shared action from the organisation's .github repo once it is established there.",
-          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/.github/actions/supabase-start/action.yml",
+          "targetFile": "/home/ryana/development/common-bond/supabase-receptor/.github/actions/supabase-start/action.yml",
           "completedAt": "2026-03-12T22:47:10Z",
           "completedBy": "session-8-260313"
         },
@@ -1475,7 +1487,7 @@
           "taskId": "CICD-09-T2a",
           "status": "complete",
           "description": "[comprehensive_review_3 GAP-4 \u2014 split from CICD-09-T2] EVALUATION ONLY: Write an ADR note evaluating composite action vs reusable workflow for Supabase CI boot consolidation. Must include: (1) which CI jobs across all 6 repos currently boot Supabase independently; (2) whether a single workflow_call could replace individual boots; (3) decision with rationale. Acceptance criteria: ADR note written and committed. If decision is 'yes, implement reusable workflow', create CICD-09-T2b. If 'no', mark CICD-09-T2b as not-applicable.",
-          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/.github/actions/supabase-start/action.yml",
+          "targetFile": "/home/ryana/development/common-bond/supabase-receptor/.github/actions/supabase-start/action.yml",
           "completedAt": "2026-03-13T02:58:00Z",
           "completedBy": "session-15-260313"
         },
@@ -1483,7 +1495,7 @@
           "taskId": "CICD-09-T2b",
           "status": "not-applicable",
           "description": "[comprehensive_review_3 GAP-4 \u2014 conditional] CONDITIONAL IMPLEMENTATION: Not applicable \u2014 CICD-09-T2a evaluation (EVALUATION.md) concluded that the composite action is the correct pattern for Supabase CI boot consolidation. A reusable workflow would require cross-repo caller configuration and does not suit the ephemeral branch namespace model. Composite action (CICD-09-T1) remains the canonical implementation. Closed per CICD-09-T2a acceptance criteria.",
-          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/.github/workflows/supabase-ci-base.yml",
+          "targetFile": "/home/ryana/development/common-bond/supabase-receptor/.github/workflows/supabase-ci-base.yml",
           "completedAt": "2026-03-13T02:58:00Z",
           "completedBy": "session-15-260313"
         }
@@ -1503,7 +1515,7 @@
           "taskId": "CICD-10-T1",
           "status": "complete",
           "description": "Create a reusable composite action at supabase-receptor/.github/actions/smoke-test/action.yml with inputs: base-url (the Cloudflare Tunnel or production URL) and slack-webhook-url (injected from Vault KV path infrastructure/slack-webhook-incidents and infrastructure/slack-webhook-deployments via the Vault OIDC bridge established in ARCH-03; CICD-08 GitHub Environments are deferred \u2014 do not reference them here). The action performs the following checks IN ORDER, failing fast on the first failure: (1) Kong API health \u2014 'curl -f --retry 3 --retry-delay 5 --retry-all-errors --max-time 10 ${base-url}/health' \u2014 expects 200 with body containing 'ok'. (2) PostgREST liveness \u2014 'curl -f --retry 3 --retry-delay 5 --max-time 10 -H \"apikey: ${ANON_KEY}\" ${base-url}/rest/v1/' \u2014 expects 200 with a JSON array body (not an error). (3) Auth endpoint liveness \u2014 'curl -f --retry 3 --retry-delay 5 --max-time 10 ${base-url}/auth/v1/health' \u2014 expects 200. (4) DB canary query \u2014 'curl -f --retry 2 --max-time 15 -H \"apikey: ${ANON_KEY}\" -H \"Authorization: Bearer ${ANON_JWT}\" ${base-url}/rest/v1/organisations?select=id&limit=1' \u2014 expects 200 with a JSON array (empty is acceptable; a 404 or 5xx indicates schema drift or DB unavailability). (5) Storage liveness \u2014 'curl -f --max-time 10 ${base-url}/storage/v1/status' \u2014 expects 200. On ALL checks passing: post a Slack message to the deployments webhook: ':white_check_mark: Smoke test PASSED for ${base-url} \u2014 Kong, PostgREST, Auth, DB canary, Storage all healthy.' On ANY check failing: post to the incidents webhook: ':fire: SMOKE TEST FAILED for ${base-url} \u2014 step N (description) returned HTTP ${status_code}. Halt deployment and investigate.' Set exit code 1 so the calling workflow job fails and any subsequent deploy steps are blocked.",
-          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/.github/actions/smoke-test/action.yml",
+          "targetFile": "/home/ryana/development/common-bond/supabase-receptor/.github/actions/smoke-test/action.yml",
           "completedAt": "2026-03-12T22:12:49Z",
           "completedBy": "session-7-260312"
         },
@@ -1511,7 +1523,7 @@
           "taskId": "CICD-10-T2",
           "status": "complete",
           "description": "Integrate the smoke-test composite action into two workflows: (A) prod-deploy.yml (ENV-05): add a 'smoke-test-prod' job that runs immediately after the 'deploy' job succeeds, using base-url: https://api.commonbond.au and the production ANON_KEY injected by Vault via the self-hosted runner OIDC bridge (ARCH-03). The job must complete before the workflow is marked successful. (B) Create a new workflow '.github/workflows/staging-smoke.yml' triggered on: push to main (post-migration to staging) and workflow_dispatch (for manual re-runs). Uses base-url: https://staging-api-829c83.commonbond.au and the staging ANON_KEY injected by Vault via the self-hosted runner OIDC bridge (ARCH-03). Also integrate a lightweight version (Kong health + PostgREST only) as a post-step in the self-hosted runner CI job after each ephemeral branch Supabase boot, to confirm the instance is truly healthy before tests run \u2014 replacing the current '--ignore-health-check' workaround with a real health gate.",
-          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/.github/workflows/staging-smoke.yml",
+          "targetFile": "/home/ryana/development/common-bond/supabase-receptor/.github/workflows/staging-smoke.yml",
           "completedAt": "2026-03-12T22:12:49Z",
           "completedBy": "session-7-260312"
         },
@@ -1519,7 +1531,7 @@
           "taskId": "CICD-10-T3",
           "status": "complete",
           "description": "Document the smoke test architecture in docs/operations/ci-troubleshooting.md (DOC-04): (1) What each of the 5 checks validates and why; (2) Common failure signatures \u2014 Kong 503 (Traefik routing issue), PostgREST 404 (schema cache not initialised), Auth 500 (GoTrue startup failure), DB canary 401 (ANON_KEY mismatch), Storage 503 (S3-compatible storage pod not ready); (3) How to re-run the smoke test manually ('gh workflow run staging-smoke.yml'); (4) How to interpret Slack notifications \u2014 pass format, fail format, which channel each routes to. Add this section under a new '## Smoke Test Failures' heading in the existing DOC-04 troubleshooting doc.",
-          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/docs/operations/ci-troubleshooting.md",
+          "targetFile": "/home/ryana/development/common-bond/supabase-receptor/docs/operations/ci-troubleshooting.md",
           "completedAt": "2026-03-12T22:12:49Z",
           "completedBy": "session-7-260312"
         }
@@ -1539,7 +1551,7 @@
           "taskId": "ARCH-11-T1",
           "status": "complete",
           "description": "Write docs/adr/ADR-005-vault-ci-oidc-bridge.md documenting the GitHub Actions to Vault OIDC authentication flow for the self-hosted runner. Must cover: (1) Vault auth method selection \u2014 jwt auth method bound to the GitHub OIDC issuer (https://token.actions.githubusercontent.com); (2) Bound claims \u2014 'sub' bound to 'repo:dm-ra-01/supabase-receptor:ref:refs/heads/*' and 'repository' bound to 'dm-ra-01/supabase-receptor'; (3) Vault policy attached to the CI role \u2014 read-only access to KV paths: infrastructure/slack-webhook-incidents, infrastructure/slack-webhook-deployments, infrastructure/supabase-anon-key, infrastructure/supabase-service-role-key; (4) How the runner retrieves secrets: 'vault kv get -field=url infrastructure/slack-webhook-incidents'; (5) Token TTL \u2014 15 minutes (sufficient for a CI job, short enough to limit blast radius); (6) Why GitHub Environments (CICD-08) were deferred and how Vault replaces them for secret scoping. Link this ADR from ci-troubleshooting.md (DOC-04) and key-management.md (KEY-02).",
-          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/docs/adr/ADR-005-vault-ci-oidc-bridge.md",
+          "targetFile": "/home/ryana/development/common-bond/supabase-receptor/docs/adr/ADR-005-vault-ci-oidc-bridge.md",
           "completedAt": "2026-03-12T22:12:49Z",
           "completedBy": "session-7-260312"
         }
@@ -1831,5 +1843,5 @@
     }
   ],
   "deferred": [],
-  "openTaskCount": 27
+  "openTaskCount": 22
 }
