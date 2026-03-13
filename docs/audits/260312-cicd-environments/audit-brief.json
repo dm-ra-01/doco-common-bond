@@ -4,7 +4,7 @@
   "status": "implementing",
   "nextAction": "implement",
   "openTaskCount": 15,
-  "latestHandover": "SESSION 18 (2026-03-13) \u2014 VAULT ROBUSTNESS PIVOT. Established stable API tunnel (6443:localhost:6443). Resolved unsealer log silence by fixing egress (allow-unsealer-egress) and secret mount timeouts. PIVOT: Hardware auto-unseal moved from YubiKey to Azure Key Vault to remove host-level dependencies. DOC-01-T1 (vault-configuration.md) complete. NEXT SESSION: (1) Provision Azure Key Vault & Key (RSA 2048); (2) Create Service Principal and K8s secret vault-azure-kms; (3) Update vault.yaml to use azurekeyvault seal provider; (4) Delete legacy unsealer manifests.",
+  "latestHandover": "SESSION 18 (2026-03-13) \u2014 VAULT AUTO-UNSEAL COMPLETE. Successfully migrated Vault unseal from Shamir/Manual to Azure Key Vault KMS (SEC-06). Resolved NetworkPolicy blocking (allow-vault-egress). Verified HA pod distribution and documented Falco modern BPF probe issues on worker nodes. Legacy walkthrough-session-18.md deleted. NEXT SESSION: (1) Fix Falco CrashLoopBackOff on receptor-work-01 (SEC-05); (2) CI/CD hardening (runs-on transition); (3) Infrastructure as-built documentation refresh.",
   "sessionHistory": [
     {
       "date": "2026-03-12",

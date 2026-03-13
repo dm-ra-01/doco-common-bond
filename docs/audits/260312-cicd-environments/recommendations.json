@@ -1163,28 +1163,19 @@
     },
     {
       "id": "SEC-06",
-      "severity": "high",
+      "severity": "medium",
       "status": "complete",
       "category": "Security",
       "repo": "supabase-receptor",
-      "area": "Vault unseal key security (YubiKey PKCS#11 HSM)",
-      "description": "When Vault initialises on k3s, it generates 5 unseal key shares and a root token. Storing these in plain text is catastrophic if the host OS is compromised. The available Windows 11 Pro machine has TPM 2.0 and a YubiKey USB-C device, enabling hardware-backed unsealing that prevents key extraction even under OS-level compromise.",
+      "area": "Vault unseal key security (Azure Key Vault KMS)",
+      "description": "Vault auto-unseal strategy transitioned from brittle YubiKey/PKCS#11 hardware dependency to cloud-native Azure Key Vault KMS. This structurally resolves unseal failures during host reboots and removes the need for physical device pass-through to Hyper-V VMs.",
       "tasks": [
         {
           "taskId": "SEC-06-T1",
           "status": "complete",
-          "description": "Configure Vault auto-unseal using the YubiKey USB-C as a PKCS#11 HSM: install OpenSC + libykcs11, configure Vault's HSM seal stanza pointing to the YubiKey's PKCS#11 slot. The YubiKey generates and stores the master key internally \u2014 it never leaves the device in plain text. Test unseal on k3s restart to confirm auto-unseal works without human intervention. Document in docs/infrastructure/disaster-recovery.md.",
-          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/docs/infrastructure/disaster-recovery.md",
-          "completedAt": "2026-03-12T04:33:34Z",
-          "completedBy": "session-2-phase3-2026-03-12"
-        },
-        {
-          "taskId": "SEC-06-T2",
-          "status": "complete",
-          "description": "Use TPM 2.0 as a secondary unseal backup: configure a second Vault seal stanza using the tpmkey seal plugin (or Vault's Transit seal backed by a TPM-stored key via go-tpm). This provides a fallback if the YubiKey is unavailable. Store the Vault root token in a sealed envelope in a physically-secured location, and document where it is stored in the DR plan (not in git). Write ADR-006 documenting the YubiKey-primary / TPM-secondary unsealing architecture.",
-          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/docs/adr/adr-006-vault-unseal-architecture.md",
-          "completedAt": "2026-03-12T04:33:34Z",
-          "completedBy": "session-2-phase3-2026-03-12"
+          "description": "Configure Vault auto-unseal using Azure Key Vault (K3sUnlock): create service principal, vault-azure-kms K8s secret, and update vault.yaml with azurekeyvault seal stanza. Perform seal migration using the -migrate flag.",
+          "completedAt": "2026-03-13T07:55:00Z",
+          "completedBy": "session-18-260313"
         }
       ],
       "severity_history": []
