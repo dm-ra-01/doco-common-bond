@@ -3,8 +3,8 @@
   "auditSlug": "260312-cicd-environments",
   "status": "implementing",
   "nextAction": "implement",
-  "openTaskCount": 35,
-  "latestHandover": "SESSION 17 (2026-03-13) — REDUNDANT INGRESS OPERATIONAL. cloudflared refactored into 'traefik' namespace (Ingress Tier). Scaled to 2 replicas with podAntiAffinity to ensure multi-node distribution. Critical NetworkPolicy fix: Calico evaluates policies before kube-proxy DNAT, requiring explicit whitelisting of pod/service CIDRs for ClusterIP connectivity. Added 192.168.0.0/16 (Calico pod network) and allowed TCP 7844 for Cloudflare edge fallback. All internal routing to Traefik is now stable. Verified access to Grafana and Vault via tunnel subdomains. Commits: ce3437f (supersedes 48b4657). NEXT SESSION: (1) Gate 8C: ARCH-03-T1 — 7-run self-hosted runner trial (kubectl get pods -n ci-runner to verify runner pod first); (2) DOC-01: vault-configuration.md; (3) ISO-03-T1: physical controls SoA update.",
+  "openTaskCount": 15,
+  "latestHandover": "SESSION 18 (2026-03-13) \u2014 VAULT ROBUSTNESS PIVOT. Established stable API tunnel (6443:localhost:6443). Resolved unsealer log silence by fixing egress (allow-unsealer-egress) and secret mount timeouts. PIVOT: Hardware auto-unseal moved from YubiKey to Azure Key Vault to remove host-level dependencies. DOC-01-T1 (vault-configuration.md) complete. NEXT SESSION: (1) Provision Azure Key Vault & Key (RSA 2048); (2) Create Service Principal and K8s secret vault-azure-kms; (3) Update vault.yaml to use azurekeyvault seal provider; (4) Delete legacy unsealer manifests.",
   "sessionHistory": [
     {
       "date": "2026-03-12",
@@ -170,7 +170,7 @@
       "date": "2026-03-13",
       "completedFindingIds": [],
       "completedTaskIds": [],
-      "summary": "Phase 7.5 pre-flight interval gate created. 5 gaps and 5 enhancements from comprehensive audit review accepted. recommendations.json amended: ARCH-11 finding added, ARCH-02-T0 / ARCH-03-T0 / ISO-01-T2 tasks added, CICD-10 task descriptions fixed (removed CICD-08 dep), CICD-09 moved Phase 5→8, Phase 7.5 inserted. Slack app created and credentials stored in Vault. Open task count: 38."
+      "summary": "Phase 7.5 pre-flight interval gate created. 5 gaps and 5 enhancements from comprehensive audit review accepted. recommendations.json amended: ARCH-11 finding added, ARCH-02-T0 / ARCH-03-T0 / ISO-01-T2 tasks added, CICD-10 task descriptions fixed (removed CICD-08 dep), CICD-09 moved Phase 5\u21928, Phase 7.5 inserted. Slack app created and credentials stored in Vault. Open task count: 38."
     },
     {
       "date": "2026-03-13",
@@ -220,7 +220,7 @@
       "completedFindingIds": [],
       "completedTaskIds": [],
       "openTaskCountAfter": 22,
-      "summary": "Session 12 (scoping only). 0 tasks completed. Confirmed starting state: no Hyper-V VMs exist, WSL2 toolchain not installed, external Hyper-V switch configured. User moving provisioning session to Windows host (PowerShell access needed for Hyper-V). Handover brief updated with full provisioning order and environment split (Windows host for VM creation, WSL2 for cluster toolchain and kubectl). vm-setup.md flagged as stale — rewrite during provisioning session."
+      "summary": "Session 12 (scoping only). 0 tasks completed. Confirmed starting state: no Hyper-V VMs exist, WSL2 toolchain not installed, external Hyper-V switch configured. User moving provisioning session to Windows host (PowerShell access needed for Hyper-V). Handover brief updated with full provisioning order and environment split (Windows host for VM creation, WSL2 for cluster toolchain and kubectl). vm-setup.md flagged as stale \u2014 rewrite during provisioning session."
     },
     {
       "date": "2026-03-13",
@@ -236,7 +236,7 @@
         "CICD-09-T2b"
       ],
       "openTaskCountAfter": 27,
-      "summary": "Session 15 (Phase 9 partial + cluster deploy). Helm stack fully deployed on ctrl-01: vault (initialised+unsealed), traefik, calico, kube-prometheus-stack (grafana 3/3), loki-stack, falco-falcosidekick, cert-manager, cloudflared. vault.yaml TLS fixed (global.tlsDisable:true, no cert refs). Grafana datasource conflict fixed (loki-stack ConfigMap isDefault patched). ENV-05 complete: prod-deploy.yml created with backup gate + manual approval (T0+T1), soa.md 8.32 Implemented (T2). CICD-09-T2a: EVALUATION.md written — composite action recommended over reusable workflow. CICD-09-T2b: not-applicable. supabase-receptor committed (041c6d8). Workers still NotReady — Hyper-V VM-to-VM networking issue. Open tasks: 27."
+      "summary": "Session 15 (Phase 9 partial + cluster deploy). Helm stack fully deployed on ctrl-01: vault (initialised+unsealed), traefik, calico, kube-prometheus-stack (grafana 3/3), loki-stack, falco-falcosidekick, cert-manager, cloudflared. vault.yaml TLS fixed (global.tlsDisable:true, no cert refs). Grafana datasource conflict fixed (loki-stack ConfigMap isDefault patched). ENV-05 complete: prod-deploy.yml created with backup gate + manual approval (T0+T1), soa.md 8.32 Implemented (T2). CICD-09-T2a: EVALUATION.md written \u2014 composite action recommended over reusable workflow. CICD-09-T2b: not-applicable. supabase-receptor committed (041c6d8). Workers still NotReady \u2014 Hyper-V VM-to-VM networking issue. Open tasks: 27."
     },
     {
       "date": "2026-03-13",
@@ -244,11 +244,20 @@
       "completedTaskIds": [],
       "openTaskCountAfter": 27,
       "summary": "Session 17 (Redundant Ingress Tier). Refactored ingress architecture: moved `cloudflared` to `traefik` namespace, scaled to 2 replicas with `podAntiAffinity` for redundancy. Fixed critical NetworkPolicy gaps: allowed TCP 7844 for Cloudflare edge connectivity and 192.168.0.0/16 for internal pod-to-pod communication. Verified connectivity to Grafana/Vault via redundant tunnels. `supabase-receptor` committed `ce3437f`. All connectivity restored after Calico-aware NetworkPolicy updates."
+    },
+    {
+      "date": "2026-03-13",
+      "completedFindingIds": [],
+      "completedTaskIds": [
+        "DOC-01-T1"
+      ],
+      "openTaskCountAfter": 15,
+      "summary": "Session 18: Established stable API access via SSH tunnel. Resolved vault-unsealer volume mount and egress issues (NetworkPolicy fix). Pivoted auto-unseal strategy from YubiKey/PKCS#11 to Azure Key Vault for robustness. Authored vault-configuration.md documenting the new architecture."
     }
   ],
   "sessionGates": [
-    "Gate 8A: ARCH-02-T1 + ENV-03 — setup.sh CI-native mode + RESET --force flag (supabase-receptor only)",
-    "Gate 8B: ISO-01-T1 + ISO-01-T2 + ISO-02-T1 + ENV-04-T1 — test isolation + seed namespacing (supabase-receptor + 3 frontends)",
-    "Gate 8C: ARCH-03-T0 verified → ARCH-01-T1 + ARCH-03-T1 + CICD-01-T1 + CICD-09-T1 — runner migration + composite action (all 6 repos, CICD-09 prerequisite in place)"
+    "Gate 8A: ARCH-02-T1 + ENV-03 \u2014 setup.sh CI-native mode + RESET --force flag (supabase-receptor only)",
+    "Gate 8B: ISO-01-T1 + ISO-01-T2 + ISO-02-T1 + ENV-04-T1 \u2014 test isolation + seed namespacing (supabase-receptor + 3 frontends)",
+    "Gate 8C: ARCH-03-T0 verified \u2192 ARCH-01-T1 + ARCH-03-T1 + CICD-01-T1 + CICD-09-T1 \u2014 runner migration + composite action (all 6 repos, CICD-09 prerequisite in place)"
   ]
 }
