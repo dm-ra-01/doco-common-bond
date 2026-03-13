@@ -4,7 +4,7 @@
   "status": "implementing",
   "nextAction": "implement",
   "openTaskCount": 22,
-  "latestHandover": "SESSION 13 (2026-03-13) — SUCCESS: 3-node k3s cluster provisioned on Windows Hyper-V. Nodes: ctrl-01 (172.29.87.97), work-01 (172.29.90.159), work-02 (172.29.81.114). Lean specs (2GB/4GB/2GB) active. All nodes joined and visible in 'kubectl get nodes'. NEXT: Transition to WSL2. (1) Copy Kubeconfig to ~/.kube/config; (2) Install Calico via Tigera Operator; (3) Deploy Supabase stack via helmfile.",
+  "latestHandover": "SESSION 14 (2026-03-13) \u2014 WSL2 TOOLING COMPLETE. CORRECTED NODE IPs: ctrl-01=172.29.80.10 (static netplan), work-01=172.29.90.159 (DHCP), work-02=172.29.81.114 (DHCP). DO NOT use networkingMode=mirrored in .wslconfig \u2014 breaks remote SSH. Instead: Windows netsh portproxy routes 172.24.224.1:6443->ctrl-01:6443 and 172.24.224.1:2222->ctrl-01:22. WSL2 kubeconfig at ~/.kube/config points to 172.24.224.1:6443 with insecure-skip-tls-verify. TOOLING: helm v3.20.0, helmfile v0.169.2, helm-diff plugin installed on WSL2. ALL 3 NODES NotReady (correct \u2014 Calico not installed). BLOCKER: k3s/values/*.yaml files do not exist \u2014 create before helmfile will work. DOCS COMMITTED: ONBOARDING.md + kubernetes-cluster.md updated with portproxy procedure (supabase-receptor audit branch). NEXT SESSION: (1) Create k3s/values/calico.yaml for tigera-operator; (2) helmfile --file k3s/helmfile.yaml apply --selector name=tigera-operator from supabase-receptor/; (3) Wait for calico-node Ready; (4) kubectl apply -f k3s/network-policies/ && kubectl apply -f k3s/rbac/; (5) helmfile --file k3s/helmfile.yaml sync for full stack. If portproxy lost after reboot re-run netsh commands in kubernetes-cluster.md.",
   "sessionHistory": [
     {
       "date": "2026-03-12",
@@ -192,27 +192,40 @@
     },
     {
       "date": "2026-03-13",
-      "completedFindingIds": ["ARCH-02", "ENV-03", "ISO-02", "ENV-04", "BACK-01", "DOC-06"],
+      "completedFindingIds": [
+        "ARCH-02",
+        "ENV-03",
+        "ISO-02",
+        "ENV-04",
+        "BACK-01",
+        "DOC-06"
+      ],
       "completedTaskIds": [
-        "ARCH-02-T1", "ARCH-02-T2", "ENV-03-T1",
-        "ISO-02-T1", "ENV-04-T1", "ENV-04-T2",
-        "BACK-01-T1", "BACK-01-T2", "DOC-06-T1", "CICD-09-T1"
+        "ARCH-02-T1",
+        "ARCH-02-T2",
+        "ENV-03-T1",
+        "ISO-02-T1",
+        "ENV-04-T1",
+        "ENV-04-T2",
+        "BACK-01-T1",
+        "BACK-01-T2",
+        "DOC-06-T1",
+        "CICD-09-T1"
       ],
       "openTaskCountAfter": 22,
       "summary": "Session 11 (Phase 8 Gate 8A+8B). 10 tasks completed. Gate 8A/8B close-outs confirmed already implemented: --ci/--teardown/--force in setup scripts, seed files already split, test_cleanup.sql + pg_cron live, __test_* convention in testing-guide.md. New code: BACK-01-T1 (receptor-planner pytest scoped), BACK-01-T2 (match-backend integration-tests job with Supabase boot), DOC-06-T1 (ONBOARDING.md), CICD-09-T1 (supabase-start composite action with health poll + masked key outputs). All 3 repos pushed. Open tasks: 22."
-    }
-  ,
+    },
     {
       "date": "2026-03-13",
       "completedFindingIds": [],
       "completedTaskIds": [],
       "openTaskCountAfter": 22,
-      "summary": "Session 12 (scoping only). 0 tasks completed. Confirmed starting state: no Hyper-V VMs exist, WSL2 toolchain not installed, external Hyper-V switch configured. User moving provisioning session to Windows host (PowerShell access needed for Hyper-V). Handover brief updated with full provisioning order and environment split (Windows host for VM creation, WSL2 for cluster toolchain and kubectl). vm-setup.md flagged as stale — rewrite during provisioning session."
+      "summary": "Session 12 (scoping only). 0 tasks completed. Confirmed starting state: no Hyper-V VMs exist, WSL2 toolchain not installed, external Hyper-V switch configured. User moving provisioning session to Windows host (PowerShell access needed for Hyper-V). Handover brief updated with full provisioning order and environment split (Windows host for VM creation, WSL2 for cluster toolchain and kubectl). vm-setup.md flagged as stale \u2014 rewrite during provisioning session."
     }
   ],
   "sessionGates": [
-    "Gate 8A: ARCH-02-T1 + ENV-03 — setup.sh CI-native mode + RESET --force flag (supabase-receptor only)",
-    "Gate 8B: ISO-01-T1 + ISO-01-T2 + ISO-02-T1 + ENV-04-T1 — test isolation + seed namespacing (supabase-receptor + 3 frontends)",
-    "Gate 8C: ARCH-03-T0 verified → ARCH-01-T1 + ARCH-03-T1 + CICD-01-T1 + CICD-09-T1 — runner migration + composite action (all 6 repos, CICD-09 prerequisite in place)"
+    "Gate 8A: ARCH-02-T1 + ENV-03 \u2014 setup.sh CI-native mode + RESET --force flag (supabase-receptor only)",
+    "Gate 8B: ISO-01-T1 + ISO-01-T2 + ISO-02-T1 + ENV-04-T1 \u2014 test isolation + seed namespacing (supabase-receptor + 3 frontends)",
+    "Gate 8C: ARCH-03-T0 verified \u2192 ARCH-01-T1 + ARCH-03-T1 + CICD-01-T1 + CICD-09-T1 \u2014 runner migration + composite action (all 6 repos, CICD-09 prerequisite in place)"
   ]
 }
