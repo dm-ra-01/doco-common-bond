@@ -710,7 +710,7 @@
     {
       "id": "ENV-05",
       "severity": "medium",
-      "status": "open",
+      "status": "complete",
       "category": "Compliance",
       "repo": "supabase-receptor",
       "area": "Production database change gate",
@@ -718,21 +718,27 @@
       "tasks": [
         {
           "taskId": "ENV-05-T0",
-          "status": "open",
+          "status": "complete",
           "description": "[Phase 7.5 gate — comprehensive_review_3 GAP-1] PRE-DEPLOY BACKUP GATE: In prod-deploy.yml (ENV-05-T1), add a mandatory pre-migration step that invokes scripts/backup-prod.sh (or a lightweight pg_dump --schema-only + pg_dump --data-only) before any supabase db push. The deploy job MUST fail if the backup step exits non-zero. This converts the RPO for botched migrations from 'time since last cron backup' (up to 15h) to 'time since deploy started' (≈0). Additionally, create docs/operations/migration-rollback.md documenting: (1) how to restore from the pre-deploy backup; (2) supabase db diff reverse-migration generation; (3) when to use point-in-time recovery vs full restore; (4) communication protocol for failed production deploys.",
-          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/.github/workflows/prod-deploy.yml"
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/.github/workflows/prod-deploy.yml",
+          "completedAt": "2026-03-13T02:58:00Z",
+          "completedBy": "session-15-260313"
         },
         {
           "taskId": "ENV-05-T1",
-          "status": "open",
+          "status": "complete",
           "description": "Add a GitHub Actions workflow 'prod-deploy.yml' that triggers manually (workflow_dispatch) or on tag push to 'release/*'. The workflow runs 'supabase db diff --schema public' against prod, posts the diff as a workflow artifact for human review, and requires manual approval (GitHub Environment protection rule) before running 'supabase db push'.",
-          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/.github/workflows/prod-deploy.yml"
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/.github/workflows/prod-deploy.yml",
+          "completedAt": "2026-03-13T02:58:00Z",
+          "completedBy": "session-15-260313"
         },
         {
           "taskId": "ENV-05-T2",
-          "status": "open",
+          "status": "complete",
           "description": "Update SoA control 8.32 (Change management) in docs/compliance/iso27001/operations/soa.md from 'Implemented — all ISMS document changes via Git PR workflow; infrastructure changes reviewed informally' to 'Implemented' once prod-deploy.yml is active with GitHub Environment protection. Update the implementation notes to cite the prod-deploy.yml workflow as the production DB change gate.",
-          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/compliance/iso27001/operations/soa.md"
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/compliance/iso27001/operations/soa.md",
+          "completedAt": "2026-03-13T02:58:00Z",
+          "completedBy": "session-15-260313"
         },
         {
           "taskId": "ENV-05-T3",
@@ -1474,15 +1480,19 @@
         },
         {
           "taskId": "CICD-09-T2a",
-          "status": "open",
+          "status": "complete",
           "description": "[comprehensive_review_3 GAP-4 — split from CICD-09-T2] EVALUATION ONLY: Write an ADR note evaluating composite action vs reusable workflow for Supabase CI boot consolidation. Must include: (1) which CI jobs across all 6 repos currently boot Supabase independently; (2) whether a single workflow_call could replace individual boots; (3) decision with rationale. Acceptance criteria: ADR note written and committed. If decision is 'yes, implement reusable workflow', create CICD-09-T2b. If 'no', mark CICD-09-T2b as not-applicable.",
-          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/.github/actions/supabase-start/action.yml"
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/.github/actions/supabase-start/action.yml",
+          "completedAt": "2026-03-13T02:58:00Z",
+          "completedBy": "session-15-260313"
         },
         {
           "taskId": "CICD-09-T2b",
-          "status": "open",
-          "description": "[comprehensive_review_3 GAP-4 — conditional] CONDITIONAL IMPLEMENTATION: If CICD-09-T2a recommends the reusable workflow: implement supabase-ci-base.yml with on: workflow_call: and migrate all Supabase-booting jobs to use it. If CICD-09-T2a recommends against: mark this task as 'not-applicable' and close with a note referencing the ADR evaluation.",
-          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/.github/workflows/supabase-ci-base.yml"
+          "status": "not-applicable",
+          "description": "[comprehensive_review_3 GAP-4 — conditional] CONDITIONAL IMPLEMENTATION: Not applicable — CICD-09-T2a evaluation (EVALUATION.md) concluded that the composite action is the correct pattern for Supabase CI boot consolidation. A reusable workflow would require cross-repo caller configuration and does not suit the ephemeral branch namespace model. Composite action (CICD-09-T1) remains the canonical implementation. Closed per CICD-09-T2a acceptance criteria.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/.github/workflows/supabase-ci-base.yml",
+          "completedAt": "2026-03-13T02:58:00Z",
+          "completedBy": "session-15-260313"
         }
       ],
       "severity_history": []
@@ -1828,5 +1838,5 @@
     }
   ],
   "deferred": [],
-  "openTaskCount": 33
+  "openTaskCount": 27
 }

@@ -3,8 +3,8 @@
   "auditSlug": "260312-cicd-environments",
   "status": "implementing",
   "nextAction": "implement",
-  "openTaskCount": 22,
-  "latestHandover": "SESSION 14 (2026-03-13) \u2014 WSL2 TOOLING COMPLETE. CORRECTED NODE IPs: ctrl-01=172.29.80.10 (static netplan), work-01=172.29.90.159 (DHCP), work-02=172.29.81.114 (DHCP). DO NOT use networkingMode=mirrored in .wslconfig \u2014 breaks remote SSH. Instead: Windows netsh portproxy routes 172.24.224.1:6443->ctrl-01:6443 and 172.24.224.1:2222->ctrl-01:22. WSL2 kubeconfig at ~/.kube/config points to 172.24.224.1:6443 with insecure-skip-tls-verify. TOOLING: helm v3.20.0, helmfile v0.169.2, helm-diff plugin installed on WSL2. ALL 3 NODES NotReady (correct \u2014 Calico not installed). BLOCKER: k3s/values/*.yaml files do not exist \u2014 create before helmfile will work. DOCS COMMITTED: ONBOARDING.md + kubernetes-cluster.md updated with portproxy procedure (supabase-receptor audit branch). NEXT SESSION: (1) Create k3s/values/calico.yaml for tigera-operator; (2) helmfile --file k3s/helmfile.yaml apply --selector name=tigera-operator from supabase-receptor/; (3) Wait for calico-node Ready; (4) kubectl apply -f k3s/network-policies/ && kubectl apply -f k3s/rbac/; (5) helmfile --file k3s/helmfile.yaml sync for full stack. If portproxy lost after reboot re-run netsh commands in kubernetes-cluster.md.",
+  "openTaskCount": 27,
+  "latestHandover": "SESSION 15 (2026-03-13) — HELM STACK DEPLOYED + SESSION CLOSE. All 8 charts deployed and running on ctrl-01 (vault, traefik, calico, kube-prometheus-stack, loki-stack, falco, cert-manager, cloudflared). Vault initialised (5 shares, 3-of-5 threshold) and unsealed — root token and unseal keys stored offline in do_not_commit.txt. Grafana fixed (loki-stack ConfigMap isDefault:false conflict). Workers (work-01, work-02) still NotReady — Hyper-V VM-to-VM networking issue post-crash. Block D (prod-deploy.yml) and Block E (migration-rollback.md) complete. CICD-09-T2a evaluation complete (composite action retained). COMMITTED: supabase-receptor 041c6d8 (vault TLS, cert-manager ServiceMonitor, cloudflared chart). doco-common-bond commit pending — need to push after git commit. NEXT SESSION: (1) Push doco-common-bond audit branch; (2) Push supabase-receptor audit branch; (3) Investigate worker reconnect (Hyper-V internal switch: may need netsh portproxy reset or VM restart with correct switch assignment); (4) Gate 8C: ARCH-03-T1 7-run trial on self-hosted runner; (5) DOC-01 (vault-configuration.md — now that vault is live); (6) ISO-03-T1 physical controls SoA. Open tasks: 27.",
   "sessionHistory": [
     {
       "date": "2026-03-12",
@@ -170,7 +170,7 @@
       "date": "2026-03-13",
       "completedFindingIds": [],
       "completedTaskIds": [],
-      "summary": "Phase 7.5 pre-flight interval gate created. 5 gaps and 5 enhancements from comprehensive audit review accepted. recommendations.json amended: ARCH-11 finding added, ARCH-02-T0 / ARCH-03-T0 / ISO-01-T2 tasks added, CICD-10 task descriptions fixed (removed CICD-08 dep), CICD-09 moved Phase 5\u21928, Phase 7.5 inserted. Slack app created and credentials stored in Vault. Open task count: 38."
+      "summary": "Phase 7.5 pre-flight interval gate created. 5 gaps and 5 enhancements from comprehensive audit review accepted. recommendations.json amended: ARCH-11 finding added, ARCH-02-T0 / ARCH-03-T0 / ISO-01-T2 tasks added, CICD-10 task descriptions fixed (removed CICD-08 dep), CICD-09 moved Phase 5→8, Phase 7.5 inserted. Slack app created and credentials stored in Vault. Open task count: 38."
     },
     {
       "date": "2026-03-13",
@@ -220,12 +220,28 @@
       "completedFindingIds": [],
       "completedTaskIds": [],
       "openTaskCountAfter": 22,
-      "summary": "Session 12 (scoping only). 0 tasks completed. Confirmed starting state: no Hyper-V VMs exist, WSL2 toolchain not installed, external Hyper-V switch configured. User moving provisioning session to Windows host (PowerShell access needed for Hyper-V). Handover brief updated with full provisioning order and environment split (Windows host for VM creation, WSL2 for cluster toolchain and kubectl). vm-setup.md flagged as stale \u2014 rewrite during provisioning session."
+      "summary": "Session 12 (scoping only). 0 tasks completed. Confirmed starting state: no Hyper-V VMs exist, WSL2 toolchain not installed, external Hyper-V switch configured. User moving provisioning session to Windows host (PowerShell access needed for Hyper-V). Handover brief updated with full provisioning order and environment split (Windows host for VM creation, WSL2 for cluster toolchain and kubectl). vm-setup.md flagged as stale — rewrite during provisioning session."
+    },
+    {
+      "date": "2026-03-13",
+      "completedFindingIds": [
+        "ENV-05",
+        "CICD-09"
+      ],
+      "completedTaskIds": [
+        "ENV-05-T0",
+        "ENV-05-T1",
+        "ENV-05-T2",
+        "CICD-09-T2a",
+        "CICD-09-T2b"
+      ],
+      "openTaskCountAfter": 27,
+      "summary": "Session 15 (Phase 9 partial + cluster deploy). Helm stack fully deployed on ctrl-01: vault (initialised+unsealed), traefik, calico, kube-prometheus-stack (grafana 3/3), loki-stack, falco-falcosidekick, cert-manager, cloudflared. vault.yaml TLS fixed (global.tlsDisable:true, no cert refs). Grafana datasource conflict fixed (loki-stack ConfigMap isDefault patched). ENV-05 complete: prod-deploy.yml created with backup gate + manual approval (T0+T1), soa.md 8.32 Implemented (T2). CICD-09-T2a: EVALUATION.md written — composite action recommended over reusable workflow. CICD-09-T2b: not-applicable. supabase-receptor committed (041c6d8). Workers still NotReady — Hyper-V VM-to-VM networking issue. Open tasks: 27."
     }
   ],
   "sessionGates": [
-    "Gate 8A: ARCH-02-T1 + ENV-03 \u2014 setup.sh CI-native mode + RESET --force flag (supabase-receptor only)",
-    "Gate 8B: ISO-01-T1 + ISO-01-T2 + ISO-02-T1 + ENV-04-T1 \u2014 test isolation + seed namespacing (supabase-receptor + 3 frontends)",
-    "Gate 8C: ARCH-03-T0 verified \u2192 ARCH-01-T1 + ARCH-03-T1 + CICD-01-T1 + CICD-09-T1 \u2014 runner migration + composite action (all 6 repos, CICD-09 prerequisite in place)"
+    "Gate 8A: ARCH-02-T1 + ENV-03 — setup.sh CI-native mode + RESET --force flag (supabase-receptor only)",
+    "Gate 8B: ISO-01-T1 + ISO-01-T2 + ISO-02-T1 + ENV-04-T1 — test isolation + seed namespacing (supabase-receptor + 3 frontends)",
+    "Gate 8C: ARCH-03-T0 verified → ARCH-01-T1 + ARCH-03-T1 + CICD-01-T1 + CICD-09-T1 — runner migration + composite action (all 6 repos, CICD-09 prerequisite in place)"
   ]
 }
