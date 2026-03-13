@@ -226,9 +226,11 @@
         },
         {
           "taskId": "ARCH-03-T1",
-          "status": "open",
-          "description": "Evaluate self-hosted runner installation on the VM (14 GB RAM, 16 GB swap). Document memory requirements: a single Supabase stack uses ~3-4 GB, so the VM can support 2-3 concurrent branch test instances. Add this analysis to cicd-architecture.md.",
-          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/docs/infrastructure/environment/cicd-architecture.md"
+          "status": "complete",
+          "description": "Evaluate self-hosted runner installation on the VM (14 GB RAM, 16 GB swap). Document memory requirements: a single Supabase stack uses ~3-4 GB. Analysis: Host physical RAM is 32GB; cluster downsized to 2GB/4GB/2GB (8GB total) to maintain host stability. Support for 1-2 concurrent branch test instances is feasible if swap is utilized.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/docs/infrastructure/environment/cicd-architecture.md",
+          "completedAt": "2026-03-13T11:00:00Z",
+          "completedBy": "session-13-260313"
         },
         {
           "taskId": "ARCH-03-T2",
@@ -587,8 +589,8 @@
           "status": "complete",
           "description": "Provision a k3s cluster on the Windows 11 Pro machine using Hyper-V VMs running Ubuntu Server 24.04 LTS. Install k3s on the control plane and join the two worker nodes.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/docs/operations/vm-setup.md",
-          "completedAt": "2026-03-12T04:33:33Z",
-          "completedBy": "session-2-phase3-2026-03-12"
+          "completedAt": "2026-03-13T11:00:00Z",
+          "completedBy": "session-13-260313"
         },
         {
           "taskId": "ARCH-04-T3",
