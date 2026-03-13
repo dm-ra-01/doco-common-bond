@@ -147,8 +147,9 @@ Affects: `cross-ecosystem` — CI runner strategy
 - [x] PREREQUISITE before ARCH-03-T1: establish a 7-run parallel trial protocol before switching any repo to k3s-only CI. Steps: (1) Verify the self-hosted runner pod is healthy: 'kubectl get pods -n ci-runner' must show Running. (2) Run a no-op workflow_dispatch job ('echo runner online') on supabase-receptor's audit branch and confirm end-to-end completion in under 30 seconds. (3) Configure ci.yml in supabase-receptor to use 'runs-on: [self-hosted, k3s]' while keeping 'runs-on: ubuntu-latest' in a commented-out line immediately above it — this provides a one-line rollback escape hatch. (4) Run CI 7 consecutive times with green results before removing the ubuntu-latest commented line and before applying the runner migration to any other repo. (5) Add a Slack alert (via PROC-02 Alertmanager or direct webhook) for runner unavailability: if a self-hosted job is queued for &#62; 5 minutes with no runner pickup, post to #incidents. Do not proceed with ARCH-03-T1 until the 7-run gate passes.
       `/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/.github/workflows/ci.yml`
       _(Completed: 2026-03-12T22:12:49Z)_
-- [ ] Evaluate self-hosted runner installation on the VM (14 GB RAM, 16 GB swap). Document memory requirements: a single Supabase stack uses ~3-4 GB, so the VM can support 2-3 concurrent branch test instances. Add this analysis to cicd-architecture.md.
+- [x] Evaluate self-hosted runner installation on the VM (14 GB RAM, 16 GB swap). Document memory requirements: a single Supabase stack uses ~3-4 GB. Analysis: Host physical RAM is 32GB; cluster downsized to 2GB/4GB/2GB (8GB total) to maintain host stability. Support for 1-2 concurrent branch test instances is feasible if swap is utilized.
       `/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/docs/infrastructure/environment/cicd-architecture.md`
+      _(Completed: 2026-03-13T11:00:00Z)_
 - [ ] If self-hosted runner is approved: install GitHub Actions runner on VM, configure as runs-on: [self-hosted, linux], and update all three frontend ci.yml files.
       `/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/docs/operations/vm-setup.md`
 
@@ -174,7 +175,7 @@ Affects: `cross-ecosystem` — Kubernetes cluster infrastructure
       _(Completed: 2026-03-12T04:33:33Z)_
 - [x] Provision a k3s cluster on the Windows 11 Pro machine using Hyper-V VMs running Ubuntu Server 24.04 LTS. Install k3s on the control plane and join the two worker nodes.
       `/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/docs/operations/vm-setup.md`
-      _(Completed: 2026-03-12T04:33:33Z)_
+      _(Completed: 2026-03-13T11:00:00Z)_
 - [x] Deploy Supabase to the k3s cluster using the community Helm chart (https://github.com/supabase-community/supabase-kubernetes). Create namespaces: supabase-dev, supabase-staging, supabase-prod with separate PVCs per namespace.
       `/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/docs/infrastructure/environment/kubernetes-cluster.md`
       _(Completed: 2026-03-12T04:33:33Z)_
@@ -414,12 +415,15 @@ Affects: `cross-ecosystem` — CI job timeout configuration
 Affects: `supabase-receptor` — Production database change gate
 
 
-- [ ] [Phase 7.5 gate — comprehensive_review_3 GAP-1] PRE-DEPLOY BACKUP GATE: In prod-deploy.yml (ENV-05-T1), add a mandatory pre-migration step that invokes scripts/backup-prod.sh (or a lightweight pg_dump --schema-only + pg_dump --data-only) before any supabase db push. The deploy job MUST fail if the backup step exits non-zero. This converts the RPO for botched migrations from 'time since last cron backup' (up to 15h) to 'time since deploy started' (≈0). Additionally, create docs/operations/migration-rollback.md documenting: (1) how to restore from the pre-deploy backup; (2) supabase db diff reverse-migration generation; (3) when to use point-in-time recovery vs full restore; (4) communication protocol for failed production deploys.
+- [x] [Phase 7.5 gate — comprehensive_review_3 GAP-1] PRE-DEPLOY BACKUP GATE: In prod-deploy.yml (ENV-05-T1), add a mandatory pre-migration step that invokes scripts/backup-prod.sh (or a lightweight pg_dump --schema-only + pg_dump --data-only) before any supabase db push. The deploy job MUST fail if the backup step exits non-zero. This converts the RPO for botched migrations from 'time since last cron backup' (up to 15h) to 'time since deploy started' (≈0). Additionally, create docs/operations/migration-rollback.md documenting: (1) how to restore from the pre-deploy backup; (2) supabase db diff reverse-migration generation; (3) when to use point-in-time recovery vs full restore; (4) communication protocol for failed production deploys.
       `/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/.github/workflows/prod-deploy.yml`
-- [ ] Add a GitHub Actions workflow 'prod-deploy.yml' that triggers manually (workflow_dispatch) or on tag push to 'release/*'. The workflow runs 'supabase db diff --schema public' against prod, posts the diff as a workflow artifact for human review, and requires manual approval (GitHub Environment protection rule) before running 'supabase db push'.
+      _(Completed: 2026-03-13T02:58:00Z)_
+- [x] Add a GitHub Actions workflow 'prod-deploy.yml' that triggers manually (workflow_dispatch) or on tag push to 'release/*'. The workflow runs 'supabase db diff --schema public' against prod, posts the diff as a workflow artifact for human review, and requires manual approval (GitHub Environment protection rule) before running 'supabase db push'.
       `/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/.github/workflows/prod-deploy.yml`
-- [ ] Update SoA control 8.32 (Change management) in docs/compliance/iso27001/operations/soa.md from 'Implemented — all ISMS document changes via Git PR workflow; infrastructure changes reviewed informally' to 'Implemented' once prod-deploy.yml is active with GitHub Environment protection. Update the implementation notes to cite the prod-deploy.yml workflow as the production DB change gate.
+      _(Completed: 2026-03-13T02:58:00Z)_
+- [x] Update SoA control 8.32 (Change management) in docs/compliance/iso27001/operations/soa.md from 'Implemented — all ISMS document changes via Git PR workflow; infrastructure changes reviewed informally' to 'Implemented' once prod-deploy.yml is active with GitHub Environment protection. Update the implementation notes to cite the prod-deploy.yml workflow as the production DB change gate.
       `/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/compliance/iso27001/operations/soa.md`
+      _(Completed: 2026-03-13T02:58:00Z)_
 - [ ] Update Supabase audits table via REST API upsert to note that ENV-05 (production migration gate) addresses ISO 27001 A.8.32. This is a documentation-only update to the governance register — no schema change required.
       ``
 
@@ -642,10 +646,12 @@ Affects: `cross-ecosystem` — GitHub Actions composite action for Supabase star
 - [x] Create a composite action at supabase-receptor/.github/actions/supabase-start/action.yml with inputs: supabase-version (string, required — the pinned CLI version). Steps: (1) uses: supabase/setup-cli@&#60;pinned-SHA&#62; with: version: $&#123;&#123; inputs.supabase-version &#125;&#125;; (2) run: supabase start --ignore-health-check; (3) run: extract PUBLISHABLE_KEY, ANON_KEY (JWT), SERVICE_ROLE_KEY from 'supabase status -o env' using the tr -d quotes pattern from preference-frontend; (4) echo each extracted key to $GITHUB_ENV and as a named step output. Update all 4 ci.yml files to replace their existing Supabase start + key extraction steps with 'uses: ./.github/actions/supabase-start' (for supabase-receptor, which owns the action) or reference the shared action from the organisation's .github repo once it is established there.
       `/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/.github/actions/supabase-start/action.yml`
       _(Completed: 2026-03-12T22:47:10Z)_
-- [ ] [comprehensive_review_3 GAP-4 — split from CICD-09-T2] EVALUATION ONLY: Write an ADR note evaluating composite action vs reusable workflow for Supabase CI boot consolidation. Must include: (1) which CI jobs across all 6 repos currently boot Supabase independently; (2) whether a single workflow_call could replace individual boots; (3) decision with rationale. Acceptance criteria: ADR note written and committed. If decision is 'yes, implement reusable workflow', create CICD-09-T2b. If 'no', mark CICD-09-T2b as not-applicable.
+- [x] [comprehensive_review_3 GAP-4 — split from CICD-09-T2] EVALUATION ONLY: Write an ADR note evaluating composite action vs reusable workflow for Supabase CI boot consolidation. Must include: (1) which CI jobs across all 6 repos currently boot Supabase independently; (2) whether a single workflow_call could replace individual boots; (3) decision with rationale. Acceptance criteria: ADR note written and committed. If decision is 'yes, implement reusable workflow', create CICD-09-T2b. If 'no', mark CICD-09-T2b as not-applicable.
       `/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/.github/actions/supabase-start/action.yml`
-- [ ] [comprehensive_review_3 GAP-4 — conditional] CONDITIONAL IMPLEMENTATION: If CICD-09-T2a recommends the reusable workflow: implement supabase-ci-base.yml with on: workflow_call: and migrate all Supabase-booting jobs to use it. If CICD-09-T2a recommends against: mark this task as 'not-applicable' and close with a note referencing the ADR evaluation.
+      _(Completed: 2026-03-13T02:58:00Z)_
+- [ ] [comprehensive_review_3 GAP-4 — conditional] CONDITIONAL IMPLEMENTATION: Not applicable — CICD-09-T2a evaluation (EVALUATION.md) concluded that the composite action is the correct pattern for Supabase CI boot consolidation. A reusable workflow would require cross-repo caller configuration and does not suit the ephemeral branch namespace model. Composite action (CICD-09-T1) remains the canonical implementation. Closed per CICD-09-T2a acceptance criteria.
       `/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/.github/workflows/supabase-ci-base.yml`
+      _(Completed: 2026-03-13T02:58:00Z)_
 
 ### ARCH-11: Phase 8 (ARCH-03) requires the self-hosted GitHub Actions runner to authenticate to Vault via GitHub OIDC JWT to receive
 
@@ -808,15 +814,3 @@ Affects: `supabase-receptor` — Post-deploy smoke tests for staging and product
 | DOC-06 | Engineer onboarding guide | `ONBOARDING.md` | Documentation Gap | 🟢 Low |
 | CICD-10 | Post-deploy smoke tests for staging and production | `action.yml` | Process Gap | 🟢 Low |
 
-
-## Session Close — 2026-03-13
-
-**Completed:** ARCH-02-T1, ARCH-02-T2, ENV-03-T1, ISO-02-T1, ENV-04-T1, ENV-04-T2 (confirmed already implemented — close-outs only), BACK-01-T1, BACK-01-T2, DOC-06-T1, CICD-09-T1
-
-**Remaining:** 22 open tasks. Key open items: CICD-09-T2a (ADR note: composite action vs reusable workflow), SEC-03-T0/T1 (branch protection — blocked on PROC-01-T2 ✓ now clear), ENV-05 (staging deploy gates), ARCH-01/ARCH-03 (runner migration — blocked on live k3s cluster), ARCH-05-T2, BACK-01 (only T1/T2 done), ISO-03-T1, ENV-08-T1/T3 (backup script — blocked on k3s), ENV-11-T1, DOC-01-T1, CICD-01-T1/T2/T3.
-
-**Blocked:** ARCH-03-T2 (runner install), ARCH-01-T1/T2/T3 (runner migration), ENV-05-T0/T1/T2/T3 (staging deploy gates — need k3s Ready), ENV-08-T1 / ENV-11-T1 (backup script — need k3s), ISO-03-T1 (physical security — need provisioned k3s node). User is provisioning k3s cluster now.
-
-**PR order note:** All changes are in repo-specific audit branches. No inter-repo dependency for this session's changes. Merge order for the eventual PR wave: supabase-receptor → frontends → backends → common-bond.
-
-**Brief for next agent:** k3s cluster provisioning is underway by the user. Gate 8C (ARCH-03-T2 runner install + ARCH-01 migration) becomes unblocked when `kubectl get nodes` shows a Ready node. Start next session with CICD-09-T2a (ADR note) and SEC-03-T0/T1 (branch protection) which have no k3s dependency. ISO-02-T1, ENV-04-T1/T2, ARCH-02-T1/T2, ENV-03-T1 were all already implemented from prior sessions — do not re-implement. CICD-09-T1 composite action is in supabase-receptor/.github/actions/supabase-start/action.yml; future sessions can reference it when updating frontend ci.yml files to call it.

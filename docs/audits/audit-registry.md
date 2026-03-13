@@ -10,7 +10,7 @@ sidebar_position: 1
 > platform. Each entry links to the source `audit.md` and `recommendations.md`
 > where they live inside the relevant repository's `docs/audits/` folder.
 
-**Last Updated:** 2026-03-12 | **Maintained by:** Engineering Leadership
+**Last Updated:** 2026-03-13 | **Maintained by:** Engineering Leadership
 
 ---
 
@@ -91,7 +91,7 @@ sidebar_position: 1
 ```
 Repository                   Audits   Last Audit
 ─────────────────────────────────────────────────
-supabase-receptor              4       2026-03-12
+supabase-receptor              4       2026-03-13
 backend/match-backend          2       2026-03-11
 backend/receptor-planner       1       2026-03-11
 planner-frontend               5       2026-03-12
