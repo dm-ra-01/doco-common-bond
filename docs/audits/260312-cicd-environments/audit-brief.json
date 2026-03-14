@@ -1,10 +1,10 @@
 {
   "$schema": "../../../dev-environment/.agents/schemas/audit-brief.schema.json",
   "auditSlug": "260312-cicd-environments",
-  "status": "complete",
-  "nextAction": "none",
-  "openTaskCount": 22,
-  "latestHandover": "SESSION 20 (2026-03-13) — INFRASTRUCTURE STABILIZATION & MULTI-REPO RUNNERS. Resolved systemic DNS failures via IP pool realignment and NetworkPolicy corrections. Deployed and verified 6 CI runners across the ecosystem. Activated self-hosted k3s runner for supabase-receptor CI. Marked 5 audit tasks (ARCH-01-T2/T3, ARCH-03-T2, ENV-05-T3, ARCH-05-T2) as complete.",
+  "status": "implementing",
+  "nextAction": "implement",
+  "openTaskCount": 2,
+  "latestHandover": "SESSION 21 (2026-03-14) \u2014 INFRASTRUCTURE GAP ANALYSIS & HARDENING + AUDIT CLOSE-OUT.\n\nCOMPLETED THIS SESSION:\n\u2022 Full cluster gap analysis: inspected all 60+ pods, 15 namespaces, 8 Helm releases, 14 NetworkPolicies, 18 PVCs\n\u2022 17 infrastructure gaps identified and resolved (staging NetworkPolicies, Traefik dedup, Zot registry deployed, TLS refs removed, CI images SHA-pinned, 25 stale pods cleaned, registries.yaml on all 3 VMs)\n\u2022 6 audit tasks closed: CICD-01 (all 3 \u2014 reusable CI job + 2 superseded), SEC-03-T0 (validation script), ISO-03 (SoA physical controls), ENV-08-T2 (SoA 8.13)\n\u2022 SEC-03-T2 (branch protection) deferred 8 weeks to 2026-05-09 \u2014 Founder decision; ci-required-checks.md matrix confirmed STALE (job names do not match actual ci.yml keys)\n\u2022 SoA v1.1: controls 7.1-7.5 and 7.8 updated from Not Applicable to Applicable with compensating controls; 8.22 updated to Implemented (Calico NetworkPolicies)\n\u2022 ci.yml refactored to use supabase-start composite action (CICD-01/CICD-09)\n\nREMAINING OPEN (2 tasks):\n1. ENV-08-T1: backup script (backup-prod.sh) \u2014 pg_dumpall + rclone not installed on ctrl-01 (requires sudo apt install)\n2. ENV-11-T1: secondary Backblaze B2 backup \u2014 extends ENV-08 backup script\n\nDEFERRED (1 task):\n\u2022 SEC-03-T2: branch protection \u2014 deferred to 2026-05-09; ci-required-checks.md must be refreshed first\n\nNEXT AGENT PRIORITY \u2014 CI STABILISATION:\nThe ci-required-checks.md matrix is stale. Before SEC-03-T2 can execute in May:\n1. Clone all 6 repos (only supabase-receptor is cloned on WSL currently)\n2. Audit every ci.yml \u2014 confirm actual job keys vs matrix entries\n3. Refresh ci-required-checks.md to match reality\n4. Run scripts/validate-branch-protection.sh to confirm alignment\n5. Install gh CLI on WSL (apt install gh) for the validation script\n6. Trigger CI runs on main for all 6 repos to populate GitHub Actions run history\n\nSSH ACCESS: Agent has SSH to all 3 VMs via ProxyJump through Cloudflare tunnel (ssh-ctrl-receptor.commonbond.au). No sudo access. SSH config entries: receptor-work-01, receptor-work-02.\n\nREPOS WITH audit/260312-cicd-environments BRANCH: supabase-receptor, doco-common-bond, planner-frontend, workforce-frontend, preference-frontend, match-backend, receptor-planner.",
   "sessionHistory": [
     {
       "date": "2026-03-12",
@@ -170,7 +170,7 @@
       "date": "2026-03-13",
       "completedFindingIds": [],
       "completedTaskIds": [],
-      "summary": "Phase 7.5 pre-flight interval gate created. 5 gaps and 5 enhancements from comprehensive audit review accepted. recommendations.json amended: ARCH-11 finding added, ARCH-02-T0 / ARCH-03-T0 / ISO-01-T2 tasks added, CICD-10 task descriptions fixed (removed CICD-08 dep), CICD-09 moved Phase 5→8, Phase 7.5 inserted. Slack app created and credentials stored in Vault. Open task count: 38."
+      "summary": "Phase 7.5 pre-flight interval gate created. 5 gaps and 5 enhancements from comprehensive audit review accepted. recommendations.json amended: ARCH-11 finding added, ARCH-02-T0 / ARCH-03-T0 / ISO-01-T2 tasks added, CICD-10 task descriptions fixed (removed CICD-08 dep), CICD-09 moved Phase 5\u21928, Phase 7.5 inserted. Slack app created and credentials stored in Vault. Open task count: 38."
     },
     {
       "date": "2026-03-13",
@@ -220,7 +220,7 @@
       "completedFindingIds": [],
       "completedTaskIds": [],
       "openTaskCountAfter": 22,
-      "summary": "Session 12 (scoping only). 0 tasks completed. Confirmed starting state: no Hyper-V VMs exist, WSL2 toolchain not installed, external Hyper-V switch configured. User moving provisioning session to Windows host (PowerShell access needed for Hyper-V). Handover brief updated with full provisioning order and environment split (Windows host for VM creation, WSL2 for cluster toolchain and kubectl). vm-setup.md flagged as stale — rewrite during provisioning session."
+      "summary": "Session 12 (scoping only). 0 tasks completed. Confirmed starting state: no Hyper-V VMs exist, WSL2 toolchain not installed, external Hyper-V switch configured. User moving provisioning session to Windows host (PowerShell access needed for Hyper-V). Handover brief updated with full provisioning order and environment split (Windows host for VM creation, WSL2 for cluster toolchain and kubectl). vm-setup.md flagged as stale \u2014 rewrite during provisioning session."
     },
     {
       "date": "2026-03-13",
@@ -236,7 +236,7 @@
         "CICD-09-T2b"
       ],
       "openTaskCountAfter": 27,
-      "summary": "Session 15 (Phase 9 partial + cluster deploy). Helm stack fully deployed on ctrl-01: vault (initialised+unsealed), traefik, calico, kube-prometheus-stack (grafana 3/3), loki-stack, falco-falcosidekick, cert-manager, cloudflared. vault.yaml TLS fixed (global.tlsDisable:true, no cert refs). Grafana datasource conflict fixed (loki-stack ConfigMap isDefault patched). ENV-05 complete: prod-deploy.yml created with backup gate + manual approval (T0+T1), soa.md 8.32 Implemented (T2). CICD-09-T2a: EVALUATION.md written — composite action recommended over reusable workflow. CICD-09-T2b: not-applicable. supabase-receptor committed (041c6d8). Workers still NotReady — Hyper-V VM-to-VM networking issue. Open tasks: 27."
+      "summary": "Session 15 (Phase 9 partial + cluster deploy). Helm stack fully deployed on ctrl-01: vault (initialised+unsealed), traefik, calico, kube-prometheus-stack (grafana 3/3), loki-stack, falco-falcosidekick, cert-manager, cloudflared. vault.yaml TLS fixed (global.tlsDisable:true, no cert refs). Grafana datasource conflict fixed (loki-stack ConfigMap isDefault patched). ENV-05 complete: prod-deploy.yml created with backup gate + manual approval (T0+T1), soa.md 8.32 Implemented (T2). CICD-09-T2a: EVALUATION.md written \u2014 composite action recommended over reusable workflow. CICD-09-T2b: not-applicable. supabase-receptor committed (041c6d8). Workers still NotReady \u2014 Hyper-V VM-to-VM networking issue. Open tasks: 27."
     },
     {
       "date": "2026-03-13",
@@ -285,11 +285,32 @@
         "ARCH-05-T2"
       ],
       "summary": "Session 20: Infrastructure Stabilization & Multi-Repo Runners. Resolved systemic DNS issues via Calico IP pool realignment. Deployed 6 CI runners across 6 repositories. Activated self-hosted runner in supabase-receptor. Marked ARCH-01-T2, ARCH-01-T3, ARCH-03-T2, ENV-05-T3, and ARCH-05-T2 as complete."
+    },
+    {
+      "date": "2026-03-14",
+      "completedFindingIds": [
+        "CICD-01",
+        "ISO-03"
+      ],
+      "completedTaskIds": [
+        "CICD-01-T1",
+        "CICD-01-T2",
+        "CICD-01-T3",
+        "SEC-03-T0",
+        "ISO-03-T1",
+        "ENV-08-T3"
+      ],
+      "deferredFindingIds": [],
+      "deferredTaskIds": [
+        "SEC-03-T2"
+      ],
+      "openTaskCountAfter": 2,
+      "summary": "Session 21: Infrastructure Gap Analysis & Audit Close-out. Full cluster inspection (60+ pods, 15 namespaces, 8 Helm releases). 17 infrastructure gaps identified and resolved (staging NetworkPolicies, Traefik dedup, Zot registry, TLS removal, CI image SHA pinning, VM registries.yaml). 6 audit tasks closed, 1 deferred (SEC-03 branch protection to May 2026). SoA v1.1 updated for physical controls 7.1-7.5/7.8 and network segregation 8.22. ci.yml refactored to use supabase-start composite action. Validation script confirmed ci-required-checks.md matrix is stale."
     }
   ],
   "sessionGates": [
-    "Gate 8A: ARCH-02-T1 + ENV-03 — setup.sh CI-native mode + RESET --force flag (supabase-receptor only)",
-    "Gate 8B: ISO-01-T1 + ISO-01-T2 + ISO-02-T1 + ENV-04-T1 — test isolation + seed namespacing (supabase-receptor + 3 frontends)",
-    "Gate 8C: ARCH-03-T0 verified → ARCH-01-T1 + ARCH-03-T1 + CICD-01-T1 + CICD-09-T1 — runner migration + composite action (all 6 repos, CICD-09 prerequisite in place)"
+    "Gate 8A: ARCH-02-T1 + ENV-03 \u2014 setup.sh CI-native mode + RESET --force flag (supabase-receptor only)",
+    "Gate 8B: ISO-01-T1 + ISO-01-T2 + ISO-02-T1 + ENV-04-T1 \u2014 test isolation + seed namespacing (supabase-receptor + 3 frontends)",
+    "Gate 8C: ARCH-03-T0 verified \u2192 ARCH-01-T1 + ARCH-03-T1 + CICD-01-T1 + CICD-09-T1 \u2014 runner migration + composite action (all 6 repos, CICD-09 prerequisite in place)"
   ]
 }
