@@ -22,21 +22,23 @@ It must be read in conjunction with the
 [Risk Methodology](../risk-management/methodology).
 
 **Organisation profile:** Common Bond is a cloud-native, fully remote,
-pre-revenue SaaS company in the healthcare workforce management sector. All
-infrastructure is hosted on managed cloud services (Supabase on AWS, Cloudflare,
-GitHub). There are no physical offices or data-centre premises. The team
-comprises the Founder/CEO and two Territory Managers. Personal information held
-is limited to workforce administration PII — no health records are held.
+pre-revenue SaaS company in the healthcare workforce management sector.
+Infrastructure is hosted on a combination of managed cloud services (Supabase on
+AWS, Cloudflare, GitHub) and a self-hosted k3s Kubernetes cluster running on
+Hyper-V virtual machines in the Founder/CEO's home office. There are no leased
+offices or data-centre premises. The team comprises the Founder/CEO and two
+Territory Managers. Personal information held is limited to workforce
+administration PII — no health records are held.
 
 ## Applicability Summary
 
 | Category               | Count |
 | ---------------------- | ----- |
 | Total Annex A controls | 93    |
-| Applicable             | 78    |
-| Not Applicable         | 15    |
+| Applicable             | 82    |
+| Not Applicable         | 11    |
 | Implemented            | 29    |
-| Partially Implemented  | 32    |
+| Partially Implemented  | 36    |
 | Planned                | 17    |
 
 :::note
@@ -108,14 +110,14 @@ Cells marked **⚠️ Confirm** require a Founder/CEO decision before this SoA c
 
 | Control ID | Control Name                                          | Applicable | Justification                                                                                                                         | Implementation Status                                                                                           |
 | ---------- | ----------------------------------------------------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
-| 7.1        | Physical security perimeters                          | No         | Common Bond has no physical offices or facilities. All infrastructure is cloud-hosted.                                                | Not Applicable                                                                                                  |
-| 7.2        | Physical entry                                        | No         | No physical premises to control entry to.                                                                                             | Not Applicable                                                                                                  |
-| 7.3        | Securing offices, rooms and facilities                | No         | No offices or rooms exist.                                                                                                            | Not Applicable                                                                                                  |
-| 7.4        | Physical security monitoring                          | No         | No physical perimeter to monitor. Infrastructure physical security is the responsibility of AWS (via Supabase) and Cloudflare.        | Not Applicable                                                                                                  |
-| 7.5        | Protecting against physical and environmental threats | No         | No physical infrastructure owned or operated by Common Bond. Environmental controls are the responsibility of the cloud providers.    | Not Applicable                                                                                                  |
+| 7.1        | Physical security perimeters                          | Yes        | The k3s cluster host machine is located in the Founder/CEO's home office. The dwelling is lockable (deadbolt) and has an alarm system. The office room itself is not independently lockable. Compensating controls: property alarm, camera system, restricted access (Founder and partner only), BitLocker full-disk encryption on host. | Partial — perimeter exists (lockable dwelling with alarm); room-level perimeter not present; accepted risk for pre-revenue stage |
+| 7.2        | Physical entry                                        | Yes        | Physical access to the k3s host is restricted to the Founder/CEO and their partner. No key registry or visitor log is maintained. Compensating control: alarm system with entry detection, camera system for access monitoring. | Partial — access restricted by locked dwelling + alarm; no formal visitor control or key register |
+| 7.3        | Securing offices, rooms and facilities                | Yes        | The home office room hosting the k3s infrastructure is not separately lockable. Compensating controls: dwelling-level access control (lock + alarm), BitLocker FDE on host, 15-minute auto-lock screen timeout, k3s RBAC with least-privilege ServiceAccounts, Vault auto-unseal via Azure Key Vault (secrets not stored on disk in cleartext). | Partial — compensating controls in place; room-level lock not present |
+| 7.4        | Physical security monitoring                          | Yes        | External camera system and alarm monitoring are in place at the premises. No dedicated server-room monitoring (no separate server room). | Partial — cameras and alarm system active; no room-level monitoring |
+| 7.5        | Protecting against physical and environmental threats | Yes        | The k3s host is a consumer desktop in a home office environment. No UPS, no fire suppression, no climate control beyond residential HVAC. Compensating controls: disaster-recovery.md documents 4-hour RTO; all data replicated to Cloudflare R2 APAC + Backblaze B2 SYD. | Partial — no dedicated environmental controls; mitigated by backup strategy and documented DR runbook |
 | 7.6        | Working in secure areas                               | No         | No secure areas exist.                                                                                                                | Not Applicable                                                                                                  |
 | 7.7        | Clear desk and clear screen                           | Yes        | Remote staff access PII on personal laptops; clear screen policy applicable to prevent shoulder-surfing in shared spaces              | Planned — principle referenced in Acceptable Use Policy; explicit clear screen requirement not yet documented   |
-| 7.8        | Equipment siting and protection                       | Yes        | Developer laptops are critical assets; applicable in remote work context                                                              | Partial — device encryption required per Acceptable Use Policy; formal equipment siting guidance not documented |
+| 7.8        | Equipment siting and protection                       | Yes        | The k3s host machine (desktop PC) is sited in a home office on a desk. BitLocker FDE is enabled. The host runs Hyper-V with 3 VMs (ctrl-01, work-01, work-02). The machine is connected via wired Ethernet. Physical port access is unrestricted within the room. | Partial — FDE and OS-level security in place; equipment siting not formally documented; no cable lock |
 | 7.9        | Security of assets off-premises                       | Yes        | All staff work off-premises with company assets (laptops); directly applicable                                                        | Partial — Acceptable Use Policy addresses encryption and access controls for remote devices                     |
 | 7.10       | Storage media                                         | Yes        | Portable storage media (USB drives) poses data exfiltration risk                                                                      | Implemented — USB storage is explicitly prohibited in Section 4.2 of the Acceptable Use Policy (confirmed by Founder 2026-03-05); applies to all staff regardless of device ownership |
 | 7.11       | Supporting utilities (power, HVAC)                    | No         | Common Bond does not operate any hardware infrastructure. Supporting utilities are entirely the responsibility of AWS and Cloudflare. | Not Applicable                                                                                                  |
@@ -150,7 +152,7 @@ Cells marked **⚠️ Confirm** require a Founder/CEO decision before this SoA c
 | 8.19       | Installation of software on operational systems             | Yes        | Unauthorised software installation on production systems is a risk                                                     | Partial — Supabase managed infrastructure restricts direct installation; developer laptop policy not formally documented             |
 | 8.20       | Networks security                                           | Yes        | Network security controls protect platform and data in transit                                                         | Implemented — Cloudflare Zero Trust in use; all traffic encrypted via TLS                                                            |
 | 8.21       | Security of network services                                | Yes        | External network services (CDN, API gateway) must be secured                                                           | Implemented — Cloudflare provides WAF, DDoS protection, and secure API routing                                                       |
-| 8.22       | Segregation of networks                                     | Yes        | Production and development environments should be network-segregated                                                   | Partial — Supabase project-level separation provides logical segregation; network-level isolation not formally documented            |
+| 8.22       | Segregation of networks                                     | Yes        | Production and development environments should be network-segregated                                                   | Implemented — k3s cluster uses Calico CNI with namespace-scoped NetworkPolicies. Production (`supabase`) and staging (`supabase-staging`) namespaces have hardened ingress/egress policies. CI runner namespace (`ci-runner`) isolated. RBAC ServiceAccounts enforce least-privilege per namespace. See `k3s/network-policies/` and `k3s/rbac/`. Implemented via audit 260312-cicd-environments (ARCH-08, 2026-03-14). |
 | 8.23       | Web filtering                                               | Yes        | Applicable; all devices are personal (BYOD); Cloudflare Zero Trust governs access to company assets but web filtering is not applied to personal device browsing | Partial — Cloudflare Zero Trust enforces access control to company systems; no Cloudflare Gateway or equivalent web filtering is applied to personal device internet traffic; BYOD model accepted risk (confirmed by Founder 2026-03-05) |
 | 8.24       | Use of cryptography                                         | Yes        | Cryptography is used throughout (TLS in transit, encryption at rest in Supabase/AWS)                                   | Implemented — TLS enforced by Cloudflare; Supabase/AWS encrypt data at rest; key management via provider-managed KMS                 |
 | 8.25       | Secure development lifecycle                                | Yes        | All product development must embed security throughout the SDLC                                                        | Partial — PR review process and Dependabot provide partial coverage; formal SDLC security gates not documented                       |
@@ -168,25 +170,23 @@ Cells marked **⚠️ Confirm** require a Founder/CEO decision before this SoA c
 
 ## Exclusion Summary
 
-The following controls are excluded on the basis that Common Bond operates no
-physical premises and owns no infrastructure hardware. Physical security
-responsibilities are entirely delegated to the cloud providers (Amazon Web
-Services via Supabase, and Cloudflare), both of which hold their own ISO 27001
-certifications.
+The following controls are excluded on the basis that Common Bond does not
+operate leased office or data-centre premises. The self-hosted k3s cluster
+runs in the Founder/CEO's home office with compensating controls documented
+under 7.1–7.5 and 7.8 above. Cloud infrastructure physical security is
+delegated to the cloud providers (Amazon Web Services via Supabase, and
+Cloudflare), both of which hold their own ISO 27001 certifications.
 
-| Control ID | Control Name                                          | Exclusion Justification       |
-| ---------- | ----------------------------------------------------- | ----------------------------- |
-| 7.1        | Physical security perimeters                          | No physical premises          |
-| 7.2        | Physical entry                                        | No physical premises          |
-| 7.3        | Securing offices, rooms and facilities                | No physical premises          |
-| 7.4        | Physical security monitoring                          | No physical premises          |
-| 7.5        | Protecting against physical and environmental threats | Cloud provider responsibility |
-| 7.6        | Working in secure areas                               | No physical premises          |
-| 7.11       | Supporting utilities                                  | Cloud provider responsibility |
-| 7.12       | Cabling security                                      | No physical infrastructure    |
+| Control ID | Control Name                                          | Exclusion Justification          |
+| ---------- | ----------------------------------------------------- | -------------------------------- |
+| 7.6        | Working in secure areas                               | No dedicated secure areas exist  |
+| 7.11       | Supporting utilities                                  | Residential premises — accepted risk; mitigated by DR strategy |
+| 7.12       | Cabling security                                      | Consumer-grade home network — accepted risk |
 
 :::warning
-If Common Bond establishes a physical office, co-working space arrangement with dedicated infrastructure, or engages staff working in client premises with access to Common Bond systems, the excluded controls (7.1–7.6, 7.11, 7.12) must be reviewed for applicability.
+If Common Bond establishes a leased office, co-working space arrangement with dedicated infrastructure,
+or migrates the k3s cluster to a co-location facility, the excluded controls (7.6, 7.11, 7.12) and
+the compensating controls documented for 7.1–7.5 must be reviewed for applicability.
 :::
 
 ---
@@ -195,4 +195,5 @@ If Common Bond establishes a physical office, co-working space arrangement with 
 
 | Date       | Version | Reviewed By          | Notes                                        |
 | ---------- | ------- | -------------------- | -------------------------------------------- |
+| 2026-03-14 | 1.1     | Agent (audit 260312) | Updated 7.1–7.5, 7.8 for k3s on-premises infrastructure; updated 8.22 for Calico NetworkPolicies; revised exclusion summary; updated applicability counts |
 | ⚠️ Confirm | 1.0     | Ryan Ammendolea, CEO | Initial SoA — pre-certification review stage |
