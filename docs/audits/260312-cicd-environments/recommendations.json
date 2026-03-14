@@ -818,9 +818,13 @@
         },
         {
           "taskId": "SEC-03-T1",
-          "status": "open",
+          "status": "deferred",
           "description": "Enable branch protection on main across all 6 repositories once CI is stable: require PR, require all CI status checks to pass, require at least 1 approval, disallow force pushes and deletions. Use GitHub repository rulesets for cross-org consistency.",
-          "targetFile": ""
+          "targetFile": "",
+          "deferredBy": "agent-session-21",
+          "deferredDate": "2026-03-14",
+          "deferredUntil": "2026-05-09",
+          "deferralNote": "Deferred 8 weeks per Founder decision (2026-03-14). Rationale: CI needs stabilisation period. Pre-check validation (SEC-03-T0) found ci-required-checks.md matrix is stale \u2014 job names do not match actual ci.yml keys (e.g. matrix says validate/test/build but actual keys are database-tests/deno-check). Matrix must be refreshed before branch protection can be enabled."
         }
       ],
       "severity_history": []
