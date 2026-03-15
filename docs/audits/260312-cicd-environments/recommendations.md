@@ -815,3 +815,53 @@ Affects: `supabase-receptor` — Post-deploy smoke tests for staging and product
 | DOC-06 | Engineer onboarding guide | `ONBOARDING.md` | Documentation Gap | 🟢 Low |
 | CICD-10 | Post-deploy smoke tests for staging and production | `action.yml` | Process Gap | 🟢 Low |
 
+
+
+---
+
+## Session Close — Session 23 (2026-03-15)
+
+### Completed This Session
+
+- **Runner auth migrated to GitHub App** — All 6 CI runner Deployments switched from `ACCESS_TOKEN` (PAT) to `APP_ID` + `APP_PRIVATE_KEY` + `APP_LOGIN` (GitHub App ID: 3095294, `dm-ra-01` org). Private key stored in Vault KV (`secret/ci/github-app`), surfaced via `github-app-credentials` k8s Secret in `ci-runner` namespace. All 6 runners confirmed online.
+- **Exposed PAT rotated** — `gho_Ssh7...` appeared in session terminal; rotated immediately. New PAT stored in Vault and k8s Secret.
+- **supabase-receptor docs modernised** (6 files, commit `1485c38`):
+  - `ADR-001` rewritten — k3s Deployments + GitHub App auth, full key rotation procedure
+  - `ADR-003` updated — implemented vs planned Vault features cleanly separated
+  - `vault-configuration.md` rewritten — actual KV paths, CI secret flow, implemented/planned table
+  - `cicd-architecture.md` — removed Docker Compose/VM install guide; 7-run trial marked ✅ complete
+  - `ci-troubleshooting.md` — Failure Mode 5 added (runner pod not registering)
+  - `arc-migration-handover.md` — new doc for ARC migration with exact steps
+
+### Remaining Open Tasks (2)
+
+| Finding | Task | Blocker |
+|---|---|---|
+| ENV-08 | `ENV-08-T1` — backup script (backup-prod.sh) | `pg_dumpall` + `rclone` not installed on ctrl-01 (requires `sudo apt install`) |
+| ENV-11 | `ENV-11-T1` — Backblaze B2 secondary backup | Extends ENV-08-T1; same blocker |
+
+### Blocked
+
+- **ENV-08 + ENV-11**: Both blocked on `sudo apt install postgresql-client rclone` on `receptor-ctrl-01`. Agent has SSH access but no sudo rights. Must be resolved by Ryan before these tasks can execute.
+
+### PR Order Note
+
+All supabase-receptor changes committed to `audit/260312-cicd-environments`. No PRs ready to merge yet — ENV-08/ENV-11 remain open. Raise PRs only after all tasks are complete per `/finalise-global-audit` workflow.
+
+### Brief for Next Agent
+
+**Primary task:** Migrate CI runners from `myoung34/github-runner` to Actions Runner Controller (ARC) — see `supabase-receptor/docs/operations/arc-migration-handover.md`.
+
+**What's already done:**
+- GitHub App 3095294 created + installed on all 6 repos
+- Private key in Vault KV (`secret/ci/github-app`) — extracted in-cluster, never on workstation
+- `github-app-credentials` k8s Secret in `ci-runner` namespace — reuse directly with ARC
+
+**ARC migration steps (summary):**
+1. `helm install arc oci://ghcr.io/actions/actions-runner-controller-charts/gha-runner-scale-set-controller -n arc-systems --create-namespace`
+2. Create `AutoscalingRunnerSet` per repo using existing `github-app-credentials` Secret
+3. Update `runs-on` labels in each repo's `ci.yml`
+4. Delete the 6 `myoung34`-based Deployments from `ci-runner` namespace
+
+**SSH access:** `ssh-ctrl-receptor.commonbond.au` → `receptor-ctrl-01`, `receptor-work-01`, `receptor-work-02` via ProxyJump.
+
