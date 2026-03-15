@@ -389,7 +389,7 @@
     {
       "id": "ENV-03",
       "severity": "medium",
-      "status": "open",
+      "status": "complete",
       "category": "Process Gap",
       "repo": "supabase-receptor",
       "area": "Non-interactive teardown",
@@ -409,7 +409,7 @@
     {
       "id": "ENV-04",
       "severity": "medium",
-      "status": "open",
+      "status": "complete",
       "category": "Process Gap",
       "repo": "supabase-receptor",
       "area": "Test data cleanup",
@@ -437,7 +437,7 @@
     {
       "id": "ISO-01",
       "severity": "medium",
-      "status": "open",
+      "status": "complete",
       "category": "Process Gap",
       "repo": "preference-frontend, planner-frontend, workforce-frontend, match-backend, receptor-planner",
       "area": "Test data isolation",
@@ -473,7 +473,7 @@
     {
       "id": "ISO-02",
       "severity": "medium",
-      "status": "open",
+      "status": "complete",
       "category": "Process Gap",
       "repo": "supabase-receptor",
       "area": "Seed data isolation",
@@ -513,7 +513,7 @@
     {
       "id": "DOC-01",
       "severity": "low",
-      "status": "open",
+      "status": "complete",
       "category": "Documentation Gap",
       "repo": "supabase-receptor",
       "area": "Secrets vault",
@@ -533,7 +533,7 @@
     {
       "id": "BACK-01",
       "severity": "medium",
-      "status": "open",
+      "status": "complete",
       "category": "Process Gap",
       "repo": "match-backend, receptor-planner",
       "area": "Backend CI integration test coverage",
@@ -773,7 +773,7 @@
     {
       "id": "ARCH-05",
       "severity": "medium",
-      "status": "open",
+      "status": "complete",
       "category": "Documentation Gap",
       "repo": "supabase-receptor",
       "area": "Architecture Decision Records",
@@ -850,7 +850,7 @@
     {
       "id": "ISO-03",
       "severity": "medium",
-      "status": "open",
+      "status": "complete",
       "category": "Compliance",
       "repo": "supabase-receptor",
       "area": "Physical security scope change from k3s bare-metal node",

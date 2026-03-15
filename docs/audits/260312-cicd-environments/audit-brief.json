@@ -361,11 +361,19 @@
         "CICD-09",
         "CICD-10",
         "ARCH-11",
-        "CICD-11"
+        "CICD-11",
+        "ENV-03",
+        "ENV-04",
+        "ISO-01",
+        "ISO-02",
+        "DOC-01",
+        "BACK-01",
+        "ARCH-05",
+        "ISO-03"
       ],
       "completedTaskIds": [],
       "openTaskCountAfter": 2,
-      "summary": "Session 26: Comprehensive Gap Analysis & Documentation Remediation. Full cross-check: live cluster vs. committed manifests vs. docs vs. audit register. 9 gaps identified and resolved: (1) ADR-001 updated to document ARC as current architecture (myoung34 moved to 'Previous Approach' section). (2) vault-configuration.md CI Secret Flow updated to show ARC path. (3) arc-migration-handover.md replaced with completion notice. (4) helmfile.yaml vault version corrected 0.28.1\u21920.32.0; ARC controller and 6 runner sets added as helmfile releases for full k8s lifecycle management. (5) Stale secrets github-runner-pat and github-app-credentials deleted from ci-runner namespace (ci-runner namespace now empty). (6) ARC supabase-receptor runner set confirmed healthy (runner-scale-set-id=1, blank CURRENT RUNNERS is cosmetic display issue, not a fault). (7) 10 findings with all-complete tasks closed: CICD-01, ARCH-01, ARCH-02, ARCH-03, PROC-01, DOC-06, CICD-09, CICD-10, ARCH-11, CICD-11. (8) scripts/backup-prod.sh written (pg_dumpall \u2192 gzip \u2192 dual-stream R2 + B2 via tee, Slack alerts, 30-day retention). (9) scripts/rclone-config-from-vault.sh + .service written (systemd oneshot populates rclone.conf from Vault KV at VM boot). ENV-08-T1 and ENV-11-T1 remain open \u2014 scripts committed, operational deploy + crontab install on ctrl-01 is a manual step requiring live cluster access."
+      "summary": "Session 26: Comprehensive Gap Analysis & Documentation Remediation. Full cross-check: live cluster vs. committed manifests vs. docs vs. audit register. 9 gaps identified and resolved: (1) ADR-001 updated to document ARC as current architecture (myoung34 moved to 'Previous Approach' section). (2) vault-configuration.md CI Secret Flow updated to show ARC path. (3) arc-migration-handover.md replaced with completion notice. (4) helmfile.yaml vault version corrected 0.28.1\u21920.32.0; ARC controller and 6 runner sets added as helmfile releases for full k8s lifecycle management. (5) Stale secrets github-runner-pat and github-app-credentials deleted from ci-runner namespace (ci-runner namespace now empty). (6) ARC supabase-receptor runner set confirmed healthy (runner-scale-set-id=1, blank CURRENT RUNNERS is cosmetic display issue, not a fault). (7) 10 findings with all-complete tasks closed: CICD-01, ARCH-01, ARCH-02, ARCH-03, PROC-01, DOC-06, CICD-09, CICD-10, ARCH-11, CICD-11. (8) scripts/backup-prod.sh written (pg_dumpall \u2192 gzip \u2192 dual-stream R2 + B2 via tee, Slack alerts, 30-day retention). (9) scripts/rclone-config-from-vault.sh + .service written (systemd oneshot populates rclone.conf from Vault KV at VM boot). ENV-08-T1 and ENV-11-T1 remain open \u2014 scripts committed, operational deploy + crontab install on ctrl-01 is a manual step requiring live cluster access. Additionally closed 8 more findings with all-complete tasks: ENV-03, ENV-04, ISO-01, ISO-02, DOC-01, BACK-01, ARCH-05, ISO-03. Final state: 55 complete, 2 accepted, 1 deferred, 2 open (ENV-08, ENV-11)."
     }
   ],
   "sessionGates": [
