@@ -834,3 +834,28 @@ Affects: `supabase-receptor` — Post-deploy smoke tests for staging and product
 | DOC-06 | Engineer onboarding guide | `ONBOARDING.md` | Documentation Gap | 🟢 Low |
 | CICD-10 | Post-deploy smoke tests for staging and production | `action.yml` | Process Gap | 🟢 Low |
 
+
+---
+
+## Session Close — 2026-03-15
+
+**Completed:** CICD-11-T3 (ci.yml runs-on labels updated across all 6 repos)
+
+**Remaining:**
+- CICD-11-T1 (`supabase-receptor`) — install ARC controller Helm chart — blocked on passwordless sudo on ctrl-01
+- CICD-11-T2 (`supabase-receptor`) — create arc-runners namespace, mirror Secret, install 6 runner sets — blocked on passwordless sudo on ctrl-01
+- CICD-11-T4 (`supabase-receptor`) — delete 6 myoung34 Deployments — blocked on passwordless sudo on ctrl-01
+- ENV-08-T1 (`supabase-receptor`) — backup script (pg_dumpall + rclone) — blocked on `sudo apt install postgresql-client rclone` on ctrl-01
+- ENV-11-T1 (`supabase-receptor`) — secondary Backblaze B2 backup — extends ENV-08-T1; same blocker
+
+**Blocked:** CICD-11-T1, T2, T4: ryan is in the sudo group on ctrl-01 but agent SSH via Cloudflare tunnel cannot supply an interactive password. Run DEPLOY.md interactively: `ssh ssh-ctrl-receptor.commonbond.au` — see `supabase-receptor/k3s/ci-runner/DEPLOY.md` for the full step-by-step.
+
+**PR order note:** All 6 repo ci.yml PRs can be raised and merged in parallel — no dependency between them. Merge supabase-receptor first so the ARC controller and runner sets (infra manifests) are in before the ci.yml label change lands on main. doco-common-bond merged last.
+
+**Brief for next agent:**
+- ci.yml changes are live on all 6 audit branches. Existing myoung34 runners will keep handling jobs until CICD-11-T1/T2 (ARC install) completes — no CI gap.
+- All cluster work is in `supabase-receptor/k3s/ci-runner/DEPLOY.md`. Steps 1–5 require `sudo` interactively on ctrl-01 via `ssh ssh-ctrl-receptor.commonbond.au`.
+- Once CICD-11-T1/T2/T4 are done on-cluster, mark them complete via `complete-task.sh` and update `audit-brief.json` openTaskCount to 2 (only ENV-08-T1, ENV-11-T1 remain).
+- ENV-08-T1 / ENV-11-T1 need `sudo apt install postgresql-client rclone` on ctrl-01 before they can proceed — this is an identical sudo blocker.
+- GitHub App (3095294), Vault KV (`secret/ci/github-app`), `github-app-credentials` k8s Secret in `ci-runner` namespace — all already in place, no new credentials needed for ARC.
+- SEC-03-T2 (branch protection) deferred until 2026-05-09.
