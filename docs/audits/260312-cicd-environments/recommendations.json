@@ -1209,7 +1209,8 @@
           "status": "complete",
           "description": "Configure Vault auto-unseal using Azure Key Vault (K3sUnlock): create service principal, vault-azure-kms K8s secret, and update vault.yaml with azurekeyvault seal stanza. Perform seal migration using the -migrate flag.",
           "completedAt": "2026-03-13T07:55:00Z",
-          "completedBy": "session-18-260313"
+          "completedBy": "session-18-260313",
+          "targetFile": "n/a"
         }
       ],
       "severity_history": []
@@ -1576,6 +1577,44 @@
           "targetFile": "/home/ryana/development/common-bond/supabase-receptor/docs/adr/ADR-005-vault-ci-oidc-bridge.md",
           "completedAt": "2026-03-12T22:12:49Z",
           "completedBy": "session-7-260312"
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "CICD-11",
+      "severity": "high",
+      "status": "open",
+      "category": "Security",
+      "repo": "supabase-receptor",
+      "area": "CI Runner Infrastructure",
+      "description": "All 6 CI runner Deployments use the community-maintained myoung34/github-runner image which has broad host access (Docker socket mount, privileged), is not maintained by GitHub, and has no autoscaling. GitHub's official Actions Runner Controller (ARC) uses the official ghcr.io/actions/runner image managed by GitHub, autoscales from 0 to N runners on job demand, and handles registration/deregistration natively via the same GitHub App credentials already in Vault (App ID 3095294). This eliminates the myoung34 supply-chain risk flagged by Ryan and removes the need for runner registration tokens. Note (session-24): GitHub App (3095294) and Vault KV (secret/ci/github-app) are already in place from session 23 \u2014 ARC reuses them directly. Old myoung34 Deployments are not being used and can be deleted at any time.",
+      "tasks": [
+        {
+          "taskId": "CICD-11-T1",
+          "status": "open",
+          "description": "Install the ARC controller via Helm (oci://ghcr.io/actions/actions-runner-controller-charts/gha-runner-scale-set-controller) into the arc-systems namespace. Verify CRDs registered and controller pod Running.",
+          "targetFile": "/home/ryana/development/common-bond/supabase-receptor/k3s/ci-runner/arc-controller.yaml"
+        },
+        {
+          "taskId": "CICD-11-T2",
+          "status": "open",
+          "description": "Create arc-runners namespace. Mirror github-app-credentials Secret from ci-runner to arc-runners. Install 6 AutoscalingRunnerSet Helm releases (one per repo) using the existing github-app-credentials Secret. See k3s/ci-runner/arc-runner-sets.yaml and DEPLOY.md for install commands.",
+          "targetFile": "/home/ryana/development/common-bond/supabase-receptor/k3s/ci-runner/arc-runner-sets.yaml"
+        },
+        {
+          "taskId": "CICD-11-T3",
+          "status": "complete",
+          "description": "Update runs-on labels in all 6 repos ci.yml from [self-hosted, k3s] to repo-specific ARC label (e.g. [self-hosted, linux, arc-runner-supabase-receptor]). All 6 files updated in session 24.",
+          "targetFile": "/home/ryana/development/common-bond/supabase-receptor/.github/workflows/ci.yml",
+          "completedAt": "2026-03-15T04:07:23Z",
+          "completedBy": "agent-session-24"
+        },
+        {
+          "taskId": "CICD-11-T4",
+          "status": "open",
+          "description": "Once ARC runner sets are confirmed online, delete the 6 myoung34 runner Deployments and their runner-token Secrets from the ci-runner namespace. See DEPLOY.md Step 5.",
+          "targetFile": "/home/ryana/development/common-bond/supabase-receptor/k3s/ci-runner/DEPLOY.md"
         }
       ],
       "severity_history": []
