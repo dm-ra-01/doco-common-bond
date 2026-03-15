@@ -837,22 +837,3 @@ Affects: `supabase-receptor` — Post-deploy smoke tests for staging and product
 | DOC-06 | Engineer onboarding guide | `ONBOARDING.md` | Documentation Gap | 🟢 Low |
 | CICD-10 | Post-deploy smoke tests for staging and production | `action.yml` | Process Gap | 🟢 Low |
 
-
----
-
-## Session Close — 2026-03-15
-
-**Completed:** CICD-11 (T1–T4 all complete — ARC controller deployed, 6 AutoscalingRunnerSets installed, 6 listener pods running, all myoung34 Deployments + old token Secrets deleted, all 6 `ci.yml` files updated to bare ARC `runs-on` label). Also fixed two pre-existing issues surfaced by ARC running tests for the first time: `--no-cov` added for unit-only CI run (95% threshold requires full suite), and `planner/engine.py` engine bug: engine was returning `SUCCESS` with `data=[]` when `allow_partial_filling=True` and all rotations had `capacity=0` — now correctly returns `INFEASIBLE` with a descriptive message.
-
-**Remaining:** ENV-08-T1 (backup-prod.sh — `pg_dumpall` + `rclone` upload to R2), ENV-11-T1 (secondary Backblaze B2 upload — extends ENV-08-T1).
-
-**Blocked:** None — passwordless sudo now configured on `receptor-ctrl-01` for `ryan`, ENV tasks are unblocked.
-
-**PR order note:** No cross-repo dependency constraints for remaining ENV tasks (changes to `supabase-receptor/k3s/backup/` only). ARC `ci.yml` changes across all 6 repos can be raised in parallel via `meta`.
-
-**Brief for next agent:**
-- ARC fully deployed: 6 listener pods in `arc-systems`, 6 `AutoscalingRunnerSet` in `arc-runners`. Secret `github-app-credentials` in `arc-runners` ns requires all 3 fields: `github_app_id=3095294`, `github_app_installation_id=116472161`, `github_app_private_key`.
-- ARC routing: `runs-on` must be the bare scale set name (e.g. `arc-runner-supabase-receptor`) — NOT `[self-hosted, linux, ...]`. The array form routes to the traditional runner pool and ARC never receives the job.
-- receptor-planner CI green as of `950c737` on `audit/260312-cicd-environments`. Engine fix is production-ready.
-- ENV-08-T1/ENV-11-T1: SSH via `ssh ssh-ctrl-receptor.commonbond.au`. Install `postgresql-client` and `rclone` with passwordless sudo before writing the backup script target file `k3s/backup/backup-prod.sh`.
-- Security: all clear — no credentials committed to git, `/tmp/get_install_id.py` cleaned from ctrl-01.

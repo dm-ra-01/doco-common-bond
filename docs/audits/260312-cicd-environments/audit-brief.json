@@ -2,9 +2,9 @@
   "$schema": "../../../dev-environment/.agents/schemas/audit-brief.schema.json",
   "auditSlug": "260312-cicd-environments",
   "status": "implementing",
-  "nextAction": "implement",
+  "nextAction": "deploy-backup-scripts",
   "openTaskCount": 2,
-  "latestHandover": "SESSION 25 (2026-03-15) \u2014 ARC OPERATIONAL, SESSION CLOSED\n\nARC STATUS: Fully deployed and verified on receptor-ctrl-01.\n\u2022 6 listener pods Running in arc-systems\n\u2022 6 AutoscalingRunnerSets in arc-runners (minRunners=0, maxRunners=3)\n\u2022 Secret: github-app-credentials in arc-runners \u2014 requires 3 fields:\n    github_app_id=3095294, github_app_installation_id=116472161, github_app_private_key\n\u2022 IMPORTANT runs-on fix: bare scale set name ONLY (e.g. arc-runner-supabase-receptor)\n  NOT [self-hosted, linux, arc-runner-*] \u2014 array form routes to traditional runner pool\n\u2022 Jobs confirmed dispatching and completing (receptor-planner CI green)\n\nRECEPTOR-PLANNER CHANGES (audit/260312-cicd-environments):\n\u2022 ci.yml: bare runs-on, TMPDIR redirect, --no-cov for unit run\n\u2022 planner/engine.py: INFEASIBLE guard when solver returns 0 scheduled lines\n\u2022 test_engine_properties.py: len(data)>0 assertion restored (backed by engine fix)\n\nREMAINING OPEN (2 tasks \u2014 UNBLOCKED):\n1. ENV-08-T1: Write k3s/backup/backup-prod.sh (pg_dumpall + rclone to R2)\n2. ENV-11-T1: Extend backup-prod.sh for secondary Backblaze B2 upload\n   Both require: ssh ssh-ctrl-receptor.commonbond.au then sudo apt install postgresql-client rclone\n   Passwordless sudo NOW ACTIVE on ctrl-01 \u2014 no blocker.\n\nAFTER ENV TASKS COMPLETE \u2192 proceed to /finalise-global-audit.\n\nTUNNEL SSH: ssh ssh-ctrl-receptor.commonbond.au (passwordless sudo active)\nVAULT KV: secret/ci/github-app (app_id, private_key)",
+  "latestHandover": "Session 26 completed a comprehensive gap analysis. The cluster is healthy: ARC fully operational (6 AutoscalingRunnerSets, 6 listener pods), Vault auto-unsealed (Azure KV), all Supabase pods Running. Documentation is now accurate: ADR-001 reflects ARC, helmfile tracks all releases, stale secrets deleted. 2 tasks remain open (ENV-08-T1, ENV-11-T1): backup-prod.sh and rclone-config-from-vault.sh are committed to supabase-receptor/scripts/. Next agent must deploy these on ctrl-01: copy scripts to /opt/scripts/, install systemd service (rclone-config-from-vault.service \u2192 /etc/systemd/system/), create /etc/vault-token.env (VAULT_TOKEN=<root-token>), install crontab for root (0 15 * * * /opt/scripts/backup-prod.sh, 0 14 * * 0 /opt/scripts/backup-prod.sh), then run a backup dry-run to verify the pipeline.",
   "sessionHistory": [
     {
       "date": "2026-03-12",
@@ -348,6 +348,24 @@
       "completedTaskIds": [],
       "openTaskCountAfter": 2,
       "summary": "Session 25 (2026-03-15): ARC fully operational and verified. Fixed ARC dispatch routing (bare runs-on label \u2014 self-hosted array was routing to traditional pool). Fixed pip ENOSPC from 6 concurrent heavy installs (TMPDIR redirect). Engine bug fixed in receptor-planner: engine.py was returning SUCCESS+data:[] when allow_partial_filling=True and all capacity=0 \u2014 now returns INFEASIBLE. CI green on receptor-planner audit branch (950c737). Security review: no credentials in git, /tmp script cleaned from ctrl-01."
+    },
+    {
+      "date": "2026-03-15",
+      "completedFindingIds": [
+        "CICD-01",
+        "ARCH-01",
+        "ARCH-02",
+        "ARCH-03",
+        "PROC-01",
+        "DOC-06",
+        "CICD-09",
+        "CICD-10",
+        "ARCH-11",
+        "CICD-11"
+      ],
+      "completedTaskIds": [],
+      "openTaskCountAfter": 2,
+      "summary": "Session 26: Comprehensive Gap Analysis & Documentation Remediation. Full cross-check: live cluster vs. committed manifests vs. docs vs. audit register. 9 gaps identified and resolved: (1) ADR-001 updated to document ARC as current architecture (myoung34 moved to 'Previous Approach' section). (2) vault-configuration.md CI Secret Flow updated to show ARC path. (3) arc-migration-handover.md replaced with completion notice. (4) helmfile.yaml vault version corrected 0.28.1\u21920.32.0; ARC controller and 6 runner sets added as helmfile releases for full k8s lifecycle management. (5) Stale secrets github-runner-pat and github-app-credentials deleted from ci-runner namespace (ci-runner namespace now empty). (6) ARC supabase-receptor runner set confirmed healthy (runner-scale-set-id=1, blank CURRENT RUNNERS is cosmetic display issue, not a fault). (7) 10 findings with all-complete tasks closed: CICD-01, ARCH-01, ARCH-02, ARCH-03, PROC-01, DOC-06, CICD-09, CICD-10, ARCH-11, CICD-11. (8) scripts/backup-prod.sh written (pg_dumpall \u2192 gzip \u2192 dual-stream R2 + B2 via tee, Slack alerts, 30-day retention). (9) scripts/rclone-config-from-vault.sh + .service written (systemd oneshot populates rclone.conf from Vault KV at VM boot). ENV-08-T1 and ENV-11-T1 remain open \u2014 scripts committed, operational deploy + crontab install on ctrl-01 is a manual step requiring live cluster access."
     }
   ],
   "sessionGates": [
