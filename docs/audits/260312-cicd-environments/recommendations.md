@@ -253,15 +253,18 @@ Affects: `supabase-receptor` — Supabase PostgreSQL pgaudit extension for datab
 Affects: `supabase-receptor` — CI Runner Infrastructure
 
 
-- [ ] Install the ARC controller via Helm (oci://ghcr.io/actions/actions-runner-controller-charts/gha-runner-scale-set-controller) into the arc-systems namespace. Verify CRDs registered and controller pod Running.
+- [x] Install the ARC controller via Helm (oci://ghcr.io/actions/actions-runner-controller-charts/gha-runner-scale-set-controller) into the arc-systems namespace. Verify CRDs registered and controller pod Running.
       `/home/ryana/development/common-bond/supabase-receptor/k3s/ci-runner/arc-controller.yaml`
-- [ ] Create arc-runners namespace. Mirror github-app-credentials Secret from ci-runner to arc-runners. Install 6 AutoscalingRunnerSet Helm releases (one per repo) using the existing github-app-credentials Secret. See k3s/ci-runner/arc-runner-sets.yaml and DEPLOY.md for install commands.
+      _(Completed: 2026-03-15T04:34:42Z)_
+- [x] Create arc-runners namespace. Mirror github-app-credentials Secret from ci-runner to arc-runners. Install 6 AutoscalingRunnerSet Helm releases (one per repo) using the existing github-app-credentials Secret. See k3s/ci-runner/arc-runner-sets.yaml and DEPLOY.md for install commands.
       `/home/ryana/development/common-bond/supabase-receptor/k3s/ci-runner/arc-runner-sets.yaml`
+      _(Completed: 2026-03-15T04:34:42Z)_
 - [x] Update runs-on labels in all 6 repos ci.yml from [self-hosted, k3s] to repo-specific ARC label (e.g. [self-hosted, linux, arc-runner-supabase-receptor]). All 6 files updated in session 24.
       `/home/ryana/development/common-bond/supabase-receptor/.github/workflows/ci.yml`
       _(Completed: 2026-03-15T04:07:23Z)_
-- [ ] Once ARC runner sets are confirmed online, delete the 6 myoung34 runner Deployments and their runner-token Secrets from the ci-runner namespace. See DEPLOY.md Step 5.
+- [x] Once ARC runner sets are confirmed online, delete the 6 myoung34 runner Deployments and their runner-token Secrets from the ci-runner namespace. See DEPLOY.md Step 5.
       `/home/ryana/development/common-bond/supabase-receptor/k3s/ci-runner/DEPLOY.md`
+      _(Completed: 2026-03-15T04:34:43Z)_
 
 ## 🟡 Medium
 
@@ -834,28 +837,3 @@ Affects: `supabase-receptor` — Post-deploy smoke tests for staging and product
 | DOC-06 | Engineer onboarding guide | `ONBOARDING.md` | Documentation Gap | 🟢 Low |
 | CICD-10 | Post-deploy smoke tests for staging and production | `action.yml` | Process Gap | 🟢 Low |
 
-
----
-
-## Session Close — 2026-03-15
-
-**Completed:** CICD-11-T3 (ci.yml runs-on labels updated across all 6 repos)
-
-**Remaining:**
-- CICD-11-T1 (`supabase-receptor`) — install ARC controller Helm chart — blocked on passwordless sudo on ctrl-01
-- CICD-11-T2 (`supabase-receptor`) — create arc-runners namespace, mirror Secret, install 6 runner sets — blocked on passwordless sudo on ctrl-01
-- CICD-11-T4 (`supabase-receptor`) — delete 6 myoung34 Deployments — blocked on passwordless sudo on ctrl-01
-- ENV-08-T1 (`supabase-receptor`) — backup script (pg_dumpall + rclone) — blocked on `sudo apt install postgresql-client rclone` on ctrl-01
-- ENV-11-T1 (`supabase-receptor`) — secondary Backblaze B2 backup — extends ENV-08-T1; same blocker
-
-**Blocked:** CICD-11-T1, T2, T4: ryan is in the sudo group on ctrl-01 but agent SSH via Cloudflare tunnel cannot supply an interactive password. Run DEPLOY.md interactively: `ssh ssh-ctrl-receptor.commonbond.au` — see `supabase-receptor/k3s/ci-runner/DEPLOY.md` for the full step-by-step.
-
-**PR order note:** All 6 repo ci.yml PRs can be raised and merged in parallel — no dependency between them. Merge supabase-receptor first so the ARC controller and runner sets (infra manifests) are in before the ci.yml label change lands on main. doco-common-bond merged last.
-
-**Brief for next agent:**
-- ci.yml changes are live on all 6 audit branches. Existing myoung34 runners will keep handling jobs until CICD-11-T1/T2 (ARC install) completes — no CI gap.
-- All cluster work is in `supabase-receptor/k3s/ci-runner/DEPLOY.md`. Steps 1–5 require `sudo` interactively on ctrl-01 via `ssh ssh-ctrl-receptor.commonbond.au`.
-- Once CICD-11-T1/T2/T4 are done on-cluster, mark them complete via `complete-task.sh` and update `audit-brief.json` openTaskCount to 2 (only ENV-08-T1, ENV-11-T1 remain).
-- ENV-08-T1 / ENV-11-T1 need `sudo apt install postgresql-client rclone` on ctrl-01 before they can proceed — this is an identical sudo blocker.
-- GitHub App (3095294), Vault KV (`secret/ci/github-app`), `github-app-credentials` k8s Secret in `ci-runner` namespace — all already in place, no new credentials needed for ARC.
-- SEC-03-T2 (branch protection) deferred until 2026-05-09.

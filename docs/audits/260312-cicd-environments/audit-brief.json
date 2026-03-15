@@ -3,8 +3,8 @@
   "auditSlug": "260312-cicd-environments",
   "status": "implementing",
   "nextAction": "implement",
-  "openTaskCount": 5,
-  "latestHandover": "SESSION 24 (2026-03-15) \u2014 ARC MIGRATION (code complete; cluster steps blocked on sudo)\n\nCOMPLETED THIS SESSION:\n\u2022 Added CICD-11 finding ('Migrate CI runners to ARC') to recommendations.json\n\u2022 Updated all 6 ci.yml files: runs-on [self-hosted, k3s] \u2192 [self-hosted, linux, arc-runner-<repo>]\n\u2022 Created supabase-receptor/k3s/ci-runner/arc-controller.yaml \u2014 ARC controller notes\n\u2022 Created supabase-receptor/k3s/ci-runner/arc-runner-sets.yaml \u2014 6 AutoscalingRunnerSet install commands\n\u2022 Created supabase-receptor/k3s/ci-runner/DEPLOY.md \u2014 step-by-step runbook for Ryan\n\u2022 CICD-11-T3 (ci.yml label updates) marked complete\n\nREMAINING OPEN (5 tasks):\n1. CICD-11-T1: Install ARC controller via Helm (arc-systems ns) \u2014 needs sudo on ctrl-01\n2. CICD-11-T2: Create arc-runners ns + mirror Secret + install 6 runner sets \u2014 needs sudo on ctrl-01\n3. CICD-11-T4: Delete 6 myoung34 Deployments \u2014 needs sudo on ctrl-01\n4. ENV-08-T1: backup-prod.sh (pg_dumpall + rclone) \u2014 needs sudo apt install on ctrl-01\n5. ENV-11-T1: secondary Backblaze B2 backup \u2014 extends ENV-08-T1\n\nCLUSTER BLOCKER: ryan is in sudo group on ctrl-01 but sudo requires password interactively.\nAgent SSH via cloudflare tunnel cannot supply a password. Ryan must either:\n  (a) Run DEPLOY.md steps 1-5 interactively using: ssh ssh-ctrl-receptor.commonbond.au\n  (b) Grant passwordless sudo to ryan: echo 'ryan ALL=(ALL) NOPASSWD:ALL' | sudo tee /etc/sudoers.d/ryan\n\nONCE CLUSTER STEPS DONE:\n\u2022 Run validate-branch-protection + Docusaurus build gates\n\u2022 Mark CICD-11-T1, T2, T4 complete via complete-task.sh\n\u2022 Update audit-brief.json and push to close the session\n\u2022 All audit tasks will then be either complete or deferred \u2192 proceed to /finalise-global-audit\n\nDEFERRED:\n\u2022 SEC-03-T2: branch protection \u2014 2026-05-09\n\nAUTH REFERENCES:\n\u2022 GitHub App ID: 3095294 (dm-ra-01 org)\n\u2022 Vault KV: secret/ci/github-app (app_id, private_key)\n\u2022 k8s Secret: github-app-credentials in ci-runner namespace\n\u2022 Tunnel SSH: ssh ssh-ctrl-receptor.commonbond.au",
+  "openTaskCount": 2,
+  "latestHandover": "SESSION 24 (2026-03-15) \u2014 ARC MIGRATION COMPLETE\n\nCOMPLETED (CICD-11 \u2014 all 4 tasks):\n\u2022 ARC controller installed via Helm into arc-systems namespace\n\u2022 Arc-runners namespace created; github-app-credentials Secret created with ARC format:\n  github_app_id=3095294, github_app_installation_id=116472161, github_app_private_key\n\u2022 6 AutoscalingRunnerSets installed (one per repo, minRunners=0, maxRunners=3)\n\u2022 All 6 listener pods Running in arc-systems\n\u2022 All 6 ci.yml runs-on labels updated to arc-runner-<repo> labels\n\u2022 All 6 myoung34 Deployments deleted from ci-runner namespace\n\u2022 All old runner-token Secrets deleted from ci-runner namespace\n\u2022 Security review: no credentials committed to git; /tmp script cleaned from ctrl-01\n\nREMAINING OPEN (2 tasks \u2014 same ENV backup tasks, now UNBLOCKED):\n1. ENV-08-T1: Write scripts/backup-prod.sh (pg_dumpall + rclone to R2)\n   - Requires: sudo apt install postgresql-client rclone on ctrl-01 (NOW POSSIBLE \u2014 passwordless sudo configured)\n2. ENV-11-T1: Extend backup-prod.sh for secondary Backblaze B2 upload\n   - Requires: ENV-08-T1 complete first\n\nDEFERRED:\n\u2022 SEC-03-T2: branch protection \u2014 2026-05-09\n\nNEXT AGENT: ENV-08-T1 + ENV-11-T1 are the final blockers before /finalise-global-audit.\nPasswordless sudo now configured on ctrl-01 \u2014 agent can SSH and run apt install.\nAfter those 2 tasks: all audit tasks done/deferred \u2192 proceed to /finalise-global-audit.\n\nARC NOTES (for reference):\n\u2022 Runner sets: minRunners=0 (scale to zero at idle) \u2014 GitHub shows no runners until job queued\n\u2022 Secret in arc-runners ns: github-app-credentials (3 fields per ARC format)\n\u2022 Vault KV: secret/ci/github-app (app_id, private_key) \u2014 installation ID is 116472161\n\u2022 Listener pods always run in arc-systems ns, runner pods spawn in arc-runners ns\n\u2022 SSH: ssh ssh-ctrl-receptor.commonbond.au (passwordless sudo now active)",
   "sessionHistory": [
     {
       "date": "2026-03-12",
@@ -328,6 +328,19 @@
       ],
       "openTaskCountAfter": 5,
       "summary": "Session 24: ARC Migration (code/config complete; cluster steps pending sudo). Added CICD-11 finding to recommendations.json. Updated all 6 repos ci.yml runs-on labels from [self-hosted, k3s] to repo-specific ARC runner set labels (e.g. arc-runner-supabase-receptor). Added arc-controller.yaml, arc-runner-sets.yaml, and DEPLOY.md runbook to supabase-receptor/k3s/ci-runner/. CICD-11-T3 (ci.yml label updates) marked complete. CICD-11-T1 (install ARC controller), CICD-11-T2 (AutoscalingRunnerSets), CICD-11-T4 (decommission myoung34) remain open \u2014 blocked on passwordless sudo on ctrl-01. ENV-08-T1 and ENV-11-T1 still blocked (same sudo requirement)."
+    },
+    {
+      "date": "2026-03-15",
+      "completedFindingIds": [
+        "CICD-11"
+      ],
+      "completedTaskIds": [
+        "CICD-11-T1",
+        "CICD-11-T2",
+        "CICD-11-T4"
+      ],
+      "openTaskCountAfter": 2,
+      "summary": "Session 24 (continued): ARC cluster deployment complete. ARC controller installed (arc-systems), 6 AutoscalingRunnerSets installed (arc-runners), all 6 listener pods Running. All 6 myoung34 Deployments deleted. All old runner-token Secrets (planner-frontend-token etc.) deleted. /tmp/get_install_id.py cleaned from ctrl-01. Security review: no credentials in committed files. CICD-11 fully complete. Open tasks: 2 (ENV-08-T1, ENV-11-T1 \u2014 blocked on sudo apt install postgresql-client rclone on ctrl-01, now unblocked with passwordless sudo)."
     }
   ],
   "sessionGates": [
