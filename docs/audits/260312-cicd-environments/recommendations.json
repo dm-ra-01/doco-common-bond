@@ -3,7 +3,7 @@
   "auditSlug": "260312-cicd-environments",
   "title": "CI/CD Infrastructure & Environment Architecture Audit",
   "date": "2026-03-12",
-  "scope": "All repositories \u2014 preference-frontend, planner-frontend, workforce-frontend, supabase-receptor, backend/receptor-planner, backend/match-backend",
+  "scope": "All repositories — preference-frontend, planner-frontend, workforce-frontend, supabase-receptor, backend/receptor-planner, backend/match-backend",
   "auditor": "Ryan Ammendolea",
   "branch": "audit/260312-cicd-environments",
   "findings": [
@@ -121,7 +121,7 @@
       "category": "Security",
       "repo": "planner-frontend, workforce-frontend",
       "area": "Service role key sourcing",
-      "description": "planner-frontend and workforce-frontend pass SUPABASE_SERVICE_ROLE_KEY from secrets.LOCAL_SUPABASE_SECRET_KEY \u2014 a static developer secret \u2014 rather than extracting the dynamically generated key from the ephemeral CI Supabase instance. If the local dev key differs from the CI instance key, service-role operations will silently fail or operate against an unintended instance.",
+      "description": "planner-frontend and workforce-frontend pass SUPABASE_SERVICE_ROLE_KEY from secrets.LOCAL_SUPABASE_SECRET_KEY — a static developer secret — rather than extracting the dynamically generated key from the ephemeral CI Supabase instance. If the local dev key differs from the CI instance key, service-role operations will silently fail or operate against an unintended instance.",
       "tasks": [
         {
           "taskId": "CICD-03-T1",
@@ -234,7 +234,7 @@
         {
           "taskId": "ARCH-03-T0",
           "status": "complete",
-          "description": "PREREQUISITE before ARCH-03-T1: establish a 7-run parallel trial protocol before switching any repo to k3s-only CI. Steps: (1) Verify the self-hosted runner pod is healthy: 'kubectl get pods -n ci-runner' must show Running. (2) Run a no-op workflow_dispatch job ('echo runner online') on supabase-receptor's audit branch and confirm end-to-end completion in under 30 seconds. (3) Configure ci.yml in supabase-receptor to use 'runs-on: [self-hosted, k3s]' while keeping 'runs-on: ubuntu-latest' in a commented-out line immediately above it \u2014 this provides a one-line rollback escape hatch. (4) Run CI 7 consecutive times with green results before removing the ubuntu-latest commented line and before applying the runner migration to any other repo. (5) Add a Slack alert (via PROC-02 Alertmanager or direct webhook) for runner unavailability: if a self-hosted job is queued for > 5 minutes with no runner pickup, post to #incidents. Do not proceed with ARCH-03-T1 until the 7-run gate passes.",
+          "description": "PREREQUISITE before ARCH-03-T1: establish a 7-run parallel trial protocol before switching any repo to k3s-only CI. Steps: (1) Verify the self-hosted runner pod is healthy: 'kubectl get pods -n ci-runner' must show Running. (2) Run a no-op workflow_dispatch job ('echo runner online') on supabase-receptor's audit branch and confirm end-to-end completion in under 30 seconds. (3) Configure ci.yml in supabase-receptor to use 'runs-on: [self-hosted, k3s]' while keeping 'runs-on: ubuntu-latest' in a commented-out line immediately above it — this provides a one-line rollback escape hatch. (4) Run CI 7 consecutive times with green results before removing the ubuntu-latest commented line and before applying the runner migration to any other repo. (5) Add a Slack alert (via PROC-02 Alertmanager or direct webhook) for runner unavailability: if a self-hosted job is queued for > 5 minutes with no runner pickup, post to #incidents. Do not proceed with ARCH-03-T1 until the 7-run gate passes.",
           "targetFile": "/home/ryana/development/common-bond/supabase-receptor/.github/workflows/ci.yml",
           "completedAt": "2026-03-12T22:12:49Z",
           "completedBy": "session-7-260312"
@@ -333,7 +333,7 @@
       "category": "Tech Debt",
       "repo": "supabase-receptor",
       "area": "supabase-receptor CI robustness",
-      "description": "supabase-receptor ci.yml runs 'supabase start --ignore-health-check' with no --workdir flag. The working directory is assumed to be the repo root, which is fragile to future directory restructuring. Additionally, no key extraction step is present \u2014 if any future job needs the generated keys, there is no mechanism to retrieve them.",
+      "description": "supabase-receptor ci.yml runs 'supabase start --ignore-health-check' with no --workdir flag. The working directory is assumed to be the repo root, which is fragile to future directory restructuring. Additionally, no key extraction step is present — if any future job needs the generated keys, there is no mechanism to retrieve them.",
       "tasks": [
         {
           "taskId": "CICD-04-T1",
@@ -454,7 +454,7 @@
         {
           "taskId": "ISO-01-T2",
           "status": "complete",
-          "description": "Add an explicit cleanup trigger for the run-ID-scoped test org created in ISO-01-T1. In each frontend repo's ci.yml, add a cleanup job with 'if: always()' that runs after integration-tests: the job calls 'supabase db execute' (or a REST DELETE against the organisations endpoint using SERVICE_ROLE_KEY) to delete any org matching '__ci_{GITHUB_RUN_ID}_%'. This ensures cleanup fires even on test failure or job cancellation. The ENV-04 pg_cron job (DELETE WHERE name LIKE '__ci_%' AND created_at < now() - interval 24h) is the safety net for runner-crash leaked orgs only \u2014 it must NOT be treated as the primary cleanup mechanism. Document this two-layer cleanup model (always() job = primary; pg_cron = safety net) in a comment in each ci.yml above the cleanup job definition.",
+          "description": "Add an explicit cleanup trigger for the run-ID-scoped test org created in ISO-01-T1. In each frontend repo's ci.yml, add a cleanup job with 'if: always()' that runs after integration-tests: the job calls 'supabase db execute' (or a REST DELETE against the organisations endpoint using SERVICE_ROLE_KEY) to delete any org matching '__ci_{GITHUB_RUN_ID}_%'. This ensures cleanup fires even on test failure or job cancellation. The ENV-04 pg_cron job (DELETE WHERE name LIKE '__ci_%' AND created_at < now() - interval 24h) is the safety net for runner-crash leaked orgs only — it must NOT be treated as the primary cleanup mechanism. Document this two-layer cleanup model (always() job = primary; pg_cron = safety net) in a comment in each ci.yml above the cleanup job definition.",
           "targetFile": "/home/ryana/development/common-bond/frontend/preference-frontend/src/__tests__/globalSetup.ts",
           "completedAt": "2026-03-12T22:12:49Z",
           "completedBy": "session-7-260312"
@@ -477,7 +477,7 @@
       "category": "Process Gap",
       "repo": "supabase-receptor",
       "area": "Seed data isolation",
-      "description": "seed_acacia.sql and test_user_credentials.json configure a single shared 'Acacia Enterprises' org. There is no mechanism for CI runs to work in isolated org namespaces \u2014 all runs compete for the same seed data.",
+      "description": "seed_acacia.sql and test_user_credentials.json configure a single shared 'Acacia Enterprises' org. There is no mechanism for CI runs to work in isolated org namespaces — all runs compete for the same seed data.",
       "tasks": [
         {
           "taskId": "ISO-02-T1",
@@ -497,12 +497,12 @@
       "category": "Documentation Gap",
       "repo": "supabase-receptor",
       "area": "Promotion runbook",
-      "description": "No runbook exists for promoting a change through dev \u2192 test \u2192 staging \u2192 prod. setup.sh supports the --env flag but there is no documented promotion workflow, migration gate, or rollback procedure.",
+      "description": "No runbook exists for promoting a change through dev → test → staging → prod. setup.sh supports the --env flag but there is no documented promotion workflow, migration gate, or rollback procedure.",
       "tasks": [
         {
           "taskId": "DOC-02-T1",
           "status": "complete",
-          "description": "Extend the staging-to-prod promotion runbook already created by ENV-09-T1 (docs/operations/promotion-runbook.md). Add the following post-provisioning sections that can only be written once the real infrastructure is running: (1) Staging smoke test commands \u2014 exact curl/supabase invocations for the Cloudflare Tunnel URL staging-api-829c83.commonbond.au (reference CICD-10 for the automated check); (2) Live ENV-05 prod-deploy.yml approval workflow link; (3) Actual Supabase project-ref values for staging and prod; (4) DB diff review procedure using 'supabase db diff --schema public' against the live instances. This task must NOT create a new file \u2014 it updates promotion-runbook.md in-place.",
+          "description": "Extend the staging-to-prod promotion runbook already created by ENV-09-T1 (docs/operations/promotion-runbook.md). Add the following post-provisioning sections that can only be written once the real infrastructure is running: (1) Staging smoke test commands — exact curl/supabase invocations for the Cloudflare Tunnel URL staging-api-829c83.commonbond.au (reference CICD-10 for the automated check); (2) Live ENV-05 prod-deploy.yml approval workflow link; (3) Actual Supabase project-ref values for staging and prod; (4) DB diff review procedure using 'supabase db diff --schema public' against the live instances. This task must NOT create a new file — it updates promotion-runbook.md in-place.",
           "targetFile": "/home/ryana/development/common-bond/supabase-receptor/docs/operations/promotion-runbook.md",
           "completedAt": "2026-03-12T09:45:00Z",
           "completedBy": "session-7-260312"
@@ -517,12 +517,12 @@
       "category": "Documentation Gap",
       "repo": "supabase-receptor",
       "area": "Secrets vault",
-      "description": "Vault configuration guide for the k3s deployment. The Bitwarden/Doppler TODO in key-management.md:86-88 is superseded \u2014 the decision was made in the clarifications to use HashiCorp Vault OSS on k3s (SEC-06, ADR-006). DOC-01 now covers the post-provisioning Vault documentation that can only be written once Vault is live: OIDC JWT auth setup for GitHub Actions, database secrets engine configuration (dynamic short-lived Postgres credentials per CI run), Vault Secrets Operator (VSO) CRD patterns for injecting secrets into k3s pods, and the KV v2 path structure for static API keys.",
+      "description": "Vault configuration guide for the k3s deployment. The Bitwarden/Doppler TODO in key-management.md:86-88 is superseded — the decision was made in the clarifications to use HashiCorp Vault OSS on k3s (SEC-06, ADR-006). DOC-01 now covers the post-provisioning Vault documentation that can only be written once Vault is live: OIDC JWT auth setup for GitHub Actions, database secrets engine configuration (dynamic short-lived Postgres credentials per CI run), Vault Secrets Operator (VSO) CRD patterns for injecting secrets into k3s pods, and the KV v2 path structure for static API keys.",
       "tasks": [
         {
           "taskId": "DOC-01-T1",
           "status": "complete",
-          "description": "[comprehensive_review_3 GAP-3 cross-reference gate] This guide MUST cross-reference ADR-005-vault-ci-oidc-bridge.md (ARCH-11) for all OIDC architecture decisions. Do not re-derive Vault auth method, bound claims, or policy names \u2014 import them from the ADR. ORIGINAL TASK: Write docs/infrastructure/security/vault-configuration.md covering: (1) OIDC JWT auth \u2014 how GitHub Actions authenticates via OIDC token to Vault without long-lived secrets; (2) Database secrets engine \u2014 how Vault issues dynamic short-lived Postgres credentials per CI run and the lease TTL configuration; (3) Vault Secrets Operator (VSO) CRD patterns \u2014 how k3s pods consume secrets via VaultStaticSecret and VaultDynamicSecret CRDs; (4) KV v2 path structure \u2014 canonical paths for all static secrets (infrastructure/cloudflare-dns01-token, infrastructure/slack-incidents-webhook, infrastructure/slack-deployments-webhook, infrastructure/backblaze-b2-aus-key); (5) Renewal and rotation procedure for each secret category. Update the key-management.md TODO block (line 86-88) to close it with a reference to this new document. Link from ONBOARDING.md (DOC-06).",
+          "description": "[comprehensive_review_3 GAP-3 cross-reference gate] This guide MUST cross-reference ADR-005-vault-ci-oidc-bridge.md (ARCH-11) for all OIDC architecture decisions. Do not re-derive Vault auth method, bound claims, or policy names — import them from the ADR. ORIGINAL TASK: Write docs/infrastructure/security/vault-configuration.md covering: (1) OIDC JWT auth — how GitHub Actions authenticates via OIDC token to Vault without long-lived secrets; (2) Database secrets engine — how Vault issues dynamic short-lived Postgres credentials per CI run and the lease TTL configuration; (3) Vault Secrets Operator (VSO) CRD patterns — how k3s pods consume secrets via VaultStaticSecret and VaultDynamicSecret CRDs; (4) KV v2 path structure — canonical paths for all static secrets (infrastructure/cloudflare-dns01-token, infrastructure/slack-incidents-webhook, infrastructure/slack-deployments-webhook, infrastructure/backblaze-b2-aus-key); (5) Renewal and rotation procedure for each secret category. Update the key-management.md TODO block (line 86-88) to close it with a reference to this new document. Link from ONBOARDING.md (DOC-06).",
           "targetFile": "/home/ryana/development/common-bond/supabase-receptor/docs/infrastructure/security/key-management.md",
           "completedAt": "2026-03-13T07:17:50.645408Z",
           "completedBy": "session-18-260313"
@@ -537,7 +537,7 @@
       "category": "Process Gap",
       "repo": "match-backend, receptor-planner",
       "area": "Backend CI integration test coverage",
-      "description": "match-backend integration tests (test_supabase_integration.py) are skipped in CI via pytest.mark.skipif when stub env vars are detected and are never run in CI. receptor-planner runs bare pytest with no path scoping \u2014 no unit/integration tier separation exists, meaning all tests run against stub URLs with misleading pass/fail results.",
+      "description": "match-backend integration tests (test_supabase_integration.py) are skipped in CI via pytest.mark.skipif when stub env vars are detected and are never run in CI. receptor-planner runs bare pytest with no path scoping — no unit/integration tier separation exists, meaning all tests run against stub URLs with misleading pass/fail results.",
       "tasks": [
         {
           "taskId": "BACK-01-T1",
@@ -680,7 +680,7 @@
         {
           "taskId": "SEC-02-T2",
           "status": "complete",
-          "description": "Update SoA control 8.8 (Management of technical vulnerabilities) in docs/compliance/iso27001/operations/soa.md. Current status is 'Partial \u2014 Dependabot enabled; no formal vulnerability disclosure policy'. Add a note that CI Action SHA pinning + Renovate Bot extends supply-chain vulnerability management to the build toolchain.",
+          "description": "Update SoA control 8.8 (Management of technical vulnerabilities) in docs/compliance/iso27001/operations/soa.md. Current status is 'Partial — Dependabot enabled; no formal vulnerability disclosure policy'. Add a note that CI Action SHA pinning + Renovate Bot extends supply-chain vulnerability management to the build toolchain.",
           "targetFile": "/home/ryana/development/common-bond/documentation/common-bond/docs/compliance/iso27001/operations/soa.md"
         }
       ],
@@ -738,7 +738,7 @@
         {
           "taskId": "ENV-05-T0",
           "status": "complete",
-          "description": "[Phase 7.5 gate \u2014 comprehensive_review_3 GAP-1] PRE-DEPLOY BACKUP GATE: In prod-deploy.yml (ENV-05-T1), add a mandatory pre-migration step that invokes scripts/backup-prod.sh (or a lightweight pg_dump --schema-only + pg_dump --data-only) before any supabase db push. The deploy job MUST fail if the backup step exits non-zero. This converts the RPO for botched migrations from 'time since last cron backup' (up to 15h) to 'time since deploy started' (\u22480). Additionally, create docs/operations/migration-rollback.md documenting: (1) how to restore from the pre-deploy backup; (2) supabase db diff reverse-migration generation; (3) when to use point-in-time recovery vs full restore; (4) communication protocol for failed production deploys.",
+          "description": "[Phase 7.5 gate — comprehensive_review_3 GAP-1] PRE-DEPLOY BACKUP GATE: In prod-deploy.yml (ENV-05-T1), add a mandatory pre-migration step that invokes scripts/backup-prod.sh (or a lightweight pg_dump --schema-only + pg_dump --data-only) before any supabase db push. The deploy job MUST fail if the backup step exits non-zero. This converts the RPO for botched migrations from 'time since last cron backup' (up to 15h) to 'time since deploy started' (≈0). Additionally, create docs/operations/migration-rollback.md documenting: (1) how to restore from the pre-deploy backup; (2) supabase db diff reverse-migration generation; (3) when to use point-in-time recovery vs full restore; (4) communication protocol for failed production deploys.",
           "targetFile": "/home/ryana/development/common-bond/supabase-receptor/.github/workflows/prod-deploy.yml",
           "completedAt": "2026-03-13T02:58:00Z",
           "completedBy": "session-15-260313"
@@ -754,7 +754,7 @@
         {
           "taskId": "ENV-05-T2",
           "status": "complete",
-          "description": "Update SoA control 8.32 (Change management) in docs/compliance/iso27001/operations/soa.md from 'Implemented \u2014 all ISMS document changes via Git PR workflow; infrastructure changes reviewed informally' to 'Implemented' once prod-deploy.yml is active with GitHub Environment protection. Update the implementation notes to cite the prod-deploy.yml workflow as the production DB change gate.",
+          "description": "Update SoA control 8.32 (Change management) in docs/compliance/iso27001/operations/soa.md from 'Implemented — all ISMS document changes via Git PR workflow; infrastructure changes reviewed informally' to 'Implemented' once prod-deploy.yml is active with GitHub Environment protection. Update the implementation notes to cite the prod-deploy.yml workflow as the production DB change gate.",
           "targetFile": "/home/ryana/development/common-bond/documentation/common-bond/docs/compliance/iso27001/operations/soa.md",
           "completedAt": "2026-03-13T02:58:00Z",
           "completedBy": "session-15-260313"
@@ -762,7 +762,7 @@
         {
           "taskId": "ENV-05-T3",
           "status": "complete",
-          "description": "Update Supabase audits table via REST API upsert to note that ENV-05 (production migration gate) addresses ISO 27001 A.8.32. This is a documentation-only update to the governance register \u2014 no schema change required.",
+          "description": "Update Supabase audits table via REST API upsert to note that ENV-05 (production migration gate) addresses ISO 27001 A.8.32. This is a documentation-only update to the governance register — no schema change required.",
           "targetFile": "",
           "completedAt": "2026-03-13T11:15:42Z",
           "completedBy": "e6969860-51e0-4977-9d09-c134ab3f9d04"
@@ -782,7 +782,7 @@
         {
           "taskId": "ARCH-05-T1",
           "status": "complete",
-          "description": "Create docs/adr/ directory in supabase-receptor. Write ADR-001 (k3s cluster selection rationale over Docker Compose/Swarm/Nomad), ADR-002 (self-hosted runner vs GitHub-hosted), ADR-003 (Docker network isolation vs k8s namespace isolation). Use standard ADR template: Context, Decision, Consequences. ADR-001 MUST include the following Helm chart caveat in its Consequences section: 'The Supabase community Helm chart (supabase-community/supabase-kubernetes) is not officially maintained by Supabase and may lag Docker Compose feature releases by weeks-to-months. Mitigation: pin the chart to a known-working version (ARCH-09 Helmfile). Fallback if chart falls significantly behind: run Supabase as Docker Compose inside a k3s Pod using a Docker-out-of-Docker (DooD) sidecar with the host Docker socket mounted, or accept delayed upgrades on the Helm chart until it catches up. This fallback must be re-evaluated at each quarterly Helm upgrade review (ARCH-09-T2) \u2014 if the chart lags by more than one minor Supabase version, escalate to the DooD fallback.'",
+          "description": "Create docs/adr/ directory in supabase-receptor. Write ADR-001 (k3s cluster selection rationale over Docker Compose/Swarm/Nomad), ADR-002 (self-hosted runner vs GitHub-hosted), ADR-003 (Docker network isolation vs k8s namespace isolation). Use standard ADR template: Context, Decision, Consequences. ADR-001 MUST include the following Helm chart caveat in its Consequences section: 'The Supabase community Helm chart (supabase-community/supabase-kubernetes) is not officially maintained by Supabase and may lag Docker Compose feature releases by weeks-to-months. Mitigation: pin the chart to a known-working version (ARCH-09 Helmfile). Fallback if chart falls significantly behind: run Supabase as Docker Compose inside a k3s Pod using a Docker-out-of-Docker (DooD) sidecar with the host Docker socket mounted, or accept delayed upgrades on the Helm chart until it catches up. This fallback must be re-evaluated at each quarterly Helm upgrade review (ARCH-09-T2) — if the chart lags by more than one minor Supabase version, escalate to the DooD fallback.'",
           "targetFile": "/home/ryana/development/common-bond/supabase-receptor/docs/adr/README.md",
           "completedAt": "2026-03-12T04:13:37Z",
           "completedBy": "1f057739-dd49-4553-9a66-cf607aebf04f"
@@ -790,7 +790,7 @@
         {
           "taskId": "ARCH-05-T2",
           "status": "complete",
-          "description": "[comprehensive_review_3 ENH-4 \u2014 amended] Register each ADR as an entry in the existing 'standards' table in supabase-common-bond with category='adr'. Add a 'document_path' column if not already present. Do NOT create a separate architecture_decisions table \u2014 use the existing governance schema to avoid unnecessary schema proliferation. The standards table already has columns for reference, status, and owner which map directly to ADR metadata.",
+          "description": "[comprehensive_review_3 ENH-4 — amended] Register each ADR as an entry in the existing 'standards' table in supabase-common-bond with category='adr'. Add a 'document_path' column if not already present. Do NOT create a separate architecture_decisions table — use the existing governance schema to avoid unnecessary schema proliferation. The standards table already has columns for reference, status, and owner which map directly to ADR metadata.",
           "targetFile": "",
           "completedAt": "2026-03-13T11:15:42Z",
           "completedBy": "e6969860-51e0-4977-9d09-c134ab3f9d04"
@@ -824,7 +824,7 @@
           "deferredBy": "agent-session-21",
           "deferredDate": "2026-03-14",
           "deferredUntil": "2026-05-09",
-          "deferralNote": "Deferred 8 weeks per Founder decision (2026-03-14). Rationale: CI needs stabilisation period. Pre-check validation (SEC-03-T0) found ci-required-checks.md matrix is stale \u2014 job names do not match actual ci.yml keys (e.g. matrix says validate/test/build but actual keys are database-tests/deno-check). Matrix must be refreshed before branch protection can be enabled."
+          "deferralNote": "Deferred 8 weeks per Founder decision (2026-03-14). Rationale: CI needs stabilisation period. Pre-check validation (SEC-03-T0) found ci-required-checks.md matrix is stale — job names do not match actual ci.yml keys (e.g. matrix says validate/test/build but actual keys are database-tests/deno-check). Matrix must be refreshed before branch protection can be enabled."
         }
       ],
       "severity_history": []
@@ -841,7 +841,7 @@
         {
           "taskId": "CICD-06-T1",
           "status": "complete",
-          "description": "Add a 'package-ecosystem: github-actions' block to each repo's .github/dependabot.yml (or create the file if absent), with update-schedule: weekly and target-branch: main. Ensure Renovate Bot and Dependabot are not duplicating the same bump \u2014 prefer Renovate if already configured for the repo.",
+          "description": "Add a 'package-ecosystem: github-actions' block to each repo's .github/dependabot.yml (or create the file if absent), with update-schedule: weekly and target-branch: main. Ensure Renovate Bot and Dependabot are not duplicating the same bump — prefer Renovate if already configured for the repo.",
           "targetFile": ""
         }
       ],
@@ -916,7 +916,7 @@
         {
           "taskId": "PROC-01-T2",
           "status": "complete",
-          "description": "[Phase 7.5 gate: verify this task is scheduled in Phase 11, not Phase 2 only] LIVING DOCUMENT REFRESH (mandatory before Phase 12): After Phase 5 CI hardening is complete (CICD-02 CLI pin, CICD-05 timeouts, CICD-09 composite action, CGEN-01/02 codegen gate fixes, BACK-01 backend test scoping), review and update the required check matrix in docs/operations/ci-required-checks.md for any new, renamed, or removed GitHub Actions job names introduced during Phases 4 and 5. The check matrix written in Phase 2 is a planning document \u2014 this T2 task produces the production-accurate version that is actually used to configure branch protection rules in SEC-03-T1 (Phase 12). Do not enable branch protection until this refresh is complete and verified against a live CI run showing all listed job names in the GitHub Actions tab.",
+          "description": "[Phase 7.5 gate: verify this task is scheduled in Phase 11, not Phase 2 only] LIVING DOCUMENT REFRESH (mandatory before Phase 12): After Phase 5 CI hardening is complete (CICD-02 CLI pin, CICD-05 timeouts, CICD-09 composite action, CGEN-01/02 codegen gate fixes, BACK-01 backend test scoping), review and update the required check matrix in docs/operations/ci-required-checks.md for any new, renamed, or removed GitHub Actions job names introduced during Phases 4 and 5. The check matrix written in Phase 2 is a planning document — this T2 task produces the production-accurate version that is actually used to configure branch protection rules in SEC-03-T1 (Phase 12). Do not enable branch protection until this refresh is complete and verified against a live CI run showing all listed job names in the GitHub Actions tab.",
           "targetFile": "/home/ryana/development/common-bond/supabase-receptor/docs/operations/ci-required-checks.md",
           "completedAt": "2026-03-12T22:12:49Z",
           "completedBy": "session-7-260312"
@@ -984,7 +984,7 @@
         {
           "taskId": "DOC-04-T1",
           "status": "complete",
-          "description": "Write docs/operations/ci-troubleshooting.md with the following sections: (1) Boot hang \u2014 signature: step 'Supabase Start' hangs beyond 4 min, fix: add --ignore-health-check flag and timeout-minutes to job; (2) Key format mismatch \u2014 signature: auth.signInWithPassword returns 400 in CI only, fix: check dual-key export in ci.yml globalSetup; (3) Codegen false positive \u2014 signature: 'GraphQL schema has changed' in CI but not locally, fix: pin supabase-cli version, don't use latest.",
+          "description": "Write docs/operations/ci-troubleshooting.md with the following sections: (1) Boot hang — signature: step 'Supabase Start' hangs beyond 4 min, fix: add --ignore-health-check flag and timeout-minutes to job; (2) Key format mismatch — signature: auth.signInWithPassword returns 400 in CI only, fix: check dual-key export in ci.yml globalSetup; (3) Codegen false positive — signature: 'GraphQL schema has changed' in CI but not locally, fix: pin supabase-cli version, don't use latest.",
           "targetFile": "/home/ryana/development/common-bond/supabase-receptor/docs/operations/ci-troubleshooting.md",
           "completedAt": "2026-03-12T04:13:37Z",
           "completedBy": "1f057739-dd49-4553-9a66-cf607aebf04f"
@@ -999,7 +999,7 @@
       "category": "Security",
       "repo": "supabase-receptor",
       "area": "Docker image provenance and digest pinning",
-      "description": "The self-hosted Supabase stack pulls Docker images by tag (e.g. supabase/postgres:15.1.0.117) without digest pinning or Cosign signature verification. A tag is mutable \u2014 it can be repointed to a malicious image silently. This is a supply-chain risk for the infrastructure layer.",
+      "description": "The self-hosted Supabase stack pulls Docker images by tag (e.g. supabase/postgres:15.1.0.117) without digest pinning or Cosign signature verification. A tag is mutable — it can be repointed to a malicious image silently. This is a supply-chain risk for the infrastructure layer.",
       "tasks": [
         {
           "taskId": "SEC-04-T1",
@@ -1023,7 +1023,7 @@
       "category": "Strategic Opportunity",
       "repo": "supabase-receptor",
       "area": "Observability stack (metrics, logs, traces)",
-      "description": "The k3s cluster has no observability stack. When Supabase or a CI job fails on the cluster there is no visibility into why \u2014 no metrics, no log aggregation, no traces. Grafana + Prometheus + Loki (Helm-deployed) is the standard minimal self-hosted stack. Supports ISO 27001 A.8.16 (monitoring activities).",
+      "description": "The k3s cluster has no observability stack. When Supabase or a CI job fails on the cluster there is no visibility into why — no metrics, no log aggregation, no traces. Grafana + Prometheus + Loki (Helm-deployed) is the standard minimal self-hosted stack. Supports ISO 27001 A.8.16 (monitoring activities).",
       "tasks": [
         {
           "taskId": "ARCH-07-T1",
@@ -1036,7 +1036,7 @@
         {
           "taskId": "ARCH-07-T2",
           "status": "complete",
-          "description": "Update SoA control 8.16 (Monitoring activities) in docs/compliance/iso27001/operations/soa.md to reflect that infrastructure monitoring is now implemented via Prometheus/Grafana/Loki on the k3s cluster. Document the alert channel (Alertmanager \u2192 Slack only \u2014 two webhooks: #incidents for P1/P2 alerts, #deployments for informational events; no email or PagerDuty) and the log retention policy (30-day online Loki, archived to Cloudflare R2 APAC). Cite PROC-02 clarification confirming Slack-only policy.",
+          "description": "Update SoA control 8.16 (Monitoring activities) in docs/compliance/iso27001/operations/soa.md to reflect that infrastructure monitoring is now implemented via Prometheus/Grafana/Loki on the k3s cluster. Document the alert channel (Alertmanager → Slack only — two webhooks: #incidents for P1/P2 alerts, #deployments for informational events; no email or PagerDuty) and the log retention policy (30-day online Loki, archived to Cloudflare R2 APAC). Cite PROC-02 clarification confirming Slack-only policy.",
           "targetFile": "/home/ryana/development/common-bond/documentation/common-bond/docs/compliance/iso27001/operations/soa.md",
           "completedAt": "2026-03-12T04:33:33Z",
           "completedBy": "session-2-phase3-2026-03-12"
@@ -1051,13 +1051,15 @@
       "category": "Process Gap",
       "repo": "supabase-receptor",
       "area": "Automated Supabase production backup to Cloudflare R2",
-      "description": "The production Supabase instance has no scheduled backup. Self-hosted Supabase relies on postgres WAL or pg_dump \u2014 neither is configured. Data loss risk in the event of disk failure, ransomware, or accidental migration is unmitigated. ISO 27001 A.8.13 (information backup) requires documented backup and recovery procedures.",
+      "description": "The production Supabase instance has no scheduled backup. Self-hosted Supabase relies on postgres WAL or pg_dump — neither is configured. Data loss risk in the event of disk failure, ransomware, or accidental migration is unmitigated. ISO 27001 A.8.13 (information backup) requires documented backup and recovery procedures.",
       "tasks": [
         {
           "taskId": "ENV-08-T1",
-          "status": "open",
-          "description": "[comprehensive_review_3 ENH-3 BLOCKER] Requires a running k3s cluster with Postgres accessible via kubectl port-forward. ARCH-04 completed the manifests and documentation only \u2014 physical cluster provisioning is an operational step that must be completed before this task can execute. Do not attempt until 'kubectl get nodes' shows a Ready node. ORIGINAL TASK: Write a backup script (scripts/backup-prod.sh) that runs pg_dumpall against the production Postgres pod and streams the compressed dump to Cloudflare R2 using rclone (configured with a dedicated R2 access key scoped to the backup bucket). Schedule EXCLUSIVELY via crontab in the control-plane Ubuntu VM (NOT as a k3s CronJob) \u2014 this ensures backups run regardless of k3s cluster health during a disaster recovery scenario. The VM must have pg_dumpall, rclone, and kubectl installed; access the Postgres pod via 'kubectl port-forward svc/supabase-db 5432:5432 -n supabase' run as a background step in the script before the pg_dumpall call. Cron schedule: daily at 02:00 AEST ('0 15 * * * AEST'), weekly full dump on Sunday at 01:00 AEST ('0 14 * * 0 AEST'). Store the rclone config and R2 access key in the VM's ~/.config/rclone/rclone.conf (populated from Vault KV at VM boot via a systemd oneshot service). The ENV-11 secondary Backblaze B2 upload is also triggered from this same script \u2014 see ENV-11-T1.",
-          "targetFile": "/home/ryana/development/common-bond/supabase-receptor/scripts/backup-prod.sh"
+          "status": "complete",
+          "description": "[comprehensive_review_3 ENH-3 BLOCKER] Requires a running k3s cluster with Postgres accessible via kubectl port-forward. ARCH-04 completed the manifests and documentation only — physical cluster provisioning is an operational step that must be completed before this task can execute. Do not attempt until 'kubectl get nodes' shows a Ready node. ORIGINAL TASK: Write a backup script (scripts/backup-prod.sh) that runs pg_dumpall against the production Postgres pod and streams the compressed dump to Cloudflare R2 using rclone (configured with a dedicated R2 access key scoped to the backup bucket). Schedule EXCLUSIVELY via crontab in the control-plane Ubuntu VM (NOT as a k3s CronJob) — this ensures backups run regardless of k3s cluster health during a disaster recovery scenario. The VM must have pg_dumpall, rclone, and kubectl installed; access the Postgres pod via 'kubectl port-forward svc/supabase-db 5432:5432 -n supabase' run as a background step in the script before the pg_dumpall call. Cron schedule: daily at 02:00 AEST ('0 15 * * * AEST'), weekly full dump on Sunday at 01:00 AEST ('0 14 * * 0 AEST'). Store the rclone config and R2 access key in the VM's ~/.config/rclone/rclone.conf (populated from Vault KV at VM boot via a systemd oneshot service). The ENV-11 secondary Backblaze B2 upload is also triggered from this same script — see ENV-11-T1.",
+          "targetFile": "/home/ryana/development/common-bond/supabase-receptor/scripts/backup-prod.sh",
+          "completedAt": "2026-03-15T09:10:34Z",
+          "completedBy": "session-27-backup-deploy"
         },
         {
           "taskId": "ENV-08-T2",
@@ -1106,12 +1108,12 @@
       "category": "Documentation Gap",
       "repo": "supabase-receptor",
       "area": "Disaster recovery plan",
-      "description": "The k3s node is a single point of failure. If the Windows 11 Pro machine fails, recovery time and procedure are undefined. Without a documented DR plan, recovery involves guesswork \u2014 especially for stateful services (Supabase Postgres volumes, Vault unsealing, k3s etcd). ISO 27001 A.8.14 (redundancy of information processing facilities) and A.5.30 (ICT readiness for business continuity).",
+      "description": "The k3s node is a single point of failure. If the Windows 11 Pro machine fails, recovery time and procedure are undefined. Without a documented DR plan, recovery involves guesswork — especially for stateful services (Supabase Postgres volumes, Vault unsealing, k3s etcd). ISO 27001 A.8.14 (redundancy of information processing facilities) and A.5.30 (ICT readiness for business continuity).",
       "tasks": [
         {
           "taskId": "DOC-05-T1",
           "status": "complete",
-          "description": "Write docs/infrastructure/disaster-recovery.md covering: (1) RTO target (4 hours) and RPO target (24 hours); (2) what data lives where \u2014 Supabase Postgres volumes (R2 backup via ENV-08), Vault unseal keys and root token (secure offline storage), k3s etcd snapshot (rke2-etcd-snapshots); (3) step-by-step recovery for each component in priority order; (4) contact list for who to notify during an incident. Test the DR procedure quarterly.",
+          "description": "Write docs/infrastructure/disaster-recovery.md covering: (1) RTO target (4 hours) and RPO target (24 hours); (2) what data lives where — Supabase Postgres volumes (R2 backup via ENV-08), Vault unseal keys and root token (secure offline storage), k3s etcd snapshot (rke2-etcd-snapshots); (3) step-by-step recovery for each component in priority order; (4) contact list for who to notify during an incident. Test the DR procedure quarterly.",
           "targetFile": "/home/ryana/development/common-bond/supabase-receptor/docs/infrastructure/disaster-recovery.md",
           "completedAt": "2026-03-12T04:13:37Z",
           "completedBy": "1f057739-dd49-4553-9a66-cf607aebf04f"
@@ -1187,7 +1189,7 @@
         {
           "taskId": "ENV-09-T1",
           "status": "complete",
-          "description": "Write docs/operations/promotion-runbook.md covering the staging-to-production promotion gate: (1) run staging smoke tests (list specific test commands); (2) review 'supabase db diff' output between staging and prod schemas; (3) trigger ENV-05 prod-deploy.yml workflow \u2014 awaits human approval; (4) stakeholder sign-off (who approves and how); (5) post-deploy verification steps; (6) rollback procedure (restore from latest R2 backup, revert migration). Include a checklist template for use in each deployment PR.",
+          "description": "Write docs/operations/promotion-runbook.md covering the staging-to-production promotion gate: (1) run staging smoke tests (list specific test commands); (2) review 'supabase db diff' output between staging and prod schemas; (3) trigger ENV-05 prod-deploy.yml workflow — awaits human approval; (4) stakeholder sign-off (who approves and how); (5) post-deploy verification steps; (6) rollback procedure (restore from latest R2 backup, revert migration). Include a checklist template for use in each deployment PR.",
           "targetFile": "/home/ryana/development/common-bond/supabase-receptor/docs/operations/promotion-runbook.md",
           "completedAt": "2026-03-12T04:13:37Z",
           "completedBy": "1f057739-dd49-4553-9a66-cf607aebf04f"
@@ -1227,7 +1229,7 @@
         {
           "taskId": "DOC-06-T1",
           "status": "complete",
-          "description": "Write docs/ONBOARDING.md covering: (1) Prerequisites \u2014 WSL2/Linux, Docker, kubectl, k3s kubeconfig, Helmfile, Vault CLI, cloudflared, Supabase CLI, act (for local CI); (2) Dev environment setup \u2014 clone supabase-receptor, run setup.sh, verify Supabase starts; (3) Connecting to staging \u2014 Cloudflare Tunnel URL, Vault login via OIDC; (4) Running CI locally \u2014 see .agents/skills/act-local-ci/SKILL.md; (5) Key contacts \u2014 who owns prod, who owns Vault unseal key; (6) ADR index link.",
+          "description": "Write docs/ONBOARDING.md covering: (1) Prerequisites — WSL2/Linux, Docker, kubectl, k3s kubeconfig, Helmfile, Vault CLI, cloudflared, Supabase CLI, act (for local CI); (2) Dev environment setup — clone supabase-receptor, run setup.sh, verify Supabase starts; (3) Connecting to staging — Cloudflare Tunnel URL, Vault login via OIDC; (4) Running CI locally — see .agents/skills/act-local-ci/SKILL.md; (5) Key contacts — who owns prod, who owns Vault unseal key; (6) ADR index link.",
           "targetFile": "/home/ryana/development/common-bond/supabase-receptor/docs/ONBOARDING.md",
           "completedAt": "2026-03-12T22:47:10Z",
           "completedBy": "session-8-260313"
@@ -1262,7 +1264,7 @@
       "category": "Strategic Opportunity",
       "repo": "supabase-receptor",
       "area": "TLS and cert-manager for k3s (Let's Encrypt wildcard via DNS-01)",
-      "description": "Vault, Grafana, Traefik ingress, and the staging Supabase API all need TLS. Without cert-manager, certificates are self-signed (no auto-rotation) or manually managed. Cloudflare DNS-01 challenge is one of the few ACME challenge types that supports wildcard certificates (*.commonbond.au) \u2014 confirmed compatible with Let's Encrypt.",
+      "description": "Vault, Grafana, Traefik ingress, and the staging Supabase API all need TLS. Without cert-manager, certificates are self-signed (no auto-rotation) or manually managed. Cloudflare DNS-01 challenge is one of the few ACME challenge types that supports wildcard certificates (*.commonbond.au) — confirmed compatible with Let's Encrypt.",
       "tasks": [
         {
           "taskId": "ARCH-10-T1",
@@ -1310,7 +1312,7 @@
       "category": "Security",
       "repo": "supabase-receptor",
       "area": "Falco runtime security on k3s",
-      "description": "Calico (ARCH-08) enforces network-level isolation between pods, but no tool monitors for anomalous behaviour inside running containers \u2014 e.g. a shell spawned inside the Supabase postgres pod, unexpected writes to /etc, or kubectl exec from an untrusted source. Falco provides lightweight anomaly detection at the kernel syscall level.",
+      "description": "Calico (ARCH-08) enforces network-level isolation between pods, but no tool monitors for anomalous behaviour inside running containers — e.g. a shell spawned inside the Supabase postgres pod, unexpected writes to /etc, or kubectl exec from an untrusted source. Falco provides lightweight anomaly detection at the kernel syscall level.",
       "tasks": [
         {
           "taskId": "SEC-07-T1",
@@ -1371,7 +1373,7 @@
         {
           "taskId": "PROC-02-T2",
           "status": "complete",
-          "description": "Write docs/operations/incident-response.md covering: (1) severity tiers \u2014 P1 (production down, data breach), P2 (degraded service), P3 (non-critical); (2) for each tier: who is notified (Slack alert to founder), expected response time, escalation steps; (3) post-mortem template (5-whys, timeline, action items); (4) link to DR plan (DOC-05) and rollback procedure. Update SoA control 5.26 in docs/compliance/iso27001/operations/soa.md to 'Implemented' once this document exists and alerts are live.",
+          "description": "Write docs/operations/incident-response.md covering: (1) severity tiers — P1 (production down, data breach), P2 (degraded service), P3 (non-critical); (2) for each tier: who is notified (Slack alert to founder), expected response time, escalation steps; (3) post-mortem template (5-whys, timeline, action items); (4) link to DR plan (DOC-05) and rollback procedure. Update SoA control 5.26 in docs/compliance/iso27001/operations/soa.md to 'Implemented' once this document exists and alerts are live.",
           "targetFile": "/home/ryana/development/common-bond/supabase-receptor/docs/operations/incident-response.md",
           "completedAt": "2026-03-12T04:33:35Z",
           "completedBy": "session-2-phase3-2026-03-12"
@@ -1385,13 +1387,13 @@
       "status": "complete",
       "category": "Security",
       "repo": "supabase-receptor",
-      "area": "Kubernetes RBAC \u2014 ServiceAccounts and least-privilege RoleBindings",
-      "description": "The k3s cluster plan (ARCH-04) deploys Supabase, Vault, Grafana, Falco, and the GitHub Actions self-hosted runner as workloads in distinct namespaces. Without explicit ServiceAccount, Role, and RoleBinding manifests, all pods inherit the default ServiceAccount \u2014 which in k3s defaults to cluster-admin-equivalent API server access. A compromised Supabase pod could list secrets across all namespaces; the GitHub Actions runner could kubectl delete production pods. Calico NetworkPolicy (ARCH-08) isolates network traffic but does not restrict API server access \u2014 RBAC is the complementary control. ISO 27001 A.8.3 (Information access restriction), A.8.18 (Use of privileged utility programs).",
+      "area": "Kubernetes RBAC — ServiceAccounts and least-privilege RoleBindings",
+      "description": "The k3s cluster plan (ARCH-04) deploys Supabase, Vault, Grafana, Falco, and the GitHub Actions self-hosted runner as workloads in distinct namespaces. Without explicit ServiceAccount, Role, and RoleBinding manifests, all pods inherit the default ServiceAccount — which in k3s defaults to cluster-admin-equivalent API server access. A compromised Supabase pod could list secrets across all namespaces; the GitHub Actions runner could kubectl delete production pods. Calico NetworkPolicy (ARCH-08) isolates network traffic but does not restrict API server access — RBAC is the complementary control. ISO 27001 A.8.3 (Information access restriction), A.8.18 (Use of privileged utility programs).",
       "tasks": [
         {
           "taskId": "SEC-08-T1",
           "status": "complete",
-          "description": "Create a dedicated ServiceAccount per workload in each namespace: sa-supabase-kong, sa-vault, sa-grafana, sa-falco, sa-github-runner. Bind each to a minimal Role or ClusterRole: (1) sa-github-runner: get/list/watch pods in supabase-* namespaces; create/delete namespaces prefixed 'receptor-ci-*' for ephemeral branch environments; no cluster-admin. (2) sa-supabase-*: no API server role binding at all \u2014 default deny. (3) sa-grafana: get/list pods and nodes for Prometheus scrape path only. (4) sa-vault: get on secrets in the 'vault' namespace only, no cross-namespace access. Store all manifests in k3s/rbac/. Apply via helmfile or kubectl apply -f k3s/rbac/ as part of Phase 3 cluster provisioning.",
+          "description": "Create a dedicated ServiceAccount per workload in each namespace: sa-supabase-kong, sa-vault, sa-grafana, sa-falco, sa-github-runner. Bind each to a minimal Role or ClusterRole: (1) sa-github-runner: get/list/watch pods in supabase-* namespaces; create/delete namespaces prefixed 'receptor-ci-*' for ephemeral branch environments; no cluster-admin. (2) sa-supabase-*: no API server role binding at all — default deny. (3) sa-grafana: get/list pods and nodes for Prometheus scrape path only. (4) sa-vault: get on secrets in the 'vault' namespace only, no cross-namespace access. Store all manifests in k3s/rbac/. Apply via helmfile or kubectl apply -f k3s/rbac/ as part of Phase 3 cluster provisioning.",
           "targetFile": "/home/ryana/development/common-bond/supabase-receptor/k3s/rbac/serviceaccounts.yaml",
           "completedAt": "2026-03-12T04:33:34Z",
           "completedBy": "session-2-phase3-2026-03-12"
@@ -1414,7 +1416,7 @@
       "category": "Process Gap",
       "repo": "supabase-receptor",
       "area": "Windows 11 Pro host OS patch management and reboot recovery",
-      "description": "The k3s cluster runs on Hyper-V VMs hosted on a Windows 11 Pro machine. Windows Update can forcibly reboot the host without warning, taking down all three Hyper-V VMs and the entire k3s cluster \u2014 a P1 production incident. Windows 11 Pro defaults to automatic restarts after update installation. Additionally, updates may alter Hyper-V configuration, virtual switch networking, or driver state, requiring manual intervention post-reboot. The Vault auto-unseal via YubiKey (SEC-06) covers the unseal flow but the full boot sequence (Hyper-V \u2192 Ubuntu VMs \u2192 k3s \u2192 Vault \u2192 Supabase \u2192 Cloudflare Tunnel \u2192 Falco) must be documented and tested after a host reboot. ISO 27001 A.8.8 (Management of technical vulnerabilities), A.8.14 (Redundancy of information processing facilities).",
+      "description": "The k3s cluster runs on Hyper-V VMs hosted on a Windows 11 Pro machine. Windows Update can forcibly reboot the host without warning, taking down all three Hyper-V VMs and the entire k3s cluster — a P1 production incident. Windows 11 Pro defaults to automatic restarts after update installation. Additionally, updates may alter Hyper-V configuration, virtual switch networking, or driver state, requiring manual intervention post-reboot. The Vault auto-unseal via YubiKey (SEC-06) covers the unseal flow but the full boot sequence (Hyper-V → Ubuntu VMs → k3s → Vault → Supabase → Cloudflare Tunnel → Falco) must be documented and tested after a host reboot. ISO 27001 A.8.8 (Management of technical vulnerabilities), A.8.14 (Redundancy of information processing facilities).",
       "tasks": [
         {
           "taskId": "OPS-01-T1",
@@ -1427,7 +1429,7 @@
         {
           "taskId": "OPS-01-T2",
           "status": "complete",
-          "description": "Write docs/operations/host-reboot-recovery.md \u2014 a step-by-step recovery checklist to run after any host reboot (planned or unplanned): (1) Verify all 3 Hyper-V VMs are running: 'Get-VM | Select Name, State' (PowerShell on host). (2) Confirm k3s cluster is healthy: 'kubectl get nodes' \u2014 all nodes should be Ready within ~60 seconds. (3) Confirm Vault unsealed: 'vault status' \u2014 YubiKey auto-unseal should trigger automatically (SEC-06); if not, document manual unseal procedure. (4) Confirm Supabase pods ready: 'kubectl get pods -n supabase' \u2014 all Running. (5) Verify Cloudflare Tunnel reconnected: 'cloudflared tunnel info receptor-staging'. (6) Send a Slack deployment-channel notification confirming recovery. Link this checklist from PROC-02 (incident response) and ONBOARDING.md (DOC-06). Add a Grafana/Loki alert rule for cluster node NotReady > 2 minutes as an automated recovery notification trigger.",
+          "description": "Write docs/operations/host-reboot-recovery.md — a step-by-step recovery checklist to run after any host reboot (planned or unplanned): (1) Verify all 3 Hyper-V VMs are running: 'Get-VM | Select Name, State' (PowerShell on host). (2) Confirm k3s cluster is healthy: 'kubectl get nodes' — all nodes should be Ready within ~60 seconds. (3) Confirm Vault unsealed: 'vault status' — YubiKey auto-unseal should trigger automatically (SEC-06); if not, document manual unseal procedure. (4) Confirm Supabase pods ready: 'kubectl get pods -n supabase' — all Running. (5) Verify Cloudflare Tunnel reconnected: 'cloudflared tunnel info receptor-staging'. (6) Send a Slack deployment-channel notification confirming recovery. Link this checklist from PROC-02 (incident response) and ONBOARDING.md (DOC-06). Add a Grafana/Loki alert rule for cluster node NotReady > 2 minutes as an automated recovery notification trigger.",
           "targetFile": "/home/ryana/development/common-bond/supabase-receptor/docs/operations/host-reboot-recovery.md",
           "completedAt": "2026-03-12T04:13:37Z",
           "completedBy": "1f057739-dd49-4553-9a66-cf607aebf04f"
@@ -1442,7 +1444,7 @@
       "category": "Security",
       "repo": "supabase-receptor",
       "area": "Supabase PostgreSQL pgaudit extension for database-level audit logging",
-      "description": "The self-hosted Supabase PostgreSQL instance has no database-level audit log. Without pgaudit, there is no record of: which service account ran a DELETE or TRUNCATE on production tables; schema-changing DDL operations (ALTER TABLE, DROP INDEX) run outside the migration workflow; or GRANT/REVOKE privilege changes. If a compromised API key or rogue migration executes destructive SQL, the only forensic evidence is Supabase table-level data (from backups) \u2014 no tamper-resistant event log survives at the database layer. pgaudit runs inside PostgreSQL and persists to the WAL, making it tamper-resistant from the application layer. ISO 27001 A.8.15 (Logging), A.5.28 (Collection of evidence \u2014 forensic audit trail). This is a hard non-conformance finding against A.8.15 for any ISO 27001 readiness review.",
+      "description": "The self-hosted Supabase PostgreSQL instance has no database-level audit log. Without pgaudit, there is no record of: which service account ran a DELETE or TRUNCATE on production tables; schema-changing DDL operations (ALTER TABLE, DROP INDEX) run outside the migration workflow; or GRANT/REVOKE privilege changes. If a compromised API key or rogue migration executes destructive SQL, the only forensic evidence is Supabase table-level data (from backups) — no tamper-resistant event log survives at the database layer. pgaudit runs inside PostgreSQL and persists to the WAL, making it tamper-resistant from the application layer. ISO 27001 A.8.15 (Logging), A.5.28 (Collection of evidence — forensic audit trail). This is a hard non-conformance finding against A.8.15 for any ISO 27001 readiness review.",
       "tasks": [
         {
           "taskId": "SEC-09-T1",
@@ -1455,7 +1457,7 @@
         {
           "taskId": "SEC-09-T2",
           "status": "complete",
-          "description": "Document pgaudit scope and querying in docs/infrastructure/security/audit-logging.md: (1) what events are logged (DDL, ROLE, WRITE \u2014 not SELECT by default to avoid log volume explosion); (2) how to query audit events in Grafana/Loki using the 'pgaudit' label filter; (3) log retention policy: audit logs stream to Loki, then archived to Cloudflare R2 primary bucket (ENV-08) \u2014 90-day retention; (4) ISO 27001 A.8.15 and A.5.28 control mapping. Link audit-logging.md from ONBOARDING.md (DOC-06) as mandatory security reading for engineers with DB access. Update SoA A.8.15 (Logging) from 'Partial' to 'Implemented' once pgaudit is live.",
+          "description": "Document pgaudit scope and querying in docs/infrastructure/security/audit-logging.md: (1) what events are logged (DDL, ROLE, WRITE — not SELECT by default to avoid log volume explosion); (2) how to query audit events in Grafana/Loki using the 'pgaudit' label filter; (3) log retention policy: audit logs stream to Loki, then archived to Cloudflare R2 primary bucket (ENV-08) — 90-day retention; (4) ISO 27001 A.8.15 and A.5.28 control mapping. Link audit-logging.md from ONBOARDING.md (DOC-06) as mandatory security reading for engineers with DB access. Update SoA A.8.15 (Logging) from 'Partial' to 'Implemented' once pgaudit is live.",
           "targetFile": "/home/ryana/development/common-bond/supabase-receptor/docs/infrastructure/security/audit-logging.md",
           "completedAt": "2026-03-12T09:45:00Z",
           "completedBy": "session-7-260312"
@@ -1469,19 +1471,21 @@
       "status": "open",
       "category": "Process Gap",
       "repo": "supabase-receptor",
-      "area": "R2 backup secondary copy \u2014 Australian data residency with provider redundancy",
-      "description": "ENV-08 implements automated daily Postgres backups to Cloudflare R2 (APAC bucket, Sydney region). R2 does not natively replicate cross-region, and the APAC bucket is not guaranteed to persist to a second independent infrastructure provider. For Australian data residency compliance, all backup copies must remain on Australian-hosted storage \u2014 EU or ENAM R2 jurisdiction hints are not acceptable. Backblaze B2 operates an Australian datacenter (ap-southeast aka Sydney, SYD region) that is a separate infrastructure provider from Cloudflare, satisfying both residency and provider-redundancy requirements. Risk: if the primary R2 APAC bucket is unavailable during a recovery, no off-site copy exists. ISO 27001 A.8.13 (Information backup \u2014 off-site storage requirement), A.5.30 (ICT readiness for business continuity). Australian Privacy Principle 8 (cross-border disclosure) \u2014 data must not leave Australia.",
+      "area": "R2 backup secondary copy — Australian data residency with provider redundancy",
+      "description": "ENV-08 implements automated daily Postgres backups to Cloudflare R2 (APAC bucket, Sydney region). R2 does not natively replicate cross-region, and the APAC bucket is not guaranteed to persist to a second independent infrastructure provider. For Australian data residency compliance, all backup copies must remain on Australian-hosted storage — EU or ENAM R2 jurisdiction hints are not acceptable. Backblaze B2 operates an Australian datacenter (ap-southeast aka Sydney, SYD region) that is a separate infrastructure provider from Cloudflare, satisfying both residency and provider-redundancy requirements. Risk: if the primary R2 APAC bucket is unavailable during a recovery, no off-site copy exists. ISO 27001 A.8.13 (Information backup — off-site storage requirement), A.5.30 (ICT readiness for business continuity). Australian Privacy Principle 8 (cross-border disclosure) — data must not leave Australia.",
       "tasks": [
         {
           "taskId": "ENV-11-T1",
-          "status": "open",
-          "description": "[comprehensive_review_3 ENH-3 BLOCKER] Requires a running k3s cluster with Postgres accessible via kubectl port-forward. ARCH-04 completed the manifests and documentation only \u2014 physical cluster provisioning is an operational step that must be completed before this task can execute. Do not attempt until 'kubectl get nodes' shows a Ready node. ORIGINAL TASK: Extend the backup script (scripts/backup-prod.sh from ENV-08-T1) to write to a second rclone destination after the primary R2 upload completes. Configure an rclone remote 'b2-aus' pointing to Backblaze B2 Australian region bucket ('receptor-backups-b2-aus'). The backup script pipeline becomes: pg_dumpall | gzip | tee >(rclone rcat r2-apac:receptor-backups/<filename>.gz) >(rclone rcat b2-aus:receptor-backups-b2-aus/<filename>.gz). Both uploads are required to succeed for the backup job to report success \u2014 a Slack alert fires if either fails. Backblaze B2 API key to be stored in Vault KV (path: infrastructure/backblaze-b2-aus-key) and injected as an environment variable. Verify Backblaze B2 SYD region availability at https://www.backblaze.com/docs/cloud-storage-data-center-locations before provisioning.",
-          "targetFile": "/home/ryana/development/common-bond/supabase-receptor/scripts/backup-prod.sh"
+          "status": "complete",
+          "description": "[comprehensive_review_3 ENH-3 BLOCKER] Requires a running k3s cluster with Postgres accessible via kubectl port-forward. ARCH-04 completed the manifests and documentation only — physical cluster provisioning is an operational step that must be completed before this task can execute. Do not attempt until 'kubectl get nodes' shows a Ready node. ORIGINAL TASK: Extend the backup script (scripts/backup-prod.sh from ENV-08-T1) to write to a second rclone destination after the primary R2 upload completes. Configure an rclone remote 'b2-aus' pointing to Backblaze B2 Australian region bucket ('receptor-backups-b2-aus'). The backup script pipeline becomes: pg_dumpall | gzip | tee >(rclone rcat r2-apac:receptor-backups/<filename>.gz) >(rclone rcat b2-aus:receptor-backups-b2-aus/<filename>.gz). Both uploads are required to succeed for the backup job to report success — a Slack alert fires if either fails. Backblaze B2 API key to be stored in Vault KV (path: infrastructure/backblaze-b2-aus-key) and injected as an environment variable. Verify Backblaze B2 SYD region availability at https://www.backblaze.com/docs/cloud-storage-data-center-locations before provisioning.",
+          "targetFile": "/home/ryana/development/common-bond/supabase-receptor/scripts/backup-prod.sh",
+          "completedAt": "2026-03-15T09:10:52Z",
+          "completedBy": "session-27-backup-deploy"
         },
         {
           "taskId": "ENV-11-T2",
           "status": "complete",
-          "description": "Update docs/infrastructure/disaster-recovery.md to document the two-provider backup topology: (1) Primary: Cloudflare R2 APAC (Sydney) \u2014 restore source; (2) Secondary: Backblaze B2 Australian region \u2014 failover restore source if R2 APAC is unavailable. Document the restore procedure for each source. Add a data residency statement confirming both storage providers are Australian-hosted and no data crosses international borders. Update SoA A.8.13 implementation notes to cite dual-provider Australian backup as the off-site control. Add a Grafana/Loki alert for backup script failure (either destination) within 1 hour of the scheduled backup window.",
+          "description": "Update docs/infrastructure/disaster-recovery.md to document the two-provider backup topology: (1) Primary: Cloudflare R2 APAC (Sydney) — restore source; (2) Secondary: Backblaze B2 Australian region — failover restore source if R2 APAC is unavailable. Document the restore procedure for each source. Add a data residency statement confirming both storage providers are Australian-hosted and no data crosses international borders. Update SoA A.8.13 implementation notes to cite dual-provider Australian backup as the off-site control. Add a Grafana/Loki alert for backup script failure (either destination) within 1 hour of the scheduled backup window.",
           "targetFile": "/home/ryana/development/common-bond/supabase-receptor/docs/infrastructure/disaster-recovery.md",
           "completedAt": "2026-03-12T09:45:00Z",
           "completedBy": "session-7-260312"
@@ -1496,12 +1500,12 @@
       "category": "Tech Debt",
       "repo": "cross-ecosystem",
       "area": "GitHub Actions composite action for Supabase start and key extraction",
-      "description": "Each of the 4 repos that boot Supabase in CI (preference-frontend, planner-frontend, workforce-frontend, supabase-receptor) maintains its own hand-copied Supabase start + key extraction steps in ci.yml. When the reference implementation changes (e.g. adding a new key export, changing the CLI version pin), the change must be manually mirrored to all other repos \u2014 this is structurally how KEY-01 (missing ANON_JWT export) and CICD-02 (unpinned CLI) drifted in the first place. GitHub Actions composite actions allow encapsulating a multi-step sequence as a single 'uses:' reference, so a single update propagates to all consumers. This is the structural fix for the drift problem.",
+      "description": "Each of the 4 repos that boot Supabase in CI (preference-frontend, planner-frontend, workforce-frontend, supabase-receptor) maintains its own hand-copied Supabase start + key extraction steps in ci.yml. When the reference implementation changes (e.g. adding a new key export, changing the CLI version pin), the change must be manually mirrored to all other repos — this is structurally how KEY-01 (missing ANON_JWT export) and CICD-02 (unpinned CLI) drifted in the first place. GitHub Actions composite actions allow encapsulating a multi-step sequence as a single 'uses:' reference, so a single update propagates to all consumers. This is the structural fix for the drift problem.",
       "tasks": [
         {
           "taskId": "CICD-09-T1",
           "status": "complete",
-          "description": "Create a composite action at supabase-receptor/.github/actions/supabase-start/action.yml with inputs: supabase-version (string, required \u2014 the pinned CLI version). Steps: (1) uses: supabase/setup-cli@<pinned-SHA> with: version: ${{ inputs.supabase-version }}; (2) run: supabase start --ignore-health-check; (3) run: extract PUBLISHABLE_KEY, ANON_KEY (JWT), SERVICE_ROLE_KEY from 'supabase status -o env' using the tr -d quotes pattern from preference-frontend; (4) echo each extracted key to $GITHUB_ENV and as a named step output. Update all 4 ci.yml files to replace their existing Supabase start + key extraction steps with 'uses: ./.github/actions/supabase-start' (for supabase-receptor, which owns the action) or reference the shared action from the organisation's .github repo once it is established there.",
+          "description": "Create a composite action at supabase-receptor/.github/actions/supabase-start/action.yml with inputs: supabase-version (string, required — the pinned CLI version). Steps: (1) uses: supabase/setup-cli@<pinned-SHA> with: version: ${{ inputs.supabase-version }}; (2) run: supabase start --ignore-health-check; (3) run: extract PUBLISHABLE_KEY, ANON_KEY (JWT), SERVICE_ROLE_KEY from 'supabase status -o env' using the tr -d quotes pattern from preference-frontend; (4) echo each extracted key to $GITHUB_ENV and as a named step output. Update all 4 ci.yml files to replace their existing Supabase start + key extraction steps with 'uses: ./.github/actions/supabase-start' (for supabase-receptor, which owns the action) or reference the shared action from the organisation's .github repo once it is established there.",
           "targetFile": "/home/ryana/development/common-bond/supabase-receptor/.github/actions/supabase-start/action.yml",
           "completedAt": "2026-03-12T22:47:10Z",
           "completedBy": "session-8-260313"
@@ -1509,7 +1513,7 @@
         {
           "taskId": "CICD-09-T2a",
           "status": "complete",
-          "description": "[comprehensive_review_3 GAP-4 \u2014 split from CICD-09-T2] EVALUATION ONLY: Write an ADR note evaluating composite action vs reusable workflow for Supabase CI boot consolidation. Must include: (1) which CI jobs across all 6 repos currently boot Supabase independently; (2) whether a single workflow_call could replace individual boots; (3) decision with rationale. Acceptance criteria: ADR note written and committed. If decision is 'yes, implement reusable workflow', create CICD-09-T2b. If 'no', mark CICD-09-T2b as not-applicable.",
+          "description": "[comprehensive_review_3 GAP-4 — split from CICD-09-T2] EVALUATION ONLY: Write an ADR note evaluating composite action vs reusable workflow for Supabase CI boot consolidation. Must include: (1) which CI jobs across all 6 repos currently boot Supabase independently; (2) whether a single workflow_call could replace individual boots; (3) decision with rationale. Acceptance criteria: ADR note written and committed. If decision is 'yes, implement reusable workflow', create CICD-09-T2b. If 'no', mark CICD-09-T2b as not-applicable.",
           "targetFile": "/home/ryana/development/common-bond/supabase-receptor/.github/actions/supabase-start/action.yml",
           "completedAt": "2026-03-13T02:58:00Z",
           "completedBy": "session-15-260313"
@@ -1517,7 +1521,7 @@
         {
           "taskId": "CICD-09-T2b",
           "status": "not-applicable",
-          "description": "[comprehensive_review_3 GAP-4 \u2014 conditional] CONDITIONAL IMPLEMENTATION: Not applicable \u2014 CICD-09-T2a evaluation (EVALUATION.md) concluded that the composite action is the correct pattern for Supabase CI boot consolidation. A reusable workflow would require cross-repo caller configuration and does not suit the ephemeral branch namespace model. Composite action (CICD-09-T1) remains the canonical implementation. Closed per CICD-09-T2a acceptance criteria.",
+          "description": "[comprehensive_review_3 GAP-4 — conditional] CONDITIONAL IMPLEMENTATION: Not applicable — CICD-09-T2a evaluation (EVALUATION.md) concluded that the composite action is the correct pattern for Supabase CI boot consolidation. A reusable workflow would require cross-repo caller configuration and does not suit the ephemeral branch namespace model. Composite action (CICD-09-T1) remains the canonical implementation. Closed per CICD-09-T2a acceptance criteria.",
           "targetFile": "/home/ryana/development/common-bond/supabase-receptor/.github/workflows/supabase-ci-base.yml",
           "completedAt": "2026-03-13T02:58:00Z",
           "completedBy": "session-15-260313"
@@ -1532,12 +1536,12 @@
       "category": "Process Gap",
       "repo": "supabase-receptor",
       "area": "Post-deploy smoke tests for staging and production",
-      "description": "After a staging or production deployment (schema migration via ENV-05, Edge Function deploy via ENV-10, or frontend release), there is no automated signal confirming the deployment succeeded and the API is healthy. A broken deploy is only discovered when a human manually tests it or Grafana fires an alert \u2014 minutes or hours later. A multi-layer smoke test suite runs immediately post-deploy, checks from an external vantage point (via the Cloudflare Tunnel URL), and sends a Slack pass/fail notification within 90 seconds. If any check fails the workflow posts a P1 alert to the #incidents Slack channel and halts any further deploy steps.",
+      "description": "After a staging or production deployment (schema migration via ENV-05, Edge Function deploy via ENV-10, or frontend release), there is no automated signal confirming the deployment succeeded and the API is healthy. A broken deploy is only discovered when a human manually tests it or Grafana fires an alert — minutes or hours later. A multi-layer smoke test suite runs immediately post-deploy, checks from an external vantage point (via the Cloudflare Tunnel URL), and sends a Slack pass/fail notification within 90 seconds. If any check fails the workflow posts a P1 alert to the #incidents Slack channel and halts any further deploy steps.",
       "tasks": [
         {
           "taskId": "CICD-10-T1",
           "status": "complete",
-          "description": "Create a reusable composite action at supabase-receptor/.github/actions/smoke-test/action.yml with inputs: base-url (the Cloudflare Tunnel or production URL) and slack-webhook-url (injected from Vault KV path infrastructure/slack-webhook-incidents and infrastructure/slack-webhook-deployments via the Vault OIDC bridge established in ARCH-03; CICD-08 GitHub Environments are deferred \u2014 do not reference them here). The action performs the following checks IN ORDER, failing fast on the first failure: (1) Kong API health \u2014 'curl -f --retry 3 --retry-delay 5 --retry-all-errors --max-time 10 ${base-url}/health' \u2014 expects 200 with body containing 'ok'. (2) PostgREST liveness \u2014 'curl -f --retry 3 --retry-delay 5 --max-time 10 -H \"apikey: ${ANON_KEY}\" ${base-url}/rest/v1/' \u2014 expects 200 with a JSON array body (not an error). (3) Auth endpoint liveness \u2014 'curl -f --retry 3 --retry-delay 5 --max-time 10 ${base-url}/auth/v1/health' \u2014 expects 200. (4) DB canary query \u2014 'curl -f --retry 2 --max-time 15 -H \"apikey: ${ANON_KEY}\" -H \"Authorization: Bearer ${ANON_JWT}\" ${base-url}/rest/v1/organisations?select=id&limit=1' \u2014 expects 200 with a JSON array (empty is acceptable; a 404 or 5xx indicates schema drift or DB unavailability). (5) Storage liveness \u2014 'curl -f --max-time 10 ${base-url}/storage/v1/status' \u2014 expects 200. On ALL checks passing: post a Slack message to the deployments webhook: ':white_check_mark: Smoke test PASSED for ${base-url} \u2014 Kong, PostgREST, Auth, DB canary, Storage all healthy.' On ANY check failing: post to the incidents webhook: ':fire: SMOKE TEST FAILED for ${base-url} \u2014 step N (description) returned HTTP ${status_code}. Halt deployment and investigate.' Set exit code 1 so the calling workflow job fails and any subsequent deploy steps are blocked.",
+          "description": "Create a reusable composite action at supabase-receptor/.github/actions/smoke-test/action.yml with inputs: base-url (the Cloudflare Tunnel or production URL) and slack-webhook-url (injected from Vault KV path infrastructure/slack-webhook-incidents and infrastructure/slack-webhook-deployments via the Vault OIDC bridge established in ARCH-03; CICD-08 GitHub Environments are deferred — do not reference them here). The action performs the following checks IN ORDER, failing fast on the first failure: (1) Kong API health — 'curl -f --retry 3 --retry-delay 5 --retry-all-errors --max-time 10 ${base-url}/health' — expects 200 with body containing 'ok'. (2) PostgREST liveness — 'curl -f --retry 3 --retry-delay 5 --max-time 10 -H \"apikey: ${ANON_KEY}\" ${base-url}/rest/v1/' — expects 200 with a JSON array body (not an error). (3) Auth endpoint liveness — 'curl -f --retry 3 --retry-delay 5 --max-time 10 ${base-url}/auth/v1/health' — expects 200. (4) DB canary query — 'curl -f --retry 2 --max-time 15 -H \"apikey: ${ANON_KEY}\" -H \"Authorization: Bearer ${ANON_JWT}\" ${base-url}/rest/v1/organisations?select=id&limit=1' — expects 200 with a JSON array (empty is acceptable; a 404 or 5xx indicates schema drift or DB unavailability). (5) Storage liveness — 'curl -f --max-time 10 ${base-url}/storage/v1/status' — expects 200. On ALL checks passing: post a Slack message to the deployments webhook: ':white_check_mark: Smoke test PASSED for ${base-url} — Kong, PostgREST, Auth, DB canary, Storage all healthy.' On ANY check failing: post to the incidents webhook: ':fire: SMOKE TEST FAILED for ${base-url} — step N (description) returned HTTP ${status_code}. Halt deployment and investigate.' Set exit code 1 so the calling workflow job fails and any subsequent deploy steps are blocked.",
           "targetFile": "/home/ryana/development/common-bond/supabase-receptor/.github/actions/smoke-test/action.yml",
           "completedAt": "2026-03-12T22:12:49Z",
           "completedBy": "session-7-260312"
@@ -1545,7 +1549,7 @@
         {
           "taskId": "CICD-10-T2",
           "status": "complete",
-          "description": "Integrate the smoke-test composite action into two workflows: (A) prod-deploy.yml (ENV-05): add a 'smoke-test-prod' job that runs immediately after the 'deploy' job succeeds, using base-url: https://api.commonbond.au and the production ANON_KEY injected by Vault via the self-hosted runner OIDC bridge (ARCH-03). The job must complete before the workflow is marked successful. (B) Create a new workflow '.github/workflows/staging-smoke.yml' triggered on: push to main (post-migration to staging) and workflow_dispatch (for manual re-runs). Uses base-url: https://staging-api-829c83.commonbond.au and the staging ANON_KEY injected by Vault via the self-hosted runner OIDC bridge (ARCH-03). Also integrate a lightweight version (Kong health + PostgREST only) as a post-step in the self-hosted runner CI job after each ephemeral branch Supabase boot, to confirm the instance is truly healthy before tests run \u2014 replacing the current '--ignore-health-check' workaround with a real health gate.",
+          "description": "Integrate the smoke-test composite action into two workflows: (A) prod-deploy.yml (ENV-05): add a 'smoke-test-prod' job that runs immediately after the 'deploy' job succeeds, using base-url: https://api.commonbond.au and the production ANON_KEY injected by Vault via the self-hosted runner OIDC bridge (ARCH-03). The job must complete before the workflow is marked successful. (B) Create a new workflow '.github/workflows/staging-smoke.yml' triggered on: push to main (post-migration to staging) and workflow_dispatch (for manual re-runs). Uses base-url: https://staging-api-829c83.commonbond.au and the staging ANON_KEY injected by Vault via the self-hosted runner OIDC bridge (ARCH-03). Also integrate a lightweight version (Kong health + PostgREST only) as a post-step in the self-hosted runner CI job after each ephemeral branch Supabase boot, to confirm the instance is truly healthy before tests run — replacing the current '--ignore-health-check' workaround with a real health gate.",
           "targetFile": "/home/ryana/development/common-bond/supabase-receptor/.github/workflows/staging-smoke.yml",
           "completedAt": "2026-03-12T22:12:49Z",
           "completedBy": "session-7-260312"
@@ -1553,7 +1557,7 @@
         {
           "taskId": "CICD-10-T3",
           "status": "complete",
-          "description": "Document the smoke test architecture in docs/operations/ci-troubleshooting.md (DOC-04): (1) What each of the 5 checks validates and why; (2) Common failure signatures \u2014 Kong 503 (Traefik routing issue), PostgREST 404 (schema cache not initialised), Auth 500 (GoTrue startup failure), DB canary 401 (ANON_KEY mismatch), Storage 503 (S3-compatible storage pod not ready); (3) How to re-run the smoke test manually ('gh workflow run staging-smoke.yml'); (4) How to interpret Slack notifications \u2014 pass format, fail format, which channel each routes to. Add this section under a new '## Smoke Test Failures' heading in the existing DOC-04 troubleshooting doc.",
+          "description": "Document the smoke test architecture in docs/operations/ci-troubleshooting.md (DOC-04): (1) What each of the 5 checks validates and why; (2) Common failure signatures — Kong 503 (Traefik routing issue), PostgREST 404 (schema cache not initialised), Auth 500 (GoTrue startup failure), DB canary 401 (ANON_KEY mismatch), Storage 503 (S3-compatible storage pod not ready); (3) How to re-run the smoke test manually ('gh workflow run staging-smoke.yml'); (4) How to interpret Slack notifications — pass format, fail format, which channel each routes to. Add this section under a new '## Smoke Test Failures' heading in the existing DOC-04 troubleshooting doc.",
           "targetFile": "/home/ryana/development/common-bond/supabase-receptor/docs/operations/ci-troubleshooting.md",
           "completedAt": "2026-03-12T22:12:49Z",
           "completedBy": "session-7-260312"
@@ -1567,13 +1571,13 @@
       "status": "complete",
       "category": "Documentation Gap",
       "repo": "supabase-receptor",
-      "area": "Vault CI OIDC bridge \u2014 missing ADR",
+      "area": "Vault CI OIDC bridge — missing ADR",
       "description": "Phase 8 (ARCH-03) requires the self-hosted GitHub Actions runner to authenticate to Vault via GitHub OIDC JWT to receive Supabase keys and Slack webhook URLs at runtime. This Vault trust relationship has no Architecture Decision Record documenting: which Vault auth method is used (jwt vs github), what bound claims are configured (sub, repository, ref), which Vault policies are attached to the CI token, and what the Vault KV paths look like for runner-accessible secrets. Without this ADR, Phase 8 implementors must re-derive these decisions during execution, risking inconsistency with the Phase 3 Vault setup.",
       "tasks": [
         {
           "taskId": "ARCH-11-T1",
           "status": "complete",
-          "description": "Write docs/adr/ADR-005-vault-ci-oidc-bridge.md documenting the GitHub Actions to Vault OIDC authentication flow for the self-hosted runner. Must cover: (1) Vault auth method selection \u2014 jwt auth method bound to the GitHub OIDC issuer (https://token.actions.githubusercontent.com); (2) Bound claims \u2014 'sub' bound to 'repo:dm-ra-01/supabase-receptor:ref:refs/heads/*' and 'repository' bound to 'dm-ra-01/supabase-receptor'; (3) Vault policy attached to the CI role \u2014 read-only access to KV paths: infrastructure/slack-webhook-incidents, infrastructure/slack-webhook-deployments, infrastructure/supabase-anon-key, infrastructure/supabase-service-role-key; (4) How the runner retrieves secrets: 'vault kv get -field=url infrastructure/slack-webhook-incidents'; (5) Token TTL \u2014 15 minutes (sufficient for a CI job, short enough to limit blast radius); (6) Why GitHub Environments (CICD-08) were deferred and how Vault replaces them for secret scoping. Link this ADR from ci-troubleshooting.md (DOC-04) and key-management.md (KEY-02).",
+          "description": "Write docs/adr/ADR-005-vault-ci-oidc-bridge.md documenting the GitHub Actions to Vault OIDC authentication flow for the self-hosted runner. Must cover: (1) Vault auth method selection — jwt auth method bound to the GitHub OIDC issuer (https://token.actions.githubusercontent.com); (2) Bound claims — 'sub' bound to 'repo:dm-ra-01/supabase-receptor:ref:refs/heads/*' and 'repository' bound to 'dm-ra-01/supabase-receptor'; (3) Vault policy attached to the CI role — read-only access to KV paths: infrastructure/slack-webhook-incidents, infrastructure/slack-webhook-deployments, infrastructure/supabase-anon-key, infrastructure/supabase-service-role-key; (4) How the runner retrieves secrets: 'vault kv get -field=url infrastructure/slack-webhook-incidents'; (5) Token TTL — 15 minutes (sufficient for a CI job, short enough to limit blast radius); (6) Why GitHub Environments (CICD-08) were deferred and how Vault replaces them for secret scoping. Link this ADR from ci-troubleshooting.md (DOC-04) and key-management.md (KEY-02).",
           "targetFile": "/home/ryana/development/common-bond/supabase-receptor/docs/adr/ADR-005-vault-ci-oidc-bridge.md",
           "completedAt": "2026-03-12T22:12:49Z",
           "completedBy": "session-7-260312"
@@ -1588,7 +1592,7 @@
       "category": "Security",
       "repo": "supabase-receptor",
       "area": "CI Runner Infrastructure",
-      "description": "All 6 CI runner Deployments use the community-maintained myoung34/github-runner image which has broad host access (Docker socket mount, privileged), is not maintained by GitHub, and has no autoscaling. GitHub's official Actions Runner Controller (ARC) uses the official ghcr.io/actions/runner image managed by GitHub, autoscales from 0 to N runners on job demand, and handles registration/deregistration natively via the same GitHub App credentials already in Vault (App ID 3095294). This eliminates the myoung34 supply-chain risk flagged by Ryan and removes the need for runner registration tokens. Note (session-24): GitHub App (3095294) and Vault KV (secret/ci/github-app) are already in place from session 23 \u2014 ARC reuses them directly. Old myoung34 Deployments are not being used and can be deleted at any time.",
+      "description": "All 6 CI runner Deployments use the community-maintained myoung34/github-runner image which has broad host access (Docker socket mount, privileged), is not maintained by GitHub, and has no autoscaling. GitHub's official Actions Runner Controller (ARC) uses the official ghcr.io/actions/runner image managed by GitHub, autoscales from 0 to N runners on job demand, and handles registration/deregistration natively via the same GitHub App credentials already in Vault (App ID 3095294). This eliminates the myoung34 supply-chain risk flagged by Ryan and removes the need for runner registration tokens. Note (session-24): GitHub App (3095294) and Vault KV (secret/ci/github-app) are already in place from session 23 — ARC reuses them directly. Old myoung34 Deployments are not being used and can be deleted at any time.",
       "tasks": [
         {
           "taskId": "CICD-11-T1",
@@ -1629,7 +1633,7 @@
   "clarifications": [
     {
       "item": "Environment infrastructure target",
-      "decision": "Self-hosted Supabase instances are the target \u2014 not Supabase Cloud Pro. setup.sh is the canonical provisioning script. Any new environments must extend it, not replace it."
+      "decision": "Self-hosted Supabase instances are the target — not Supabase Cloud Pro. setup.sh is the canonical provisioning script. Any new environments must extend it, not replace it."
     },
     {
       "item": "Multi-tier hosting",
@@ -1653,7 +1657,7 @@
     },
     {
       "item": "Key format migration",
-      "decision": "Supabase key format migration (JWT \u2192 sb_publishable_*/sb_secret_*) deadline was October 1 2025 (already passed). preference-frontend already exports dual keys. planner-frontend and workforce-frontend must be audited and fixed (KEY-01)."
+      "decision": "Supabase key format migration (JWT → sb_publishable_*/sb_secret_*) deadline was October 1 2025 (already passed). preference-frontend already exports dual keys. planner-frontend and workforce-frontend must be audited and fixed (KEY-01)."
     },
     {
       "item": "Kubernetes CI/CD infrastructure",
@@ -1665,7 +1669,7 @@
     },
     {
       "item": "ADR storage strategy",
-      "decision": "ADRs are stored as markdown files in docs/adr/ within supabase-receptor (ARCH-05-T1). As an interim index, each ADR is registered in the Supabase 'standards' table with document_type='ADR'. A dedicated 'architecture_decisions' Supabase table is a future TODO (ARCH-05-T2). The 'registers' table is not appropriate \u2014 it tracks meta governance objects (risk register, asset register), not individual records."
+      "decision": "ADRs are stored as markdown files in docs/adr/ within supabase-receptor (ARCH-05-T1). As an interim index, each ADR is registered in the Supabase 'standards' table with document_type='ADR'. A dedicated 'architecture_decisions' Supabase table is a future TODO (ARCH-05-T2). The 'registers' table is not appropriate — it tracks meta governance objects (risk register, asset register), not individual records."
     },
     {
       "item": "Branch protection timing",
@@ -1685,7 +1689,7 @@
     },
     {
       "item": "Vault unseal hardware",
-      "decision": "YubiKey USB-C is the primary Vault unseal mechanism (PKCS#11 HSM via OpenSC/libykcs11 \u2014 SEC-06-T1). TPM 2.0 on the Windows 11 Pro machine is the secondary backup seal (SEC-06-T2). Vault root token is stored in a physically-secured offline location (not git). Architecture documented in ADR-006."
+      "decision": "YubiKey USB-C is the primary Vault unseal mechanism (PKCS#11 HSM via OpenSC/libykcs11 — SEC-06-T1). TPM 2.0 on the Windows 11 Pro machine is the secondary backup seal (SEC-06-T2). Vault root token is stored in a physically-secured offline location (not git). Architecture documented in ADR-006."
     },
     {
       "item": "Helm chart upgrade cadence",
@@ -1693,11 +1697,11 @@
     },
     {
       "item": "Wildcard TLS via DNS-01",
-      "decision": "Let's Encrypt + Cloudflare DNS-01 challenge is confirmed to support wildcard certificates (*.commonbond.au). cert-manager-webhook-cloudflare handles DNS-01 automation. This is one of the few ACME challenge types that works for wildcards \u2014 HTTP-01 does NOT support wildcards. ARCH-10 implements this."
+      "decision": "Let's Encrypt + Cloudflare DNS-01 challenge is confirmed to support wildcard certificates (*.commonbond.au). cert-manager-webhook-cloudflare handles DNS-01 automation. This is one of the few ACME challenge types that works for wildcards — HTTP-01 does NOT support wildcards. ARCH-10 implements this."
     },
     {
       "item": "Slack notification channels",
-      "decision": "All alerting uses Slack only (no email, no PagerDuty). Two incoming webhooks: (1) incidents channel \u2014 P1/P2 Alertmanager alerts, Falco security events; (2) deployments channel \u2014 prod deploy approvals (ENV-05), cert renewals, Helm upgrade prompts (ARCH-09). Both webhook URLs stored in Vault KV, not GitHub Secrets. Configured in PROC-02-T1."
+      "decision": "All alerting uses Slack only (no email, no PagerDuty). Two incoming webhooks: (1) incidents channel — P1/P2 Alertmanager alerts, Falco security events; (2) deployments channel — prod deploy approvals (ENV-05), cert renewals, Helm upgrade prompts (ARCH-09). Both webhook URLs stored in Vault KV, not GitHub Secrets. Configured in PROC-02-T1."
     },
     {
       "item": "Edge Function deployment process",
@@ -1705,11 +1709,11 @@
     },
     {
       "item": "Australian data residency for backups",
-      "decision": "All backup copies must remain on Australian-hosted infrastructure. Cloudflare R2 APAC (Sydney) is the primary backup destination (ENV-08). Backblaze B2 Australian region (SYD) is the secondary backup destination (ENV-11). No EU, ENAM, or other non-Australian storage is acceptable \u2014 Australian Privacy Principle 8 prohibits cross-border disclosure. Both rclone destinations are written in a single backup run; failure of either triggers a Slack alert."
+      "decision": "All backup copies must remain on Australian-hosted infrastructure. Cloudflare R2 APAC (Sydney) is the primary backup destination (ENV-08). Backblaze B2 Australian region (SYD) is the secondary backup destination (ENV-11). No EU, ENAM, or other non-Australian storage is acceptable — Australian Privacy Principle 8 prohibits cross-border disclosure. Both rclone destinations are written in a single backup run; failure of either triggers a Slack alert."
     },
     {
       "item": "Kubernetes RBAC model",
-      "decision": "Every workload on k3s must use a dedicated ServiceAccount with a minimal Role/RoleBinding. The default ServiceAccount must not be used for any production workload. The GitHub Actions self-hosted runner ServiceAccount (sa-github-runner) is the only account permitted to create/delete 'reactor-ci-*' namespaces. Supabase pods have no API server bindings \u2014 default deny. ADR-007 documents the full RBAC model. Manifests in k3s/rbac/."
+      "decision": "Every workload on k3s must use a dedicated ServiceAccount with a minimal Role/RoleBinding. The default ServiceAccount must not be used for any production workload. The GitHub Actions self-hosted runner ServiceAccount (sa-github-runner) is the only account permitted to create/delete 'reactor-ci-*' namespaces. Supabase pods have no API server bindings — default deny. ADR-007 documents the full RBAC model. Manifests in k3s/rbac/."
     },
     {
       "item": "Windows host OS update policy",
@@ -1717,7 +1721,7 @@
     },
     {
       "item": "pgaudit scope",
-      "decision": "pgaudit is configured with pgaudit.log = 'ddl, role, write' \u2014 capturing DDL statements (CREATE/ALTER/DROP), privilege changes (GRANT/REVOKE), and data-modifying DML (INSERT/UPDATE/DELETE). SELECT logging is deliberately excluded to avoid log volume explosion in a production OLTP system. pgaudit output streams to Loki via Promtail for querying in Grafana. ISO 27001 A.8.15 control status updated to Implemented once live."
+      "decision": "pgaudit is configured with pgaudit.log = 'ddl, role, write' — capturing DDL statements (CREATE/ALTER/DROP), privilege changes (GRANT/REVOKE), and data-modifying DML (INSERT/UPDATE/DELETE). SELECT logging is deliberately excluded to avoid log volume explosion in a production OLTP system. pgaudit output streams to Loki via Promtail for querying in Grafana. ISO 27001 A.8.15 control status updated to Implemented once live."
     },
     {
       "item": "GitHub Actions composite action location",
@@ -1736,8 +1740,8 @@
       "decision": "The production backup cron (ENV-08-T1) runs as a Linux crontab on the control-plane Ubuntu VM, NOT as a k3s CronJob. This ensures backups execute even when the k3s cluster is degraded or unhealthy. The VM uses kubectl port-forward to reach the Postgres pod. The rclone config (with R2 and Backblaze B2 AUS credentials) is populated from Vault KV at VM boot via a systemd oneshot service, not hardcoded in the crontab environment."
     },
     {
-      "item": "CICD-08 GitHub Environments \u2014 deferred (Vault supersedes)",
-      "decision": "CICD-08 is formally deferred. Secret scoping (the core value proposition of GitHub Environments) is handled by Vault RBAC policies at the infrastructure/staging-* and infrastructure/prod-* path level \u2014 no GitHub Secrets namespace is used for environment-specific secrets. The only remaining use case (required-reviewer gate for prod-deploy.yml) is a sub-task of ENV-05-T1 and will be implemented there if needed. Creating empty GitHub Environments at this stage would add UI noise without security benefit given the Vault architecture."
+      "item": "CICD-08 GitHub Environments — deferred (Vault supersedes)",
+      "decision": "CICD-08 is formally deferred. Secret scoping (the core value proposition of GitHub Environments) is handled by Vault RBAC policies at the infrastructure/staging-* and infrastructure/prod-* path level — no GitHub Secrets namespace is used for environment-specific secrets. The only remaining use case (required-reviewer gate for prod-deploy.yml) is a sub-task of ENV-05-T1 and will be implemented there if needed. Creating empty GitHub Environments at this stage would add UI noise without security benefit given the Vault architecture."
     },
     {
       "item": "Phase 8 Gate 8C cross-repo verification (comprehensive_review_3 GAP-5)",
@@ -1745,18 +1749,18 @@
     },
     {
       "item": "Phase completion checklist (comprehensive_review_3 ENH-1)",
-      "decision": "For Phases 7.5\u201312, the implementing agent must verify the following before declaring a phase complete: (1) All phase tasks marked complete in recommendations.json; (2) All repos committed and pushed to audit/260312-cicd-environments; (3) Per-repo verification gate passed for every changed repo; (4) Cross-repo verification passed if phase involves >1 repo; (5) recommendations.md re-rendered; (6) audit-brief.json sessionHistory entry added; (7) audit-brief.json openTaskCount updated; (8) SoA controls updated if phase has compliance tasks; (9) No new lint/type/build regressions introduced."
+      "decision": "For Phases 7.5–12, the implementing agent must verify the following before declaring a phase complete: (1) All phase tasks marked complete in recommendations.json; (2) All repos committed and pushed to audit/260312-cicd-environments; (3) Per-repo verification gate passed for every changed repo; (4) Cross-repo verification passed if phase involves >1 repo; (5) recommendations.md re-rendered; (6) audit-brief.json sessionHistory entry added; (7) audit-brief.json openTaskCount updated; (8) SoA controls updated if phase has compliance tasks; (9) No new lint/type/build regressions introduced."
     },
     {
       "item": "ARCH-03-T0 parallel trial repo scope (comprehensive_review_3 ENH-2)",
-      "decision": "The 7-run parallel trial (ARCH-03-T0) should use 2 representative repos \u2014 preference-frontend (most complex frontend CI) and match-backend (simplest backend CI). Both must achieve 7 consecutive clean runs on the self-hosted runner with ubuntu-latest as a commented fallback. Only after this 2-repo trial succeeds should the remaining 4 repos be migrated to the self-hosted runner in a single batch."
+      "decision": "The 7-run parallel trial (ARCH-03-T0) should use 2 representative repos — preference-frontend (most complex frontend CI) and match-backend (simplest backend CI). Both must achieve 7 consecutive clean runs on the self-hosted runner with ubuntu-latest as a commented fallback. Only after this 2-repo trial succeeds should the remaining 4 repos be migrated to the self-hosted runner in a single batch."
     }
   ],
   "implementationPhases": [
     {
       "phase": 1,
-      "name": "PLAN \u2014 Architecture Design, ADRs & Pre-Implementation Documents",
-      "rationale": "All planning documents that must exist before any system is provisioned. No infrastructure changes. Produces: ADR-001 to ADR-004 (k3s, self-hosted runner, isolation strategy, Docker image pinning), cluster runbook template (DOC-03), CI troubleshooting (DOC-04), DR plan (DOC-05), required check matrix (PROC-01 \u2014 moved here from Phase 11 as it gates Phase 12 branch protection), staging-to-prod promotion runbook (ENV-09), and Windows host reboot recovery checklist (OPS-01). These documents gate Phase 3 implementation.",
+      "name": "PLAN — Architecture Design, ADRs & Pre-Implementation Documents",
+      "rationale": "All planning documents that must exist before any system is provisioned. No infrastructure changes. Produces: ADR-001 to ADR-004 (k3s, self-hosted runner, isolation strategy, Docker image pinning), cluster runbook template (DOC-03), CI troubleshooting (DOC-04), DR plan (DOC-05), required check matrix (PROC-01 — moved here from Phase 11 as it gates Phase 12 branch protection), staging-to-prod promotion runbook (ENV-09), and Windows host reboot recovery checklist (OPS-01). These documents gate Phase 3 implementation.",
       "findingIds": [
         "ARCH-05",
         "DOC-03",
@@ -1768,7 +1772,7 @@
     },
     {
       "phase": 2,
-      "name": "PLAN \u2014 Compliance Scope Review, Helmfile Design & Required Check Matrix",
+      "name": "PLAN — Compliance Scope Review, Helmfile Design & Required Check Matrix",
       "rationale": "Design tasks with no running system dependency: design and commit helmfile.yaml structure with pinned chart versions and quarterly upgrade workflow (ARCH-09); document the required CI status check matrix per repo (PROC-01) which is a pre-requisite for Phase 12 branch protection and must be written before any infrastructure changes are made. Both outputs are consumed by Phase 3 and Phase 12.",
       "findingIds": [
         "ARCH-09",
@@ -1777,8 +1781,8 @@
     },
     {
       "phase": 3,
-      "name": "IMPLEMENT \u2014 Core Cluster Stack (k3s, Vault, Calico, RBAC, Grafana, cert-manager, Falco, Tunnel, Slack)",
-      "rationale": "The strategic Phase 1 buildout. Provision k3s on Hyper-V, deploy all cluster services via helmfile.yaml: Calico CNI, Vault OSS (YubiKey PKCS#11 primary + TPM 2.0 secondary unseal), kube-prometheus-stack, Loki, Falco, cert-manager (wildcard TLS via DNS-01), Traefik ingress. Configure RBAC ServiceAccounts and RoleBindings for all workloads (SEC-08 \u2014 must be done at provisioning time, not retrofitted). Provision Cloudflare Tunnel for staging. Bind Supabase Studio to 127.0.0.1. Configure Alertmanager \u2192 Slack webhook pipeline. This phase has the most risk and longest duration \u2014 all subsequent phases depend on it.",
+      "name": "IMPLEMENT — Core Cluster Stack (k3s, Vault, Calico, RBAC, Grafana, cert-manager, Falco, Tunnel, Slack)",
+      "rationale": "The strategic Phase 1 buildout. Provision k3s on Hyper-V, deploy all cluster services via helmfile.yaml: Calico CNI, Vault OSS (YubiKey PKCS#11 primary + TPM 2.0 secondary unseal), kube-prometheus-stack, Loki, Falco, cert-manager (wildcard TLS via DNS-01), Traefik ingress. Configure RBAC ServiceAccounts and RoleBindings for all workloads (SEC-08 — must be done at provisioning time, not retrofitted). Provision Cloudflare Tunnel for staging. Bind Supabase Studio to 127.0.0.1. Configure Alertmanager → Slack webhook pipeline. This phase has the most risk and longest duration — all subsequent phases depend on it.",
       "findingIds": [
         "ARCH-04",
         "ARCH-07",
@@ -1794,8 +1798,8 @@
     },
     {
       "phase": 4,
-      "name": "IMPLEMENT \u2014 Critical CI Auth Fixes (parallel-safe with Phase 3 planning)",
-      "rationale": "Fix the two security-class CI defects (key format mismatch, service role misuse) that cause silent auth failures. These are CI YAML changes only \u2014 safe to implement in parallel while Phase 3 is being planned and provisioned.",
+      "name": "IMPLEMENT — Critical CI Auth Fixes (parallel-safe with Phase 3 planning)",
+      "rationale": "Fix the two security-class CI defects (key format mismatch, service role misuse) that cause silent auth failures. These are CI YAML changes only — safe to implement in parallel while Phase 3 is being planned and provisioned.",
       "findingIds": [
         "KEY-01",
         "CICD-03"
@@ -1803,7 +1807,7 @@
     },
     {
       "phase": 5,
-      "name": "IMPLEMENT \u2014 CI Hardening, Caching, Composite Actions, Edge Function Versioning & Backend Fixes",
+      "name": "IMPLEMENT — CI Hardening, Caching, Composite Actions, Edge Function Versioning & Backend Fixes",
       "rationale": "Pin Supabase CLI, standardise codegen gate, fix bare pytest, replace JWT stubs, add job timeouts, configure npm/pip caching, implement the git-tag-triggered Edge Function versioning strategy. All CI YAML and tooling changes.",
       "findingIds": [
         "CICD-02",
@@ -1819,7 +1823,7 @@
     },
     {
       "phase": 6,
-      "name": "IMPLEMENT \u2014 Supply-Chain & Runtime Security (Actions, Dependabot, Docker, Falco rules)",
+      "name": "IMPLEMENT — Supply-Chain & Runtime Security (Actions, Dependabot, Docker, Falco rules)",
       "rationale": "Add GITHUB_TOKEN permission blocks, pin Actions to SHAs, add Dependabot for github-actions ecosystem, pin Docker image digests and add verify-images target. Update SoA controls 8.3 and 8.8. These harden the CI supply chain independently of the cluster.",
       "findingIds": [
         "SEC-01",
@@ -1830,8 +1834,8 @@
     },
     {
       "phase": 7,
-      "name": "IMPLEMENT \u2014 Environment Tiers, GitHub Environments, Backup, Key Rotation, pgaudit & R2 Redundancy",
-      "rationale": "Provision staging environment, document all 4 tiers, write key management docs, configure GitHub Environments (staging + production) for secret scoping and deployment history, implement Cloudflare R2 backup (pg_dumpall/rclone) with secondary Backblaze B2 Australian region copy (ENV-11 \u2014 Australian data residency), enable pgaudit extension for database-level forensic audit logging (SEC-09), add secrets rotation schedule and reminder workflow, and configure the pull-through container registry cache. pgaudit requires Supabase (Phase 3) and Loki (Phase 3) to be running.",
+      "name": "IMPLEMENT — Environment Tiers, GitHub Environments, Backup, Key Rotation, pgaudit & R2 Redundancy",
+      "rationale": "Provision staging environment, document all 4 tiers, write key management docs, configure GitHub Environments (staging + production) for secret scoping and deployment history, implement Cloudflare R2 backup (pg_dumpall/rclone) with secondary Backblaze B2 Australian region copy (ENV-11 — Australian data residency), enable pgaudit extension for database-level forensic audit logging (SEC-09), add secrets rotation schedule and reminder workflow, and configure the pull-through container registry cache. pgaudit requires Supabase (Phase 3) and Loki (Phase 3) to be running.",
       "findingIds": [
         "ENV-01",
         "ENV-02",
@@ -1847,8 +1851,8 @@
     },
     {
       "phase": 7.5,
-      "name": "PRE-FLIGHT \u2014 Phase 8 Blockers (Interval Gate)",
-      "rationale": "A mandatory interval gate identified during a comprehensive pre-Phase-8 review (2026-03-13). Five critical gaps and five enhancements were accepted before Phase 8 may begin. This phase contains no external infrastructure changes \u2014 all tasks are documentation, contract definitions, ADRs, and task amendments that must be committed to the audit branch before any Phase 8 CI YAML is written. The three sub-sessions for Phase 8 are also defined here as sessionGates: (8A) setup.sh + RESET; (8B) test isolation; (8C) runner migration. Phase 8 MUST NOT begin until all Phase 7.5 tasks are complete.",
+      "name": "PRE-FLIGHT — Phase 8 Blockers (Interval Gate)",
+      "rationale": "A mandatory interval gate identified during a comprehensive pre-Phase-8 review (2026-03-13). Five critical gaps and five enhancements were accepted before Phase 8 may begin. This phase contains no external infrastructure changes — all tasks are documentation, contract definitions, ADRs, and task amendments that must be committed to the audit branch before any Phase 8 CI YAML is written. The three sub-sessions for Phase 8 are also defined here as sessionGates: (8A) setup.sh + RESET; (8B) test isolation; (8C) runner migration. Phase 8 MUST NOT begin until all Phase 7.5 tasks are complete.",
       "findingIds": [
         "ARCH-11",
         "ARCH-02",
@@ -1860,8 +1864,8 @@
     },
     {
       "phase": 8,
-      "name": "IMPLEMENT \u2014 CI Architecture, Test Isolation & Branch Management",
-      "rationale": "Design and implement the branch-matched CI architecture (Docker network isolation or k8s namespace-per-branch), add CI mode to setup.sh, implement test data isolation and pg_cron cleanup, migrate to self-hosted runner. Reduce redundant Supabase boots (CICD-01). May be simplified by Phase 3 k8s namespace-per-branch approach. CICD-09 (composite supabase-start action) is implemented here as the output of ARCH-02 \u2014 it encapsulates the CI-native key extraction and prevents the pattern from diverging across repos again.",
+      "name": "IMPLEMENT — CI Architecture, Test Isolation & Branch Management",
+      "rationale": "Design and implement the branch-matched CI architecture (Docker network isolation or k8s namespace-per-branch), add CI mode to setup.sh, implement test data isolation and pg_cron cleanup, migrate to self-hosted runner. Reduce redundant Supabase boots (CICD-01). May be simplified by Phase 3 k8s namespace-per-branch approach. CICD-09 (composite supabase-start action) is implemented here as the output of ARCH-02 — it encapsulates the CI-native key extraction and prevents the pattern from diverging across repos again.",
       "findingIds": [
         "ARCH-01",
         "ARCH-02",
@@ -1876,7 +1880,7 @@
     },
     {
       "phase": 9,
-      "name": "IMPLEMENT \u2014 Production Gate & Compliance Finalisation",
+      "name": "IMPLEMENT — Production Gate & Compliance Finalisation",
       "rationale": "Deploy the prod migration gate workflow (prod-deploy.yml) requiring human approval before any db push. Integrate the full 5-layer smoke test (CICD-10) into prod-deploy.yml and create the standalone staging-smoke.yml workflow. Update SoA control 8.32. Update Supabase governance register. CICD-10 also replaces the --ignore-health-check workaround in ephemeral CI boots with a real health gate. This phase is gated on Phase 7 (GitHub Environments must exist for environment protection rules and secret scoping).",
       "findingIds": [
         "ENV-05",
@@ -1885,7 +1889,7 @@
     },
     {
       "phase": 10,
-      "name": "IMPLEMENT \u2014 Post-Provisioning Documentation (Vault Docs, Onboarding Guide)",
+      "name": "IMPLEMENT — Post-Provisioning Documentation (Vault Docs, Onboarding Guide)",
       "rationale": "With all infrastructure running, write the post-implementation documentation: Vault configuration guide (DOC-01) documenting the OIDC setup, database secrets engine, and VSO CRD patterns; engineer onboarding guide (DOC-06) covering prerequisites, how to connect to each environment, how to run CI locally, and key contacts. These documents require a working system to be accurate.",
       "findingIds": [
         "DOC-01",
@@ -1894,7 +1898,7 @@
     },
     {
       "phase": 11,
-      "name": "IMPLEMENT \u2014 Physical Security SoA Update (post-provisioning)",
+      "name": "IMPLEMENT — Physical Security SoA Update (post-provisioning)",
       "rationale": "Review ISO 27001 physical controls 7.1-7.4 post-provisioning and update the SoA with confirmed compensating controls for the k3s bare-metal node. This is a low-risk documentation task that requires the physical node to be in its final configured state before the SoA entry can be confirmed accurate.",
       "findingIds": [
         "ISO-03"
@@ -1902,7 +1906,7 @@
     },
     {
       "phase": 12,
-      "name": "FINAL GATE \u2014 Branch Protection on Main (all repos)",
+      "name": "FINAL GATE — Branch Protection on Main (all repos)",
       "rationale": "The final hardening step, enabled only once CI is stable and all phase 1-11 fixes are complete and verified. Requires the required check matrix from Phase 2 (PROC-01). Enables branch protection rulesets across all 6 repositories with mandatory CI status checks, PR approval, and no force pushes.",
       "findingIds": [
         "SEC-03"
