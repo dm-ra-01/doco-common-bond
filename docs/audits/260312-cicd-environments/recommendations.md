@@ -839,3 +839,47 @@ Affects: `supabase-receptor` — Post-deploy smoke tests for staging and product
 | DOC-06 | Engineer onboarding guide | `ONBOARDING.md` | Documentation Gap | 🟢 Low |
 | CICD-10 | Post-deploy smoke tests for staging and production | `action.yml` | Process Gap | 🟢 Low |
 
+
+---
+
+## Session Close — Session 27 (2026-03-15)
+
+### Completed This Session
+
+| Task | Description |
+|---|---|
+| ENV-08-T1 | `backup-prod.sh` deployed to `/opt/scripts/` on `ctrl-01` |
+| ENV-11-T1 | Dual-destination pipeline (Azure + B2 via tee) in production |
+
+### Infrastructure Deployed
+
+- `rclone-config-from-vault.service` — systemd oneshot, `active (exited)`, starts on boot
+- `rclone-config-from-vault.sh` — rewrote to use `kubectl exec` (vault CLI not installed on host)
+- Vault policy `backup-rclone-reader` created with correct `secret/data/infrastructure/*` paths
+- Scoped periodic token (768h) in `/etc/vault-token.env` — **not** root token
+- `rclone` v1.73.2 installed on `ctrl-01`
+- Azure Blob Storage `australiaeast` (`k3sbackups71a475f1dae6/receptor-backups`) — connectivity confirmed
+- Root crontab: daily 02:00 AEST + weekly Sundays 01:00 AEST
+- ARM template + parameters committed to `supabase-receptor/k3s/azure/`
+
+### Documentation Updated
+
+- `disaster-recovery.md` — Azure Blob primary, correct restore commands, data residency links
+- `ADR-004-backup-strategy.md` — updated title, decision table, rationale for R2→Azure switch
+- `vault-configuration.md` — KV paths table updated
+- `host-reboot-recovery.md` — Azure Key Vault unseal, ARC runners, rclone-config service step
+
+### Remaining / Known Gaps
+
+- **B2 credentials not yet in Vault** — `secret/infrastructure/backblaze-b2-aus-key` pending Backblaze account provisioning. Script gracefully skips B2 until populated; run `systemctl restart rclone-config-from-vault.service` after adding.
+- **Live backup dry-run** not yet performed — run `sudo /opt/scripts/backup-prod.sh` to verify end-to-end pipeline
+
+### Brief for Next Agent
+
+All implementation tasks are complete and 0 open tasks remain. This audit is ready for `/finalise-global-audit`:
+- Raise PRs across all repo audit branches → `main`
+- Perform re-audit to confirm findings are closed
+- Archive the audit directory
+- Before merging: confirm Backblaze B2 credentials are added to Vault and run a manual backup dry-run
+
+PR order (dependency-safe): `supabase-receptor` first (infra), then all frontend/backend repos in parallel.
