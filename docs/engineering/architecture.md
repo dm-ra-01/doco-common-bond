@@ -184,3 +184,5 @@ mutations.
   for all frontends
 - [GraphQL Standard](./graphql-standard.md) — Urql client and data fetching
   patterns
+- [Cluster Infrastructure](./cluster-infrastructure.md) — Physical hosts, VMs,
+  k3s node topology, and provisioning runbook
