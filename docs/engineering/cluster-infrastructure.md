@@ -12,19 +12,19 @@ Hyper-V hypervisors on a shared VLAN 10 network (`10.10.0.0/24`).
 
 ### HYPERV-1 — SPACESHIP
 
-The original cluster host. Runs the majority of production workloads.
+The original cluster host. Runs control-plane node ctrl-50 and two workers.
 
 | Component | Detail |
 |---|---|
 | **Motherboard** | *(not recorded — see HWiNFO on host)* |
 | **OS** | Windows 11 Pro, Hyper-V enabled |
-| **Role** | Primary hypervisor — ctrl-01, work-01, work-02 |
+| **Role** | Primary hypervisor — ctrl-50, work-01, work-02 |
 
 **Virtual Machines**
 
 | VM Name | State | vCPU | RAM | VLAN 10 IP | Role |
 |---|---|---|---|---|---|
-| `receptor-ctrl-01` | Running | 2 | 8 GB | 10.10.0.11 | k3s control-plane + etcd |
+| `receptor-ctrl-50` | Running | 2 | 8 GB | 10.10.0.50 | k3s control-plane + etcd |
 | `receptor-work-01` | Running | 4 | 4 GB | 10.10.0.21 | k3s worker |
 | `receptor-work-02` | Running | 2 | 4 GB | 10.10.0.22 | k3s worker |
 | `common-bond` | Off | — | — | — | Reserved |
@@ -33,9 +33,9 @@ The original cluster host. Runs the majority of production workloads.
 
 ---
 
-### HYPERV-2 — New PC (added 2026-03-16)
+### HYPERV-2 — ENTERPRISE (added 2026-03-16)
 
-Second physical host added 2026-03-16. Runs the HA control-plane peer and a
+Second physical host added 2026-03-16. Runs two HA control-plane peers and a
 high-capacity worker, offloading CPU-intensive workloads from HYPERV-1.
 
 | Component | Detail |
@@ -57,6 +57,7 @@ high-capacity worker, offloading CPU-intensive workloads from HYPERV-1.
 | VM Name | State | vCPU | RAM | VLAN 10 IP | Role |
 |---|---|---|---|---|---|
 | `receptor-ctrl-10` | Running | 6 | 8 GB | 10.10.0.10 | k3s control-plane + etcd |
+| `receptor-ctrl-11` | Running | 6 | 8 GB | 10.10.0.30 | k3s control-plane + etcd |
 | `receptor-work-10` | Running | 6 | 8 GB | 10.10.0.20 | k3s worker |
 
 ---
@@ -78,14 +79,13 @@ All VMs have two network interfaces:
 
 | IP | Hostname | Role | Host |
 |---|---|---|---|
-| 10.10.0.10 | receptor-ctrl-10 | control-plane + etcd | HYPERV-2 |
-| 10.10.0.11 | receptor-ctrl-01 | control-plane + etcd | HYPERV-1 |
-| 10.10.0.12 | receptor-ctrl-02 | *(reserved)* | — |
-| 10.10.0.13 | receptor-ctrl-03 | *(reserved)* | — |
-| 10.10.0.20 | receptor-work-10 | worker | HYPERV-2 |
-| 10.10.0.21 | receptor-work-01 | worker | HYPERV-1 |
-| 10.10.0.22 | receptor-work-02 | worker | HYPERV-1 |
+| 10.10.0.10 | receptor-ctrl-10 | control-plane + etcd | ENTERPRISE |
+| 10.10.0.20 | receptor-work-10 | worker | ENTERPRISE |
+| 10.10.0.21 | receptor-work-01 | worker | SPACESHIP |
+| 10.10.0.22 | receptor-work-02 | worker | SPACESHIP |
 | 10.10.0.23 | receptor-work-03 | *(reserved)* | — |
+| 10.10.0.30 | receptor-ctrl-11 | control-plane + etcd | ENTERPRISE |
+| 10.10.0.50 | receptor-ctrl-50 | control-plane + etcd | SPACESHIP |
 
 ---
 
@@ -99,13 +99,14 @@ All VMs have two network interfaces:
 
 | Node | Role | IP | vCPU | RAM (allocatable) | Kernel |
 |---|---|---|---|---|---|
-| receptor-ctrl-01 | control-plane, etcd | 10.10.0.11 | 2 | ~7.8 GB | 6.17.0-1008-azure |
 | receptor-ctrl-10 | control-plane, etcd | 10.10.0.10 | 6 | ~7.8 GB | 6.17.0-1008-azure |
+| receptor-ctrl-11 | control-plane, etcd | 10.10.0.30 | 6 | ~7.8 GB | 6.17.0-1008-azure |
+| receptor-ctrl-50 | control-plane, etcd | 10.10.0.50 | 2 | ~7.8 GB | 6.17.0-1008-azure |
 | receptor-work-01 | worker | 10.10.0.21 | 4 | ~3.9 GB | 6.17.0-1008-azure |
 | receptor-work-02 | worker | 10.10.0.22 | 2 | ~3.9 GB | 6.17.0-1008-azure |
 | receptor-work-10 | worker | 10.10.0.20 | 6 | ~7.8 GB | 6.17.0-1008-azure |
 
-**Total cluster capacity:** 20 vCPU, ~31.2 GB RAM (workers only: 16 vCPU, ~15.6 GB)
+**Total cluster capacity:** 26 vCPU, ~39 GB RAM (workers only: 12 vCPU, ~11.7 GB)
 
 > [!NOTE]
 > All nodes run `linux-azure` (the Hyper-V optimised kernel). This provides
@@ -114,9 +115,9 @@ All VMs have two network interfaces:
 
 ### Control Plane HA
 
-Two control-plane nodes provide etcd quorum. A third control-plane node
-(`receptor-ctrl-02` at `10.10.0.12`) could be added from either host to
-reach a 3-node etcd cluster for full fault tolerance.
+Three control-plane nodes provide a fully fault-tolerant etcd cluster.
+The quorum threshold is 2 — the cluster survives the loss of any single
+control-plane node without service interruption.
 
 ---
 
@@ -150,8 +151,8 @@ parameters as the autoinstall URL.
 **Worker node:**
 ```bash
 curl -sfL https://get.k3s.io | \
-  K3S_URL="https://10.10.0.11:6443" \
-  K3S_TOKEN="$(sudo cat /var/lib/rancher/k3s/server/node-token on ctrl-01)" \
+  K3S_URL="https://10.10.0.10:6443" \
+  K3S_TOKEN="<token>" \
   sh -s - agent \
     --node-ip=<THIS_NODE_VLAN10_IP>
 ```
@@ -159,7 +160,7 @@ curl -sfL https://get.k3s.io | \
 **Additional control-plane node:**
 ```bash
 curl -sfL https://get.k3s.io | \
-  K3S_URL="https://10.10.0.11:6443" \
+  K3S_URL="https://10.10.0.10:6443" \
   K3S_TOKEN="<token>" \
   sh -s - server \
     --flannel-backend=none \
@@ -167,7 +168,7 @@ curl -sfL https://get.k3s.io | \
     --node-ip=<THIS_NODE_VLAN10_IP>
 ```
 
-Retrieve the join token from ctrl-01:
+Retrieve the join token from any existing control-plane node (e.g. ctrl-10):
 ```bash
 sudo cat /var/lib/rancher/k3s/server/node-token
 ```
@@ -201,8 +202,8 @@ sudo update-grub && sudo reboot
 ## Workload Distribution (GitOps)
 
 Workload scheduling is managed by k3s/Calico — pods are distributed across
-worker nodes automatically. The control-plane nodes (`ctrl-01`, `ctrl-10`) are
-not schedulable for workload pods.
+worker nodes automatically. The control-plane nodes (`ctrl-10`, `ctrl-11`,
+`ctrl-50`) are not schedulable for workload pods.
 
 Key namespaces and their typical scheduling:
 

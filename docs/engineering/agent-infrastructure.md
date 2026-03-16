@@ -70,6 +70,7 @@ in the ecosystem.
 | Skill                | Description                                                                                                                                                                                                                  |
 | :------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `supabase-standards` | Canonical standards for **all** Supabase environments — declarative migrations, RLS, SQL quality, cross-repo coordination. Promoted from a per-repo rule to a shared skill to support multiple future Supabase environments. |
+| `vm-provisioning`    | Provision, replace, or decommission Hyper-V VMs in the Receptor k3s cluster. Full lifecycle: VM creation, Ubuntu 24.04 hardening, k3s join, Cloudflare tunnel SSH, and node removal.                                        |
 
 ---
 
