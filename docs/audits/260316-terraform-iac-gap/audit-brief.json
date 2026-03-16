@@ -3,8 +3,8 @@
   "auditSlug": "260316-terraform-iac-gap",
   "status": "drafting",
   "nextAction": "implement",
-  "openTaskCount": 39,
-  "latestHandover": "Round 2 iterative improvement: 5 new proposed findings from supabase-receptor k3s/ directory (ARCH-01 missing values/, NET-01 Vault egress blocks auto-unseal, SPLIT-01 two-repo helmfile split, CI-03 staging smoke silently broken, RBAC-01 ci-runner wildcard verbs). 22 total findings (2C/8H/11M/1L). Awaiting human approval to graduate proposed→open. Phase 7 added for supabase-receptor k3s completeness.",
+  "openTaskCount": 49,
+  "latestHandover": "Round 3: 7 new lifecycle findings (LIFE-01 to LIFE-07) from auditing frontend/backend repos. Key: LIFE-01 Critical (no deploy workflows in 3 frontends), LIFE-04 High (no rollback procedure), LIFE-02/03 High (backend runtime/deploy undocumented). Also: LIFE-07 CSP unsafe-eval in all 3 frontends, LIFE-05 no per-env Vault secrets, LIFE-06 receptor-planner no Dependabot. 29 total findings (3C/10H/14M/1L). Phase 8 added for lifecycle. Also: 5 Round 2 findings graduated from proposed to open.",
   "sessionHistory": [
     {
       "session": 1,
@@ -21,21 +21,26 @@
     {
       "session": 3,
       "date": "2026-03-16",
-      "summary": "Iterative improvement round 1. Read values/vault.yaml — AZURE_CLIENT_SECRET in vault-azure-kms k8s Secret (not plaintext). Added STORE-01 (no VSO sync), SEC-03 (key rotation), SEC-04 (shared key access). Set Supabase review_due_date 2026-06-16. 12 findings.",
+      "summary": "Iterative improvement round 1. Read values/vault.yaml \u2014 AZURE_CLIENT_SECRET in vault-azure-kms k8s Secret (not plaintext). Added STORE-01 (no VSO sync), SEC-03 (key rotation), SEC-04 (shared key access). Set Supabase review_due_date 2026-06-16. 12 findings.",
       "completedTasks": []
     },
     {
       "session": 4,
       "date": "2026-03-16",
-      "summary": "Expanded scope to supabase-kubernetes. Read helmfile.yaml (supabase/supabase v0.5.1 for prod+staging). Found KUBE-01 (critical — unresolved ${} placeholders in prod values), KUBE-02 (no resource limits), ENV-01 (no test environment), KUBE-03 (no pod security contexts), KUBE-04 (Falco disabled). 17 findings total. 6-phase implementation plan.",
+      "summary": "Expanded scope to supabase-kubernetes. Read helmfile.yaml (supabase/supabase v0.5.1 for prod+staging). Found KUBE-01 (critical \u2014 unresolved ${} placeholders in prod values), KUBE-02 (no resource limits), ENV-01 (no test environment), KUBE-03 (no pod security contexts), KUBE-04 (Falco disabled). 17 findings total. 6-phase implementation plan.",
       "completedTasks": []
     },
     {
       "session": 5,
       "date": "2026-03-16",
-      "summary": "Iterative improvement round 2. Read supabase-receptor k3s/ directory. Found ARCH-01 (k3s/values/ missing — helmfile unapply-able), NET-01 (Vault namespace DNS-only egress blocks Azure KV auto-unseal), SPLIT-01 (two-repo helmfile split, no apply order), CI-03 (staging-smoke.yml broken on GitHub-hosted runners per own comment), RBAC-01 (ci-namespace-manager wildcard verbs, no Kyverno enforcement). 22 proposed findings. Phase 7 added.",
+      "summary": "Iterative improvement round 2. Read supabase-receptor k3s/ directory. Found ARCH-01 (k3s/values/ missing \u2014 helmfile unapply-able), NET-01 (Vault namespace DNS-only egress blocks Azure KV auto-unseal), SPLIT-01 (two-repo helmfile split, no apply order), CI-03 (staging-smoke.yml broken on GitHub-hosted runners per own comment), RBAC-01 (ci-namespace-manager wildcard verbs, no Kyverno enforcement). 22 proposed findings. Phase 7 added.",
+      "completedTasks": []
+    },
+    {
+      "session": 6,
+      "date": "2026-03-16",
+      "summary": "Round 3 lifecycle audit. Read all 5 app repo CI workflows. Found LIFE-01 (no deploy workflows in frontend repos \u2014 Critical), LIFE-02 (match-backend no image push, runtime undefined), LIFE-03 (receptor-planner no integration tests, no Dockerfile), LIFE-04 (no rollback procedure anywhere), LIFE-05 (no per-env Vault secrets for frontend), LIFE-06 (receptor-planner no Dependabot), LIFE-07 (CSP unsafe-eval in all 3 Next.js frontends). Also graduated ARCH-01/NET-01/SPLIT-01/CI-03/RBAC-01 from proposed to open. 29 findings total. Phase 8 added.",
       "completedTasks": []
     }
   ]
-
 }

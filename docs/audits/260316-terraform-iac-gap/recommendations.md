@@ -31,6 +31,8 @@ Do not edit it directly — edit the JSON source and re-run
 | Single-node cluster constraint | All namespaces (supabase, supabase-staging, supabase-test, vault, monitoring, arc-runners) compete for the same physical resources on one Hyper-V host. Resource limits (K8S-02) and ResourceQuotas on staging/test namespaces are essential to prevent those environments from starving production Vault and Supabase. |
 | Two-repo helmfile split (SPLIT-01) | Pending human decision on whether to consolidate both helmfiles into receptor-infra or keep the current split. Until decided, ADR-009 must document the apply order so operators are not surprised. |
 | ARCH-03 7-run trial gate status (CI-03) | Implementation agent must check whether the 7-run self-hosted runner trial referenced in 260312-cicd-environments (ARCH-03) has been satisfied before activating arc-runner in staging-smoke.yml. |
+| Frontend deployment target (LIFE-01) | Pending: are the Next.js frontends deployed to Cloudflare Pages (as per website-frontend pattern) or to the k3s cluster as containerized Next.js apps? The deploy workflow pattern depends on this decision. |
+| match-backend runtime model (LIFE-02) | Pending ADR-010: is match-backend a persistent HTTP service or a batch job? This determines whether it needs a k8s Deployment or a CronJob/Job manifest in receptor-infra. |
 
 
 ---
@@ -58,6 +60,16 @@ Affects: `receptor-infra` — azure
       `/receptor-infra/values/vault.yaml`
 - [ ] Once Workload Identity Federation is confirmed working ('vault status' shows unsealed after pod restart), revoke the vault-k3s client secret via 'az ad app credential delete --id aad24e26-8e10-4751-90ea-fb43bd147250 --key-id &#60;credential-id&#62;'. Remove AZURE_CLIENT_SECRET from the vault-azure-kms k8s secret and from values/vault.yaml extraEnvironmentVars. Update Terraform to manage the service principal without a credential.
       `/receptor-infra/terraform/modules/service-principal/main.tf`
+
+### LIFE-01: No deployment workflow exists in any of the three Next.js frontend repositories (planner-frontend, preference-frontend, 
+
+Affects: `planner-frontend` — .github/workflows
+
+
+- [ ] Create staging-deploy.yml for all three frontend repos triggered on push to main. Workflow must: (1) resolve environment Vault secrets (NEXT_PUBLIC_SUPABASE_URL + PUBLISHABLE_KEY for staging) via OIDC Vault login (same pattern as supabase-receptor staging-smoke.yml), (2) build the Next.js production bundle with live staging env vars, (3) deploy to the k3s staging namespace or Cloudflare Pages staging project depending on ADR decision (see LIFE-01 clarification), (4) run a smoke test against the deployed staging URL, (5) notify #deployments Slack. Requires deployment target ADR before implementing.
+      `/planner-frontend/.github/workflows/staging-deploy.yml`
+- [ ] Create prod-deploy.yml for all three frontend repos triggered on GitHub Release publish. Must include: (1) GitHub Environments required-reviewer gate (CICD-08 — previously deferred from 260312-cicd-environments), (2) production Vault secret injection, (3) post-deploy smoke test against production URL, (4) rollback trigger on smoke test failure. Blocked on LIFE-04 (rollback runbook) and CICD-08 (GitHub Environments).
+      `/planner-frontend/.github/workflows/prod-deploy.yml`
 
 ## 🟠 High
 
@@ -140,6 +152,30 @@ Affects: `supabase-receptor` — k3s
 
 - [ ] Add an egress rule to the vault namespace NetworkPolicy allowing outbound port 443 to the Azure Key Vault endpoint (k3sunlock.vault.azure.net). Use an ipBlock cidr covering Azure Key Vault IPs for australiasoutheast, or configure an FQDN-based egress policy if Calico GlobalNetworkPolicy is available. Verify by restarting the Vault pod and confirming 'vault status' reports Initialized=true, Sealed=false.
       `/supabase-receptor/k3s/network-policies/network-policies.yaml`
+
+### LIFE-02: match-backend has a Dockerfile and a full CI pipeline (unit + integration tests) but no image build/push workflow and no
+
+Affects: `match-backend` — .github/workflows
+
+
+- [ ] Write ADR-010-match-backend-runtime.md documenting whether match-backend runs as a persistent HTTP service (FastAPI/uvicorn) or as a batch job triggered by a Supabase Edge Function or k3s CronJob. Then: if service — add build-push.yml (build + push to GHCR) and a k8s Deployment manifest in receptor-infra with VSO for INTERNAL_API_KEY injection; if batch job — add a k3s Job/CronJob manifest in receptor-infra and document the trigger mechanism.
+      `/match-backend/.github/workflows/build-push.yml`
+
+### LIFE-03: receptor-planner CI only runs unit tests. The ci.yml comment defers integration tests indefinitely: 'Integration tests (
+
+Affects: `receptor-planner` — .github/workflows
+
+
+- [ ] Document receptor-planner runtime model in ADR-011-receptor-planner-runtime.md. Create tests/integration/ with at least one integration test verifying the planner reads from and writes back to schedule_slots in a local Supabase instance. If receptor-planner runs as a container: add a Dockerfile (mirror match-backend pattern) and build-push.yml. Add integration tests to ci.yml mirroring match-backend's BACK-01-T2 pattern.
+      `/receptor-planner/Dockerfile`
+
+### LIFE-04: No rollback procedure exists — automated or documented — for any of the five frontend/backend repositories. There are no
+
+Affects: `planner-frontend` — cross-repo
+
+
+- [ ] Create docs/operations/rollback-runbook.md covering: (1) frontend rollback — force-push previous image tag or re-trigger staging-deploy.yml from a previous release tag; (2) backend rollback — kubectl rollout undo Deployment/&#60;service&#62;; (3) database migration rollback policy — migrations are forward-only in Supabase, so define the compensating-migration strategy. Add an Alertmanager PrometheusRule that fires a 'DeploymentErrorRateSpike' alert within 5 minutes of deployment if HTTP 5xx rate exceeds baseline. Link rollback runbook from all five repo READMEs.
+      `/documentation/common-bond/docs/operations/rollback-runbook.md`
 
 ## 🟡 Medium
 
@@ -241,6 +277,30 @@ Affects: `supabase-receptor` — k3s
 - [ ] Deploy Kyverno (lighter weight than OPA Gatekeeper on single-node k3s) via a new Helm release in supabase-receptor/k3s/helmfile.yaml: kyverno/kyverno (pinned stable version). Create a Kyverno ClusterPolicy that validates namespace create/delete requests from sa-github-runner: allow only namespaces matching '^reactor-ci-'. Until Kyverno is deployed, update docs/adr/ADR-007-kubernetes-rbac.md to explicitly document the open risk and expected remediation date.
       `/supabase-receptor/k3s/helmfile.yaml`
 
+### LIFE-05: The three Next.js frontend CI pipelines all run integration tests against a locally booted Supabase instance but have no
+
+Affects: `planner-frontend` — .github/workflows
+
+
+- [ ] Add Vault KV paths for each frontend per environment: infrastructure/planner-frontend/staging, infrastructure/planner-frontend/prod (and equivalents for preference/workforce). Each path contains NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY for that environment. Update staging-deploy.yml (LIFE-01-T1) to inject these via the Vault OIDC login step. Ensure next.config.ts runtime env vars are not baked at build time — use NEXT_PUBLIC_ env vars injected at runtime via k8s ConfigMap or Cloudflare Pages variable.
+      `/planner-frontend/.github/workflows/staging-deploy.yml`
+
+### LIFE-06: receptor-planner has no dependency management automation: no Renovate Bot (.github/workflows/renovate.yml) unlike the th
+
+Affects: `receptor-planner` — .github
+
+
+- [ ] Add .github/dependabot.yml to receptor-planner targeting pip (package-ecosystem: pip, directory: /, schedule: monthly — matching match-backend). Ensure the TMPDIR: /home/runner/pip-tmp workaround in ci.yml is preserved after any pip upgrade that bumps ortools.
+      `/receptor-planner/.github/dependabot.yml`
+
+### LIFE-07: All three Next.js frontend next.config.ts files include script-src: 'unsafe-eval' 'unsafe-inline' in the Content-Securit
+
+Affects: `planner-frontend` — next.config.ts
+
+
+- [ ] Replace 'unsafe-eval' with nonce-based CSP in all three frontend next.config.ts files. Next.js 14+ supports automatic nonce injection via middleware.ts and the experimental.nonce config option. Add a CSP header verification test to the e2e-axe Playwright suite that asserts the Content-Security-Policy response header does not contain 'unsafe-eval'. Until nonces are implemented, add the known CSP risk to the ISMS Asset Register for all three applications.
+      `/planner-frontend/next.config.ts`
+
 ## 🟢 Low
 
 ### ARM-01: azure/backup-storage-account.parameters.json has three value discrepancies from live state (storageAccountName placehold
@@ -268,6 +328,7 @@ Affects: `receptor-infra` — azure
 | 5 | SEC-01, SEC-03, IAC-04, ARM-01 | Apply KV network ACL restriction and key rotation policy via the apply workflow. Add weekly drift detection. Confirm ARM-01 retirement. |
 | 6 | KUBE-01, KUBE-02, ENV-01, KUBE-03, KUBE-04 | Address supabase-kubernetes gaps in priority order: (1) K8S-01 VSO secret injection — blocking for production functionality; (2) K8S-02 resource limits — blocking for cluster stability; (3) ENV-01 test environment — required for CI isolation; (4) K8S-03 pod security contexts — hardening; (5) K8S-04 Falco — runtime monitoring. K8S-01 and K8S-02 may be implemented concurrently. |
 | 7 | NET-01, ARCH-01, CI-03, SPLIT-01, RBAC-01 | supabase-receptor k3s/ infrastructure gaps: (1) NET-01 Vault egress fix — needed for auto-unseal to function; (2) ARCH-01 missing values files — helmfile is not apply-able; (3) CI-03 activate self-hosted runner for staging smoke; (4) SPLIT-01 document or consolidate two-repo helmfile split; (5) RBAC-01 deploy Kyverno to enforce namespace prefix policy. |
+| 8 | LIFE-01, LIFE-02, LIFE-03, LIFE-04, LIFE-05, LIFE-06, LIFE-07 | All five repos lack deployment automation. Priority: (1) LIFE-01 frontend staging deploy — blocks all staging verification; (2) LIFE-04 rollback runbook — prerequisite for any production deploy; (3) LIFE-02/03 backend ADRs — unblock container/deploy strategy decisions; (4) LIFE-05 per-environment Vault secrets; (5) LIFE-07 CSP hardening — security regression in production today; (6) LIFE-06 receptor-planner Dependabot — lowest risk. |
 
 
 ---
@@ -278,6 +339,7 @@ Affects: `receptor-infra` — azure
 | :--------- | :--- | :--- | :------- | :------- |
 | KUBE-01 | supabase | `vso-secrets.yaml` | Security | 🔴 Critical |
 | SEC-02 | azure | `vault.yaml` | Security | 🔴 Critical |
+| LIFE-01 | .github/workflows | `staging-deploy.yml` | Process Gap | 🔴 Critical |
 | IAC-01 | azure | `main.tf` | Process Gap | 🟠 High |
 | IAC-03 | azure | `main.tf` | Process Gap | 🟠 High |
 | SEC-01 | azure | `main.tf` | Security | 🟠 High |
@@ -286,6 +348,9 @@ Affects: `receptor-infra` — azure
 | ENV-01 | supabase | `values.yaml` | Process Gap | 🟠 High |
 | ARCH-01 | k3s | `vault.yaml` | Process Gap | 🟠 High |
 | NET-01 | k3s | `network-policies.yaml` | Security | 🟠 High |
+| LIFE-02 | .github/workflows | `build-push.yml` | Process Gap | 🟠 High |
+| LIFE-03 | .github/workflows | `Dockerfile` | Process Gap | 🟠 High |
+| LIFE-04 | cross-repo | `rollback-runbook.md` | Process Gap | 🟠 High |
 | IAC-02 | azure | `backup-storage-account.parameters.json` | Tech Debt | 🟡 Medium |
 | IAC-04 | azure | `terraform-drift.yml` | Process Gap | 🟡 Medium |
 | CI-01 | .github/workflows | `terraform-plan.yml` | Process Gap | 🟡 Medium |
@@ -297,5 +362,8 @@ Affects: `receptor-infra` — azure
 | SPLIT-01 | k3s | `ADR-009-helmfile-split.md` | Architectural Drift | 🟡 Medium |
 | CI-03 | .github/workflows | `staging-smoke.yml` | Process Gap | 🟡 Medium |
 | RBAC-01 | k3s | `helmfile.yaml` | Security | 🟡 Medium |
+| LIFE-05 | .github/workflows | `staging-deploy.yml` | Process Gap | 🟡 Medium |
+| LIFE-06 | .github | `dependabot.yml` | Process Gap | 🟡 Medium |
+| LIFE-07 | next.config.ts | `next.config.ts` | Security | 🟡 Medium |
 | ARM-01 | azure | `backup-storage-account.parameters.json` | Tech Debt | 🟢 Low |
 

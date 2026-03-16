@@ -9,7 +9,7 @@
 
 ## Executive Summary
 
-The audit examined the `receptor-infra` repository, live Azure state, the supabase-kubernetes Helm releases, and the `supabase-receptor` k3s/ infrastructure for Infrastructure-as-Code and production-readiness coverage. Twenty-two findings were identified: 2 Critical, 8 High, 11 Medium, and 1 Low (5 are proposed, pending approval). Live `az` and `gh` CLI introspection surfaced discrepancies not visible from the repository alone:
+The audit examined the `receptor-infra` repository, live Azure state, the supabase-kubernetes Helm releases, the `supabase-receptor` k3s/ infrastructure, and the CI/CD pipelines of all five application repositories (planner-frontend, preference-frontend, workforce-frontend, match-backend, receptor-planner) for Infrastructure-as-Code, production-readiness, and lifecycle management coverage. Twenty-nine findings were identified: 3 Critical, 10 High, 14 Medium, and 1 Low (12 are proposed, pending approval). Live `az` and `gh` CLI introspection surfaced discrepancies not visible from the repository alone:
 
 - **KUBE-01 (Critical):** `supabase/production/values.yaml` contains unresolved shell placeholders (`${POSTGRES_PASSWORD}`, `${JWT_SECRET}`) — not injected by Helm or VSO. Production Supabase is either non-functional or running with empty credentials.
 - **SEC-02 (Critical):** Vault auto-unseal uses a service principal (`vault-k3s-unseal`) whose client secret is in a manually-created k8s Secret `vault-azure-kms` with no VSO sync (STORE-01). Workload Identity Federation is the preferred resolution.
@@ -34,6 +34,13 @@ The audit examined the `receptor-infra` repository, live Azure state, the supaba
 | `supabase-receptor` — CI smoke test | ❌ | 1 | Silently broken |
 | Two-repo helmfile split | ⚠️ | 1 | No apply-order doc |
 | `supabase-receptor` — RBAC (CI runner) | ⚠️ | 1 | Wildcard verbs, no admission control |
+| **Frontend/Backend Lifecycle** | | | |
+| No deployment workflows (5 repos) | ❌ | 1 | All 5 app repos — CI only, no deploy |
+| No rollback procedure | ❌ | 1 | No runbook, no automation |
+| Backend deploy model undefined | ❌ | 2 | match-backend + receptor-planner |
+| No per-environment secret scoping | ⚠️ | 1 | Frontend staging/prod Vault paths missing |
+| CSP unsafe-eval in production | ⚠️ | 1 | All 3 Next.js frontends |
+| receptor-planner no Dependabot | ⚠️ | 1 | Only non-automated repo |
 
 ---
 
@@ -196,6 +203,7 @@ The audit examined the `receptor-infra` repository, live Azure state, the supaba
 | ---------- | ----------------- | --------------- | -------- | -------- |
 | KUBE-01 | `receptor-infra` — supabase | `supabase/production/values.yaml` — unresolved `${...}` placeholders | Security | 🔴 Critical |
 | SEC-02 | Azure / `vault-k3s-unseal` + k8s `vault-azure-kms` | `values/vault.yaml` + App Registration | Security | 🔴 Critical |
+| LIFE-01 ⚑ | frontend repos | No deployment workflow in planner/preference/workforce frontends | Process Gap | 🔴 Critical |
 | IAC-01 | `receptor-infra` — Azure IaC | *(absent)* | Process Gap | 🔴 High |
 | IAC-03 | `receptor-infra` — Key Vault | *(absent)* | Process Gap | 🔴 High |
 | SEC-01 | Azure / `K3sUnlock` | Key Vault network ACLs | Security | 🔴 High |
@@ -204,6 +212,9 @@ The audit examined the `receptor-infra` repository, live Azure state, the supaba
 | ENV-01 | `receptor-infra` — supabase | *(absent)* — no test environment | Process Gap | 🔴 High |
 | ARCH-01 ⚑ | `supabase-receptor` — k3s | `k3s/values/` directory missing — helmfile unapply-able | Process Gap | 🔴 High |
 | NET-01 ⚑ | `supabase-receptor` — k3s | `k3s/network-policies/network-policies.yaml` — Vault egress DNS-only, blocks auto-unseal | Security | 🔴 High |
+| LIFE-02 ⚑ | `match-backend` | No image push, no deploy workflow, runtime model undocumented | Process Gap | 🔴 High |
+| LIFE-03 ⚑ | `receptor-planner` | No Dockerfile, no deploy, integration tests deferred with no tracking | Process Gap | 🔴 High |
+| LIFE-04 ⚑ | cross-repo | No rollback procedure — any repo | Process Gap | 🔴 High |
 | IAC-02 | `receptor-infra` — ARM | `azure/backup-storage-account.parameters.json` | Tech Debt | 🟠 Medium |
 | IAC-04 | `receptor-infra` — Azure IaC | *(absent)* | Process Gap | 🟠 Medium |
 | CI-01 | `receptor-infra` — CI | *(absent)* | Process Gap | 🟠 Medium |
@@ -215,6 +226,47 @@ The audit examined the `receptor-infra` repository, live Azure state, the supaba
 | SPLIT-01 ⚑ | `supabase-receptor` + `receptor-infra` | Two helmfiles — no apply order documented | Architectural Drift | 🟠 Medium |
 | CI-03 ⚑ | `supabase-receptor` | `staging-smoke.yml` — silently broken on GitHub-hosted runners | Process Gap | 🟠 Medium |
 | RBAC-01 ⚑ | `supabase-receptor` — k3s | `k3s/rbac/serviceaccounts.yaml` — wildcard verbs, no admission control | Security | 🟠 Medium |
+| LIFE-05 ⚑ | frontend repos | No per-environment Vault secret scoping for staging/prod | Process Gap | 🟠 Medium |
+| LIFE-06 ⚑ | `receptor-planner` | No Dependabot — only non-automated Python repo | Process Gap | 🟠 Medium |
+| LIFE-07 ⚑ | frontend repos | `next.config.ts` — `unsafe-eval` CSP in all 3 frontends | Security | 🟠 Medium |
 | ARM-01 | `receptor-infra` — ARM | `azure/backup-storage-account.parameters.json` | Tech Debt | 🟡 Low |
 
-*⚑ Proposed — pending human approval*
+*⚑ Proposed — approved by human, awaiting implementation*
+
+---
+
+## 7. Frontend & Backend Lifecycle Management *(Proposed — Round 3)*
+
+All five application repositories (planner-frontend, preference-frontend, workforce-frontend, match-backend, receptor-planner) have well-structured CI pipelines with unit and integration testing — but **none have any deployment automation**. Merge to `main` has no deployment consequence in any repo.
+
+### 7.1 No Deployment Workflows — Any Repo (LIFE-01, LIFE-02, LIFE-03)
+
+**Gaps:**
+
+- **LIFE-01 (Critical)** — planner-frontend, preference-frontend, workforce-frontend: no `staging-deploy.yml`, no `prod-deploy.yml`. Three Next.js applications are tested in CI and then not deployed. No staging URL exists for any frontend.
+- **LIFE-02 (High)** — match-backend: Dockerfile exists, CI passes — but no image push workflow, no k8s Deployment or CronJob manifest, and the runtime model (HTTP service vs. batch job) is undocumented.
+- **LIFE-03 (High)** — receptor-planner: no Dockerfile, no deployment workflow, no integration tests (deferred in CI comment with no tracking task), and operational model entirely undocumented.
+
+### 7.2 No Rollback Procedure — Any Repo (LIFE-04)
+
+**Gaps:**
+
+- **LIFE-04 (High)** — No rollback runbook, no `kubectl rollout undo` automation, no Alertmanager DeploymentErrorRateSpike alert, and no image digest pinning in k8s manifests (those manifests do not yet exist). Recovery after a bad deployment requires entirely manual intervention with no documented steps.
+
+### 7.3 Missing Per-Environment Secret Scoping (LIFE-05)
+
+**Gaps:**
+
+- **LIFE-05 (Medium)** — No Vault KV paths exist scoped per environment for any frontend (e.g., `infrastructure/planner-frontend/staging`, `infrastructure/planner-frontend/prod`). CI tests run against a local Supabase schema while staging/production use different Supabase configs never exercised by CI.
+
+### 7.4 CSP `unsafe-eval` in All Three Frontends (LIFE-07)
+
+**Gaps:**
+
+- **LIFE-07 (Medium)** — `script-src: 'unsafe-eval' 'unsafe-inline'` is set in `next.config.ts` for all three Next.js frontends. The comment says "tighten with nonces in future" — no ADR, no milestone, no tracking item exists. This defeats XSS protections for all authenticated users.
+
+### 7.5 receptor-planner Dependency Drift (LIFE-06)
+
+**Gaps:**
+
+- **LIFE-06 (Medium)** — receptor-planner is the only application repo with no automated dependency management: no Renovate Bot (unlike the three frontend repos) and no Dependabot (unlike match-backend). `requirements.txt` pins ortools, scipy, and scientific packages with no automated update tracking.
