@@ -4,7 +4,7 @@
   "status": "drafting",
   "nextAction": "implement",
   "openTaskCount": 49,
-  "latestHandover": "Round 3: 7 new lifecycle findings (LIFE-01 to LIFE-07) from auditing frontend/backend repos. Key: LIFE-01 Critical (no deploy workflows in 3 frontends), LIFE-04 High (no rollback procedure), LIFE-02/03 High (backend runtime/deploy undocumented). Also: LIFE-07 CSP unsafe-eval in all 3 frontends, LIFE-05 no per-env Vault secrets, LIFE-06 receptor-planner no Dependabot. 29 total findings (3C/10H/14M/1L). Phase 8 added for lifecycle. Also: 5 Round 2 findings graduated from proposed to open.",
+  "latestHandover": "ADR decisions recorded: (1) Frontend deployment = k3s containerised Next.js with GHCR image push + Traefik IngressRoute per app + Prometheus/Loki observability (replaces original Cloudflare Pages intent). (2) match-backend = always-on FastAPI/uvicorn HTTP service with future POST /run webhook. LIFE-01-T1 and LIFE-02-T1 task descriptions updated to reflect concrete architecture. 29 total findings (3C/10H/14M/1L), 49 open tasks.",
   "sessionHistory": [
     {
       "session": 1,
@@ -40,6 +40,12 @@
       "session": 6,
       "date": "2026-03-16",
       "summary": "Round 3 lifecycle audit. Read all 5 app repo CI workflows. Found LIFE-01 (no deploy workflows in frontend repos \u2014 Critical), LIFE-02 (match-backend no image push, runtime undefined), LIFE-03 (receptor-planner no integration tests, no Dockerfile), LIFE-04 (no rollback procedure anywhere), LIFE-05 (no per-env Vault secrets for frontend), LIFE-06 (receptor-planner no Dependabot), LIFE-07 (CSP unsafe-eval in all 3 Next.js frontends). Also graduated ARCH-01/NET-01/SPLIT-01/CI-03/RBAC-01 from proposed to open. 29 findings total. Phase 8 added.",
+      "completedTasks": []
+    },
+    {
+      "session": 7,
+      "date": "2026-03-16",
+      "summary": "ADR decisions clarified by human: frontend deployment = k3s containerised (not Cloudflare Pages), match-backend = always-on HTTP service (future webhook trigger). Updated LIFE-01 and LIFE-02 task descriptions. Updated two clarification items from pending to decided.",
       "completedTasks": []
     }
   ]

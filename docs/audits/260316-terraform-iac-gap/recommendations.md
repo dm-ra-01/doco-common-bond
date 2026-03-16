@@ -31,8 +31,8 @@ Do not edit it directly — edit the JSON source and re-run
 | Single-node cluster constraint | All namespaces (supabase, supabase-staging, supabase-test, vault, monitoring, arc-runners) compete for the same physical resources on one Hyper-V host. Resource limits (K8S-02) and ResourceQuotas on staging/test namespaces are essential to prevent those environments from starving production Vault and Supabase. |
 | Two-repo helmfile split (SPLIT-01) | Pending human decision on whether to consolidate both helmfiles into receptor-infra or keep the current split. Until decided, ADR-009 must document the apply order so operators are not surprised. |
 | ARCH-03 7-run trial gate status (CI-03) | Implementation agent must check whether the 7-run self-hosted runner trial referenced in 260312-cicd-environments (ARCH-03) has been satisfied before activating arc-runner in staging-smoke.yml. |
-| Frontend deployment target (LIFE-01) | Pending: are the Next.js frontends deployed to Cloudflare Pages (as per website-frontend pattern) or to the k3s cluster as containerized Next.js apps? The deploy workflow pattern depends on this decision. |
-| match-backend runtime model (LIFE-02) | Pending ADR-010: is match-backend a persistent HTTP service or a batch job? This determines whether it needs a k8s Deployment or a CronJob/Job manifest in receptor-infra. |
+| Frontend deployment target (LIFE-01) | DECIDED: k3s containerised Next.js with observability. Each frontend gets a Dockerfile (standalone output mode), a GHCR image push on merge to main, and a k8s Deployment in receptor-infra (own namespace per app — planner, preference, workforce). Traefik IngressRoute per app. Prometheus/Loki scraping via existing monitoring stack. Production deploy gated behind GitHub Environments required-reviewer (CICD-08). This replaces the original Cloudflare Pages intent. |
+| match-backend runtime model (LIFE-02) | DECIDED: always-on HTTP service (FastAPI/uvicorn). Runs as a k8s Deployment in receptor-infra. Future plan: expose a webhook endpoint so the orchestrator (e.g. Supabase Edge Function) can trigger a match run on demand. For now the service is always running and polled. VSO injects INTERNAL_API_KEY. Liveness/readiness probes required (ADR-010). |
 
 
 ---
@@ -66,9 +66,9 @@ Affects: `receptor-infra` — azure
 Affects: `planner-frontend` — .github/workflows
 
 
-- [ ] Create staging-deploy.yml for all three frontend repos triggered on push to main. Workflow must: (1) resolve environment Vault secrets (NEXT_PUBLIC_SUPABASE_URL + PUBLISHABLE_KEY for staging) via OIDC Vault login (same pattern as supabase-receptor staging-smoke.yml), (2) build the Next.js production bundle with live staging env vars, (3) deploy to the k3s staging namespace or Cloudflare Pages staging project depending on ADR decision (see LIFE-01 clarification), (4) run a smoke test against the deployed staging URL, (5) notify #deployments Slack. Requires deployment target ADR before implementing.
+- [ ] Create Dockerfile (Next.js standalone output: output: standalone in next.config.ts) for each frontend repo. Add build-push.yml: on push to main, build the Docker image and push to GHCR (ghcr.io/dm-ra-01/&#60;repo&#62;:&#60;sha&#62;). Create k8s Deployment and Service manifests in receptor-infra under infrastructure/&#60;app&#62;/ namespace (planner, preference, workforce). Add Traefik IngressRoute per app. Add staging-deploy.yml: resolve staging Vault KV (infrastructure/&#60;app&#62;/staging), inject NEXT_PUBLIC_SUPABASE_URL + PUBLISHABLE_KEY, apply updated image tag via kubectl set image or helmfile, run smoke test. Wire Prometheus ServiceMonitor and Loki log scraping using existing monitoring stack.
       `/planner-frontend/.github/workflows/staging-deploy.yml`
-- [ ] Create prod-deploy.yml for all three frontend repos triggered on GitHub Release publish. Must include: (1) GitHub Environments required-reviewer gate (CICD-08 — previously deferred from 260312-cicd-environments), (2) production Vault secret injection, (3) post-deploy smoke test against production URL, (4) rollback trigger on smoke test failure. Blocked on LIFE-04 (rollback runbook) and CICD-08 (GitHub Environments).
+- [ ] Create prod-deploy.yml for each frontend triggered on GitHub Release publish. Deploy to production k8s namespace. Must include: (1) GitHub Environments required-reviewer gate (CICD-08), (2) production Vault KV injection (infrastructure/&#60;app&#62;/prod), (3) post-deploy smoke test against production Traefik URL, (4) automatic rollback (kubectl rollout undo) on smoke test failure within 5 minutes. Blocked on LIFE-04 (rollback runbook).
       `/planner-frontend/.github/workflows/prod-deploy.yml`
 
 ## 🟠 High
@@ -158,7 +158,7 @@ Affects: `supabase-receptor` — k3s
 Affects: `match-backend` — .github/workflows
 
 
-- [ ] Write ADR-010-match-backend-runtime.md documenting whether match-backend runs as a persistent HTTP service (FastAPI/uvicorn) or as a batch job triggered by a Supabase Edge Function or k3s CronJob. Then: if service — add build-push.yml (build + push to GHCR) and a k8s Deployment manifest in receptor-infra with VSO for INTERNAL_API_KEY injection; if batch job — add a k3s Job/CronJob manifest in receptor-infra and document the trigger mechanism.
+- [ ] Write ADR-010-match-backend-runtime.md: always-on FastAPI/uvicorn HTTP service. Create Dockerfile (FROM python:3.12-slim-bookworm, expose port 8080, ENTRYPOINT uvicorn allocator.main:app). Add build-push.yml targeting GHCR. Create k8s Deployment in receptor-infra with: VSO for INTERNAL_API_KEY injection, liveness probe (GET /healthz), readiness probe (GET /readyz), resource limits (250m CPU, 512Mi memory). Add Traefik IngressRoute for internal-only access (no public exposure). Future: add POST /run webhook endpoint so Supabase Edge Function can trigger a match run on demand without polling.
       `/match-backend/.github/workflows/build-push.yml`
 
 ### LIFE-03: receptor-planner CI only runs unit tests. The ci.yml comment defers integration tests indefinitely: 'Integration tests (
