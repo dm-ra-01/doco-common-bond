@@ -4,7 +4,7 @@
   "status": "implementing",
   "nextAction": "implement",
   "openTaskCount": 27,
-  "latestHandover": "Session 11: Phases 4 (SEC-04) and 5 (SEC-03, IAC-04) complete in receptor-infra. STORE-01-T2 closed (WIF preferred path already taken, AZURE_CLIENT_SECRET removed session 8). SEC-04-T1 closed (use_azuread_auth=true already present in backend.tf from IAC-01-T2 session 9). SEC-03-T1 implemented: rotation_policy added to modules/key-vault/main.tf (P180D rotation, P210D expire, P30D notify). IAC-04-T1 implemented: .github/workflows/terraform-drift.yml created (weekly Mon 02:00 UTC, OIDC\u2192Vault\u2192Azure WIF, terraform plan -detailed-exitcode, opens GitHub Issue on drift). SEC-01-T1 BLOCKED: Hyper-V egress IP is dynamic; cannot use static IP rule. Documented in code and task description. terraform validate confirmed clean. 27 open tasks remain. Next session: Phase 6 (KUBE-01 VSO secret injection, KUBE-02 resource limits, ENV-01 test environment, KUBE-03 pod security, KUBE-04 Falco) in receptor-infra supabase/ values files.",
+  "latestHandover": "Session 12: Operational cluster session — no formal audit tasks completed. Key work: (1) Fixed cluster-sync helmfile workflow — vault CLI replaced with curl for Slack Slack notifications (PR #1 merged to receptor-infra main); (2) Resolved stuck Helm releases (cert-manager pending-install, kube-prometheus-stack corrupted v2 secret, vault labels) — cluster-sync now passes cleanly; (3) Fixed all 7 ARC runner listeners (planner-frontend was stuck ContainerCreating — AutoscalingListener deleted, regenerated); (4) Expanded k3s cluster on new physical host HYPERV-2 (GIGABYTE B550M DS3H AC, AMD 6-core, 32GB, RTX 3060 Ti): receptor-ctrl-10 (10.10.0.10, 6 vCPU/8GB, HA control-plane) and receptor-work-10 (10.10.0.20, 6 vCPU/8GB, worker) joined; (5) Fixed receptor-work-01 kernel from 6.8.0-101-generic to 6.17.0-1008-azure (all 5 nodes now on linux-azure); (6) Cleaned 15 ghost Unknown pods across monitoring, supabase, supabase-staging, traefik, calico-apiserver namespaces; (7) Documented full cluster infrastructure in doco-common-bond cluster-infrastructure.md. 27 open tasks remain unchanged. Next session: Phase 6 in receptor-infra — KUBE-01 (replace ${POSTGRES_PASSWORD} placeholders with VSO-synced secrets), KUBE-02 (resource limits), ENV-01 (test environment), KUBE-03 (pod security contexts), KUBE-04 (Falco).",
   "sessionHistory": [
     {
       "session": 1,
@@ -94,6 +94,12 @@
         "SEC-03-T1",
         "IAC-04-T1"
       ]
+    },
+    {
+      "session": 12,
+      "date": "2026-03-16",
+      "summary": "Operational cluster session — no formal audit tasks completed. Fixed cluster-sync helmfile workflow (vault CLI → curl, PR #1 merged). Resolved stuck Helm releases (cert-manager, kube-prometheus-stack, vault). All 7 ARC runner listeners operational. Expanded cluster: receptor-ctrl-10 (HA control-plane, 10.10.0.10) and receptor-work-10 (worker, 10.10.0.20) joined on HYPERV-2. Fixed work-01 kernel (generic → linux-azure). Cleaned 15 ghost Unknown pods. Documented cluster infrastructure in doco-common-bond.",
+      "completedTasks": []
     }
   ]
 }

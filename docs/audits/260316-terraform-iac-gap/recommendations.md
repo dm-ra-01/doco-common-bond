@@ -398,3 +398,22 @@ Affects: `receptor-infra` — azure
 **PR order note:** No PRs raised this session. When Phases 6–7 (receptor-infra, supabase-receptor) are complete, merge receptor-infra before supabase-receptor to ensure the VaultAuth and VSO CRDs are applied before helmfile references them.
 
 **Brief for next agent:** Start Phase 6 in `receptor-infra`. The supabase/ directory contains production and staging values files. KUBE-01 is the highest priority (Critical) — production values.yaml has literal `${POSTGRES_PASSWORD}` placeholders that must be replaced with VSO-synced secrets. Read `supabase/production/values.yaml` and the VaultAuth CRD pattern from `vault/vso-vault-auth.yaml` before writing KUBE-01-T3. KUBE-02 (resource limits) and KUBE-01 can be implemented concurrently in the same commit. Agent Clarifications: `supabase-community/supabase` chart v0.5.1 uses the `existingSecret` pattern — confirm chart README before implementing KUBE-01-T2.
+
+## Session Close — 2026-03-16 (Session 12)
+
+**Completed:** No formal audit tasks this session. All work was operational cluster stabilisation.
+
+**Operational work delivered:**
+- `cluster-sync` helmfile workflow fully operational — vault CLI replaced with `curl` for Slack notifications (PR #1, merged to `receptor-infra` main)
+- Resolved stuck Helm releases: `cert-manager` (pending-install → deployed), `kube-prometheus-stack` (corrupted v2 secret deleted), `vault` (stale labels patched)
+- All 7 ARC runner listeners Running — `planner-frontend` AutoscalingListener regenerated
+- k3s cluster expanded to 5 nodes on new physical host (HYPERV-2): `receptor-ctrl-10` (HA control-plane, 10.10.0.10, 6 vCPU/8GB) and `receptor-work-10` (worker, 10.10.0.20, 6 vCPU/8GB)
+- `receptor-work-01` kernel fixed from `6.8.0-101-generic` → `6.17.0-1008-azure` (all 5 nodes now on linux-azure)
+- 15 ghost `Unknown` pods cleaned across monitoring, supabase, supabase-staging, traefik, calico-apiserver
+- Cluster infrastructure documented in `doco-common-bond/docs/engineering/cluster-infrastructure.md`
+
+**Remaining:** 27 open tasks — Phase 6 (KUBE-01, KUBE-02, ENV-01, KUBE-03, KUBE-04 in `receptor-infra`), Phase 7 (NET-01, ARCH-01, CI-03, SPLIT-01, RBAC-01 in `supabase-receptor`), Phase 8 (LIFE-01–07 across lifecycle repos).
+
+**Blocked:** SEC-01-T1 (dynamic egress IP), SEC-04-T2 (pre-flight consumer audit required).
+
+**Brief for next agent:** Cluster is stable and ready for Phase 6. Start with KUBE-01 (Critical — `${POSTGRES_PASSWORD}` placeholders in `supabase/production/values.yaml` must be replaced with VSO-synced secrets). Read `vault/vso-vault-auth.yaml` for the VaultAuth CRD pattern. KUBE-02 (resource limits) can be implemented in the same commit. The cluster now has 3 workers (work-01: 4 vCPU/4GB, work-02: 2 vCPU/4GB, work-10: 6 vCPU/8GB) — resource limit budgets should reflect actual workloads.
