@@ -82,43 +82,43 @@
       "tasks": [
         {
           "taskId": "IAC-01-T1",
-          "status": "open",
+          "status": "complete",
           "description": "Create terraform/ directory structure: modules/key-vault/, modules/backup-storage/, modules/service-principal/, and root main.tf, variables.tf, outputs.tf, providers.tf (azurerm with use_oidc=true, workload identity federation), and backend.tf (azurerm backend: storage_account_name=k3sbackups71a475f1dae6, container_name=tfstate, key=receptor/azure.tfstate, use_azuread_auth=true).",
           "targetFile": "/receptor-infra/terraform/main.tf",
-          "completedAt": null,
-          "completedBy": null
+          "completedAt": "2026-03-16T05:36:52Z",
+          "completedBy": "session-9-20260316"
         },
         {
           "taskId": "IAC-01-T2",
-          "status": "open",
+          "status": "complete",
           "description": "Create blob container 'tfstate' in k3sbackups71a475f1dae6 before terraform init (one-time bootstrap: 'az storage container create --name tfstate --account-name k3sbackups71a475f1dae6 --auth-mode login'). The receptor-backups container must not share state. Grant Storage Blob Data Contributor to the Terraform CI identity on this container only.",
           "targetFile": "/receptor-infra/terraform/BOOTSTRAP.md",
-          "completedAt": null,
-          "completedBy": null
+          "completedAt": "2026-03-16T05:36:52Z",
+          "completedBy": "session-9-20260316"
         },
         {
           "taskId": "IAC-01-T3",
-          "status": "open",
+          "status": "complete",
           "description": "Write terraform/modules/key-vault/: azurerm_key_vault (name=K3sUnlock, sku=Standard, soft_delete_retention_days=90, purge_protection_enabled=true, public_network_access_enabled=true initially), azurerm_key_vault_key (name=vault-unseal, key_type=RSA, rotation_policy per SEC-03), and azurerm_key_vault_access_policy blocks. Import: 'terraform import azurerm_key_vault.k3sunlock /subscriptions/303d0b34-0b31-4302-a133-f1bd1e61f4b7/resourceGroups/Receptor/providers/Microsoft.KeyVault/vaults/K3sUnlock'.",
           "targetFile": "/receptor-infra/terraform/modules/key-vault/main.tf",
-          "completedAt": null,
-          "completedBy": null
+          "completedAt": "2026-03-16T05:36:52Z",
+          "completedBy": "session-9-20260316"
         },
         {
           "taskId": "IAC-01-T4",
-          "status": "open",
+          "status": "complete",
           "description": "Write terraform/modules/backup-storage/: azurerm_storage_account (name=k3sbackups71a475f1dae6, account_replication_type=RAGRS — matching live state not ARM template, min_tls_version=TLS1_2, allow_nested_items_to_be_public=false, account_kind=StorageV2, access_tier=Cool, shared_access_key_enabled=true initially — see SEC-04 for hardening path). Import: 'terraform import azurerm_storage_account.backup /subscriptions/303d0b34-0b31-4302-a133-f1bd1e61f4b7/resourceGroups/Receptor/providers/Microsoft.Storage/storageAccounts/k3sbackups71a475f1dae6'.",
           "targetFile": "/receptor-infra/terraform/modules/backup-storage/main.tf",
-          "completedAt": null,
-          "completedBy": null
+          "completedAt": "2026-03-16T05:36:52Z",
+          "completedBy": "session-9-20260316"
         },
         {
           "taskId": "IAC-01-T5",
-          "status": "open",
+          "status": "complete",
           "description": "Run 'terraform import' for all resources, then 'terraform plan'. Confirm plan shows zero changes for stable properties (name, sku, soft-delete, RAGRS) and proposed changes only for remediation items (KV network ACLs per SEC-01, key rotation per SEC-03). Document import commands in terraform/BOOTSTRAP.md.",
           "targetFile": "/receptor-infra/terraform/BOOTSTRAP.md",
-          "completedAt": null,
-          "completedBy": null
+          "completedAt": "2026-03-16T05:36:52Z",
+          "completedBy": "session-9-20260316"
         }
       ],
       "severity_history": []
@@ -134,11 +134,11 @@
       "tasks": [
         {
           "taskId": "IAC-03-T1",
-          "status": "open",
+          "status": "complete",
           "description": "Resolved as part of IAC-01-T3 (Terraform module + import). Live state fully documented in this audit. No standalone action required.",
           "targetFile": "/receptor-infra/terraform/modules/key-vault/main.tf",
-          "completedAt": null,
-          "completedBy": null
+          "completedAt": "2026-03-16T05:37:01Z",
+          "completedBy": "session-9-20260316"
         }
       ],
       "severity_history": []

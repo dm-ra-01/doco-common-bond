@@ -3,8 +3,8 @@
   "auditSlug": "260316-terraform-iac-gap",
   "status": "implementing",
   "nextAction": "implement",
-  "openTaskCount": 41,
-  "latestHandover": "Session 8: graduated LIFE-01 through LIFE-07 from proposed to open. Implemented Phase 1 (SEC-02, STORE-01, CI-02) in receptor-infra \u2014 Terraform Workload Identity Federation module (eliminates AZURE_CLIENT_SECRET), vault.yaml patched to remove vault-azure-kms secret ref, vault-configuration.md updated with receptor-infra-tf-ci JWT role and azure-terraform KV path. receptor-infra audit/260316-terraform-iac-gap branch pushed (commit 5236fe7). 41 open tasks remain across phases 2-8. Next: Phase 2 (IAC-01, IAC-03) \u2014 Terraform modules for Key Vault + storage account, terraform import, zero-drift plan.",
+  "openTaskCount": 35,
+  "latestHandover": "Session 9: Implemented Phase 2 (IAC-01, IAC-03) in receptor-infra \u2014 created full Terraform root (providers.tf use_oidc=true, backend.tf azurerm/tfstate, variables.tf, outputs.tf, main.tf), modules/key-vault/ (K3sUnlock KV + vault-unseal RSA key + 3 access policies), modules/backup-storage/ (k3sbackups71a475f1dae6 RAGRS + receptor-backups container), and BOOTSTRAP.md (tfstate container creation, role grants, terraform init, all import commands, zero-drift plan verification table). IAC-03 resolved as part of IAC-01-T3. receptor-infra pushed commit 34ac5cc. 35 open tasks remain across phases 3-8. Next: Phase 3 (CI-01, IAC-02) \u2014 terraform-plan.yml, terraform-apply.yml CI workflows, delete azure/ ARM directory.",
   "sessionHistory": [
     {
       "session": 1,
@@ -58,6 +58,20 @@
         "STORE-01-T1",
         "CI-02-T1",
         "CI-02-T2"
+      ]
+    },
+    {
+      "session": 9,
+
+      "date": "2026-03-16",
+      "summary": "Implementation session 2. Implemented Phase 2 (IAC-01, IAC-03): created terraform root files (providers.tf, backend.tf, variables.tf, outputs.tf, main.tf), modules/key-vault/ (K3sUnlock KV + vault-unseal RSA key + 3 access policies), modules/backup-storage/ (k3sbackups71a475f1dae6 RAGRS + receptor-backups container), and BOOTSTRAP.md (bootstrap steps, import commands, plan verification table). IAC-03-T1 resolved as part of IAC-01-T3. receptor-infra pushed commit 34ac5cc.",
+      "completedTasks": [
+        "IAC-01-T1",
+        "IAC-01-T2",
+        "IAC-01-T3",
+        "IAC-01-T4",
+        "IAC-01-T5",
+        "IAC-03-T1"
       ]
     }
   ]

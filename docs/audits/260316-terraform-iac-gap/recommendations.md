@@ -80,24 +80,30 @@ Affects: `planner-frontend` — .github/workflows
 Affects: `receptor-infra` — azure
 
 
-- [ ] Create terraform/ directory structure: modules/key-vault/, modules/backup-storage/, modules/service-principal/, and root main.tf, variables.tf, outputs.tf, providers.tf (azurerm with use_oidc=true, workload identity federation), and backend.tf (azurerm backend: storage_account_name=k3sbackups71a475f1dae6, container_name=tfstate, key=receptor/azure.tfstate, use_azuread_auth=true).
+- [x] Create terraform/ directory structure: modules/key-vault/, modules/backup-storage/, modules/service-principal/, and root main.tf, variables.tf, outputs.tf, providers.tf (azurerm with use_oidc=true, workload identity federation), and backend.tf (azurerm backend: storage_account_name=k3sbackups71a475f1dae6, container_name=tfstate, key=receptor/azure.tfstate, use_azuread_auth=true).
       `/receptor-infra/terraform/main.tf`
-- [ ] Create blob container 'tfstate' in k3sbackups71a475f1dae6 before terraform init (one-time bootstrap: 'az storage container create --name tfstate --account-name k3sbackups71a475f1dae6 --auth-mode login'). The receptor-backups container must not share state. Grant Storage Blob Data Contributor to the Terraform CI identity on this container only.
+      _(Completed: 2026-03-16T05:36:52Z)_
+- [x] Create blob container 'tfstate' in k3sbackups71a475f1dae6 before terraform init (one-time bootstrap: 'az storage container create --name tfstate --account-name k3sbackups71a475f1dae6 --auth-mode login'). The receptor-backups container must not share state. Grant Storage Blob Data Contributor to the Terraform CI identity on this container only.
       `/receptor-infra/terraform/BOOTSTRAP.md`
-- [ ] Write terraform/modules/key-vault/: azurerm_key_vault (name=K3sUnlock, sku=Standard, soft_delete_retention_days=90, purge_protection_enabled=true, public_network_access_enabled=true initially), azurerm_key_vault_key (name=vault-unseal, key_type=RSA, rotation_policy per SEC-03), and azurerm_key_vault_access_policy blocks. Import: 'terraform import azurerm_key_vault.k3sunlock /subscriptions/303d0b34-0b31-4302-a133-f1bd1e61f4b7/resourceGroups/Receptor/providers/Microsoft.KeyVault/vaults/K3sUnlock'.
+      _(Completed: 2026-03-16T05:36:52Z)_
+- [x] Write terraform/modules/key-vault/: azurerm_key_vault (name=K3sUnlock, sku=Standard, soft_delete_retention_days=90, purge_protection_enabled=true, public_network_access_enabled=true initially), azurerm_key_vault_key (name=vault-unseal, key_type=RSA, rotation_policy per SEC-03), and azurerm_key_vault_access_policy blocks. Import: 'terraform import azurerm_key_vault.k3sunlock /subscriptions/303d0b34-0b31-4302-a133-f1bd1e61f4b7/resourceGroups/Receptor/providers/Microsoft.KeyVault/vaults/K3sUnlock'.
       `/receptor-infra/terraform/modules/key-vault/main.tf`
-- [ ] Write terraform/modules/backup-storage/: azurerm_storage_account (name=k3sbackups71a475f1dae6, account_replication_type=RAGRS — matching live state not ARM template, min_tls_version=TLS1_2, allow_nested_items_to_be_public=false, account_kind=StorageV2, access_tier=Cool, shared_access_key_enabled=true initially — see SEC-04 for hardening path). Import: 'terraform import azurerm_storage_account.backup /subscriptions/303d0b34-0b31-4302-a133-f1bd1e61f4b7/resourceGroups/Receptor/providers/Microsoft.Storage/storageAccounts/k3sbackups71a475f1dae6'.
+      _(Completed: 2026-03-16T05:36:52Z)_
+- [x] Write terraform/modules/backup-storage/: azurerm_storage_account (name=k3sbackups71a475f1dae6, account_replication_type=RAGRS — matching live state not ARM template, min_tls_version=TLS1_2, allow_nested_items_to_be_public=false, account_kind=StorageV2, access_tier=Cool, shared_access_key_enabled=true initially — see SEC-04 for hardening path). Import: 'terraform import azurerm_storage_account.backup /subscriptions/303d0b34-0b31-4302-a133-f1bd1e61f4b7/resourceGroups/Receptor/providers/Microsoft.Storage/storageAccounts/k3sbackups71a475f1dae6'.
       `/receptor-infra/terraform/modules/backup-storage/main.tf`
-- [ ] Run 'terraform import' for all resources, then 'terraform plan'. Confirm plan shows zero changes for stable properties (name, sku, soft-delete, RAGRS) and proposed changes only for remediation items (KV network ACLs per SEC-01, key rotation per SEC-03). Document import commands in terraform/BOOTSTRAP.md.
+      _(Completed: 2026-03-16T05:36:52Z)_
+- [x] Run 'terraform import' for all resources, then 'terraform plan'. Confirm plan shows zero changes for stable properties (name, sku, soft-delete, RAGRS) and proposed changes only for remediation items (KV network ACLs per SEC-01, key rotation per SEC-03). Document import commands in terraform/BOOTSTRAP.md.
       `/receptor-infra/terraform/BOOTSTRAP.md`
+      _(Completed: 2026-03-16T05:36:52Z)_
 
 ### IAC-03: Azure Key Vault K3sUnlock (URI: https://k3sunlock.vault.azure.net/) and its access policies have no IaC representation. 
 
 Affects: `receptor-infra` — azure
 
 
-- [ ] Resolved as part of IAC-01-T3 (Terraform module + import). Live state fully documented in this audit. No standalone action required.
+- [x] Resolved as part of IAC-01-T3 (Terraform module + import). Live state fully documented in this audit. No standalone action required.
       `/receptor-infra/terraform/modules/key-vault/main.tf`
+      _(Completed: 2026-03-16T05:37:01Z)_
 
 ### SEC-01: Key Vault K3sUnlock has networkAcls.defaultAction=Allow with zero IP rules and no virtual network rules (confirmed via a
 
@@ -372,17 +378,3 @@ Affects: `receptor-infra` — azure
 | LIFE-07 | next.config.ts | `next.config.ts` | Security | 🟡 Medium |
 | ARM-01 | azure | `backup-storage-account.parameters.json` | Tech Debt | 🟢 Low |
 
-
----
-
-## Session Close — 2026-03-16
-
-**Completed:** SEC-02 (Workload Identity Federation Terraform module + vault.yaml patch), STORE-01 (vault-azure-kms secret ref removed — preferred path via SEC-02), CI-02 (Vault JWT role `receptor-infra-tf-ci` + `secret/infrastructure/azure-terraform` KV path documented in vault-configuration.md). LIFE-01 through LIFE-07 graduated from `proposed` → `open`.
-
-**Remaining:** IAC-01, IAC-03 (Phase 2 — Terraform Key Vault + storage modules, terraform import), CI-01, IAC-02 (Phase 3 — CI workflow, ARM retirement), SEC-04 (Phase 4 — storage AD auth), SEC-01, SEC-03, IAC-04, ARM-01 (Phase 5 — Azure hardening), KUBE-01, KUBE-02, ENV-01, KUBE-03, KUBE-04 (Phase 6 — supabase-kubernetes), NET-01, ARCH-01, CI-03, SPLIT-01, RBAC-01 (Phase 7 — supabase-receptor), LIFE-01 through LIFE-07 (Phase 8 — lifecycle). 41 open tasks total.
-
-**Blocked:** None.
-
-**PR order note:** receptor-infra audit branch created and pushed. No PRs raised yet — per workflow, merge is deferred to `/finalise-global-audit`.
-
-**Brief for next agent:** Phase 2 is the logical next step (IAC-01, IAC-03 in receptor-infra). It requires creating `terraform/main.tf` (root module), `terraform/modules/azure-keyvault/`, `terraform/modules/azure-storage/`, running `terraform import` for the two existing Azure resources, and confirming a zero-drift plan. The `terraform/modules/azure-workload-identity/` module from this session provides the auth pattern. Use the WIF approach (no client secret) in the provider config. The tfstate container name is `tfstate` in storage account `k3sbackups71a475f1dae6`. Backend uses `use_azuread_auth=true`.
