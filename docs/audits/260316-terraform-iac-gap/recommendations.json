@@ -466,6 +466,114 @@
         }
       ],
       "severity_history": []
+    },
+    {
+      "id": "ARCH-01",
+      "severity": "high",
+      "status": "proposed",
+      "category": "Process Gap",
+      "repo": "supabase-receptor",
+      "area": "k3s",
+      "description": "k3s/helmfile.yaml (supabase-receptor) references values files at k3s/values/calico.yaml, k3s/values/cert-manager.yaml, k3s/values/traefik.yaml, k3s/values/vault.yaml, k3s/values/prometheus-stack.yaml, k3s/values/loki.yaml, k3s/values/falco.yaml, and k3s/values/cloudflared.yaml — but the k3s/values/ directory does not exist on disk. Running 'helmfile sync' from supabase-receptor would fail immediately with file-not-found errors for all 8 chart values files. The helmfile documents the intended chart list and dependency order but cannot be applied as written.",
+      "tasks": [
+        {
+          "taskId": "ARCH-01-T1",
+          "status": "open",
+          "description": "Create k3s/values/ directory and populate the 8 missing values files: calico.yaml, cert-manager.yaml, traefik.yaml, vault.yaml, prometheus-stack.yaml, loki.yaml, falco.yaml, cloudflared.yaml. For vault.yaml, mirror the structure of receptor-infra/values/vault.yaml. For falco.yaml, reference k3s/falco/falco-rules.yaml as customRules. For cloudflared.yaml, inject the tunnel token from Vault KV. Run 'helmfile lint' and 'helmfile diff --dry-run' to confirm all values files resolve.",
+          "targetFile": "/supabase-receptor/k3s/values/vault.yaml",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "NET-01",
+      "severity": "high",
+      "status": "proposed",
+      "category": "Security",
+      "repo": "supabase-receptor",
+      "area": "k3s",
+      "description": "The vault namespace NetworkPolicy in k3s/network-policies/network-policies.yaml restricts all egress to DNS only (port 53 to kube-system). However, Vault's Azure Key Vault auto-unseal (SEC-02) requires outbound HTTPS (port 443) to https://k3sunlock.vault.azure.net/ to perform wrapKey/unwrapKey operations. The current egress policy silently blocks every auto-unseal attempt — Vault will remain sealed after any pod restart. This is a latent risk: the cluster appears healthy until Vault is restarted, at which point the sealed state prevents all VSO secret injection (including KUBE-01).",
+      "tasks": [
+        {
+          "taskId": "NET-01-T1",
+          "status": "open",
+          "description": "Add an egress rule to the vault namespace NetworkPolicy allowing outbound port 443 to the Azure Key Vault endpoint (k3sunlock.vault.azure.net). Use an ipBlock cidr covering Azure Key Vault IPs for australiasoutheast, or configure an FQDN-based egress policy if Calico GlobalNetworkPolicy is available. Verify by restarting the Vault pod and confirming 'vault status' reports Initialized=true, Sealed=false.",
+          "targetFile": "/supabase-receptor/k3s/network-policies/network-policies.yaml",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "SPLIT-01",
+      "severity": "medium",
+      "status": "proposed",
+      "category": "Architectural Drift",
+      "repo": "supabase-receptor",
+      "area": "k3s",
+      "description": "The k3s cluster is defined across two separate repos: supabase-receptor/k3s/helmfile.yaml (Calico, cert-manager, Traefik, Vault, Prometheus, Loki, Falco, cloudflared) and receptor-infra/helmfile.yaml (supabase + supabase-staging, VSO CRDs, network policies). There is no top-level umbrella helmfile, no documented apply order, and no CI that validates both helmfiles together. An operator must know to apply supabase-receptor first then receptor-infra, and that Vault from supabase-receptor is a prerequisite for VSO in receptor-infra. The supabase-receptor helm-upgrade-check.yml only scans its own helmfile — it misses the supabase-community/supabase chart pinned in receptor-infra.",
+      "tasks": [
+        {
+          "taskId": "SPLIT-01-T1",
+          "status": "open",
+          "description": "Document the two-repo helmfile split in docs/adr/ADR-009-helmfile-split.md with the canonical apply order: (1) supabase-receptor/k3s/helmfile.yaml, (2) receptor-infra/helmfile.yaml. Include cross-repo dependency notes (Vault from repo 1 is required before Supabase in repo 2). Link from both repos' README.md cluster-setup sections.",
+          "targetFile": "/supabase-receptor/docs/adr/ADR-009-helmfile-split.md",
+          "completedAt": null,
+          "completedBy": null
+        },
+        {
+          "taskId": "SPLIT-01-T2",
+          "status": "open",
+          "description": "Create a root-level cluster-apply.sh in receptor-infra (or supabase-receptor) that drives both helmfile syncs in order with --wait between phases. Extend helm-upgrade-check.yml to also check chart versions from receptor-infra/helmfile.yaml so both helmfiles are covered by the quarterly review.",
+          "targetFile": "/receptor-infra/cluster-apply.sh",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "CI-03",
+      "severity": "medium",
+      "status": "proposed",
+      "category": "Process Gap",
+      "repo": "supabase-receptor",
+      "area": ".github/workflows",
+      "description": "staging-smoke.yml runs on 'ubuntu-latest' (GitHub-hosted runner). The workflow's inline comment explicitly states: 'On GitHub-hosted runners (ubuntu-latest), this step will fail because the internal Vault endpoint is not reachable.' The Vault OIDC login step therefore fails on every push to main, breaking post-deployment verification. The self-hosted arc-runner is commented out pending a '7-run trial gate' (ARCH-03 from 260312-cicd-environments audit) that has not been activated. The staging smoke test has been silently broken since it was written.",
+      "tasks": [
+        {
+          "taskId": "CI-03-T1",
+          "status": "open",
+          "description": "Check whether the ARCH-03 7-run trial gate from 260312-cicd-environments has been met. If met: uncomment 'runs-on: [self-hosted, k3s]' and comment out 'ubuntu-latest' in staging-smoke.yml. If not met: document the remaining count and continue the trial with ci.yml first. Confirm the arc-runner-receptor-infra runner is registered and labelled 'k3s' before switching.",
+          "targetFile": "/supabase-receptor/.github/workflows/staging-smoke.yml",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "RBAC-01",
+      "severity": "medium",
+      "status": "proposed",
+      "category": "Security",
+      "repo": "supabase-receptor",
+      "area": "k3s",
+      "description": "The ci-namespace-manager ClusterRole (k3s/rbac/serviceaccounts.yaml) grants verbs: ['*'] on secrets, pods, services, configmaps, persistentvolumeclaims, deployments, statefulsets, and replicasets — cluster-wide. The intended scope is reactor-ci-* namespaces only, but the ClusterRoleBinding makes it cluster-scoped. The inline comment acknowledges that 'a future Kyverno/OPA Gatekeeper admission webhook will enforce the receptor-ci-* prefix programmatically (ADR-007)' — but no admission controller has been deployed or planned. Until it is, a compromised sa-github-runner has write access to secrets and pods in vault and supabase namespaces.",
+      "tasks": [
+        {
+          "taskId": "RBAC-01-T1",
+          "status": "open",
+          "description": "Deploy Kyverno (lighter weight than OPA Gatekeeper on single-node k3s) via a new Helm release in supabase-receptor/k3s/helmfile.yaml: kyverno/kyverno (pinned stable version). Create a Kyverno ClusterPolicy that validates namespace create/delete requests from sa-github-runner: allow only namespaces matching '^reactor-ci-'. Until Kyverno is deployed, update docs/adr/ADR-007-kubernetes-rbac.md to explicitly document the open risk and expected remediation date.",
+          "targetFile": "/supabase-receptor/k3s/helmfile.yaml",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
     }
   ],
   "clarifications": [
@@ -512,6 +620,14 @@
     {
       "item": "Single-node cluster constraint",
       "decision": "All namespaces (supabase, supabase-staging, supabase-test, vault, monitoring, arc-runners) compete for the same physical resources on one Hyper-V host. Resource limits (K8S-02) and ResourceQuotas on staging/test namespaces are essential to prevent those environments from starving production Vault and Supabase."
+    },
+    {
+      "item": "Two-repo helmfile split (SPLIT-01)",
+      "decision": "Pending human decision on whether to consolidate both helmfiles into receptor-infra or keep the current split. Until decided, ADR-009 must document the apply order so operators are not surprised."
+    },
+    {
+      "item": "ARCH-03 7-run trial gate status (CI-03)",
+      "decision": "Implementation agent must check whether the 7-run self-hosted runner trial referenced in 260312-cicd-environments (ARCH-03) has been satisfied before activating arc-runner in staging-smoke.yml."
     }
   ],
   "implementationPhases": [
@@ -550,6 +666,12 @@
       "name": "Supabase-Kubernetes Production Readiness",
       "findingIds": ["KUBE-01", "KUBE-02", "ENV-01", "KUBE-03", "KUBE-04"],
       "rationale": "Address supabase-kubernetes gaps in priority order: (1) K8S-01 VSO secret injection — blocking for production functionality; (2) K8S-02 resource limits — blocking for cluster stability; (3) ENV-01 test environment — required for CI isolation; (4) K8S-03 pod security contexts — hardening; (5) K8S-04 Falco — runtime monitoring. K8S-01 and K8S-02 may be implemented concurrently."
+    },
+    {
+      "phase": 7,
+      "name": "supabase-receptor k3s Completeness and RBAC Hardening",
+      "findingIds": ["NET-01", "ARCH-01", "CI-03", "SPLIT-01", "RBAC-01"],
+      "rationale": "supabase-receptor k3s/ infrastructure gaps: (1) NET-01 Vault egress fix — needed for auto-unseal to function; (2) ARCH-01 missing values files — helmfile is not apply-able; (3) CI-03 activate self-hosted runner for staging smoke; (4) SPLIT-01 document or consolidate two-repo helmfile split; (5) RBAC-01 deploy Kyverno to enforce namespace prefix policy."
     }
   ],
   "deferred": []

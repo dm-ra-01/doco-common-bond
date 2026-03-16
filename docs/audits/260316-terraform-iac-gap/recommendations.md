@@ -29,6 +29,8 @@ Do not edit it directly — edit the JSON source and re-run
 | K8S-01 severity (Critical) | Production values.yaml has literal '$&#123;POSTGRES_PASSWORD&#125;' and '$&#123;JWT_SECRET&#125;' strings — not resolved by Helm or VSO. Production Supabase is either non-functional or running with empty credentials. Must be fixed before Phase 6 can progress. Staging has no secret declarations at all. |
 | supabase-kubernetes chart and secret pattern | helmfile.yaml pins supabase-community/supabase chart at v0.5.1 for both production and staging. Implementation agents must check the chart's existingSecret pattern at https://github.com/supabase-community/supabase-kubernetes/blob/main/charts/supabase/README.md before implementing K8S-01-T2. |
 | Single-node cluster constraint | All namespaces (supabase, supabase-staging, supabase-test, vault, monitoring, arc-runners) compete for the same physical resources on one Hyper-V host. Resource limits (K8S-02) and ResourceQuotas on staging/test namespaces are essential to prevent those environments from starving production Vault and Supabase. |
+| Two-repo helmfile split (SPLIT-01) | Pending human decision on whether to consolidate both helmfiles into receptor-infra or keep the current split. Until decided, ADR-009 must document the apply order so operators are not surprised. |
+| ARCH-03 7-run trial gate status (CI-03) | Implementation agent must check whether the 7-run self-hosted runner trial referenced in 260312-cicd-environments (ARCH-03) has been satisfied before activating arc-runner in staging-smoke.yml. |
 
 
 ---
@@ -123,6 +125,22 @@ Affects: `receptor-infra` — supabase
 - [ ] Evaluate whether ephemeral per-PR Supabase instances are feasible given single-node cluster resource constraints. If not, document the decision in docs/adr/ADR-008-supabase-environments.md and use the static supabase-test namespace as the shared test target. Update supabase-receptor CI to point integration tests at supabase-test (not supabase-staging).
       `/receptor-infra/docs/adr/ADR-008-supabase-environments.md`
 
+### ARCH-01: k3s/helmfile.yaml (supabase-receptor) references values files at k3s/values/calico.yaml, k3s/values/cert-manager.yaml, k
+
+Affects: `supabase-receptor` — k3s
+
+
+- [ ] Create k3s/values/ directory and populate the 8 missing values files: calico.yaml, cert-manager.yaml, traefik.yaml, vault.yaml, prometheus-stack.yaml, loki.yaml, falco.yaml, cloudflared.yaml. For vault.yaml, mirror the structure of receptor-infra/values/vault.yaml. For falco.yaml, reference k3s/falco/falco-rules.yaml as customRules. For cloudflared.yaml, inject the tunnel token from Vault KV. Run 'helmfile lint' and 'helmfile diff --dry-run' to confirm all values files resolve.
+      `/supabase-receptor/k3s/values/vault.yaml`
+
+### NET-01: The vault namespace NetworkPolicy in k3s/network-policies/network-policies.yaml restricts all egress to DNS only (port 5
+
+Affects: `supabase-receptor` — k3s
+
+
+- [ ] Add an egress rule to the vault namespace NetworkPolicy allowing outbound port 443 to the Azure Key Vault endpoint (k3sunlock.vault.azure.net). Use an ipBlock cidr covering Azure Key Vault IPs for australiasoutheast, or configure an FQDN-based egress policy if Calico GlobalNetworkPolicy is available. Verify by restarting the Vault pod and confirming 'vault status' reports Initialized=true, Sealed=false.
+      `/supabase-receptor/k3s/network-policies/network-policies.yaml`
+
 ## 🟡 Medium
 
 ### IAC-02: azure/backup-storage-account.parameters.json has three discrepancies from live state: (1) storageAccountName: &#60;SET_ME&#62; v
@@ -197,6 +215,32 @@ Affects: `receptor-infra` — supabase
 - [ ] Add custom Falco rules targeting the supabase namespace: alert on shell spawned in postgres container, unexpected outbound connections from auth or rest components, new binary execution in kong. Store in falco/custom-rules.yaml, reference from values/falco.yaml.
       `/receptor-infra/falco/custom-rules.yaml`
 
+### SPLIT-01: The k3s cluster is defined across two separate repos: supabase-receptor/k3s/helmfile.yaml (Calico, cert-manager, Traefik
+
+Affects: `supabase-receptor` — k3s
+
+
+- [ ] Document the two-repo helmfile split in docs/adr/ADR-009-helmfile-split.md with the canonical apply order: (1) supabase-receptor/k3s/helmfile.yaml, (2) receptor-infra/helmfile.yaml. Include cross-repo dependency notes (Vault from repo 1 is required before Supabase in repo 2). Link from both repos' README.md cluster-setup sections.
+      `/supabase-receptor/docs/adr/ADR-009-helmfile-split.md`
+- [ ] Create a root-level cluster-apply.sh in receptor-infra (or supabase-receptor) that drives both helmfile syncs in order with --wait between phases. Extend helm-upgrade-check.yml to also check chart versions from receptor-infra/helmfile.yaml so both helmfiles are covered by the quarterly review.
+      `/receptor-infra/cluster-apply.sh`
+
+### CI-03: staging-smoke.yml runs on 'ubuntu-latest' (GitHub-hosted runner). The workflow's inline comment explicitly states: 'On G
+
+Affects: `supabase-receptor` — .github/workflows
+
+
+- [ ] Check whether the ARCH-03 7-run trial gate from 260312-cicd-environments has been met. If met: uncomment 'runs-on: [self-hosted, k3s]' and comment out 'ubuntu-latest' in staging-smoke.yml. If not met: document the remaining count and continue the trial with ci.yml first. Confirm the arc-runner-receptor-infra runner is registered and labelled 'k3s' before switching.
+      `/supabase-receptor/.github/workflows/staging-smoke.yml`
+
+### RBAC-01: The ci-namespace-manager ClusterRole (k3s/rbac/serviceaccounts.yaml) grants verbs: ['*'] on secrets, pods, services, con
+
+Affects: `supabase-receptor` — k3s
+
+
+- [ ] Deploy Kyverno (lighter weight than OPA Gatekeeper on single-node k3s) via a new Helm release in supabase-receptor/k3s/helmfile.yaml: kyverno/kyverno (pinned stable version). Create a Kyverno ClusterPolicy that validates namespace create/delete requests from sa-github-runner: allow only namespaces matching '^reactor-ci-'. Until Kyverno is deployed, update docs/adr/ADR-007-kubernetes-rbac.md to explicitly document the open risk and expected remediation date.
+      `/supabase-receptor/k3s/helmfile.yaml`
+
 ## 🟢 Low
 
 ### ARM-01: azure/backup-storage-account.parameters.json has three value discrepancies from live state (storageAccountName placehold
@@ -223,6 +267,7 @@ Affects: `receptor-infra` — azure
 | 4 | SEC-04 | Configure use_azuread_auth=true on Terraform backend. After consumer pre-flight audit, disable allowSharedKeyAccess. |
 | 5 | SEC-01, SEC-03, IAC-04, ARM-01 | Apply KV network ACL restriction and key rotation policy via the apply workflow. Add weekly drift detection. Confirm ARM-01 retirement. |
 | 6 | KUBE-01, KUBE-02, ENV-01, KUBE-03, KUBE-04 | Address supabase-kubernetes gaps in priority order: (1) K8S-01 VSO secret injection — blocking for production functionality; (2) K8S-02 resource limits — blocking for cluster stability; (3) ENV-01 test environment — required for CI isolation; (4) K8S-03 pod security contexts — hardening; (5) K8S-04 Falco — runtime monitoring. K8S-01 and K8S-02 may be implemented concurrently. |
+| 7 | NET-01, ARCH-01, CI-03, SPLIT-01, RBAC-01 | supabase-receptor k3s/ infrastructure gaps: (1) NET-01 Vault egress fix — needed for auto-unseal to function; (2) ARCH-01 missing values files — helmfile is not apply-able; (3) CI-03 activate self-hosted runner for staging smoke; (4) SPLIT-01 document or consolidate two-repo helmfile split; (5) RBAC-01 deploy Kyverno to enforce namespace prefix policy. |
 
 
 ---
@@ -239,6 +284,8 @@ Affects: `receptor-infra` — azure
 | STORE-01 | vault | `vso-azure-kms-secret.yaml` | Process Gap | 🟠 High |
 | KUBE-02 | supabase | `values.yaml` | Security | 🟠 High |
 | ENV-01 | supabase | `values.yaml` | Process Gap | 🟠 High |
+| ARCH-01 | k3s | `vault.yaml` | Process Gap | 🟠 High |
+| NET-01 | k3s | `network-policies.yaml` | Security | 🟠 High |
 | IAC-02 | azure | `backup-storage-account.parameters.json` | Tech Debt | 🟡 Medium |
 | IAC-04 | azure | `terraform-drift.yml` | Process Gap | 🟡 Medium |
 | CI-01 | .github/workflows | `terraform-plan.yml` | Process Gap | 🟡 Medium |
@@ -247,5 +294,8 @@ Affects: `receptor-infra` — azure
 | SEC-04 | azure | `backend.tf` | Security | 🟡 Medium |
 | KUBE-03 | supabase | `values.yaml` | Security | 🟡 Medium |
 | KUBE-04 | supabase | `helmfile.yaml` | Process Gap | 🟡 Medium |
+| SPLIT-01 | k3s | `ADR-009-helmfile-split.md` | Architectural Drift | 🟡 Medium |
+| CI-03 | .github/workflows | `staging-smoke.yml` | Process Gap | 🟡 Medium |
+| RBAC-01 | k3s | `helmfile.yaml` | Security | 🟡 Medium |
 | ARM-01 | azure | `backup-storage-account.parameters.json` | Tech Debt | 🟢 Low |
 

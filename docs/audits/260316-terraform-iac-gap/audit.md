@@ -9,7 +9,7 @@
 
 ## Executive Summary
 
-The audit examined the `receptor-infra` repository, live Azure state, and the supabase-kubernetes Helm releases for Infrastructure-as-Code and production-readiness coverage. Seventeen findings were identified: 2 Critical, 6 High, 8 Medium, and 1 Low. Live `az` and `gh` CLI introspection surfaced discrepancies not visible from the repository alone:
+The audit examined the `receptor-infra` repository, live Azure state, the supabase-kubernetes Helm releases, and the `supabase-receptor` k3s/ infrastructure for Infrastructure-as-Code and production-readiness coverage. Twenty-two findings were identified: 2 Critical, 8 High, 11 Medium, and 1 Low (5 are proposed, pending approval). Live `az` and `gh` CLI introspection surfaced discrepancies not visible from the repository alone:
 
 - **KUBE-01 (Critical):** `supabase/production/values.yaml` contains unresolved shell placeholders (`${POSTGRES_PASSWORD}`, `${JWT_SECRET}`) — not injected by Helm or VSO. Production Supabase is either non-functional or running with empty credentials.
 - **SEC-02 (Critical):** Vault auto-unseal uses a service principal (`vault-k3s-unseal`) whose client secret is in a manually-created k8s Secret `vault-azure-kms` with no VSO sync (STORE-01). Workload Identity Federation is the preferred resolution.
@@ -29,6 +29,11 @@ The audit examined the `receptor-infra` repository, live Azure state, and the su
 | Supabase staging (namespace `supabase-staging`) | ⚠️ | 2 | Partial |
 | Supabase runtime security (Falco) | ❌ | 1 | Disabled |
 | Multi-environment coverage | ❌ | 1 | No test env |
+| `supabase-receptor` — k3s/values/ | ❌ | 1 | All chart values missing |
+| `supabase-receptor` — Vault egress NetworkPolicy | ❌ | 1 | Auto-unseal blocked |
+| `supabase-receptor` — CI smoke test | ❌ | 1 | Silently broken |
+| Two-repo helmfile split | ⚠️ | 1 | No apply-order doc |
+| `supabase-receptor` — RBAC (CI runner) | ⚠️ | 1 | Wildcard verbs, no admission control |
 
 ---
 
@@ -151,6 +156,40 @@ The audit examined the `receptor-infra` repository, live Azure state, and the su
 
 ---
 
+## 6. supabase-receptor — k3s Infrastructure Gaps *(Proposed — Round 2)*
+
+### 6.1 Missing Helm Values Directory
+
+**Gaps:**
+
+- **ARCH-01** — `k3s/helmfile.yaml` references `k3s/values/` for 8 chart configuration files (calico, cert-manager, traefik, vault, prometheus-stack, loki, falco, cloudflared) but the `k3s/values/` directory does not exist on disk. `helmfile sync` from this repo would fail immediately.
+
+### 6.2 Vault Namespace Egress Policy Blocks Auto-Unseal
+
+**Gaps:**
+
+- **NET-01** — `k3s/network-policies/network-policies.yaml` restricts the `vault` namespace to DNS-only egress (port 53 to `kube-system`). Vault auto-unseal (SEC-02) requires outbound HTTPS to `https://k3sunlock.vault.azure.net/` — this is silently blocked. Every Vault pod restart will leave Vault sealed.
+
+### 6.3 Two-Repo Helmfile Split Without Orchestration
+
+**Gaps:**
+
+- **SPLIT-01** — The cluster is defined across two repos: `supabase-receptor/k3s/helmfile.yaml` (core infra) and `receptor-infra/helmfile.yaml` (Supabase workloads). No documented apply order exists, no CI validates both together, and `helm-upgrade-check.yml` covers only `supabase-receptor`'s helmfile — missing the `supabase-community/supabase` chart in `receptor-infra`.
+
+### 6.4 Staging Smoke Test Silently Broken
+
+**Gaps:**
+
+- **CI-03** — `staging-smoke.yml` runs on `ubuntu-latest`. Its own inline comment states the Vault OIDC step "will fail because the internal Vault endpoint is not reachable" on GitHub-hosted runners. The self-hosted runner is commented out. The staging smoke test has been silently failing since it was written.
+
+### 6.5 CI Runner RBAC — Wildcard Verbs with No Admission Control
+
+**Gaps:**
+
+- **RBAC-01** — `k3s/rbac/serviceaccounts.yaml` grants `ci-namespace-manager` ClusterRole with `verbs: ["*"]` on secrets, pods, configmaps, and PVCs — cluster-wide. The namespace prefix constraint (`receptor-ci-*`) is an intent-only comment; no admission controller (Kyverno/OPA) enforces it. A compromised runner SA has write access to the `vault` and `supabase` namespaces.
+
+---
+
 ## Severity Summary
 
 | Finding ID | Repository / Area | File / Resource | Category | Severity |
@@ -163,6 +202,8 @@ The audit examined the `receptor-infra` repository, live Azure state, and the su
 | STORE-01 | `receptor-infra` — k8s / vault | `vault-azure-kms` k8s secret unmanaged | Process Gap | 🔴 High |
 | KUBE-02 | `receptor-infra` — supabase | `supabase/*/values.yaml` — no resource limits | Security | 🔴 High |
 | ENV-01 | `receptor-infra` — supabase | *(absent)* — no test environment | Process Gap | 🔴 High |
+| ARCH-01 ⚑ | `supabase-receptor` — k3s | `k3s/values/` directory missing — helmfile unapply-able | Process Gap | 🔴 High |
+| NET-01 ⚑ | `supabase-receptor` — k3s | `k3s/network-policies/network-policies.yaml` — Vault egress DNS-only, blocks auto-unseal | Security | 🔴 High |
 | IAC-02 | `receptor-infra` — ARM | `azure/backup-storage-account.parameters.json` | Tech Debt | 🟠 Medium |
 | IAC-04 | `receptor-infra` — Azure IaC | *(absent)* | Process Gap | 🟠 Medium |
 | CI-01 | `receptor-infra` — CI | *(absent)* | Process Gap | 🟠 Medium |
@@ -171,4 +212,9 @@ The audit examined the `receptor-infra` repository, live Azure state, and the su
 | SEC-04 | Azure / `k3sbackups71a475f1dae6` | `allowSharedKeyAccess=true` | Security | 🟠 Medium |
 | KUBE-03 | `receptor-infra` — supabase | `supabase/*/values.yaml` — no pod security contexts | Security | 🟠 Medium |
 | KUBE-04 | `receptor-infra` — supabase | `helmfile.yaml` — Falco commented out | Process Gap | 🟠 Medium |
+| SPLIT-01 ⚑ | `supabase-receptor` + `receptor-infra` | Two helmfiles — no apply order documented | Architectural Drift | 🟠 Medium |
+| CI-03 ⚑ | `supabase-receptor` | `staging-smoke.yml` — silently broken on GitHub-hosted runners | Process Gap | 🟠 Medium |
+| RBAC-01 ⚑ | `supabase-receptor` — k3s | `k3s/rbac/serviceaccounts.yaml` — wildcard verbs, no admission control | Security | 🟠 Medium |
 | ARM-01 | `receptor-infra` — ARM | `azure/backup-storage-account.parameters.json` | Tech Debt | 🟡 Low |
+
+*⚑ Proposed — pending human approval*

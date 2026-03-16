@@ -3,8 +3,8 @@
   "auditSlug": "260316-terraform-iac-gap",
   "status": "drafting",
   "nextAction": "implement",
-  "openTaskCount": 30,
-  "latestHandover": "Audit scope expanded to include supabase-kubernetes production readiness. 17 findings total (2C/6H/8M/1L). Critical additions: KUBE-01 (production values.yaml has unresolved ${POSTGRES_PASSWORD} / ${JWT_SECRET} placeholders — Supabase non-functional in production), KUBE-02 (no resource limits — single-node cluster risk), ENV-01 (no test environment — integration tests hit staging). Also added: KUBE-03 (no pod security contexts), KUBE-04 (Falco commented out). Finding IDs use KUBE/ENV prefix (schema requires ^[A-Z]+-[0-9]{2}$). Phase 6 added for supabase-kubernetes production readiness. Implementation order: Phase 1 (SEC-02/STORE-01 credential safety) → Phase 2 (Terraform) → Phase 3 (CI) → Phase 4 (storage AD auth) → Phase 5 (Azure hardening) → Phase 6 (Supabase readiness, start with KUBE-01 + KUBE-02 concurrently).",
+  "openTaskCount": 39,
+  "latestHandover": "Round 2 iterative improvement: 5 new proposed findings from supabase-receptor k3s/ directory (ARCH-01 missing values/, NET-01 Vault egress blocks auto-unseal, SPLIT-01 two-repo helmfile split, CI-03 staging smoke silently broken, RBAC-01 ci-runner wildcard verbs). 22 total findings (2C/8H/11M/1L). Awaiting human approval to graduate proposed→open. Phase 7 added for supabase-receptor k3s completeness.",
   "sessionHistory": [
     {
       "session": 1,
@@ -21,7 +21,7 @@
     {
       "session": 3,
       "date": "2026-03-16",
-      "summary": "Iterative improvement round 1. Read values/vault.yaml — AZURE_CLIENT_SECRET in vault-azure-kms k8s secret (not plaintext). Added STORE-01 (no VSO sync), SEC-03 (key rotation), SEC-04 (shared key access). Set Supabase review_due_date 2026-06-16. 12 findings.",
+      "summary": "Iterative improvement round 1. Read values/vault.yaml — AZURE_CLIENT_SECRET in vault-azure-kms k8s Secret (not plaintext). Added STORE-01 (no VSO sync), SEC-03 (key rotation), SEC-04 (shared key access). Set Supabase review_due_date 2026-06-16. 12 findings.",
       "completedTasks": []
     },
     {
@@ -29,6 +29,13 @@
       "date": "2026-03-16",
       "summary": "Expanded scope to supabase-kubernetes. Read helmfile.yaml (supabase/supabase v0.5.1 for prod+staging). Found KUBE-01 (critical — unresolved ${} placeholders in prod values), KUBE-02 (no resource limits), ENV-01 (no test environment), KUBE-03 (no pod security contexts), KUBE-04 (Falco disabled). 17 findings total. 6-phase implementation plan.",
       "completedTasks": []
+    },
+    {
+      "session": 5,
+      "date": "2026-03-16",
+      "summary": "Iterative improvement round 2. Read supabase-receptor k3s/ directory. Found ARCH-01 (k3s/values/ missing — helmfile unapply-able), NET-01 (Vault namespace DNS-only egress blocks Azure KV auto-unseal), SPLIT-01 (two-repo helmfile split, no apply order), CI-03 (staging-smoke.yml broken on GitHub-hosted runners per own comment), RBAC-01 (ci-namespace-manager wildcard verbs, no Kyverno enforcement). 22 proposed findings. Phase 7 added.",
+      "completedTasks": []
     }
   ]
+
 }
