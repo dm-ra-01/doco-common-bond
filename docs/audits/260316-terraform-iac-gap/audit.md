@@ -9,15 +9,15 @@
 
 ## Executive Summary
 
-The audit examined the `receptor-infra` repository and live Azure state for Infrastructure-as-Code coverage of Azure resources underpinning the Receptor k3s cluster. Nine findings were identified: 1 Critical, 3 High, 4 Medium, and 1 Low. Live `az` CLI introspection confirmed actual resource configuration and surfaced three discrepancies not visible from the repository alone: the auto-unseal identity is an App Registration service principal (not a managed identity) with a long-lived client secret expiring 2028-03-12; the live storage account SKU is `Standard_RAGRS` (geo-redundant) rather than `Standard_LRS` as specified in the ARM template, confirming the ARM template never matched the live state; and both Azure resources have public network access enabled with no IP restrictions. No Terraform directory, state file, or CI-gated apply workflow exists.
+The audit examined the `receptor-infra` repository and live Azure state for Infrastructure-as-Code coverage of Azure resources underpinning the Receptor k3s cluster. Twelve findings were identified: 1 Critical, 4 High, 5 Medium, and 1 Low. Live `az` CLI introspection confirmed actual resource configuration and surfaced discrepancies not visible from the repository alone: the auto-unseal identity is a service principal (`vault-k3s-unseal`) whose client secret is injected into Vault pods via a manually-created Kubernetes secret (`vault-azure-kms`) with no VSO management (found by reading `values/vault.yaml`); the live storage account SKU is `Standard_RAGRS` (geo-redundant) rather than `Standard_LRS` as specified in the ARM template, confirming the template never matched live state; both Azure resources have public network access enabled; the unseal key has no rotation policy; and `allowSharedKeyAccess` is enabled on the backup storage account. No Terraform directory, state file, or CI-gated apply workflow exists.
 
-| Repository / Area               | Coverage | Issues Found | Overall       |
+| Repository / Area | Coverage | Issues Found | Overall |
 | -------------------------------- | -------- | ------------ | ------------- |
-| `receptor-infra` — Azure IaC    | ❌        | 4            | Critical gap  |
-| `receptor-infra` — CI workflows | ⚠️       | 2            | Partial       |
-| Azure Key Vault (`K3sUnlock`)   | ⚠️       | 2            | Security gaps |
-| Azure Storage (`k3sbackups71a475f1dae6`) | ⚠️ | 1          | Config drift  |
-| Auto-unseal identity              | ❌       | 1            | Critical gap  |
+| `receptor-infra` — Azure IaC | ❌ | 4 | Critical gap |
+| `receptor-infra` — CI workflows | ⚠️ | 2 | Partial |
+| Azure Key Vault (`K3sUnlock`) | ⚠️ | 3 | Security gaps |
+| Azure Storage (`k3sbackups71a475f1dae6`) | ⚠️ | 2 | Config drift + security |
+| Auto-unseal identity + k8s secret | ❌ | 2 | Critical gap |
 
 ---
 
@@ -144,12 +144,15 @@ The audit examined the `receptor-infra` repository and live Azure state for Infr
 
 | Finding ID | Repository / Area | File / Resource | Category | Severity |
 | ---------- | ----------------- | --------------- | -------- | -------- |
-| SEC-02 | Azure / `vault-k3s-unseal` | App Registration client secret | Security | 🔴 Critical |
+| SEC-02 | Azure / `vault-k3s-unseal` + k8s `vault-azure-kms` | `values/vault.yaml` + App Registration | Security | 🔴 Critical |
 | IAC-01 | `receptor-infra` — Azure IaC | *(absent)* | Process Gap | 🔴 High |
 | IAC-03 | `receptor-infra` — Key Vault | *(absent)* | Process Gap | 🔴 High |
 | SEC-01 | Azure / `K3sUnlock` | Key Vault network ACLs | Security | 🔴 High |
+| STORE-01 | `receptor-infra` — k8s / vault | `vault/` — `vault-azure-kms` k8s secret unmanaged | Process Gap | 🔴 High |
 | IAC-04 | `receptor-infra` — Azure IaC | *(absent)* | Process Gap | 🟠 Medium |
 | CI-01 | `receptor-infra` — CI | *(absent)* | Process Gap | 🟠 Medium |
 | CI-02 | `receptor-infra` — CI / Vault | `.github/workflows/cluster-sync.yml` | Process Gap | 🟠 Medium |
 | IAC-02 | `receptor-infra` — ARM | `azure/backup-storage-account.parameters.json` | Tech Debt | 🟠 Medium |
+| SEC-03 | Azure / `K3sUnlock` | Unseal key `vault-unseal` — no rotation policy | Security | 🟠 Medium |
+| SEC-04 | Azure / `k3sbackups71a475f1dae6` | `allowSharedKeyAccess=true` | Security | 🟠 Medium |
 | ARM-01 | `receptor-infra` — ARM | `azure/backup-storage-account.parameters.json` | Tech Debt | 🟡 Low |

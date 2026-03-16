@@ -3,8 +3,8 @@
   "auditSlug": "260316-terraform-iac-gap",
   "status": "drafting",
   "nextAction": "implement",
-  "openTaskCount": 16,
-  "latestHandover": "Audit enriched with live az CLI data (2026-03-16). 9 findings: 1 Critical (SEC-02 — vault-k3s-unseal SP client secret, expires 2028-03-12, storage location unconfirmed), 3 High (IAC-01 no Terraform, IAC-03 KV untracked, SEC-01 KV network ACLs open), 4 Medium, 1 Low. Live identifiers confirmed: subscription 303d0b34-0b31-4302-a133-f1bd1e61f4b7, RG Receptor, KV K3sUnlock (https://k3sunlock.vault.azure.net/), storage k3sbackups71a475f1dae6 (Standard_RAGRS), SP appId aad24e26-8e10-4751-90ea-fb43bd147250, tenant 76c68bd9-6fba-42d1-bf81-471e2e8c1395. Phase 1 must start with SEC-02-T1 (locate client secret) before any Terraform work.",
+  "openTaskCount": 20,
+  "latestHandover": "Audit fully enriched with live az CLI and gh CLI evidence (2026-03-16). 12 findings: 1C/4H/5M/1L. Key context: vault.yaml injects AZURE_CLIENT_SECRET from k8s secret vault-azure-kms (NOT plaintext values) but vault-azure-kms has no VSO sync (STORE-01). Unseal key vault-unseal has rotationPolicy=null (SEC-03). allowSharedKeyAccess=true on storage account (SEC-04). All live Azure IDs embedded in recommendations.json tasks. Phase 1 must start with SEC-02 Workload Identity Federation eval + STORE-01 VSO-manage before any Terraform work. Supabase row: review_due_date 2026-06-16.",
   "sessionHistory": [
     {
       "session": 1,
@@ -15,7 +15,13 @@
     {
       "session": 2,
       "date": "2026-03-16",
-      "summary": "Enriched with live az CLI data. Added SEC-01 (KV network ACLs) and SEC-02 (SP client secret) findings. Confirmed all resource identifiers. Discovered ARM template has 3 discrepancies from live state (not just placeholder). Upgraded SEC-02 to Critical.",
+      "summary": "Enriched with live az CLI data. Added SEC-01 (KV network ACLs) and SEC-02 (SP client secret). Confirmed all resource identifiers. Discovered ARM template has 3 discrepancies from live state. Upgraded SEC-02 to Critical.",
+      "completedTasks": []
+    },
+    {
+      "session": 3,
+      "date": "2026-03-16",
+      "summary": "Iterative improvement round 1. Read values/vault.yaml via gh CLI — confirmed AZURE_CLIENT_SECRET injected from vault-azure-kms k8s secret (NOT plaintext). vault-azure-kms has no VSO sync (STORE-01, new High finding). Confirmed unseal key rotationPolicy=null (SEC-03, new Medium). Confirmed allowSharedKeyAccess=true (SEC-04, new Medium, with robust two-step remediation requiring consumer pre-flight audit). Set Supabase review_due_date to 2026-06-16. Total: 12 findings.",
       "completedTasks": []
     }
   ]

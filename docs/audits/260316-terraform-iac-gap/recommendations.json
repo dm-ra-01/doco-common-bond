@@ -14,29 +14,21 @@
       "category": "Security",
       "repo": "receptor-infra",
       "area": "azure",
-      "description": "The auto-unseal identity for HashiCorp Vault is an App Registration service principal ('vault-k3s-unseal', appId: aad24e26-8e10-4751-90ea-fb43bd147250) with a client secret (hint: y3I) expiring 2028-03-12. This long-lived credential must be stored in the Vault Helm chart values or a Vault KV secret to enable auto-unseal — its storage location is unconfirmed. The preferred replacement is Azure Workload Identity Federation (no secret) or an Arc-enrolled VM managed identity. A client secret expiry event or accidental revocation would seal the Vault cluster until manually recovered.",
+      "description": "The auto-unseal identity for HashiCorp Vault is an App Registration service principal ('vault-k3s-unseal', appId: aad24e26-8e10-4751-90ea-fb43bd147250) with a client secret (hint: y3I) expiring 2028-03-12. values/vault.yaml (confirmed via gh CLI) injects AZURE_TENANT_ID, AZURE_CLIENT_ID, and AZURE_CLIENT_SECRET from a Kubernetes Secret named 'vault-azure-kms' via secretKeyRef — the secret is NOT stored in plaintext in the values file. However, 'vault-azure-kms' was created manually (kubectl create secret) with no VSO sync and no IaC tracking (see STORE-01). The client secret has no automated rotation mechanism. Expiry or revocation would seal the Vault cluster until a human manually creates a new secret and redeploys. Preferred replacement: Azure AD Workload Identity Federation bound to the Vault Kubernetes service account (eliminates the client secret entirely — no Arc enrollment required for on-premise k3s).",
       "tasks": [
         {
           "taskId": "SEC-02-T1",
           "status": "open",
-          "description": "Locate where the vault-k3s-unseal client secret is currently stored: search receptor-infra/values/ for any Vault Helm values referencing azure.clientId or azure.clientSecret, and check Vault KV at secret/infrastructure/azure-unseal. Document the finding — if the secret is in a plaintext values file it is an immediate exposure that must be remediated before everything else.",
-          "targetFile": "/receptor-infra/values/vault.yaml.gotmpl",
+          "description": "Evaluate Azure AD Workload Identity Federation for vault-k3s-unseal: configure federation on the vault-k3s-unseal App Registration, binding it to the Vault Kubernetes service account JWT (sa-vault in vault namespace). Update values/vault.yaml to use the federated identity (AZURE_CLIENT_ID + AZURE_TENANT_ID only, no AZURE_CLIENT_SECRET). On-premise k3s is supported as long as the OIDC issuer URL is reachable by Azure AD (expose via Cloudflare Tunnel or public endpoint).",
+          "targetFile": "/receptor-infra/values/vault.yaml",
           "completedAt": null,
           "completedBy": null
         },
         {
           "taskId": "SEC-02-T2",
           "status": "open",
-          "description": "Evaluate feasibility of Workload Identity Federation for vault-k3s-unseal: if k3s VMs cannot be Arc-enrolled, configure Azure AD Workload Identity Federation on the vault-k3s-unseal App Registration, binding it to the Vault Kubernetes service account JWT. This eliminates the client secret. Alternatively, if Arc enrollment is feasible, migrate to a User-Assigned Managed Identity instead.",
-          "targetFile": "/receptor-infra/docs/azure-identity.md",
-          "completedAt": null,
-          "completedBy": null
-        },
-        {
-          "taskId": "SEC-02-T3",
-          "status": "open",
-          "description": "Once the identity migration is complete, revoke the vault-k3s client secret (via 'az ad app credential delete') and confirm Vault auto-unseal continues to function via 'vault status'. Update Terraform modules/managed-identity or modules/service-principal to manage the new identity resource.",
-          "targetFile": "/receptor-infra/terraform/modules/managed-identity/main.tf",
+          "description": "Once Workload Identity Federation is confirmed working ('vault status' shows unsealed after pod restart), revoke the vault-k3s client secret via 'az ad app credential delete --id aad24e26-8e10-4751-90ea-fb43bd147250 --key-id <credential-id>'. Remove AZURE_CLIENT_SECRET from the vault-azure-kms k8s secret and from values/vault.yaml extraEnvironmentVars. Update Terraform to manage the service principal without a credential.",
+          "targetFile": "/receptor-infra/terraform/modules/service-principal/main.tf",
           "completedAt": null,
           "completedBy": null
         }
@@ -55,7 +47,7 @@
         {
           "taskId": "IAC-01-T1",
           "status": "open",
-          "description": "Create terraform/ directory structure: modules/key-vault/, modules/backup-storage/, modules/service-principal/, and root main.tf, variables.tf, outputs.tf, providers.tf (azurerm with use_oidc=true, workload identity federation), and backend.tf (azurerm backend: storage_account_name=k3sbackups71a475f1dae6, container_name=tfstate, key=receptor/azure.tfstate).",
+          "description": "Create terraform/ directory structure: modules/key-vault/, modules/backup-storage/, modules/service-principal/, and root main.tf, variables.tf, outputs.tf, providers.tf (azurerm with use_oidc=true, workload identity federation), and backend.tf (azurerm backend: storage_account_name=k3sbackups71a475f1dae6, container_name=tfstate, key=receptor/azure.tfstate, use_azuread_auth=true).",
           "targetFile": "/receptor-infra/terraform/main.tf",
           "completedAt": null,
           "completedBy": null
@@ -63,7 +55,7 @@
         {
           "taskId": "IAC-01-T2",
           "status": "open",
-          "description": "Create blob container 'tfstate' in k3sbackups71a475f1dae6 before terraform init (one-time bootstrap: 'az storage container create --name tfstate --account-name k3sbackups71a475f1dae6'). The receptor-backups container must not share state.",
+          "description": "Create blob container 'tfstate' in k3sbackups71a475f1dae6 before terraform init (one-time bootstrap: 'az storage container create --name tfstate --account-name k3sbackups71a475f1dae6 --auth-mode login'). The receptor-backups container must not share state. Grant Storage Blob Data Contributor to the Terraform CI identity on this container only.",
           "targetFile": "/receptor-infra/terraform/BOOTSTRAP.md",
           "completedAt": null,
           "completedBy": null
@@ -71,7 +63,7 @@
         {
           "taskId": "IAC-01-T3",
           "status": "open",
-          "description": "Write terraform/modules/key-vault/: azurerm_key_vault (name=K3sUnlock, sku=Standard, soft_delete_retention_days=90, purge_protection_enabled=true), azurerm_key_vault_key (name=vault-unseal, key_type=RSA), and azurerm_key_vault_access_policy for SEC-02 identity. Import existing resources: 'terraform import azurerm_key_vault.k3sunlock /subscriptions/303d0b34-0b31-4302-a133-f1bd1e61f4b7/resourceGroups/Receptor/providers/Microsoft.KeyVault/vaults/K3sUnlock'.",
+          "description": "Write terraform/modules/key-vault/: azurerm_key_vault (name=K3sUnlock, sku=Standard, soft_delete_retention_days=90, purge_protection_enabled=true, public_network_access_enabled=true initially), azurerm_key_vault_key (name=vault-unseal, key_type=RSA, rotation_policy per SEC-03), and azurerm_key_vault_access_policy blocks. Import: 'terraform import azurerm_key_vault.k3sunlock /subscriptions/303d0b34-0b31-4302-a133-f1bd1e61f4b7/resourceGroups/Receptor/providers/Microsoft.KeyVault/vaults/K3sUnlock'.",
           "targetFile": "/receptor-infra/terraform/modules/key-vault/main.tf",
           "completedAt": null,
           "completedBy": null
@@ -79,7 +71,7 @@
         {
           "taskId": "IAC-01-T4",
           "status": "open",
-          "description": "Write terraform/modules/backup-storage/: azurerm_storage_account (name=k3sbackups71a475f1dae6, sku=Standard_RAGRS — matching live state not ARM template, min_tls_version=TLS1_2, allow_blob_public_access=false, account_kind=StorageV2, access_tier=Cool). Import: 'terraform import azurerm_storage_account.backup /subscriptions/303d0b34-0b31-4302-a133-f1bd1e61f4b7/resourceGroups/Receptor/providers/Microsoft.Storage/storageAccounts/k3sbackups71a475f1dae6'.",
+          "description": "Write terraform/modules/backup-storage/: azurerm_storage_account (name=k3sbackups71a475f1dae6, account_replication_type=RAGRS — matching live state not ARM template, min_tls_version=TLS1_2, allow_nested_items_to_be_public=false, account_kind=StorageV2, access_tier=Cool, shared_access_key_enabled=true initially — see SEC-04 for hardening path). Import: 'terraform import azurerm_storage_account.backup /subscriptions/303d0b34-0b31-4302-a133-f1bd1e61f4b7/resourceGroups/Receptor/providers/Microsoft.Storage/storageAccounts/k3sbackups71a475f1dae6'.",
           "targetFile": "/receptor-infra/terraform/modules/backup-storage/main.tf",
           "completedAt": null,
           "completedBy": null
@@ -87,7 +79,7 @@
         {
           "taskId": "IAC-01-T5",
           "status": "open",
-          "description": "Run 'terraform import' for all resources, then 'terraform plan'. Confirm plan shows zero changes for stable properties (name, sku, soft-delete) and proposed changes only for remediation items (e.g., KV network ACLs per SEC-01). Document import commands in terraform/BOOTSTRAP.md.",
+          "description": "Run 'terraform import' for all resources, then 'terraform plan'. Confirm plan shows zero changes for stable properties (name, sku, soft-delete, RAGRS) and proposed changes only for remediation items (KV network ACLs per SEC-01, key rotation per SEC-03). Document import commands in terraform/BOOTSTRAP.md.",
           "targetFile": "/receptor-infra/terraform/BOOTSTRAP.md",
           "completedAt": null,
           "completedBy": null
@@ -102,12 +94,12 @@
       "category": "Process Gap",
       "repo": "receptor-infra",
       "area": "azure",
-      "description": "Azure Key Vault K3sUnlock (URI: https://k3sunlock.vault.azure.net/) and its access policies have no IaC representation. Live state confirmed via az CLI: Standard SKU, purge protection enabled, soft-delete 90 days, two access policies (admin objectId 24f68cfb-d4c3-4698-9d5f-91e724a8eee6 and unseal SP 26b134d5-deb6-4856-8c48-3d5f8b3c6262). The unseal key is 'vault-unseal' (RSA, enabled 2026-03-13, no expiry). This finding is addressed by IAC-01-T3.",
+      "description": "Azure Key Vault K3sUnlock (URI: https://k3sunlock.vault.azure.net/) and its access policies have no IaC representation. Live state confirmed via az CLI: Standard SKU, purge protection enabled, soft-delete 90 days, two access policies (admin objectId 24f68cfb-d4c3-4698-9d5f-91e724a8eee6 and unseal SP 26b134d5-deb6-4856-8c48-3d5f8b3c6262). The unseal key is 'vault-unseal' (RSA, enabled 2026-03-13, no expiry, no rotation policy). This finding is addressed by IAC-01-T3.",
       "tasks": [
         {
           "taskId": "IAC-03-T1",
           "status": "open",
-          "description": "Resolved as part of IAC-01-T3 (Terraform module + import). No standalone action required — live state is now fully documented in this audit.",
+          "description": "Resolved as part of IAC-01-T3 (Terraform module + import). Live state fully documented in this audit. No standalone action required.",
           "targetFile": "/receptor-infra/terraform/modules/key-vault/main.tf",
           "completedAt": null,
           "completedBy": null
@@ -122,13 +114,41 @@
       "category": "Security",
       "repo": "receptor-infra",
       "area": "azure",
-      "description": "Key Vault K3sUnlock has networkAcls.defaultAction=Allow with zero IP rules and no virtual network rules. The vault URI https://k3sunlock.vault.azure.net/ is reachable from any public IP. The only caller requiring access is the Vault pod on the k3s cluster (via the vault-k3s-unseal service principal). Restricting to the Hyper-V host public egress IP would close this exposure without impacting the unseal flow.",
+      "description": "Key Vault K3sUnlock has networkAcls.defaultAction=Allow with zero IP rules and no virtual network rules (confirmed via az CLI). The vault URI https://k3sunlock.vault.azure.net/ is reachable from any public IP. The only caller requiring access is the Vault pod on the k3s cluster (via the vault-k3s-unseal service principal). Restricting to the Hyper-V host public egress IP would close this exposure without impacting the unseal flow.",
       "tasks": [
         {
           "taskId": "SEC-01-T1",
           "status": "open",
-          "description": "Determine the public egress IP of the Hyper-V host (or the static IP if one exists). Add an azurerm_key_vault network_acls block in the Terraform module: default_action=Deny, bypass=[AzureServices], ip_rules=[<host-egress-ip>/32]. Apply via terraform-apply.yml after CI workflow is established (Phase 3). Do not apply manually — this must go through the CI gate.",
+          "description": "Determine the public egress IP of the Hyper-V host. Add an azurerm_key_vault network_acls block in the Terraform module: default_action=Deny, bypass=[AzureServices], ip_rules=[<host-egress-ip>/32]. Apply via terraform-apply.yml after CI workflow is established (Phase 5). Do not apply manually.",
           "targetFile": "/receptor-infra/terraform/modules/key-vault/main.tf",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "STORE-01",
+      "severity": "high",
+      "status": "open",
+      "category": "Process Gap",
+      "repo": "receptor-infra",
+      "area": "vault",
+      "description": "The Kubernetes secret 'vault-azure-kms' in the vault namespace (referenced by values/vault.yaml secretKeyRef for AZURE_TENANT_ID, AZURE_CLIENT_ID, AZURE_CLIENT_SECRET) was created manually via kubectl and has no VSO sync, no IaC declaration, and no automated rotation mechanism. Only 'github-app-credentials' is VSO-managed (vault/vso-github-app-secret.yaml). If the vault namespace is accidentally wiped, vault-azure-kms is lost and Vault cannot unseal until manually recreated. Remediation: create a VaultStaticSecret CRD to VSO-manage it, or eliminate it entirely via Workload Identity Federation (SEC-02).",
+      "tasks": [
+        {
+          "taskId": "STORE-01-T1",
+          "status": "open",
+          "description": "Determine where vault-azure-kms is currently sourced: run 'vault kv get secret/infrastructure/azure-unseal'. If the path exists, create vault/vso-azure-kms-secret.yaml as a VaultStaticSecret CRD mirroring vault/vso-github-app-secret.yaml (kv-v2, path=infrastructure/azure-unseal, destination.name=vault-azure-kms, namespace=vault, refreshAfter=1h). If not in Vault KV, store it there first then create the CRD.",
+          "targetFile": "/receptor-infra/vault/vso-azure-kms-secret.yaml",
+          "completedAt": null,
+          "completedBy": null
+        },
+        {
+          "taskId": "STORE-01-T2",
+          "status": "open",
+          "description": "If SEC-02 Workload Identity Federation migration is implemented first, vault-azure-kms becomes unnecessary. Delete the k8s secret, remove the AZURE_CLIENT_SECRET extraEnvironmentVar from values/vault.yaml, and skip STORE-01-T1. This is the preferred path — it eliminates the secret rather than managing its lifecycle.",
+          "targetFile": "/receptor-infra/values/vault.yaml",
           "completedAt": null,
           "completedBy": null
         }
@@ -147,7 +167,7 @@
         {
           "taskId": "IAC-02-T1",
           "status": "open",
-          "description": "After Terraform import of the storage account is confirmed (IAC-01-T4/T5), delete the azure/ directory from receptor-infra ('git rm -r azure/'). Update README.md to remove the ARM template reference and replace it with a pointer to terraform/. Commit on a feature branch.",
+          "description": "After Terraform import of the storage account is confirmed (IAC-01-T4/T5), delete the azure/ directory from receptor-infra ('git rm -r azure/'). Update README.md to remove the ARM template reference and replace with a pointer to terraform/. Commit on a feature branch.",
           "targetFile": "/receptor-infra/azure/backup-storage-account.parameters.json",
           "completedAt": null,
           "completedBy": null
@@ -167,7 +187,7 @@
         {
           "taskId": "IAC-04-T1",
           "status": "open",
-          "description": "Create .github/workflows/terraform-drift.yml: scheduled weekly (cron: '0 2 * * 1'), runs terraform plan -detailed-exitcode on arc-runner-receptor-infra. Exit code 2 (changes detected) fails the job and triggers Slack notification via the existing OIDC→Vault→Slack pattern from cluster-sync.yml. Implement in Phase 4 after apply workflow is proven.",
+          "description": "Create .github/workflows/terraform-drift.yml: scheduled weekly (cron: '0 2 * * 1'), runs terraform plan -detailed-exitcode on arc-runner-receptor-infra. Exit code 2 (changes detected) fails the job and triggers Slack notification via the existing OIDC→Vault→Slack pattern from cluster-sync.yml. Implement in Phase 5 after apply workflow is proven.",
           "targetFile": "/receptor-infra/.github/workflows/terraform-drift.yml",
           "completedAt": null,
           "completedBy": null
@@ -187,7 +207,7 @@
         {
           "taskId": "CI-01-T1",
           "status": "open",
-          "description": "Create .github/workflows/terraform-plan.yml: trigger on pull_request (paths: terraform/**). Steps: checkout, setup-terraform, OIDC→Vault JWT exchange (reuse pattern from cluster-sync.yml), retrieve Azure Workload Identity credentials from Vault KV, terraform init (AzureRM backend: k3sbackups71a475f1dae6/tfstate/receptor/azure.tfstate), terraform validate, terraform plan. Post plan output as PR comment. Runner: arc-runner-receptor-infra.",
+          "description": "Create .github/workflows/terraform-plan.yml: trigger on pull_request (paths: terraform/**). Steps: checkout, setup-terraform, OIDC→Vault JWT exchange (reuse pattern from cluster-sync.yml), retrieve Azure Workload Identity credentials from Vault KV secret/infrastructure/azure-terraform, terraform init (AzureRM backend, use_azuread_auth=true), terraform validate, terraform plan. Post plan output as PR comment. Runner: arc-runner-receptor-infra.",
           "targetFile": "/receptor-infra/.github/workflows/terraform-plan.yml",
           "completedAt": null,
           "completedBy": null
@@ -215,7 +235,7 @@
         {
           "taskId": "CI-02-T1",
           "status": "open",
-          "description": "Create Vault KV secret at secret/infrastructure/azure-terraform containing: client_id (vault-k3s-unseal appId or future managed identity client ID), tenant_id (76c68bd9-6fba-42d1-bf81-471e2e8c1395), subscription_id (303d0b34-0b31-4302-a133-f1bd1e61f4b7). No client_secret if Workload Identity Federation is used.",
+          "description": "Create Vault KV secret at secret/infrastructure/azure-terraform containing: client_id (vault-k3s-unseal appId: aad24e26-8e10-4751-90ea-fb43bd147250 or future federated identity), tenant_id (76c68bd9-6fba-42d1-bf81-471e2e8c1395), subscription_id (303d0b34-0b31-4302-a133-f1bd1e61f4b7). No client_secret if Workload Identity Federation is used.",
           "targetFile": "/receptor-infra/docs/vault-policies.md",
           "completedAt": null,
           "completedBy": null
@@ -223,8 +243,56 @@
         {
           "taskId": "CI-02-T2",
           "status": "open",
-          "description": "Create Vault policy receptor-infra-tf with read access to secret/data/infrastructure/azure-terraform. Create Vault JWT role receptor-infra-tf-ci bound to this policy, scoped to repo dm-ra-01/receptor-infra (bound_claims: sub=repo:dm-ra-01/receptor-infra:*). Document in vault-configuration.md in supabase-receptor.",
+          "description": "Create Vault policy receptor-infra-tf with read access to secret/data/infrastructure/azure-terraform. Create Vault JWT role receptor-infra-tf-ci bound to this policy, scoped to repo dm-ra-01/receptor-infra (bound_claims: sub=repo:dm-ra-01/receptor-infra:*). Document in supabase-receptor vault-configuration.md.",
           "targetFile": "/receptor-infra/docs/vault-policies.md",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "SEC-03",
+      "severity": "medium",
+      "status": "open",
+      "category": "Security",
+      "repo": "receptor-infra",
+      "area": "azure",
+      "description": "The unseal key 'vault-unseal' in Key Vault K3sUnlock has rotationPolicy=null (confirmed via az keyvault key show). No automatic rotation schedule exists. If the key is deleted or becomes otherwise inaccessible, Vault cannot unseal. Azure Key Vault supports managed rotation policies. A Terraform azurerm_key_vault_key rotation_policy block should declare an annual rotation cadence with a 30-day pre-rotation notification, giving time to respond before Vault unsealing is impacted.",
+      "tasks": [
+        {
+          "taskId": "SEC-03-T1",
+          "status": "open",
+          "description": "Add a rotation_policy block to the azurerm_key_vault_key resource in terraform/modules/key-vault/: automatic rotation with time_after_creation='P1Y' (rotate annually), notify='P30D' (Vault team notified 30 days before). Apply via terraform-apply.yml (Phase 5). Confirm via 'az keyvault key rotation-policy show --vault-name K3sUnlock --name vault-unseal' after apply. NOTE: key rotation changes the key version — Vault auto-unseal uses wrapKey/unwrapKey which is version-agnostic, so rotation is safe.",
+          "targetFile": "/receptor-infra/terraform/modules/key-vault/main.tf",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "SEC-04",
+      "severity": "medium",
+      "status": "open",
+      "category": "Security",
+      "repo": "receptor-infra",
+      "area": "azure",
+      "description": "Storage account k3sbackups71a475f1dae6 has allowSharedKeyAccess=true with a keyExpirationPeriodInDays=60 policy (confirmed via az CLI). Shared key access allows any caller with the account key to bypass Azure AD authorization. The Terraform AzureRM backend must use use_azuread_auth=true; once all storage consumers are confirmed on Azure AD auth, allowSharedKeyAccess can be set to false. The 60-day key expiry is a partial mitigation only.",
+      "tasks": [
+        {
+          "taskId": "SEC-04-T1",
+          "status": "open",
+          "description": "In terraform/backend.tf, set use_azuread_auth=true on the azurerm backend block. Grant 'Storage Blob Data Contributor' role to the Terraform CI identity on the tfstate container only: 'az role assignment create --role \"Storage Blob Data Contributor\" --assignee <ci-identity-object-id> --scope /subscriptions/303d0b34-0b31-4302-a133-f1bd1e61f4b7/resourceGroups/Receptor/providers/Microsoft.Storage/storageAccounts/k3sbackups71a475f1dae6/blobServices/default/containers/tfstate'. Verify 'terraform init' and 'terraform plan' succeed with AD auth before proceeding.",
+          "targetFile": "/receptor-infra/terraform/backend.tf",
+          "completedAt": null,
+          "completedBy": null
+        },
+        {
+          "taskId": "SEC-04-T2",
+          "status": "open",
+          "description": "Pre-flight: audit all consumers of the receptor-backups container (backup scripts in supabase-receptor or any other repo) to confirm they use Azure AD auth or SAS tokens (not shared key). Only after all consumers confirmed: set azurerm_storage_account { shared_access_key_enabled = false } in Terraform and apply via CI. Do NOT skip this pre-flight — disabling shared key access without auditing consumers will break backup jobs.",
+          "targetFile": "/receptor-infra/terraform/modules/backup-storage/main.tf",
           "completedAt": null,
           "completedBy": null
         }
@@ -255,11 +323,11 @@
   "clarifications": [
     {
       "item": "Credential model for Terraform CI",
-      "decision": "No long-lived Azure credentials in GitHub Secrets. Azure Workload Identity Federation via OIDC JWT. GitHub OIDC token exchanged for short-lived Vault token (existing receptor-infra-ci pattern), then Azure client_id/tenant_id retrieved from Vault KV. azurerm provider uses use_oidc=true. This matches the existing cluster-sync.yml Slack notification pattern."
+      "decision": "No long-lived Azure credentials in GitHub Secrets. Azure Workload Identity Federation via OIDC JWT. GitHub OIDC token exchanged for short-lived Vault token (existing receptor-infra-ci pattern), then Azure client_id/tenant_id retrieved from Vault KV. azurerm provider uses use_oidc=true. Matches existing cluster-sync.yml Slack notification pattern."
     },
     {
       "item": "Terraform state backend",
-      "decision": "State stored in k3sbackups71a475f1dae6 storage account in a NEW dedicated container named 'tfstate' (not the existing receptor-backups container). Container must be created before terraform init as a one-time bootstrap step."
+      "decision": "State stored in k3sbackups71a475f1dae6 in a NEW dedicated container named 'tfstate' (NOT the existing receptor-backups container). Container created as one-time bootstrap before terraform init. Backend uses use_azuread_auth=true."
     },
     {
       "item": "ARM template fate",
@@ -267,45 +335,55 @@
     },
     {
       "item": "Terraform scope",
-      "decision": "Terraform manages Azure resources only: Key Vault K3sUnlock, storage account k3sbackups71a475f1dae6, and the vault-k3s-unseal service principal (or its managed identity replacement). k3s cluster manifests remain in helmfile.yaml / Kubernetes YAML."
+      "decision": "Terraform manages Azure resources only: Key Vault K3sUnlock, storage account k3sbackups71a475f1dae6, and the vault-k3s-unseal service principal (or its Workload Identity Federation replacement). k3s cluster manifests remain in helmfile.yaml / Kubernetes YAML."
     },
     {
       "item": "Live Azure resource details (confirmed via az CLI)",
-      "decision": "Subscription: 303d0b34-0b31-4302-a133-f1bd1e61f4b7. Resource group: Receptor. Location: australiasoutheast. Key Vault: K3sUnlock (URI: https://k3sunlock.vault.azure.net/). Storage account: k3sbackups71a475f1dae6 (SKU: Standard_RAGRS). Auto-unseal SP: vault-k3s-unseal (appId: aad24e26-8e10-4751-90ea-fb43bd147250, objectId: 26b134d5-deb6-4856-8c48-3d5f8b3c6262). Tenant: 76c68bd9-6fba-42d1-bf81-471e2e8c1395."
+      "decision": "Subscription: 303d0b34-0b31-4302-a133-f1bd1e61f4b7. Resource group: Receptor. Location: australiasoutheast. Key Vault: K3sUnlock (URI: https://k3sunlock.vault.azure.net/). Storage account: k3sbackups71a475f1dae6 (SKU: Standard_RAGRS). Auto-unseal SP: vault-k3s-unseal (appId: aad24e26-8e10-4751-90ea-fb43bd147250, objectId: 26b134d5-deb6-4856-8c48-3d5f8b3c6262). Tenant: 76c68bd9-6fba-42d1-bf81-471e2e8c1395. Unseal key: vault-unseal (RSA, no expiry, no rotation policy)."
     },
     {
       "item": "VM platform (k3s on Hyper-V)",
-      "decision": "k3s VMs run on on-premise Hyper-V (Windows host). No native Azure VM Managed Identity available unless VMs are Arc-enrolled. Preferred SEC-02 remediation is Azure AD Workload Identity Federation bound to the Vault Kubernetes service account JWT — eliminates client secret without requiring Arc enrollment."
+      "decision": "k3s VMs run on on-premise Hyper-V. No native Azure VM Managed Identity unless Arc-enrolled. Preferred SEC-02 remediation: Azure AD Workload Identity Federation bound to the Vault Kubernetes SA (sa-vault in vault namespace) — eliminates client secret, no Arc enrollment required."
     },
     {
       "item": "Severity of SEC-02",
-      "decision": "Proposed as Critical because a long-lived client secret for the auto-unseal identity is unrotatable without Vault downtime risk, and its storage location (values file or Vault KV) is unconfirmed. Human auditor may adjust severity after SEC-02-T1 locates the secret."
+      "decision": "Confirmed Critical. vault.yaml uses secretKeyRef from vault-azure-kms k8s Secret (NOT plaintext values file — good). vault-azure-kms has no VSO sync (STORE-01). Preferred fix is Workload Identity Federation (SEC-02-T1) which eliminates the client secret entirely. Human auditor may downgrade to High if STORE-01 VSO sync is implemented as interim measure."
+    },
+    {
+      "item": "SEC-04 robustness requirement",
+      "decision": "SEC-04-T2 (disabling allowSharedKeyAccess) must NOT be applied until ALL consumers of the storage account (Terraform backend AND any backup scripts in supabase-receptor or other repos) have been confirmed to use Azure AD auth. SEC-04-T1 (use_azuread_auth=true on backend) must succeed in CI first. Pre-flight consumer audit is mandatory."
     }
   ],
   "implementationPhases": [
     {
       "phase": 1,
-      "name": "Locate Secret and Audit Live State",
-      "findingIds": ["SEC-02", "CI-02"],
-      "rationale": "Before any Terraform or CI work: (1) find where the vault-k3s-unseal client secret is stored (SEC-02-T1) and remediate if in plaintext values file; (2) create Vault JWT role and KV path for Terraform CI credentials (CI-02). These are prerequisites for all subsequent phases."
+      "name": "Credential Safety and CI Prerequisites",
+      "findingIds": ["SEC-02", "STORE-01", "CI-02"],
+      "rationale": "Before any Terraform or CI work: (1) VSO-manage vault-azure-kms or migrate to Workload Identity Federation (SEC-02, STORE-01); (2) create Vault JWT role and KV path for Terraform CI credentials (CI-02). All are prerequisites for subsequent phases."
     },
     {
       "phase": 2,
       "name": "Terraform Modules and State Bootstrap",
       "findingIds": ["IAC-01", "IAC-03"],
-      "rationale": "Create tfstate container, write Terraform modules for Key Vault and storage account using confirmed live resource identifiers, run terraform import, confirm zero-drift plan. IAC-03 is resolved as part of IAC-01-T3."
+      "rationale": "Create tfstate container, write Terraform modules for Key Vault and storage account using confirmed live identifiers, run terraform import, confirm zero-drift plan. IAC-03 resolved as part of IAC-01-T3."
     },
     {
       "phase": 3,
       "name": "CI Workflow and ARM Retirement",
       "findingIds": ["CI-01", "IAC-02"],
-      "rationale": "Implement terraform-plan.yml and terraform-apply.yml using OIDC JWT/Vault credential pattern. After apply workflow is proven, delete the azure/ ARM directory (IAC-02)."
+      "rationale": "Implement terraform-plan.yml (PR gate) and terraform-apply.yml (merge-to-main). After apply workflow proven, delete the azure/ ARM directory (IAC-02)."
     },
     {
       "phase": 4,
+      "name": "Storage AD Auth and Shared Key Removal",
+      "findingIds": ["SEC-04"],
+      "rationale": "Configure use_azuread_auth=true on Terraform backend (SEC-04-T1). After consumer pre-flight audit confirms all callers use AD auth, disable allowSharedKeyAccess (SEC-04-T2). Must be after Phase 3 (CI workflow proven)."
+    },
+    {
+      "phase": 5,
       "name": "Security Hardening and Drift Detection",
-      "findingIds": ["SEC-01", "IAC-04", "ARM-01"],
-      "rationale": "Apply KV network ACL restriction (SEC-01) via the new apply workflow. Add scheduled drift detection (IAC-04). Confirm ARM-01 retirement from Phase 3."
+      "findingIds": ["SEC-01", "SEC-03", "IAC-04", "ARM-01"],
+      "rationale": "Apply KV network ACL restriction (SEC-01) and key rotation policy (SEC-03) via the apply workflow. Add weekly drift detection (IAC-04). Confirm ARM-01 retirement from Phase 3."
     }
   ],
   "deferred": []
