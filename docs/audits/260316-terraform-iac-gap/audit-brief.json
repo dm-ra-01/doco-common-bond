@@ -3,8 +3,8 @@
   "auditSlug": "260316-terraform-iac-gap",
   "status": "implementing",
   "nextAction": "implement",
-  "openTaskCount": 31,
-  "latestHandover": "Session 10: Implemented Phase 3 (CI-01, IAC-02) in receptor-infra — created .github/workflows/terraform-plan.yml (OIDC→Vault→Azure WIF, plan posted as PR comment) and .github/workflows/terraform-apply.yml (push-to-main trigger, auto-approve apply, Slack failure notification). Deleted azure/ ARM template directory (git rm -r azure/). Updated README.md with terraform/ repo layout entry and Terraform CI section. Added .gitignore and .terraform.lock.hcl. ARM-01-T1 closed as part of IAC-02-T1. receptor-infra pushed commit 53ee0b2. 31 open tasks remain across phases 4–8. terraform validate confirmed clean locally (v1.14.7, azurerm 3.117.1, azuread 2.53.1). Next: Phase 4 (SEC-04) — configure use_azuread_auth=true on Terraform backend, then consumer pre-flight audit before disabling allowSharedKeyAccess. Note: Terraform CLI is now installed (v1.14.7); full terraform init+plan requires Arc runner with network access to Vault and tfstate container.",
+  "openTaskCount": 27,
+  "latestHandover": "Session 11: Phases 4 (SEC-04) and 5 (SEC-03, IAC-04) complete in receptor-infra. STORE-01-T2 closed (WIF preferred path already taken, AZURE_CLIENT_SECRET removed session 8). SEC-04-T1 closed (use_azuread_auth=true already present in backend.tf from IAC-01-T2 session 9). SEC-03-T1 implemented: rotation_policy added to modules/key-vault/main.tf (P180D rotation, P210D expire, P30D notify). IAC-04-T1 implemented: .github/workflows/terraform-drift.yml created (weekly Mon 02:00 UTC, OIDC\u2192Vault\u2192Azure WIF, terraform plan -detailed-exitcode, opens GitHub Issue on drift). SEC-01-T1 BLOCKED: Hyper-V egress IP is dynamic; cannot use static IP rule. Documented in code and task description. terraform validate confirmed clean. 27 open tasks remain. Next session: Phase 6 (KUBE-01 VSO secret injection, KUBE-02 resource limits, ENV-01 test environment, KUBE-03 pod security, KUBE-04 Falco) in receptor-infra supabase/ values files.",
   "sessionHistory": [
     {
       "session": 1,
@@ -76,12 +76,23 @@
     {
       "session": 10,
       "date": "2026-03-16",
-      "summary": "Implementation session 3. Implemented Phase 3 (CI-01, IAC-02): created terraform-plan.yml (PR trigger, OIDC→Vault→Azure WIF, posts plan as PR comment) and terraform-apply.yml (push-to-main, auto-approve, Slack on failure). Deleted azure/ ARM template directory (IAC-02-T1). ARM-01-T1 closed as part of IAC-02-T1. Added .gitignore and .terraform.lock.hcl. Updated README.md with terraform/ layout and Terraform CI section. receptor-infra pushed commit 53ee0b2.",
+      "summary": "Implementation session 3. Implemented Phase 3 (CI-01, IAC-02): created terraform-plan.yml (PR trigger, OIDC\u2192Vault\u2192Azure WIF, posts plan as PR comment) and terraform-apply.yml (push-to-main, auto-approve, Slack on failure). Deleted azure/ ARM template directory (IAC-02-T1). ARM-01-T1 closed as part of IAC-02-T1. Added .gitignore and .terraform.lock.hcl. Updated README.md with terraform/ layout and Terraform CI section. receptor-infra pushed commit 53ee0b2.",
       "completedTasks": [
         "CI-01-T1",
         "CI-01-T2",
         "IAC-02-T1",
         "ARM-01-T1"
+      ]
+    },
+    {
+      "session": 11,
+      "date": "2026-03-16",
+      "summary": "Phase 4 (SEC-04) and Phase 5 (SEC-03, IAC-04) complete. STORE-01-T2 closed (WIF no-op). SEC-04-T1 closed (use_azuread_auth already set). SEC-03-T1: rotation_policy P180D added to key-vault/main.tf. IAC-04-T1: terraform-drift.yml created (weekly, opens GitHub Issue on drift). SEC-01-T1 BLOCKED: dynamic Hyper-V egress IP. Documented in code.",
+      "completedTasks": [
+        "STORE-01-T2",
+        "SEC-04-T1",
+        "SEC-03-T1",
+        "IAC-04-T1"
       ]
     }
   ]

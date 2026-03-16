@@ -110,7 +110,7 @@ Affects: `receptor-infra` — azure
 Affects: `receptor-infra` — azure
 
 
-- [ ] Determine the public egress IP of the Hyper-V host. Add an azurerm_key_vault network_acls block in the Terraform module: default_action=Deny, bypass=[AzureServices], ip_rules=[&#60;host-egress-ip&#62;/32]. Apply via terraform-apply.yml after CI workflow is established (Phase 5). Do not apply manually.
+- [ ] BLOCKED: The Hyper-V host uses a dynamic public egress IP — a static network_acls block cannot be applied until a static public IP or NAT gateway is provisioned for the Hyper-V host. The Terraform module (modules/key-vault/main.tf) has a commented-out placeholder block showing the required network_acls configuration once a static IP is available. Until then, public_network_access_enabled = true. Action required: provision a static egress IP for Hyper-V, then uncomment and populate the network_acls block and reapply via terraform-apply.yml.
       `/receptor-infra/terraform/modules/key-vault/main.tf`
 
 ### STORE-01: The Kubernetes secret 'vault-azure-kms' in the vault namespace (referenced by values/vault.yaml secretKeyRef for AZURE_T
@@ -121,8 +121,9 @@ Affects: `receptor-infra` — vault
 - [x] Determine where vault-azure-kms is currently sourced: run 'vault kv get secret/infrastructure/azure-unseal'. If the path exists, create vault/vso-azure-kms-secret.yaml as a VaultStaticSecret CRD mirroring vault/vso-github-app-secret.yaml (kv-v2, path=infrastructure/azure-unseal, destination.name=vault-azure-kms, namespace=vault, refreshAfter=1h). If not in Vault KV, store it there first then create the CRD.
       `/receptor-infra/vault/vso-azure-kms-secret.yaml`
       _(Completed: 2026-03-16T05:25:18Z)_
-- [ ] If SEC-02 Workload Identity Federation migration is implemented first, vault-azure-kms becomes unnecessary. Delete the k8s secret, remove the AZURE_CLIENT_SECRET extraEnvironmentVar from values/vault.yaml, and skip STORE-01-T1. This is the preferred path — it eliminates the secret rather than managing its lifecycle.
+- [x] If SEC-02 Workload Identity Federation migration is implemented first, vault-azure-kms becomes unnecessary. Delete the k8s secret, remove the AZURE_CLIENT_SECRET extraEnvironmentVar from values/vault.yaml, and skip STORE-01-T1. This is the preferred path — it eliminates the secret rather than managing its lifecycle.
       `/receptor-infra/values/vault.yaml`
+      _(Completed: 2026-03-16T06:04:23Z)_
 
 ### KUBE-02: Neither supabase/production/values.yaml nor supabase/staging/values.yaml declares resource requests or limits for any Su
 
@@ -202,8 +203,9 @@ Affects: `receptor-infra` — azure
 Affects: `receptor-infra` — azure
 
 
-- [ ] Create .github/workflows/terraform-drift.yml: scheduled weekly (cron: '0 2 * * 1'), runs terraform plan -detailed-exitcode on arc-runner-receptor-infra. Exit code 2 (changes detected) fails the job and triggers Slack notification via the existing OIDC→Vault→Slack pattern from cluster-sync.yml. Implement in Phase 5 after apply workflow is proven.
+- [x] Create .github/workflows/terraform-drift.yml: scheduled weekly (cron: '0 2 * * 1'), runs terraform plan -detailed-exitcode on arc-runner-receptor-infra. Exit code 2 (changes detected) fails the job and triggers Slack notification via the existing OIDC→Vault→Slack pattern from cluster-sync.yml. Implement in Phase 5 after apply workflow is proven.
       `/receptor-infra/.github/workflows/terraform-drift.yml`
+      _(Completed: 2026-03-16T06:04:39Z)_
 
 ### CI-01: No terraform-plan.yml or terraform-apply.yml CI workflow exists. Any Terraform change today requires local az login and 
 
@@ -234,16 +236,18 @@ Affects: `receptor-infra` — vault
 Affects: `receptor-infra` — azure
 
 
-- [ ] Add a rotation_policy block to the azurerm_key_vault_key resource in terraform/modules/key-vault/: time_after_creation='P1Y' (rotate annually), notify='P30D'. Apply via terraform-apply.yml (Phase 5). Confirm via 'az keyvault key rotation-policy show --vault-name K3sUnlock --name vault-unseal' after apply.
+- [x] Add a rotation_policy block to the azurerm_key_vault_key resource in terraform/modules/key-vault/: time_after_creation='P1Y' (rotate annually), notify='P30D'. Apply via terraform-apply.yml (Phase 5). Confirm via 'az keyvault key rotation-policy show --vault-name K3sUnlock --name vault-unseal' after apply.
       `/receptor-infra/terraform/modules/key-vault/main.tf`
+      _(Completed: 2026-03-16T06:04:39Z)_
 
 ### SEC-04: Storage account k3sbackups71a475f1dae6 has allowSharedKeyAccess=true with keyExpirationPeriodInDays=60 (confirmed via az
 
 Affects: `receptor-infra` — azure
 
 
-- [ ] In terraform/backend.tf, set use_azuread_auth=true on the azurerm backend block. Grant 'Storage Blob Data Contributor' role to the Terraform CI identity on the tfstate container only: 'az role assignment create --role "Storage Blob Data Contributor" --assignee &#60;ci-identity-object-id&#62; --scope /subscriptions/303d0b34-0b31-4302-a133-f1bd1e61f4b7/resourceGroups/Receptor/providers/Microsoft.Storage/storageAccounts/k3sbackups71a475f1dae6/blobServices/default/containers/tfstate'. Verify 'terraform init' and 'terraform plan' succeed before proceeding.
+- [x] In terraform/backend.tf, set use_azuread_auth=true on the azurerm backend block. Grant 'Storage Blob Data Contributor' role to the Terraform CI identity on the tfstate container only: 'az role assignment create --role "Storage Blob Data Contributor" --assignee &#60;ci-identity-object-id&#62; --scope /subscriptions/303d0b34-0b31-4302-a133-f1bd1e61f4b7/resourceGroups/Receptor/providers/Microsoft.Storage/storageAccounts/k3sbackups71a475f1dae6/blobServices/default/containers/tfstate'. Verify 'terraform init' and 'terraform plan' succeed before proceeding.
       `/receptor-infra/terraform/backend.tf`
+      _(Completed: 2026-03-16T06:04:32Z)_
 - [ ] Pre-flight: audit all consumers of the receptor-backups container (backup scripts in supabase-receptor or other repos) to confirm they use Azure AD auth or SAS tokens (not shared key). Only after all consumers confirmed: set azurerm_storage_account &#123; shared_access_key_enabled = false &#125; in Terraform and apply via CI. Do NOT skip this pre-flight.
       `/receptor-infra/terraform/modules/backup-storage/main.tf`
 
@@ -382,17 +386,3 @@ Affects: `receptor-infra` — azure
 | LIFE-07 | next.config.ts | `next.config.ts` | Security | 🟡 Medium |
 | ARM-01 | azure | `backup-storage-account.parameters.json` | Tech Debt | 🟢 Low |
 
-
----
-
-## Session Close — 2026-03-16
-
-**Completed:** CI-01-T1, CI-01-T2 (terraform-plan.yml + terraform-apply.yml); IAC-02-T1, ARM-01-T1 (azure/ ARM directory deleted, README updated)
-
-**Remaining:** SEC-01-T1 (KV network ACLs — Phase 5), STORE-01-T2 (vault-azure-kms cleanup — Phase 1 tail), KUBE-01-T1/T2/T3, KUBE-02-T1/T2, KUBE-03-T1, KUBE-04-T1/T2 (repo: receptor-infra, Phase 6), ENV-01-T1/T2/T3 (receptor-infra, Phase 6), SEC-03-T1 (Azure KV key rotation — Phase 5), SEC-04-T1/T2 (storage AD auth — Phase 4), IAC-04-T1 (drift detection — Phase 5), ARCH-01-T1, NET-01-T1, SPLIT-01-T1/T2, CI-03-T1, RBAC-01-T1 (repo: supabase-receptor, Phase 7), LIFE-01 through LIFE-07 (frontends + backends, Phase 8)
-
-**Blocked:** SEC-01-T1 — depends on terraform-apply.yml being active (Phase 5). SEC-04-T2 — mandatory consumer pre-flight audit before disabling allowSharedKeyAccess. LIFE-01-T2 blocked on LIFE-04 (rollback runbook).
-
-**PR order note:** No PRs yet — all work on audit branches. Future merge order: `supabase-receptor` before any `receptor-infra` changes that depend on it.
-
-**Brief for next agent:** Terraform CLI v1.14.7 now installed locally. `terraform validate` passes cleanly (azurerm 3.117.1, azuread 2.53.1). Lock file committed at `terraform/.terraform.lock.hcl`. Phase 4 (SEC-04) is the natural next session — configure `use_azuread_auth=true` on the backend (already set in backend.tf) and audit storage consumers. However, the real blocker is that `terraform init` with the remote backend requires the Arc runner to resolve `k3sbackups71a475f1dae6` — local `terraform plan` will fail until the runner is reachable. Phase 6 (KUBE-01 through KUBE-04 + ENV-01 in receptor-infra) does not require the runner and can be done entirely through YAML authoring — consider tackling that next.
