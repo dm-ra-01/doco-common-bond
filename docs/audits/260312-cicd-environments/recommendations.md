@@ -672,9 +672,9 @@ Affects: `cross-ecosystem` — GitHub Actions composite action for Supabase star
 - [x] [comprehensive_review_3 GAP-4 — split from CICD-09-T2] EVALUATION ONLY: Write an ADR note evaluating composite action vs reusable workflow for Supabase CI boot consolidation. Must include: (1) which CI jobs across all 6 repos currently boot Supabase independently; (2) whether a single workflow_call could replace individual boots; (3) decision with rationale. Acceptance criteria: ADR note written and committed. If decision is 'yes, implement reusable workflow', create CICD-09-T2b. If 'no', mark CICD-09-T2b as not-applicable.
       `/home/ryana/development/common-bond/supabase-receptor/.github/actions/supabase-start/action.yml`
       _(Completed: 2026-03-13T02:58:00Z)_
-- [ ] [comprehensive_review_3 GAP-4 — conditional] CONDITIONAL IMPLEMENTATION: Not applicable — CICD-09-T2a evaluation (EVALUATION.md) concluded that the composite action is the correct pattern for Supabase CI boot consolidation. A reusable workflow would require cross-repo caller configuration and does not suit the ephemeral branch namespace model. Composite action (CICD-09-T1) remains the canonical implementation. Closed per CICD-09-T2a acceptance criteria.
+- [x] [comprehensive_review_3 GAP-4 — conditional] CONDITIONAL IMPLEMENTATION: Not applicable — CICD-09-T2a evaluation (EVALUATION.md) concluded that the composite action is the correct pattern for Supabase CI boot consolidation. A reusable workflow would require cross-repo caller configuration and does not suit the ephemeral branch namespace model. Composite action (CICD-09-T1) remains the canonical implementation. Closed per CICD-09-T2a acceptance criteria.
       `/home/ryana/development/common-bond/supabase-receptor/.github/workflows/supabase-ci-base.yml`
-      _(Completed: 2026-03-13T02:58:00Z)_
+      _(Completed: 2026-03-16T00:41:00Z — N/A, closed per evaluation)_
 
 ### ARCH-11: Phase 8 (ARCH-03) requires the self-hosted GitHub Actions runner to authenticate to Vault via GitHub OIDC JWT to receive
 
@@ -922,3 +922,51 @@ The `receptor-infra` repo is now the canonical home for all infrastructure docs 
 ADR-008 Phase 2 (supabase-receptor OIDC) is designed but not yet implemented — no blocking dependency, implement when a concrete secret-retrieval need arises in supabase-receptor CI.
 
 PR order when finalising: `supabase-receptor` first (database schema dependency), then all other repos in parallel.
+
+---
+
+## Session Close — Session 29 (2026-03-16)
+
+### Re-Audit Outcome
+
+Full re-audit conducted per `finalise-global-audit` workflow. All 58 original findings verified across 6 repositories. `re-audit.md` written at `docs/audits/260312-cicd-environments/re-audit.md`.
+
+### Critical Gaps Found and Remediated
+
+| Gap | Severity | Root Cause | Fix Applied |
+|---|---|---|---|
+| `pg_dumpall` missing from ctrl-01 | 🔴 HIGH | `postgresql-client` never installed; backup silently failing since Session 27 | `sudo apt-get install -y postgresql-client` — pg_dumpall v16.13 now installed |
+| Backup `port-forward svc/` fails for StatefulSet | 🔴 HIGH | `kubectl port-forward svc/X` does not relay ClusterIP for StatefulSet Postgres | Changed `DB_SERVICE` → `DB_POD="supabase-supabase-db-0"` and all forward refs to `pod/${DB_POD}` |
+| B2 secondary kills primary backup | 🔴 HIGH | `tee >()` pipeline requires both rclone processes to exit 0; b2-aus remote not configured (deferred) | Refactored from `tee` pipeline to sequential `rclone copyto` calls; B2 gated on `rclone listremotes | grep b2-aus` |
+
+### Backup Dry-Run Result
+
+```
+[2026-03-16T00:50:07Z] Starting kubectl port-forward pod/supabase-supabase-db-0:5432 → localhost:5433
+[2026-03-16T00:50:11Z] Postgres reachable via port-forward
+[2026-03-16T00:50:11Z] Dumping Postgres to temp file: /tmp/backup-xwYhH9.sql.gz
+[2026-03-16T00:50:24Z] Dump complete: 112K — uploading to Azure primary
+[2026-03-16T00:50:24Z] ✅ Backup complete: receptor-prod-20260316T005007Z.sql.gz (112K)
+[2026-03-16T00:50:24Z]    Primary:   azure-aus:receptor-backups/receptor-prod-20260316T005007Z.sql.gz
+[2026-03-16T00:50:25Z] INFO: b2-aus remote not configured — skipping B2 secondary (ENV-11 deferred)
+[2026-03-16T00:50:25Z] Backup job complete
+```
+
+**Exit code: 0** ✅
+
+### CICD-09-T2c Closed
+
+The final open `[ ]` task (CICD-09-T2c conditional) was marked closed per evaluation — the composite action approach was confirmed correct in the EVALUATION.md ADR note (CICD-09-T2a). No implementation needed.
+
+### Deferred Items (Intentional)
+
+| Item | Status |
+|---|---|
+| B2 secondary backup (ENV-11) | Deferred — add `secret/infrastructure/backblaze-b2-aus-key` to Vault, then `systemctl restart rclone-config-from-vault.service` |
+| Branch protection (SEC-03-T1) | Execute after PRs merged — final gate by design |
+| GitHub Environments (CICD-08) | Formally closed — Vault RBAC supersedes |
+
+### Audit Status: ✅ Ready to Close
+
+All findings addressed. Backup functional. Raising PRs to merge `audit/260312-cicd-environments` → `main` across all 6 repositories and archiving the audit directory.
+
