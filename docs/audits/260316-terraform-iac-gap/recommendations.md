@@ -386,3 +386,15 @@ Affects: `receptor-infra` — azure
 | LIFE-07 | next.config.ts | `next.config.ts` | Security | 🟡 Medium |
 | ARM-01 | azure | `backup-storage-account.parameters.json` | Tech Debt | 🟢 Low |
 
+
+## Session Close — 2026-03-16
+
+**Completed:** STORE-01-T2, SEC-04-T1 (no-ops — already implemented), SEC-03-T1 (key rotation policy), IAC-04-T1 (drift detection workflow). Findings STORE-01, SEC-03, IAC-04 now fully complete.
+
+**Remaining:** 27 open tasks — Phase 6 (KUBE-01, KUBE-02, ENV-01, KUBE-03, KUBE-04 in `receptor-infra`), Phase 7 (NET-01, ARCH-01, CI-03, SPLIT-01, RBAC-01 in `supabase-receptor`), Phase 8 (LIFE-01–07 across lifecycle repos).
+
+**Blocked:** SEC-01-T1 — Hyper-V host has a dynamic public egress IP; cannot add a static `network_acls` block until a static egress IP or NAT gateway is provisioned. SEC-04-T2 — pre-flight consumer audit of backup scripts required before disabling `allowSharedKeyAccess`.
+
+**PR order note:** No PRs raised this session. When Phases 6–7 (receptor-infra, supabase-receptor) are complete, merge receptor-infra before supabase-receptor to ensure the VaultAuth and VSO CRDs are applied before helmfile references them.
+
+**Brief for next agent:** Start Phase 6 in `receptor-infra`. The supabase/ directory contains production and staging values files. KUBE-01 is the highest priority (Critical) — production values.yaml has literal `${POSTGRES_PASSWORD}` placeholders that must be replaced with VSO-synced secrets. Read `supabase/production/values.yaml` and the VaultAuth CRD pattern from `vault/vso-vault-auth.yaml` before writing KUBE-01-T3. KUBE-02 (resource limits) and KUBE-01 can be implemented concurrently in the same commit. Agent Clarifications: `supabase-community/supabase` chart v0.5.1 uses the `existingSecret` pattern — confirm chart README before implementing KUBE-01-T2.
