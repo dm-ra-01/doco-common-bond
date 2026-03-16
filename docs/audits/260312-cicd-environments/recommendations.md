@@ -883,3 +883,42 @@ All implementation tasks are complete and 0 open tasks remain. This audit is rea
 - Before merging: confirm Backblaze B2 credentials are added to Vault and run a manual backup dry-run
 
 PR order (dependency-safe): `supabase-receptor` first (infra), then all frontend/backend repos in parallel.
+
+---
+
+## Session Close — Session 28 (2026-03-16)
+
+### Completed this session
+
+| Area | Work Done |
+|---|---|
+| Vault recovery keys | Rekeyed — old shares invalidated, new 5-of-5 generated and stored offline |
+| Root token lifecycle | Hardened: generate-root → delegate scoped write token (10m TTL) → revoke root immediately. Documented in vault-configuration.md |
+| Documentation migration | 16 docs moved from `supabase-receptor/docs` → `receptor-infra/docs` (environment/, security/, operations/). supabase-receptor retains only app-scoped content |
+| GitHub App key rotation | Private key rotated 2026-03-16. `installation_id=116472161` added to Vault (`secret/ci/github-app`). VSO force-synced. Due: 2027-03-16 |
+| Azure credential expiry | vault-k3s SP expires 2028-03-12; Azure Blob key due 2026-06-13. GitHub rotation variables set in receptor-infra |
+| ADR-008 (OIDC JWT auth) | Fully implemented: JWT auth method + `ci-slack-notifier` policy + `receptor-infra-ci` role (bound_claims to `dm-ra-01/receptor-infra`). `cluster-sync.yml` retrieves Slack webhook from Vault at runtime — zero static GitHub Secrets remain in receptor-infra |
+| Agent skills | `commonbond-k3s-operator` (WSL→ctrl-01→kubectl patterns, Vault pod constraints) and `vault-write-token` (interactive generate-root script with scoped delegation) |
+| Helm chart evaluation | `supabase-community/supabase-traefik` is Docker Compose (not k8s). `supabase-community/supabase-kubernetes` confirmed — supports `secretRef` natively for VSO integration |
+
+### Remaining / Next Steps
+
+1. **Run `/finalise-global-audit` workflow** — re-audit, raise PRs to main, archive
+2. **ADR-008 Phase 2** — wire `supabase-receptor` CI to Vault OIDC when runtime secrets are needed
+3. **Supabase Helm migration** — migrate deployment to `supabase-community/supabase-kubernetes` (VSO `secretRef` integration confirmed)
+4. **Azure Blob key rotation** — due 2026-06-13, will be automatable after ADR-008 Phase 2
+
+### Brief for next agent
+
+The 260312-cicd-environments audit has **0 open tasks**. `nextAction = finalise`.
+
+Security posture is significantly improved this session:
+- No static GitHub Secrets remain in `receptor-infra`
+- Recovery keys rekeyed and offline
+- Key rotation schedule fully documented with due dates
+
+The `receptor-infra` repo is now the canonical home for all infrastructure docs (Vault, CI, cluster operations). The cluster-sync GitOps loop is fully operational.
+
+ADR-008 Phase 2 (supabase-receptor OIDC) is designed but not yet implemented — no blocking dependency, implement when a concrete secret-retrieval need arises in supabase-receptor CI.
+
+PR order when finalising: `supabase-receptor` first (database schema dependency), then all other repos in parallel.
