@@ -18,19 +18,34 @@ Do not edit it directly — edit the JSON source and re-run
 
 | Item | Decision |
 | :--- | :------- |
-| Credential model for Terraform CI | No long-lived Azure credentials in GitHub Secrets. Azure Workload Identity Federation via OIDC JWT. GitHub OIDC token exchanged for short-lived Vault token (existing receptor-infra-ci pattern), then Azure client_id/tenant_id retrieved from Vault KV. azurerm provider uses use_oidc=true. Matches existing cluster-sync.yml Slack notification pattern. |
-| Terraform state backend | State stored in k3sbackups71a475f1dae6 in a NEW dedicated container named 'tfstate' (NOT the existing receptor-backups container). Container created as one-time bootstrap before terraform init. Backend uses use_azuread_auth=true. |
-| ARM template fate | The azure/ ARM template directory should be deleted (git rm -r azure/) once Terraform successfully imports and manages both resources. Not to be maintained in parallel. |
-| Terraform scope | Terraform manages Azure resources only: Key Vault K3sUnlock, storage account k3sbackups71a475f1dae6, and the vault-k3s-unseal service principal (or its Workload Identity Federation replacement). k3s cluster manifests remain in helmfile.yaml / Kubernetes YAML. |
+| Credential model for Terraform CI | No long-lived Azure credentials in GitHub Secrets. Azure Workload Identity Federation via OIDC JWT. GitHub OIDC token exchanged for short-lived Vault token (existing receptor-infra-ci pattern), then Azure client_id/tenant_id retrieved from Vault KV. azurerm provider uses use_oidc=true. |
+| Terraform state backend | State stored in k3sbackups71a475f1dae6 in a NEW dedicated container named 'tfstate' (NOT the existing receptor-backups container). Created as one-time bootstrap before terraform init. Backend uses use_azuread_auth=true. |
+| ARM template fate | The azure/ ARM template directory should be deleted (git rm -r azure/) once Terraform successfully imports and manages both resources. |
+| Terraform scope | Terraform manages Azure resources only: Key Vault K3sUnlock, storage account k3sbackups71a475f1dae6, and the vault-k3s-unseal service principal. k3s cluster manifests remain in helmfile.yaml / Kubernetes YAML. |
 | Live Azure resource details (confirmed via az CLI) | Subscription: 303d0b34-0b31-4302-a133-f1bd1e61f4b7. Resource group: Receptor. Location: australiasoutheast. Key Vault: K3sUnlock (URI: https://k3sunlock.vault.azure.net/). Storage account: k3sbackups71a475f1dae6 (SKU: Standard_RAGRS). Auto-unseal SP: vault-k3s-unseal (appId: aad24e26-8e10-4751-90ea-fb43bd147250, objectId: 26b134d5-deb6-4856-8c48-3d5f8b3c6262). Tenant: 76c68bd9-6fba-42d1-bf81-471e2e8c1395. Unseal key: vault-unseal (RSA, no expiry, no rotation policy). |
 | VM platform (k3s on Hyper-V) | k3s VMs run on on-premise Hyper-V. No native Azure VM Managed Identity unless Arc-enrolled. Preferred SEC-02 remediation: Azure AD Workload Identity Federation bound to the Vault Kubernetes SA (sa-vault in vault namespace) — eliminates client secret, no Arc enrollment required. |
-| Severity of SEC-02 | Confirmed Critical. vault.yaml uses secretKeyRef from vault-azure-kms k8s Secret (NOT plaintext values file — good). vault-azure-kms has no VSO sync (STORE-01). Preferred fix is Workload Identity Federation (SEC-02-T1) which eliminates the client secret entirely. Human auditor may downgrade to High if STORE-01 VSO sync is implemented as interim measure. |
-| SEC-04 robustness requirement | SEC-04-T2 (disabling allowSharedKeyAccess) must NOT be applied until ALL consumers of the storage account (Terraform backend AND any backup scripts in supabase-receptor or other repos) have been confirmed to use Azure AD auth. SEC-04-T1 (use_azuread_auth=true on backend) must succeed in CI first. Pre-flight consumer audit is mandatory. |
+| Severity of SEC-02 | Confirmed Critical. vault.yaml uses secretKeyRef from vault-azure-kms k8s Secret (NOT plaintext values file). vault-azure-kms has no VSO sync (STORE-01). Preferred fix is Workload Identity Federation (SEC-02-T1) which eliminates the client secret entirely. |
+| SEC-04 robustness requirement | SEC-04-T2 (disabling allowSharedKeyAccess) must NOT be applied until ALL consumers of the storage account have been confirmed to use Azure AD auth. SEC-04-T1 (use_azuread_auth=true on backend) must succeed in CI first. Pre-flight consumer audit is mandatory. |
+| K8S-01 severity (Critical) | Production values.yaml has literal '$&#123;POSTGRES_PASSWORD&#125;' and '$&#123;JWT_SECRET&#125;' strings — not resolved by Helm or VSO. Production Supabase is either non-functional or running with empty credentials. Must be fixed before Phase 6 can progress. Staging has no secret declarations at all. |
+| supabase-kubernetes chart and secret pattern | helmfile.yaml pins supabase-community/supabase chart at v0.5.1 for both production and staging. Implementation agents must check the chart's existingSecret pattern at https://github.com/supabase-community/supabase-kubernetes/blob/main/charts/supabase/README.md before implementing K8S-01-T2. |
+| Single-node cluster constraint | All namespaces (supabase, supabase-staging, supabase-test, vault, monitoring, arc-runners) compete for the same physical resources on one Hyper-V host. Resource limits (K8S-02) and ResourceQuotas on staging/test namespaces are essential to prevent those environments from starving production Vault and Supabase. |
 
 
 ---
 
 ## 🔴 Critical
+
+### KUBE-01: supabase/production/values.yaml contains literal shell interpolation placeholders ('$&#123;POSTGRES_PASSWORD&#125;', '$&#123;JWT_SECRET
+
+Affects: `receptor-infra` — supabase
+
+
+- [ ] Store all Supabase secrets in Vault KV at: secret/supabase/production/&#123;postgres-password,jwt-secret,anon-key,service-role-key,dashboard-password&#125; and secret/supabase/staging/&#123;...&#125;. Create VaultStaticSecret CRDs at supabase/production/vso-secrets.yaml and supabase/staging/vso-secrets.yaml following the pattern of vault/vso-github-app-secret.yaml. Each CRD syncs one Vault KV path into a k8s Secret in the respective namespace (supabase / supabase-staging). refreshAfter: 1h.
+      `/receptor-infra/supabase/production/vso-secrets.yaml`
+- [ ] Update supabase/production/values.yaml and supabase/staging/values.yaml to reference the VSO-synced k8s Secret via the chart's existingSecret pattern or direct envFrom.secretRef. Remove all $&#123;...&#125; placeholder strings. Verify with 'helm template supabase supabase/supabase -f supabase/production/values.yaml | grep -c "\$&#123;"' returns 0.
+      `/receptor-infra/supabase/production/values.yaml`
+- [ ] Create a VaultAuth CRD for the supabase namespace (vault/vso-supabase-auth.yaml) following the pattern of vault/vso-vault-auth.yaml. The Vault role for supabase must have read access to secret/data/supabase/production/* and be bound to sa-supabase in namespace supabase. Equivalent role and CRD for staging (secret/data/supabase/staging/*, sa-supabase in supabase-staging).
+      `/receptor-infra/vault/vso-supabase-auth.yaml`
 
 ### SEC-02: The auto-unseal identity for HashiCorp Vault is an App Registration service principal ('vault-k3s-unseal', appId: aad24e
 
@@ -86,6 +101,28 @@ Affects: `receptor-infra` — vault
 - [ ] If SEC-02 Workload Identity Federation migration is implemented first, vault-azure-kms becomes unnecessary. Delete the k8s secret, remove the AZURE_CLIENT_SECRET extraEnvironmentVar from values/vault.yaml, and skip STORE-01-T1. This is the preferred path — it eliminates the secret rather than managing its lifecycle.
       `/receptor-infra/values/vault.yaml`
 
+### KUBE-02: Neither supabase/production/values.yaml nor supabase/staging/values.yaml declares resource requests or limits for any Su
+
+Affects: `receptor-infra` — supabase
+
+
+- [ ] Add resource requests and limits for all enabled Supabase components in supabase/production/values.yaml. Baseline values (tune after observing real usage with 'kubectl top pods -n supabase'): db: requests cpu=250m mem=512Mi limits cpu=1000m mem=2Gi; studio: requests cpu=100m mem=256Mi limits cpu=500m mem=512Mi; kong: requests cpu=100m mem=256Mi limits cpu=500m mem=512Mi; auth/rest/meta: requests cpu=50m mem=128Mi limits cpu=250m mem=256Mi; realtime: requests cpu=100m mem=256Mi limits cpu=500m mem=512Mi.
+      `/receptor-infra/supabase/production/values.yaml`
+- [ ] Add proportionally smaller resource limits for supabase/staging/values.yaml (50% of production values). Add a ResourceQuota manifest to the supabase-staging namespace capping total CPU and memory to prevent staging from impacting production workloads on the same single-node cluster.
+      `/receptor-infra/supabase/staging/values.yaml`
+
+### ENV-01: No testing/ephemeral environment exists for supabase-kubernetes. helmfile.yaml declares only 'supabase' (production, nam
+
+Affects: `receptor-infra` — supabase
+
+
+- [ ] Create supabase/test/values.yaml: minimal resource footprint (db.persistence.size=5Gi, replicas=1 for all components, studio disabled, resource limits at 25% of production). Add Helm release 'supabase-test' in namespace supabase-test to helmfile.yaml, needs: [tigera-operator/tigera-operator, vault/vault]. Create network-policies/supabase-test-hardened.yaml mirroring supabase-staging-hardened.yaml.
+      `/receptor-infra/supabase/test/values.yaml`
+- [ ] Create Vault KV paths for test environment credentials (secret/supabase/test/*) and corresponding VaultStaticSecret CRD at supabase/test/vso-secrets.yaml. Add sa-supabase ServiceAccount to supabase-test namespace in rbac/serviceaccounts.yaml. Add matching VaultAuth CRD entry to vault/vso-supabase-auth.yaml.
+      `/receptor-infra/supabase/test/vso-secrets.yaml`
+- [ ] Evaluate whether ephemeral per-PR Supabase instances are feasible given single-node cluster resource constraints. If not, document the decision in docs/adr/ADR-008-supabase-environments.md and use the static supabase-test namespace as the shared test target. Update supabase-receptor CI to point integration tests at supabase-test (not supabase-staging).
+      `/receptor-infra/docs/adr/ADR-008-supabase-environments.md`
+
 ## 🟡 Medium
 
 ### IAC-02: azure/backup-storage-account.parameters.json has three discrepancies from live state: (1) storageAccountName: &#60;SET_ME&#62; v
@@ -96,7 +133,7 @@ Affects: `receptor-infra` — azure
 - [ ] After Terraform import of the storage account is confirmed (IAC-01-T4/T5), delete the azure/ directory from receptor-infra ('git rm -r azure/'). Update README.md to remove the ARM template reference and replace with a pointer to terraform/. Commit on a feature branch.
       `/receptor-infra/azure/backup-storage-account.parameters.json`
 
-### IAC-04: No drift detection exists. The SKU discrepancy (Standard_LRS in ARM vs Standard_RAGRS live) and location discrepancy (au
+### IAC-04: No drift detection exists. The SKU discrepancy (Standard_LRS in ARM vs Standard_RAGRS live) and location discrepancy wer
 
 Affects: `receptor-infra` — azure
 
@@ -129,18 +166,36 @@ Affects: `receptor-infra` — vault
 Affects: `receptor-infra` — azure
 
 
-- [ ] Add a rotation_policy block to the azurerm_key_vault_key resource in terraform/modules/key-vault/: automatic rotation with time_after_creation='P1Y' (rotate annually), notify='P30D' (Vault team notified 30 days before). Apply via terraform-apply.yml (Phase 5). Confirm via 'az keyvault key rotation-policy show --vault-name K3sUnlock --name vault-unseal' after apply. NOTE: key rotation changes the key version — Vault auto-unseal uses wrapKey/unwrapKey which is version-agnostic, so rotation is safe.
+- [ ] Add a rotation_policy block to the azurerm_key_vault_key resource in terraform/modules/key-vault/: time_after_creation='P1Y' (rotate annually), notify='P30D'. Apply via terraform-apply.yml (Phase 5). Confirm via 'az keyvault key rotation-policy show --vault-name K3sUnlock --name vault-unseal' after apply.
       `/receptor-infra/terraform/modules/key-vault/main.tf`
 
-### SEC-04: Storage account k3sbackups71a475f1dae6 has allowSharedKeyAccess=true with a keyExpirationPeriodInDays=60 policy (confirm
+### SEC-04: Storage account k3sbackups71a475f1dae6 has allowSharedKeyAccess=true with keyExpirationPeriodInDays=60 (confirmed via az
 
 Affects: `receptor-infra` — azure
 
 
-- [ ] In terraform/backend.tf, set use_azuread_auth=true on the azurerm backend block. Grant 'Storage Blob Data Contributor' role to the Terraform CI identity on the tfstate container only: 'az role assignment create --role "Storage Blob Data Contributor" --assignee &#60;ci-identity-object-id&#62; --scope /subscriptions/303d0b34-0b31-4302-a133-f1bd1e61f4b7/resourceGroups/Receptor/providers/Microsoft.Storage/storageAccounts/k3sbackups71a475f1dae6/blobServices/default/containers/tfstate'. Verify 'terraform init' and 'terraform plan' succeed with AD auth before proceeding.
+- [ ] In terraform/backend.tf, set use_azuread_auth=true on the azurerm backend block. Grant 'Storage Blob Data Contributor' role to the Terraform CI identity on the tfstate container only: 'az role assignment create --role "Storage Blob Data Contributor" --assignee &#60;ci-identity-object-id&#62; --scope /subscriptions/303d0b34-0b31-4302-a133-f1bd1e61f4b7/resourceGroups/Receptor/providers/Microsoft.Storage/storageAccounts/k3sbackups71a475f1dae6/blobServices/default/containers/tfstate'. Verify 'terraform init' and 'terraform plan' succeed before proceeding.
       `/receptor-infra/terraform/backend.tf`
-- [ ] Pre-flight: audit all consumers of the receptor-backups container (backup scripts in supabase-receptor or any other repo) to confirm they use Azure AD auth or SAS tokens (not shared key). Only after all consumers confirmed: set azurerm_storage_account &#123; shared_access_key_enabled = false &#125; in Terraform and apply via CI. Do NOT skip this pre-flight — disabling shared key access without auditing consumers will break backup jobs.
+- [ ] Pre-flight: audit all consumers of the receptor-backups container (backup scripts in supabase-receptor or other repos) to confirm they use Azure AD auth or SAS tokens (not shared key). Only after all consumers confirmed: set azurerm_storage_account &#123; shared_access_key_enabled = false &#125; in Terraform and apply via CI. Do NOT skip this pre-flight.
       `/receptor-infra/terraform/modules/backup-storage/main.tf`
+
+### KUBE-03: Neither supabase/production/values.yaml nor supabase/staging/values.yaml declares podSecurityContext or containerSecurit
+
+Affects: `receptor-infra` — supabase
+
+
+- [ ] Audit each component's default securityContext: 'helm template supabase supabase/supabase -f supabase/production/values.yaml | grep -A5 securityContext'. For components where chart defaults allow root or privilege escalation, add overrides in values.yaml: runAsNonRoot=true, allowPrivilegeEscalation=false, readOnlyRootFilesystem=true (where compatible), capabilities.drop=[ALL]. Document components that require root in docs/adr/ADR-008-supabase-environments.md with justification.
+      `/receptor-infra/supabase/production/values.yaml`
+
+### KUBE-04: Falco (runtime security monitoring) is commented out in helmfile.yaml with no explanation. The falco.yaml values file an
+
+Affects: `receptor-infra` — supabase
+
+
+- [ ] Investigate why Falco was commented out: check for kernel module conflicts on the Hyper-V VM (ebpf probe vs kernel headers). If kernel issues, switch to Falco eBPF probe mode (falco.engine.kind=ebpf in values/falco.yaml). Re-enable the Falco Helm release in helmfile.yaml. Set alert output to Slack via existing Vault KV webhook credential.
+      `/receptor-infra/helmfile.yaml`
+- [ ] Add custom Falco rules targeting the supabase namespace: alert on shell spawned in postgres container, unexpected outbound connections from auth or rest components, new binary execution in kong. Store in falco/custom-rules.yaml, reference from values/falco.yaml.
+      `/receptor-infra/falco/custom-rules.yaml`
 
 ## 🟢 Low
 
@@ -162,11 +217,12 @@ Affects: `receptor-infra` — azure
 
 | Phase | Finding IDs | Rationale |
 | :---- | :---------- | :-------- |
-| 1 | SEC-02, STORE-01, CI-02 | Before any Terraform or CI work: (1) VSO-manage vault-azure-kms or migrate to Workload Identity Federation (SEC-02, STORE-01); (2) create Vault JWT role and KV path for Terraform CI credentials (CI-02). All are prerequisites for subsequent phases. |
-| 2 | IAC-01, IAC-03 | Create tfstate container, write Terraform modules for Key Vault and storage account using confirmed live identifiers, run terraform import, confirm zero-drift plan. IAC-03 resolved as part of IAC-01-T3. |
-| 3 | CI-01, IAC-02 | Implement terraform-plan.yml (PR gate) and terraform-apply.yml (merge-to-main). After apply workflow proven, delete the azure/ ARM directory (IAC-02). |
-| 4 | SEC-04 | Configure use_azuread_auth=true on Terraform backend (SEC-04-T1). After consumer pre-flight audit confirms all callers use AD auth, disable allowSharedKeyAccess (SEC-04-T2). Must be after Phase 3 (CI workflow proven). |
-| 5 | SEC-01, SEC-03, IAC-04, ARM-01 | Apply KV network ACL restriction (SEC-01) and key rotation policy (SEC-03) via the apply workflow. Add weekly drift detection (IAC-04). Confirm ARM-01 retirement from Phase 3. |
+| 1 | SEC-02, STORE-01, CI-02 | Before any Terraform or CI work: VSO-manage vault-azure-kms or migrate to Workload Identity Federation (SEC-02, STORE-01); create Vault JWT role and KV path for Terraform CI credentials (CI-02). |
+| 2 | IAC-01, IAC-03 | Create tfstate container, write Terraform modules for Key Vault and storage account, run terraform import, confirm zero-drift plan. |
+| 3 | CI-01, IAC-02 | Implement terraform-plan.yml and terraform-apply.yml. Delete azure/ ARM directory after apply workflow proven. |
+| 4 | SEC-04 | Configure use_azuread_auth=true on Terraform backend. After consumer pre-flight audit, disable allowSharedKeyAccess. |
+| 5 | SEC-01, SEC-03, IAC-04, ARM-01 | Apply KV network ACL restriction and key rotation policy via the apply workflow. Add weekly drift detection. Confirm ARM-01 retirement. |
+| 6 | KUBE-01, KUBE-02, ENV-01, KUBE-03, KUBE-04 | Address supabase-kubernetes gaps in priority order: (1) K8S-01 VSO secret injection — blocking for production functionality; (2) K8S-02 resource limits — blocking for cluster stability; (3) ENV-01 test environment — required for CI isolation; (4) K8S-03 pod security contexts — hardening; (5) K8S-04 Falco — runtime monitoring. K8S-01 and K8S-02 may be implemented concurrently. |
 
 
 ---
@@ -175,16 +231,21 @@ Affects: `receptor-infra` — azure
 
 | Finding ID | Area | File | Category | Severity |
 | :--------- | :--- | :--- | :------- | :------- |
+| KUBE-01 | supabase | `vso-secrets.yaml` | Security | 🔴 Critical |
 | SEC-02 | azure | `vault.yaml` | Security | 🔴 Critical |
 | IAC-01 | azure | `main.tf` | Process Gap | 🟠 High |
 | IAC-03 | azure | `main.tf` | Process Gap | 🟠 High |
 | SEC-01 | azure | `main.tf` | Security | 🟠 High |
 | STORE-01 | vault | `vso-azure-kms-secret.yaml` | Process Gap | 🟠 High |
+| KUBE-02 | supabase | `values.yaml` | Security | 🟠 High |
+| ENV-01 | supabase | `values.yaml` | Process Gap | 🟠 High |
 | IAC-02 | azure | `backup-storage-account.parameters.json` | Tech Debt | 🟡 Medium |
 | IAC-04 | azure | `terraform-drift.yml` | Process Gap | 🟡 Medium |
 | CI-01 | .github/workflows | `terraform-plan.yml` | Process Gap | 🟡 Medium |
 | CI-02 | vault | `vault-policies.md` | Process Gap | 🟡 Medium |
 | SEC-03 | azure | `main.tf` | Security | 🟡 Medium |
 | SEC-04 | azure | `backend.tf` | Security | 🟡 Medium |
+| KUBE-03 | supabase | `values.yaml` | Security | 🟡 Medium |
+| KUBE-04 | supabase | `helmfile.yaml` | Process Gap | 🟡 Medium |
 | ARM-01 | azure | `backup-storage-account.parameters.json` | Tech Debt | 🟢 Low |
 

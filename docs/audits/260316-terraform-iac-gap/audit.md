@@ -9,7 +9,14 @@
 
 ## Executive Summary
 
-The audit examined the `receptor-infra` repository and live Azure state for Infrastructure-as-Code coverage of Azure resources underpinning the Receptor k3s cluster. Twelve findings were identified: 1 Critical, 4 High, 5 Medium, and 1 Low. Live `az` CLI introspection confirmed actual resource configuration and surfaced discrepancies not visible from the repository alone: the auto-unseal identity is a service principal (`vault-k3s-unseal`) whose client secret is injected into Vault pods via a manually-created Kubernetes secret (`vault-azure-kms`) with no VSO management (found by reading `values/vault.yaml`); the live storage account SKU is `Standard_RAGRS` (geo-redundant) rather than `Standard_LRS` as specified in the ARM template, confirming the template never matched live state; both Azure resources have public network access enabled; the unseal key has no rotation policy; and `allowSharedKeyAccess` is enabled on the backup storage account. No Terraform directory, state file, or CI-gated apply workflow exists.
+The audit examined the `receptor-infra` repository, live Azure state, and the supabase-kubernetes Helm releases for Infrastructure-as-Code and production-readiness coverage. Seventeen findings were identified: 2 Critical, 6 High, 8 Medium, and 1 Low. Live `az` and `gh` CLI introspection surfaced discrepancies not visible from the repository alone:
+
+- **KUBE-01 (Critical):** `supabase/production/values.yaml` contains unresolved shell placeholders (`${POSTGRES_PASSWORD}`, `${JWT_SECRET}`) — not injected by Helm or VSO. Production Supabase is either non-functional or running with empty credentials.
+- **SEC-02 (Critical):** Vault auto-unseal uses a service principal (`vault-k3s-unseal`) whose client secret is in a manually-created k8s Secret `vault-azure-kms` with no VSO sync (STORE-01). Workload Identity Federation is the preferred resolution.
+- No Terraform, no state file, no CI-gated apply workflow exists for Azure resources.
+- No resource limits declared for any Supabase component on a single-node cluster.
+- No test/ephemeral environment for Supabase — integration tests hit staging.
+- Falco runtime monitoring is commented out in helmfile.yaml.
 
 | Repository / Area | Coverage | Issues Found | Overall |
 | -------------------------------- | -------- | ------------ | ------------- |
@@ -18,6 +25,10 @@ The audit examined the `receptor-infra` repository and live Azure state for Infr
 | Azure Key Vault (`K3sUnlock`) | ⚠️ | 3 | Security gaps |
 | Azure Storage (`k3sbackups71a475f1dae6`) | ⚠️ | 2 | Config drift + security |
 | Auto-unseal identity + k8s secret | ❌ | 2 | Critical gap |
+| Supabase production (namespace `supabase`) | ❌ | 3 | Critical — not prod-ready |
+| Supabase staging (namespace `supabase-staging`) | ⚠️ | 2 | Partial |
+| Supabase runtime security (Falco) | ❌ | 1 | Disabled |
+| Multi-environment coverage | ❌ | 1 | No test env |
 
 ---
 
@@ -144,15 +155,20 @@ The audit examined the `receptor-infra` repository and live Azure state for Infr
 
 | Finding ID | Repository / Area | File / Resource | Category | Severity |
 | ---------- | ----------------- | --------------- | -------- | -------- |
+| KUBE-01 | `receptor-infra` — supabase | `supabase/production/values.yaml` — unresolved `${...}` placeholders | Security | 🔴 Critical |
 | SEC-02 | Azure / `vault-k3s-unseal` + k8s `vault-azure-kms` | `values/vault.yaml` + App Registration | Security | 🔴 Critical |
 | IAC-01 | `receptor-infra` — Azure IaC | *(absent)* | Process Gap | 🔴 High |
 | IAC-03 | `receptor-infra` — Key Vault | *(absent)* | Process Gap | 🔴 High |
 | SEC-01 | Azure / `K3sUnlock` | Key Vault network ACLs | Security | 🔴 High |
-| STORE-01 | `receptor-infra` — k8s / vault | `vault/` — `vault-azure-kms` k8s secret unmanaged | Process Gap | 🔴 High |
+| STORE-01 | `receptor-infra` — k8s / vault | `vault-azure-kms` k8s secret unmanaged | Process Gap | 🔴 High |
+| KUBE-02 | `receptor-infra` — supabase | `supabase/*/values.yaml` — no resource limits | Security | 🔴 High |
+| ENV-01 | `receptor-infra` — supabase | *(absent)* — no test environment | Process Gap | 🔴 High |
+| IAC-02 | `receptor-infra` — ARM | `azure/backup-storage-account.parameters.json` | Tech Debt | 🟠 Medium |
 | IAC-04 | `receptor-infra` — Azure IaC | *(absent)* | Process Gap | 🟠 Medium |
 | CI-01 | `receptor-infra` — CI | *(absent)* | Process Gap | 🟠 Medium |
 | CI-02 | `receptor-infra` — CI / Vault | `.github/workflows/cluster-sync.yml` | Process Gap | 🟠 Medium |
-| IAC-02 | `receptor-infra` — ARM | `azure/backup-storage-account.parameters.json` | Tech Debt | 🟠 Medium |
 | SEC-03 | Azure / `K3sUnlock` | Unseal key `vault-unseal` — no rotation policy | Security | 🟠 Medium |
 | SEC-04 | Azure / `k3sbackups71a475f1dae6` | `allowSharedKeyAccess=true` | Security | 🟠 Medium |
+| KUBE-03 | `receptor-infra` — supabase | `supabase/*/values.yaml` — no pod security contexts | Security | 🟠 Medium |
+| KUBE-04 | `receptor-infra` — supabase | `helmfile.yaml` — Falco commented out | Process Gap | 🟠 Medium |
 | ARM-01 | `receptor-infra` — ARM | `azure/backup-storage-account.parameters.json` | Tech Debt | 🟡 Low |

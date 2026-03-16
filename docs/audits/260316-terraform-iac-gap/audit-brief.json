@@ -3,25 +3,31 @@
   "auditSlug": "260316-terraform-iac-gap",
   "status": "drafting",
   "nextAction": "implement",
-  "openTaskCount": 20,
-  "latestHandover": "Audit fully enriched with live az CLI and gh CLI evidence (2026-03-16). 12 findings: 1C/4H/5M/1L. Key context: vault.yaml injects AZURE_CLIENT_SECRET from k8s secret vault-azure-kms (NOT plaintext values) but vault-azure-kms has no VSO sync (STORE-01). Unseal key vault-unseal has rotationPolicy=null (SEC-03). allowSharedKeyAccess=true on storage account (SEC-04). All live Azure IDs embedded in recommendations.json tasks. Phase 1 must start with SEC-02 Workload Identity Federation eval + STORE-01 VSO-manage before any Terraform work. Supabase row: review_due_date 2026-06-16.",
+  "openTaskCount": 30,
+  "latestHandover": "Audit scope expanded to include supabase-kubernetes production readiness. 17 findings total (2C/6H/8M/1L). Critical additions: KUBE-01 (production values.yaml has unresolved ${POSTGRES_PASSWORD} / ${JWT_SECRET} placeholders — Supabase non-functional in production), KUBE-02 (no resource limits — single-node cluster risk), ENV-01 (no test environment — integration tests hit staging). Also added: KUBE-03 (no pod security contexts), KUBE-04 (Falco commented out). Finding IDs use KUBE/ENV prefix (schema requires ^[A-Z]+-[0-9]{2}$). Phase 6 added for supabase-kubernetes production readiness. Implementation order: Phase 1 (SEC-02/STORE-01 credential safety) → Phase 2 (Terraform) → Phase 3 (CI) → Phase 4 (storage AD auth) → Phase 5 (Azure hardening) → Phase 6 (Supabase readiness, start with KUBE-01 + KUBE-02 concurrently).",
   "sessionHistory": [
     {
       "session": 1,
       "date": "2026-03-16",
-      "summary": "Initial audit. Identified 7 findings from receptor-infra repo inspection. Created feature branch, wrote audit.md and recommendations.json.",
+      "summary": "Initial audit. 7 findings from receptor-infra repo inspection. Feature branch created, audit.md and recommendations.json written.",
       "completedTasks": []
     },
     {
       "session": 2,
       "date": "2026-03-16",
-      "summary": "Enriched with live az CLI data. Added SEC-01 (KV network ACLs) and SEC-02 (SP client secret). Confirmed all resource identifiers. Discovered ARM template has 3 discrepancies from live state. Upgraded SEC-02 to Critical.",
+      "summary": "Enriched with live az CLI data. Added SEC-01 (KV network ACLs) and SEC-02 (SP client secret). Confirmed all resource identifiers. 3 ARM template discrepancies found. SEC-02 upgraded to Critical.",
       "completedTasks": []
     },
     {
       "session": 3,
       "date": "2026-03-16",
-      "summary": "Iterative improvement round 1. Read values/vault.yaml via gh CLI — confirmed AZURE_CLIENT_SECRET injected from vault-azure-kms k8s secret (NOT plaintext). vault-azure-kms has no VSO sync (STORE-01, new High finding). Confirmed unseal key rotationPolicy=null (SEC-03, new Medium). Confirmed allowSharedKeyAccess=true (SEC-04, new Medium, with robust two-step remediation requiring consumer pre-flight audit). Set Supabase review_due_date to 2026-06-16. Total: 12 findings.",
+      "summary": "Iterative improvement round 1. Read values/vault.yaml — AZURE_CLIENT_SECRET in vault-azure-kms k8s secret (not plaintext). Added STORE-01 (no VSO sync), SEC-03 (key rotation), SEC-04 (shared key access). Set Supabase review_due_date 2026-06-16. 12 findings.",
+      "completedTasks": []
+    },
+    {
+      "session": 4,
+      "date": "2026-03-16",
+      "summary": "Expanded scope to supabase-kubernetes. Read helmfile.yaml (supabase/supabase v0.5.1 for prod+staging). Found KUBE-01 (critical — unresolved ${} placeholders in prod values), KUBE-02 (no resource limits), ENV-01 (no test environment), KUBE-03 (no pod security contexts), KUBE-04 (Falco disabled). 17 findings total. 6-phase implementation plan.",
       "completedTasks": []
     }
   ]
