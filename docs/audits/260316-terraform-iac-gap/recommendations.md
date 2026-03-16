@@ -378,17 +378,3 @@ Affects: `receptor-infra` — azure
 | LIFE-07 | next.config.ts | `next.config.ts` | Security | 🟡 Medium |
 | ARM-01 | azure | `backup-storage-account.parameters.json` | Tech Debt | 🟢 Low |
 
-
----
-
-## Session Close — 2026-03-16
-
-**Completed:** IAC-01-T1, IAC-01-T2, IAC-01-T3, IAC-01-T4, IAC-01-T5, IAC-03-T1 (Phase 2 — Terraform Modules and State Bootstrap)
-
-**Remaining:** CI-01, IAC-02 (Phase 3 — receptor-infra); SEC-04 (Phase 4); SEC-01, SEC-03, IAC-04, ARM-01 (Phase 5); KUBE-01, KUBE-02, ENV-01, KUBE-03, KUBE-04 (Phase 6 — supabase-kubernetes); NET-01, ARCH-01, CI-03, SPLIT-01, RBAC-01 (Phase 7 — supabase-receptor); LIFE-01 through LIFE-07 (Phase 8 — frontend/backend lifecycle)
-
-**Blocked:** None
-
-**PR order note:** receptor-infra changes (Terraform modules) have no ordering dependency on other repos. Phase 3 (CI-01, IAC-02) adds CI workflows to receptor-infra and can proceed independently.
-
-**Brief for next agent:** Phase 2 is complete. The `terraform/` directory now has: root files (`providers.tf` with `use_oidc=true`, `backend.tf` pointing to `k3sbackups71a475f1dae6/tfstate`, `variables.tf`, `outputs.tf`, `main.tf`), `modules/key-vault/` (K3sUnlock KV + vault-unseal RSA key + 3 access policies for admin, unseal SP, and tf-ci), `modules/backup-storage/` (k3sbackups71a475f1dae6 RAGRS + receptor-backups container), and `BOOTSTRAP.md` (complete bootstrap runbook with import commands and zero-drift plan verification table). IAC-03 resolved as part of IAC-01-T3. Terraform CLI is not installed in the local environment — `terraform validate` / `terraform fmt` cannot be run locally; CI workflow (Phase 3, CI-01) will be the runtime validation gate. Phase 3 (CI-01, IAC-02): create `.github/workflows/terraform-plan.yml` and `terraform-apply.yml` in receptor-infra, then delete `azure/` ARM directory.
