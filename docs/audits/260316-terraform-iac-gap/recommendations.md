@@ -44,12 +44,15 @@ Do not edit it directly — edit the JSON source and re-run
 Affects: `receptor-infra` — supabase
 
 
-- [ ] Store all Supabase secrets in Vault KV at: secret/supabase/production/&#123;postgres-password,jwt-secret,anon-key,service-role-key,dashboard-password&#125; and secret/supabase/staging/&#123;...&#125;. Create VaultStaticSecret CRDs at supabase/production/vso-secrets.yaml and supabase/staging/vso-secrets.yaml following the pattern of vault/vso-github-app-secret.yaml. Each CRD syncs one Vault KV path into a k8s Secret in the respective namespace (supabase / supabase-staging). refreshAfter: 1h.
+- [x] Store all Supabase secrets in Vault KV at: secret/supabase/production/&#123;postgres-password,jwt-secret,anon-key,service-role-key,dashboard-password&#125; and secret/supabase/staging/&#123;...&#125;. Create VaultStaticSecret CRDs at supabase/production/vso-secrets.yaml and supabase/staging/vso-secrets.yaml following the pattern of vault/vso-github-app-secret.yaml. Each CRD syncs one Vault KV path into a k8s Secret in the respective namespace (supabase / supabase-staging). refreshAfter: 1h.
       `/receptor-infra/supabase/production/vso-secrets.yaml`
-- [ ] Update supabase/production/values.yaml and supabase/staging/values.yaml to reference the VSO-synced k8s Secret via the chart's existingSecret pattern or direct envFrom.secretRef. Remove all $&#123;...&#125; placeholder strings. Verify with 'helm template supabase supabase/supabase -f supabase/production/values.yaml | grep -c "\$&#123;"' returns 0.
+      _(Completed: 2026-03-16T23:03:13Z)_
+- [x] Update supabase/production/values.yaml and supabase/staging/values.yaml to reference the VSO-synced k8s Secret via the chart's existingSecret pattern or direct envFrom.secretRef. Remove all $&#123;...&#125; placeholder strings. Verify with 'helm template supabase supabase/supabase -f supabase/production/values.yaml | grep -c "\$&#123;"' returns 0.
       `/receptor-infra/supabase/production/values.yaml`
-- [ ] Create a VaultAuth CRD for the supabase namespace (vault/vso-supabase-auth.yaml) following the pattern of vault/vso-vault-auth.yaml. The Vault role for supabase must have read access to secret/data/supabase/production/* and be bound to sa-supabase in namespace supabase. Equivalent role and CRD for staging (secret/data/supabase/staging/*, sa-supabase in supabase-staging).
+      _(Completed: 2026-03-16T23:03:22Z)_
+- [x] Create a VaultAuth CRD for the supabase namespace (vault/vso-supabase-auth.yaml) following the pattern of vault/vso-vault-auth.yaml. The Vault role for supabase must have read access to secret/data/supabase/production/* and be bound to sa-supabase in namespace supabase. Equivalent role and CRD for staging (secret/data/supabase/staging/*, sa-supabase in supabase-staging).
       `/receptor-infra/vault/vso-supabase-auth.yaml`
+      _(Completed: 2026-03-16T23:03:24Z)_
 
 ### SEC-02: The auto-unseal identity for HashiCorp Vault is an App Registration service principal ('vault-k3s-unseal', appId: aad24e
 
@@ -130,10 +133,12 @@ Affects: `receptor-infra` — vault
 Affects: `receptor-infra` — supabase
 
 
-- [ ] Add resource requests and limits for all enabled Supabase components in supabase/production/values.yaml. Baseline values (tune after observing real usage with 'kubectl top pods -n supabase'): db: requests cpu=250m mem=512Mi limits cpu=1000m mem=2Gi; studio: requests cpu=100m mem=256Mi limits cpu=500m mem=512Mi; kong: requests cpu=100m mem=256Mi limits cpu=500m mem=512Mi; auth/rest/meta: requests cpu=50m mem=128Mi limits cpu=250m mem=256Mi; realtime: requests cpu=100m mem=256Mi limits cpu=500m mem=512Mi.
+- [x] Add resource requests and limits for all enabled Supabase components in supabase/production/values.yaml. Baseline values (tune after observing real usage with 'kubectl top pods -n supabase'): db: requests cpu=250m mem=512Mi limits cpu=1000m mem=2Gi; studio: requests cpu=100m mem=256Mi limits cpu=500m mem=512Mi; kong: requests cpu=100m mem=256Mi limits cpu=500m mem=512Mi; auth/rest/meta: requests cpu=50m mem=128Mi limits cpu=250m mem=256Mi; realtime: requests cpu=100m mem=256Mi limits cpu=500m mem=512Mi.
       `/receptor-infra/supabase/production/values.yaml`
-- [ ] Add proportionally smaller resource limits for supabase/staging/values.yaml (50% of production values). Add a ResourceQuota manifest to the supabase-staging namespace capping total CPU and memory to prevent staging from impacting production workloads on the same single-node cluster.
+      _(Completed: 2026-03-16T23:03:25Z)_
+- [x] Add proportionally smaller resource limits for supabase/staging/values.yaml (50% of production values). Add a ResourceQuota manifest to the supabase-staging namespace capping total CPU and memory to prevent staging from impacting production workloads on the same single-node cluster.
       `/receptor-infra/supabase/staging/values.yaml`
+      _(Completed: 2026-03-16T23:03:25Z)_
 
 ### ENV-01: No testing/ephemeral environment exists for supabase-kubernetes. helmfile.yaml declares only 'supabase' (production, nam
 
@@ -386,34 +391,12 @@ Affects: `receptor-infra` — azure
 | LIFE-07 | next.config.ts | `next.config.ts` | Security | 🟡 Medium |
 | ARM-01 | azure | `backup-storage-account.parameters.json` | Tech Debt | 🟢 Low |
 
+---
 
-## Session Close — 2026-03-16
+## Session Close — 2026-03-17
 
-**Completed:** STORE-01-T2, SEC-04-T1 (no-ops — already implemented), SEC-03-T1 (key rotation policy), IAC-04-T1 (drift detection workflow). Findings STORE-01, SEC-03, IAC-04 now fully complete.
-
-**Remaining:** 27 open tasks — Phase 6 (KUBE-01, KUBE-02, ENV-01, KUBE-03, KUBE-04 in `receptor-infra`), Phase 7 (NET-01, ARCH-01, CI-03, SPLIT-01, RBAC-01 in `supabase-receptor`), Phase 8 (LIFE-01–07 across lifecycle repos).
-
-**Blocked:** SEC-01-T1 — Hyper-V host has a dynamic public egress IP; cannot add a static `network_acls` block until a static egress IP or NAT gateway is provisioned. SEC-04-T2 — pre-flight consumer audit of backup scripts required before disabling `allowSharedKeyAccess`.
-
-**PR order note:** No PRs raised this session. When Phases 6–7 (receptor-infra, supabase-receptor) are complete, merge receptor-infra before supabase-receptor to ensure the VaultAuth and VSO CRDs are applied before helmfile references them.
-
-**Brief for next agent:** Start Phase 6 in `receptor-infra`. The supabase/ directory contains production and staging values files. KUBE-01 is the highest priority (Critical) — production values.yaml has literal `${POSTGRES_PASSWORD}` placeholders that must be replaced with VSO-synced secrets. Read `supabase/production/values.yaml` and the VaultAuth CRD pattern from `vault/vso-vault-auth.yaml` before writing KUBE-01-T3. KUBE-02 (resource limits) and KUBE-01 can be implemented concurrently in the same commit. Agent Clarifications: `supabase-community/supabase` chart v0.5.1 uses the `existingSecret` pattern — confirm chart README before implementing KUBE-01-T2.
-
-## Session Close — 2026-03-16 (Session 12)
-
-**Completed:** No formal audit tasks this session. All work was operational cluster stabilisation.
-
-**Operational work delivered:**
-- `cluster-sync` helmfile workflow fully operational — vault CLI replaced with `curl` for Slack notifications (PR #1, merged to `receptor-infra` main)
-- Resolved stuck Helm releases: `cert-manager` (pending-install → deployed), `kube-prometheus-stack` (corrupted v2 secret deleted), `vault` (stale labels patched)
-- All 7 ARC runner listeners Running — `planner-frontend` AutoscalingListener regenerated
-- k3s cluster expanded to 5 nodes on new physical host (HYPERV-2): `receptor-ctrl-10` (HA control-plane, 10.10.0.10, 6 vCPU/8GB) and `receptor-work-10` (worker, 10.10.0.20, 6 vCPU/8GB)
-- `receptor-work-01` kernel fixed from `6.8.0-101-generic` → `6.17.0-1008-azure` (all 5 nodes now on linux-azure)
-- 15 ghost `Unknown` pods cleaned across monitoring, supabase, supabase-staging, traefik, calico-apiserver
-- Cluster infrastructure documented in `doco-common-bond/docs/engineering/cluster-infrastructure.md`
-
-**Remaining:** 27 open tasks — Phase 6 (KUBE-01, KUBE-02, ENV-01, KUBE-03, KUBE-04 in `receptor-infra`), Phase 7 (NET-01, ARCH-01, CI-03, SPLIT-01, RBAC-01 in `supabase-receptor`), Phase 8 (LIFE-01–07 across lifecycle repos).
-
-**Blocked:** SEC-01-T1 (dynamic egress IP), SEC-04-T2 (pre-flight consumer audit required).
-
-**Brief for next agent:** Cluster is stable and ready for Phase 6. Start with KUBE-01 (Critical — `${POSTGRES_PASSWORD}` placeholders in `supabase/production/values.yaml` must be replaced with VSO-synced secrets). Read `vault/vso-vault-auth.yaml` for the VaultAuth CRD pattern. KUBE-02 (resource limits) can be implemented in the same commit. The cluster now has 3 workers (work-01: 4 vCPU/4GB, work-02: 2 vCPU/4GB, work-10: 6 vCPU/8GB) — resource limit budgets should reflect actual workloads.
+**Completed:** KUBE-01-T1, KUBE-01-T2, KUBE-01-T3, KUBE-02-T1, KUBE-02-T2
+**Remaining:** SEC-01-T1 (BLOCKED — receptor-infra), SEC-04-T2 (receptor-infra), ENV-01-T1/T2/T3 (receptor-infra), KUBE-03-T1 (receptor-infra), KUBE-04-T1/T2 (receptor-infra), ARCH-01-T1 (supabase-receptor), NET-01-T1 (supabase-receptor), SPLIT-01-T1/T2 (supabase-receptor), CI-03-T1 (supabase-receptor), RBAC-01-T1 (supabase-receptor), LIFE-01-T1/T2 (planner-frontend), LIFE-02-T1 (match-backend), LIFE-03-T1 (receptor-planner), LIFE-04-T1 (planner-frontend), LIFE-05-T1 (planner-frontend), LIFE-06-T1 (receptor-planner), LIFE-07-T1 (planner-frontend)
+**Blocked:** SEC-01-T1 (dynamic Hyper-V egress IP — need static IP or NAT gateway)
+**PR order note:** receptor-infra changes include Vault CRDs that must be applied (kubectl apply) before helmfile sync picks up the new values.yaml secretRef. No cross-repo PR dependency for this session.
+**Brief for next agent:** (1) Side-session changes committed: SSH CIDR fix, 3-node CP docs, vm-provisioning skill. (2) Supabase chart uses `secret.<section>.secretRef` + `secretRefKey` pattern (not `existingSecret`). Values.yaml references `supabase-credentials` k8s Secret in each namespace. (3) User action required before helmfile sync: Vault policies, k8s auth roles, and KV secret seeding — full bootstrap instructions in `vault/vso-supabase-auth.yaml` header comments. (4) Supabase generates JWT secrets at init time; user may need to extract from running cluster or generate new ones (instructions in comments). (5) Next: Phase 6 remainder (ENV-01 test env, KUBE-03 pod security, KUBE-04 Falco) or Phase 7 (supabase-receptor gaps).

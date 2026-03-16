@@ -3,7 +3,7 @@
   "auditSlug": "260316-terraform-iac-gap",
   "title": "Terraform Infrastructure-as-Code Gap Audit",
   "date": "2026-03-16",
-  "scope": "receptor-infra (primary) \u2014 Azure resources: Key Vault K3sUnlock, storage account k3sbackups71a475f1dae6, service principal vault-k3s-unseal; supabase-kubernetes production readiness; CI workflow coverage",
+  "scope": "receptor-infra (primary) — Azure resources: Key Vault K3sUnlock, storage account k3sbackups71a475f1dae6, service principal vault-k3s-unseal; supabase-kubernetes production readiness; CI workflow coverage",
   "auditor": "Ryan Ammendolea",
   "branch": "audit/260316-terraform-iac-gap",
   "findings": [
@@ -14,31 +14,31 @@
       "category": "Security",
       "repo": "receptor-infra",
       "area": "supabase",
-      "description": "supabase/production/values.yaml contains literal shell interpolation placeholders ('${POSTGRES_PASSWORD}', '${JWT_SECRET}') with a comment 'Placeholder for real secrets \u2014 these should be injected via environment or Vault'. These are NOT resolved by Helm or VSO \u2014 they will render as literal strings in the Helm release, meaning Supabase is either failing to start or running with blank/broken credentials. supabase/staging/values.yaml omits secrets entirely. Neither environment has VSO VaultStaticSecret or VaultDynamicSecret CRDs declared for Supabase credential injection. This is the most critical gap for production readiness of supabase-kubernetes.",
+      "description": "supabase/production/values.yaml contains literal shell interpolation placeholders ('${POSTGRES_PASSWORD}', '${JWT_SECRET}') with a comment 'Placeholder for real secrets — these should be injected via environment or Vault'. These are NOT resolved by Helm or VSO — they will render as literal strings in the Helm release, meaning Supabase is either failing to start or running with blank/broken credentials. supabase/staging/values.yaml omits secrets entirely. Neither environment has VSO VaultStaticSecret or VaultDynamicSecret CRDs declared for Supabase credential injection. This is the most critical gap for production readiness of supabase-kubernetes.",
       "tasks": [
         {
           "taskId": "KUBE-01-T1",
-          "status": "open",
+          "status": "complete",
           "description": "Store all Supabase secrets in Vault KV at: secret/supabase/production/{postgres-password,jwt-secret,anon-key,service-role-key,dashboard-password} and secret/supabase/staging/{...}. Create VaultStaticSecret CRDs at supabase/production/vso-secrets.yaml and supabase/staging/vso-secrets.yaml following the pattern of vault/vso-github-app-secret.yaml. Each CRD syncs one Vault KV path into a k8s Secret in the respective namespace (supabase / supabase-staging). refreshAfter: 1h.",
           "targetFile": "/receptor-infra/supabase/production/vso-secrets.yaml",
-          "completedAt": null,
-          "completedBy": null
+          "completedAt": "2026-03-16T23:03:13Z",
+          "completedBy": "53fbcf35-c214-42ae-8beb-742ea5888b6b"
         },
         {
           "taskId": "KUBE-01-T2",
-          "status": "open",
+          "status": "complete",
           "description": "Update supabase/production/values.yaml and supabase/staging/values.yaml to reference the VSO-synced k8s Secret via the chart's existingSecret pattern or direct envFrom.secretRef. Remove all ${...} placeholder strings. Verify with 'helm template supabase supabase/supabase -f supabase/production/values.yaml | grep -c \"\\${\"' returns 0.",
           "targetFile": "/receptor-infra/supabase/production/values.yaml",
-          "completedAt": null,
-          "completedBy": null
+          "completedAt": "2026-03-16T23:03:22Z",
+          "completedBy": "53fbcf35-c214-42ae-8beb-742ea5888b6b"
         },
         {
           "taskId": "KUBE-01-T3",
-          "status": "open",
+          "status": "complete",
           "description": "Create a VaultAuth CRD for the supabase namespace (vault/vso-supabase-auth.yaml) following the pattern of vault/vso-vault-auth.yaml. The Vault role for supabase must have read access to secret/data/supabase/production/* and be bound to sa-supabase in namespace supabase. Equivalent role and CRD for staging (secret/data/supabase/staging/*, sa-supabase in supabase-staging).",
           "targetFile": "/receptor-infra/vault/vso-supabase-auth.yaml",
-          "completedAt": null,
-          "completedBy": null
+          "completedAt": "2026-03-16T23:03:24Z",
+          "completedBy": "53fbcf35-c214-42ae-8beb-742ea5888b6b"
         }
       ],
       "severity_history": []
@@ -50,7 +50,7 @@
       "category": "Security",
       "repo": "receptor-infra",
       "area": "azure",
-      "description": "The auto-unseal identity for HashiCorp Vault is an App Registration service principal ('vault-k3s-unseal', appId: aad24e26-8e10-4751-90ea-fb43bd147250) with a client secret (hint: y3I) expiring 2028-03-12. values/vault.yaml (confirmed via gh CLI) injects AZURE_TENANT_ID, AZURE_CLIENT_ID, and AZURE_CLIENT_SECRET from a Kubernetes Secret named 'vault-azure-kms' via secretKeyRef \u2014 the secret is NOT stored in plaintext in the values file. However, 'vault-azure-kms' was created manually (kubectl create secret) with no VSO sync and no IaC tracking (see STORE-01). The client secret has no automated rotation mechanism. Expiry or revocation would seal the Vault cluster until a human manually creates a new secret and redeploys. Preferred replacement: Azure AD Workload Identity Federation bound to the Vault Kubernetes service account (eliminates the client secret entirely \u2014 no Arc enrollment required for on-premise k3s).",
+      "description": "The auto-unseal identity for HashiCorp Vault is an App Registration service principal ('vault-k3s-unseal', appId: aad24e26-8e10-4751-90ea-fb43bd147250) with a client secret (hint: y3I) expiring 2028-03-12. values/vault.yaml (confirmed via gh CLI) injects AZURE_TENANT_ID, AZURE_CLIENT_ID, and AZURE_CLIENT_SECRET from a Kubernetes Secret named 'vault-azure-kms' via secretKeyRef — the secret is NOT stored in plaintext in the values file. However, 'vault-azure-kms' was created manually (kubectl create secret) with no VSO sync and no IaC tracking (see STORE-01). The client secret has no automated rotation mechanism. Expiry or revocation would seal the Vault cluster until a human manually creates a new secret and redeploys. Preferred replacement: Azure AD Workload Identity Federation bound to the Vault Kubernetes service account (eliminates the client secret entirely — no Arc enrollment required for on-premise k3s).",
       "tasks": [
         {
           "taskId": "SEC-02-T1",
@@ -107,7 +107,7 @@
         {
           "taskId": "IAC-01-T4",
           "status": "complete",
-          "description": "Write terraform/modules/backup-storage/: azurerm_storage_account (name=k3sbackups71a475f1dae6, account_replication_type=RAGRS \u2014 matching live state not ARM template, min_tls_version=TLS1_2, allow_nested_items_to_be_public=false, account_kind=StorageV2, access_tier=Cool, shared_access_key_enabled=true initially \u2014 see SEC-04 for hardening path). Import: 'terraform import azurerm_storage_account.backup /subscriptions/303d0b34-0b31-4302-a133-f1bd1e61f4b7/resourceGroups/Receptor/providers/Microsoft.Storage/storageAccounts/k3sbackups71a475f1dae6'.",
+          "description": "Write terraform/modules/backup-storage/: azurerm_storage_account (name=k3sbackups71a475f1dae6, account_replication_type=RAGRS — matching live state not ARM template, min_tls_version=TLS1_2, allow_nested_items_to_be_public=false, account_kind=StorageV2, access_tier=Cool, shared_access_key_enabled=true initially — see SEC-04 for hardening path). Import: 'terraform import azurerm_storage_account.backup /subscriptions/303d0b34-0b31-4302-a133-f1bd1e61f4b7/resourceGroups/Receptor/providers/Microsoft.Storage/storageAccounts/k3sbackups71a475f1dae6'.",
           "targetFile": "/receptor-infra/terraform/modules/backup-storage/main.tf",
           "completedAt": "2026-03-16T05:36:52Z",
           "completedBy": "session-9-20260316"
@@ -155,7 +155,7 @@
         {
           "taskId": "SEC-01-T1",
           "status": "open",
-          "description": "BLOCKED: The Hyper-V host uses a dynamic public egress IP \u2014 a static network_acls block cannot be applied until a static public IP or NAT gateway is provisioned for the Hyper-V host. The Terraform module (modules/key-vault/main.tf) has a commented-out placeholder block showing the required network_acls configuration once a static IP is available. Until then, public_network_access_enabled = true. Action required: provision a static egress IP for Hyper-V, then uncomment and populate the network_acls block and reapply via terraform-apply.yml.",
+          "description": "BLOCKED: The Hyper-V host uses a dynamic public egress IP — a static network_acls block cannot be applied until a static public IP or NAT gateway is provisioned for the Hyper-V host. The Terraform module (modules/key-vault/main.tf) has a commented-out placeholder block showing the required network_acls configuration once a static IP is available. Until then, public_network_access_enabled = true. Action required: provision a static egress IP for Hyper-V, then uncomment and populate the network_acls block and reapply via terraform-apply.yml.",
           "targetFile": "/receptor-infra/terraform/modules/key-vault/main.tf",
           "completedAt": null,
           "completedBy": null
@@ -183,7 +183,7 @@
         {
           "taskId": "STORE-01-T2",
           "status": "complete",
-          "description": "If SEC-02 Workload Identity Federation migration is implemented first, vault-azure-kms becomes unnecessary. Delete the k8s secret, remove the AZURE_CLIENT_SECRET extraEnvironmentVar from values/vault.yaml, and skip STORE-01-T1. This is the preferred path \u2014 it eliminates the secret rather than managing its lifecycle.",
+          "description": "If SEC-02 Workload Identity Federation migration is implemented first, vault-azure-kms becomes unnecessary. Delete the k8s secret, remove the AZURE_CLIENT_SECRET extraEnvironmentVar from values/vault.yaml, and skip STORE-01-T1. This is the preferred path — it eliminates the secret rather than managing its lifecycle.",
           "targetFile": "/receptor-infra/values/vault.yaml",
           "completedAt": "2026-03-16T06:04:23Z",
           "completedBy": "325fe71b-754c-4161-9131-67c567a80d64"
@@ -198,23 +198,23 @@
       "category": "Security",
       "repo": "receptor-infra",
       "area": "supabase",
-      "description": "Neither supabase/production/values.yaml nor supabase/staging/values.yaml declares resource requests or limits for any Supabase component (db, studio, kong, auth, rest, realtime, storage, meta). Per kubernetes-specialist skill: 'Deploy to production without resource limits \u2014 MUST NOT DO'. Without limits, a runaway Supabase component can starve Vault or ARC runners on the single-node k3s cluster, disrupting the entire ecosystem. The supabase-kubernetes Helm chart supports per-component resources blocks.",
+      "description": "Neither supabase/production/values.yaml nor supabase/staging/values.yaml declares resource requests or limits for any Supabase component (db, studio, kong, auth, rest, realtime, storage, meta). Per kubernetes-specialist skill: 'Deploy to production without resource limits — MUST NOT DO'. Without limits, a runaway Supabase component can starve Vault or ARC runners on the single-node k3s cluster, disrupting the entire ecosystem. The supabase-kubernetes Helm chart supports per-component resources blocks.",
       "tasks": [
         {
           "taskId": "KUBE-02-T1",
-          "status": "open",
+          "status": "complete",
           "description": "Add resource requests and limits for all enabled Supabase components in supabase/production/values.yaml. Baseline values (tune after observing real usage with 'kubectl top pods -n supabase'): db: requests cpu=250m mem=512Mi limits cpu=1000m mem=2Gi; studio: requests cpu=100m mem=256Mi limits cpu=500m mem=512Mi; kong: requests cpu=100m mem=256Mi limits cpu=500m mem=512Mi; auth/rest/meta: requests cpu=50m mem=128Mi limits cpu=250m mem=256Mi; realtime: requests cpu=100m mem=256Mi limits cpu=500m mem=512Mi.",
           "targetFile": "/receptor-infra/supabase/production/values.yaml",
-          "completedAt": null,
-          "completedBy": null
+          "completedAt": "2026-03-16T23:03:25Z",
+          "completedBy": "53fbcf35-c214-42ae-8beb-742ea5888b6b"
         },
         {
           "taskId": "KUBE-02-T2",
-          "status": "open",
+          "status": "complete",
           "description": "Add proportionally smaller resource limits for supabase/staging/values.yaml (50% of production values). Add a ResourceQuota manifest to the supabase-staging namespace capping total CPU and memory to prevent staging from impacting production workloads on the same single-node cluster.",
           "targetFile": "/receptor-infra/supabase/staging/values.yaml",
-          "completedAt": null,
-          "completedBy": null
+          "completedAt": "2026-03-16T23:03:25Z",
+          "completedBy": "53fbcf35-c214-42ae-8beb-742ea5888b6b"
         }
       ],
       "severity_history": []
@@ -287,7 +287,7 @@
         {
           "taskId": "IAC-04-T1",
           "status": "complete",
-          "description": "Create .github/workflows/terraform-drift.yml: scheduled weekly (cron: '0 2 * * 1'), runs terraform plan -detailed-exitcode on arc-runner-receptor-infra. Exit code 2 (changes detected) fails the job and triggers Slack notification via the existing OIDC\u2192Vault\u2192Slack pattern from cluster-sync.yml. Implement in Phase 5 after apply workflow is proven.",
+          "description": "Create .github/workflows/terraform-drift.yml: scheduled weekly (cron: '0 2 * * 1'), runs terraform plan -detailed-exitcode on arc-runner-receptor-infra. Exit code 2 (changes detected) fails the job and triggers Slack notification via the existing OIDC→Vault→Slack pattern from cluster-sync.yml. Implement in Phase 5 after apply workflow is proven.",
           "targetFile": "/receptor-infra/.github/workflows/terraform-drift.yml",
           "completedAt": "2026-03-16T06:04:39Z",
           "completedBy": "325fe71b-754c-4161-9131-67c567a80d64"
@@ -307,7 +307,7 @@
         {
           "taskId": "CI-01-T1",
           "status": "complete",
-          "description": "Create .github/workflows/terraform-plan.yml: trigger on pull_request (paths: terraform/**). Steps: checkout, setup-terraform, OIDC\u2192Vault JWT exchange (reuse pattern from cluster-sync.yml), retrieve Azure Workload Identity credentials from Vault KV secret/infrastructure/azure-terraform, terraform init (AzureRM backend, use_azuread_auth=true), terraform validate, terraform plan. Post plan output as PR comment. Runner: arc-runner-receptor-infra.",
+          "description": "Create .github/workflows/terraform-plan.yml: trigger on pull_request (paths: terraform/**). Steps: checkout, setup-terraform, OIDC→Vault JWT exchange (reuse pattern from cluster-sync.yml), retrieve Azure Workload Identity credentials from Vault KV secret/infrastructure/azure-terraform, terraform init (AzureRM backend, use_azuread_auth=true), terraform validate, terraform plan. Post plan output as PR comment. Runner: arc-runner-receptor-infra.",
           "targetFile": "/receptor-infra/.github/workflows/terraform-plan.yml",
           "completedAt": "2026-03-16T05:54:41Z",
           "completedBy": "session-10-20260316"
@@ -315,7 +315,7 @@
         {
           "taskId": "CI-01-T2",
           "status": "complete",
-          "description": "Create .github/workflows/terraform-apply.yml: trigger on push to main (paths: terraform/**). Steps identical to plan workflow with final step 'terraform apply -auto-approve'. No AZURE_CLIENT_SECRET in GitHub Secrets \u2014 all credentials from Vault KV via OIDC JWT.",
+          "description": "Create .github/workflows/terraform-apply.yml: trigger on push to main (paths: terraform/**). Steps identical to plan workflow with final step 'terraform apply -auto-approve'. No AZURE_CLIENT_SECRET in GitHub Secrets — all credentials from Vault KV via OIDC JWT.",
           "targetFile": "/receptor-infra/.github/workflows/terraform-apply.yml",
           "completedAt": "2026-03-16T05:54:41Z",
           "completedBy": "session-10-20260316"
@@ -406,7 +406,7 @@
       "category": "Security",
       "repo": "receptor-infra",
       "area": "supabase",
-      "description": "Neither supabase/production/values.yaml nor supabase/staging/values.yaml declares podSecurityContext or containerSecurityContext overrides. By default the supabase-kubernetes Helm chart may run containers as root or with allowPrivilegeEscalation=true. Per kubernetes-specialist skill: 'Run containers as root without justification \u2014 MUST NOT DO'. The PostgreSQL container legitimately requires a specific UID/GID; all other components (studio, kong, auth, rest, realtime) should run non-root.",
+      "description": "Neither supabase/production/values.yaml nor supabase/staging/values.yaml declares podSecurityContext or containerSecurityContext overrides. By default the supabase-kubernetes Helm chart may run containers as root or with allowPrivilegeEscalation=true. Per kubernetes-specialist skill: 'Run containers as root without justification — MUST NOT DO'. The PostgreSQL container legitimately requires a specific UID/GID; all other components (studio, kong, auth, rest, realtime) should run non-root.",
       "tasks": [
         {
           "taskId": "KUBE-03-T1",
@@ -454,7 +454,7 @@
       "category": "Tech Debt",
       "repo": "receptor-infra",
       "area": "azure",
-      "description": "azure/backup-storage-account.parameters.json has three value discrepancies from live state (storageAccountName placeholder, accountType Standard_LRS vs live Standard_RAGRS, location australiaeast vs live australiasoutheast). Superseded by IAC-02 \u2014 tracked here for severity summary completeness.",
+      "description": "azure/backup-storage-account.parameters.json has three value discrepancies from live state (storageAccountName placeholder, accountType Standard_LRS vs live Standard_RAGRS, location australiaeast vs live australiasoutheast). Superseded by IAC-02 — tracked here for severity summary completeness.",
       "tasks": [
         {
           "taskId": "ARM-01-T1",
@@ -474,7 +474,7 @@
       "category": "Process Gap",
       "repo": "supabase-receptor",
       "area": "k3s",
-      "description": "k3s/helmfile.yaml (supabase-receptor) references values files at k3s/values/calico.yaml, k3s/values/cert-manager.yaml, k3s/values/traefik.yaml, k3s/values/vault.yaml, k3s/values/prometheus-stack.yaml, k3s/values/loki.yaml, k3s/values/falco.yaml, and k3s/values/cloudflared.yaml \u2014 but the k3s/values/ directory does not exist on disk. Running 'helmfile sync' from supabase-receptor would fail immediately with file-not-found errors for all 8 chart values files. The helmfile documents the intended chart list and dependency order but cannot be applied as written.",
+      "description": "k3s/helmfile.yaml (supabase-receptor) references values files at k3s/values/calico.yaml, k3s/values/cert-manager.yaml, k3s/values/traefik.yaml, k3s/values/vault.yaml, k3s/values/prometheus-stack.yaml, k3s/values/loki.yaml, k3s/values/falco.yaml, and k3s/values/cloudflared.yaml — but the k3s/values/ directory does not exist on disk. Running 'helmfile sync' from supabase-receptor would fail immediately with file-not-found errors for all 8 chart values files. The helmfile documents the intended chart list and dependency order but cannot be applied as written.",
       "tasks": [
         {
           "taskId": "ARCH-01-T1",
@@ -494,7 +494,7 @@
       "category": "Security",
       "repo": "supabase-receptor",
       "area": "k3s",
-      "description": "The vault namespace NetworkPolicy in k3s/network-policies/network-policies.yaml restricts all egress to DNS only (port 53 to kube-system). However, Vault's Azure Key Vault auto-unseal (SEC-02) requires outbound HTTPS (port 443) to https://k3sunlock.vault.azure.net/ to perform wrapKey/unwrapKey operations. The current egress policy silently blocks every auto-unseal attempt \u2014 Vault will remain sealed after any pod restart. This is a latent risk: the cluster appears healthy until Vault is restarted, at which point the sealed state prevents all VSO secret injection (including KUBE-01).",
+      "description": "The vault namespace NetworkPolicy in k3s/network-policies/network-policies.yaml restricts all egress to DNS only (port 53 to kube-system). However, Vault's Azure Key Vault auto-unseal (SEC-02) requires outbound HTTPS (port 443) to https://k3sunlock.vault.azure.net/ to perform wrapKey/unwrapKey operations. The current egress policy silently blocks every auto-unseal attempt — Vault will remain sealed after any pod restart. This is a latent risk: the cluster appears healthy until Vault is restarted, at which point the sealed state prevents all VSO secret injection (including KUBE-01).",
       "tasks": [
         {
           "taskId": "NET-01-T1",
@@ -514,7 +514,7 @@
       "category": "Architectural Drift",
       "repo": "supabase-receptor",
       "area": "k3s",
-      "description": "The k3s cluster is defined across two separate repos: supabase-receptor/k3s/helmfile.yaml (Calico, cert-manager, Traefik, Vault, Prometheus, Loki, Falco, cloudflared) and receptor-infra/helmfile.yaml (supabase + supabase-staging, VSO CRDs, network policies). There is no top-level umbrella helmfile, no documented apply order, and no CI that validates both helmfiles together. An operator must know to apply supabase-receptor first then receptor-infra, and that Vault from supabase-receptor is a prerequisite for VSO in receptor-infra. The supabase-receptor helm-upgrade-check.yml only scans its own helmfile \u2014 it misses the supabase-community/supabase chart pinned in receptor-infra.",
+      "description": "The k3s cluster is defined across two separate repos: supabase-receptor/k3s/helmfile.yaml (Calico, cert-manager, Traefik, Vault, Prometheus, Loki, Falco, cloudflared) and receptor-infra/helmfile.yaml (supabase + supabase-staging, VSO CRDs, network policies). There is no top-level umbrella helmfile, no documented apply order, and no CI that validates both helmfiles together. An operator must know to apply supabase-receptor first then receptor-infra, and that Vault from supabase-receptor is a prerequisite for VSO in receptor-infra. The supabase-receptor helm-upgrade-check.yml only scans its own helmfile — it misses the supabase-community/supabase chart pinned in receptor-infra.",
       "tasks": [
         {
           "taskId": "SPLIT-01-T1",
@@ -562,7 +562,7 @@
       "category": "Security",
       "repo": "supabase-receptor",
       "area": "k3s",
-      "description": "The ci-namespace-manager ClusterRole (k3s/rbac/serviceaccounts.yaml) grants verbs: ['*'] on secrets, pods, services, configmaps, persistentvolumeclaims, deployments, statefulsets, and replicasets \u2014 cluster-wide. The intended scope is reactor-ci-* namespaces only, but the ClusterRoleBinding makes it cluster-scoped. The inline comment acknowledges that 'a future Kyverno/OPA Gatekeeper admission webhook will enforce the receptor-ci-* prefix programmatically (ADR-007)' \u2014 but no admission controller has been deployed or planned. Until it is, a compromised sa-github-runner has write access to secrets and pods in vault and supabase namespaces.",
+      "description": "The ci-namespace-manager ClusterRole (k3s/rbac/serviceaccounts.yaml) grants verbs: ['*'] on secrets, pods, services, configmaps, persistentvolumeclaims, deployments, statefulsets, and replicasets — cluster-wide. The intended scope is reactor-ci-* namespaces only, but the ClusterRoleBinding makes it cluster-scoped. The inline comment acknowledges that 'a future Kyverno/OPA Gatekeeper admission webhook will enforce the receptor-ci-* prefix programmatically (ADR-007)' — but no admission controller has been deployed or planned. Until it is, a compromised sa-github-runner has write access to secrets and pods in vault and supabase namespaces.",
       "tasks": [
         {
           "taskId": "RBAC-01-T1",
@@ -582,7 +582,7 @@
       "category": "Process Gap",
       "repo": "planner-frontend",
       "area": ".github/workflows",
-      "description": "No deployment workflow exists in any of the three Next.js frontend repositories (planner-frontend, preference-frontend, workforce-frontend). Each has a ci.yml covering lint/unit/integration/build/codegen/e2e \u2014 but there is no deploy.yml, no staging-deploy.yml, and no production-deploy.yml. Merging a PR to main has no deployment consequence; the application is never updated on any environment by any automated mechanism. There are no staging URLs documented, no post-deploy health checks, and no rollback mechanism. The three frontends exist in production limbo: thoroughly tested in CI but never deployed.",
+      "description": "No deployment workflow exists in any of the three Next.js frontend repositories (planner-frontend, preference-frontend, workforce-frontend). Each has a ci.yml covering lint/unit/integration/build/codegen/e2e — but there is no deploy.yml, no staging-deploy.yml, and no production-deploy.yml. Merging a PR to main has no deployment consequence; the application is never updated on any environment by any automated mechanism. There are no staging URLs documented, no post-deploy health checks, and no rollback mechanism. The three frontends exist in production limbo: thoroughly tested in CI but never deployed.",
       "tasks": [
         {
           "taskId": "LIFE-01-T1",
@@ -610,7 +610,7 @@
       "category": "Process Gap",
       "repo": "match-backend",
       "area": ".github/workflows",
-      "description": "match-backend has a Dockerfile and a full CI pipeline (unit + integration tests) but no image build/push workflow and no deployment workflow. The Docker image is never pushed to any container registry (no GHCR or Azure Container Registry config exists). The Dockerfile entrypoint is the allocator CLI \u2014 it is undocumented whether match-backend runs as a persistent HTTP service or a batch job in production. No k8s Deployment, CronJob, or Job manifest exists for match-backend in receptor-infra.",
+      "description": "match-backend has a Dockerfile and a full CI pipeline (unit + integration tests) but no image build/push workflow and no deployment workflow. The Docker image is never pushed to any container registry (no GHCR or Azure Container Registry config exists). The Dockerfile entrypoint is the allocator CLI — it is undocumented whether match-backend runs as a persistent HTTP service or a batch job in production. No k8s Deployment, CronJob, or Job manifest exists for match-backend in receptor-infra.",
       "tasks": [
         {
           "taskId": "LIFE-02-T1",
@@ -630,7 +630,7 @@
       "category": "Process Gap",
       "repo": "receptor-planner",
       "area": ".github/workflows",
-      "description": "receptor-planner CI only runs unit tests. The ci.yml comment defers integration tests indefinitely: 'Integration tests (if added later) live in tests/integration/' \u2014 with no tracking task, unlike match-backend which has BACK-01-T2. receptor-planner also has no Dockerfile, no container image strategy, and no deployment workflow. It is unknown how the planner service is invoked in staging/production \u2014 whether as a long-running process, a cronjob, or an on-demand CLI call from the arc-runner.",
+      "description": "receptor-planner CI only runs unit tests. The ci.yml comment defers integration tests indefinitely: 'Integration tests (if added later) live in tests/integration/' — with no tracking task, unlike match-backend which has BACK-01-T2. receptor-planner also has no Dockerfile, no container image strategy, and no deployment workflow. It is unknown how the planner service is invoked in staging/production — whether as a long-running process, a cronjob, or an on-demand CLI call from the arc-runner.",
       "tasks": [
         {
           "taskId": "LIFE-03-T1",
@@ -650,12 +650,12 @@
       "category": "Process Gap",
       "repo": "planner-frontend",
       "area": "cross-repo",
-      "description": "No rollback procedure exists \u2014 automated or documented \u2014 for any of the five frontend/backend repositories. There are no GitHub Release rollback runbooks, no kubectl rollout undo automations, no pinned image digests in k8s manifests (those do not exist yet per LIFE-01/02/03), and no Alertmanager alert that tracks post-deployment error-rate regression. The only recovery after a bad deployment would be a manual git revert and re-run of a deploy workflow that does not yet exist.",
+      "description": "No rollback procedure exists — automated or documented — for any of the five frontend/backend repositories. There are no GitHub Release rollback runbooks, no kubectl rollout undo automations, no pinned image digests in k8s manifests (those do not exist yet per LIFE-01/02/03), and no Alertmanager alert that tracks post-deployment error-rate regression. The only recovery after a bad deployment would be a manual git revert and re-run of a deploy workflow that does not yet exist.",
       "tasks": [
         {
           "taskId": "LIFE-04-T1",
           "status": "open",
-          "description": "Create docs/operations/rollback-runbook.md covering: (1) frontend rollback \u2014 force-push previous image tag or re-trigger staging-deploy.yml from a previous release tag; (2) backend rollback \u2014 kubectl rollout undo Deployment/<service>; (3) database migration rollback policy \u2014 migrations are forward-only in Supabase, so define the compensating-migration strategy. Add an Alertmanager PrometheusRule that fires a 'DeploymentErrorRateSpike' alert within 5 minutes of deployment if HTTP 5xx rate exceeds baseline. Link rollback runbook from all five repo READMEs.",
+          "description": "Create docs/operations/rollback-runbook.md covering: (1) frontend rollback — force-push previous image tag or re-trigger staging-deploy.yml from a previous release tag; (2) backend rollback — kubectl rollout undo Deployment/<service>; (3) database migration rollback policy — migrations are forward-only in Supabase, so define the compensating-migration strategy. Add an Alertmanager PrometheusRule that fires a 'DeploymentErrorRateSpike' alert within 5 minutes of deployment if HTTP 5xx rate exceeds baseline. Link rollback runbook from all five repo READMEs.",
           "targetFile": "/documentation/common-bond/docs/operations/rollback-runbook.md",
           "completedAt": null,
           "completedBy": null
@@ -675,7 +675,7 @@
         {
           "taskId": "LIFE-05-T1",
           "status": "open",
-          "description": "Add Vault KV paths for each frontend per environment: infrastructure/planner-frontend/staging, infrastructure/planner-frontend/prod (and equivalents for preference/workforce). Each path contains NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY for that environment. Update staging-deploy.yml (LIFE-01-T1) to inject these via the Vault OIDC login step. Ensure next.config.ts runtime env vars are not baked at build time \u2014 use NEXT_PUBLIC_ env vars injected at runtime via k8s ConfigMap or Cloudflare Pages variable.",
+          "description": "Add Vault KV paths for each frontend per environment: infrastructure/planner-frontend/staging, infrastructure/planner-frontend/prod (and equivalents for preference/workforce). Each path contains NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY for that environment. Update staging-deploy.yml (LIFE-01-T1) to inject these via the Vault OIDC login step. Ensure next.config.ts runtime env vars are not baked at build time — use NEXT_PUBLIC_ env vars injected at runtime via k8s ConfigMap or Cloudflare Pages variable.",
           "targetFile": "/planner-frontend/.github/workflows/staging-deploy.yml",
           "completedAt": null,
           "completedBy": null
@@ -695,7 +695,7 @@
         {
           "taskId": "LIFE-06-T1",
           "status": "open",
-          "description": "Add .github/dependabot.yml to receptor-planner targeting pip (package-ecosystem: pip, directory: /, schedule: monthly \u2014 matching match-backend). Ensure the TMPDIR: /home/runner/pip-tmp workaround in ci.yml is preserved after any pip upgrade that bumps ortools.",
+          "description": "Add .github/dependabot.yml to receptor-planner targeting pip (package-ecosystem: pip, directory: /, schedule: monthly — matching match-backend). Ensure the TMPDIR: /home/runner/pip-tmp workaround in ci.yml is preserved after any pip upgrade that bumps ortools.",
           "targetFile": "/receptor-planner/.github/dependabot.yml",
           "completedAt": null,
           "completedBy": null
@@ -710,7 +710,7 @@
       "category": "Security",
       "repo": "planner-frontend",
       "area": "next.config.ts",
-      "description": "All three Next.js frontend next.config.ts files include script-src: 'unsafe-eval' 'unsafe-inline' in the Content-Security-Policy header. 'unsafe-eval' permits arbitrary eval() and Function() execution \u2014 defeating XSS protections for the entire application. The inline comment acknowledges this: 'tighten with nonces in future' \u2014 but no ADR, milestone, or tracking item exists. All three frontends are deployed to production (when deployed) with this CSP weakness, affecting medical staff, workers, and administrators.",
+      "description": "All three Next.js frontend next.config.ts files include script-src: 'unsafe-eval' 'unsafe-inline' in the Content-Security-Policy header. 'unsafe-eval' permits arbitrary eval() and Function() execution — defeating XSS protections for the entire application. The inline comment acknowledges this: 'tighten with nonces in future' — but no ADR, milestone, or tracking item exists. All three frontends are deployed to production (when deployed) with this CSP weakness, affecting medical staff, workers, and administrators.",
       "tasks": [
         {
           "taskId": "LIFE-07-T1",
@@ -747,7 +747,7 @@
     },
     {
       "item": "VM platform (k3s on Hyper-V)",
-      "decision": "k3s VMs run on on-premise Hyper-V. No native Azure VM Managed Identity unless Arc-enrolled. Preferred SEC-02 remediation: Azure AD Workload Identity Federation bound to the Vault Kubernetes SA (sa-vault in vault namespace) \u2014 eliminates client secret, no Arc enrollment required."
+      "decision": "k3s VMs run on on-premise Hyper-V. No native Azure VM Managed Identity unless Arc-enrolled. Preferred SEC-02 remediation: Azure AD Workload Identity Federation bound to the Vault Kubernetes SA (sa-vault in vault namespace) — eliminates client secret, no Arc enrollment required."
     },
     {
       "item": "Severity of SEC-02",
@@ -759,7 +759,7 @@
     },
     {
       "item": "K8S-01 severity (Critical)",
-      "decision": "Production values.yaml has literal '${POSTGRES_PASSWORD}' and '${JWT_SECRET}' strings \u2014 not resolved by Helm or VSO. Production Supabase is either non-functional or running with empty credentials. Must be fixed before Phase 6 can progress. Staging has no secret declarations at all."
+      "decision": "Production values.yaml has literal '${POSTGRES_PASSWORD}' and '${JWT_SECRET}' strings — not resolved by Helm or VSO. Production Supabase is either non-functional or running with empty credentials. Must be fixed before Phase 6 can progress. Staging has no secret declarations at all."
     },
     {
       "item": "supabase-kubernetes chart and secret pattern",
@@ -779,7 +779,7 @@
     },
     {
       "item": "Frontend deployment target (LIFE-01)",
-      "decision": "DECIDED: k3s containerised Next.js with observability. Each frontend gets a Dockerfile (standalone output mode), a GHCR image push on merge to main, and a k8s Deployment in receptor-infra (own namespace per app \u2014 planner, preference, workforce). Traefik IngressRoute per app. Prometheus/Loki scraping via existing monitoring stack. Production deploy gated behind GitHub Environments required-reviewer (CICD-08). This replaces the original Cloudflare Pages intent."
+      "decision": "DECIDED: k3s containerised Next.js with observability. Each frontend gets a Dockerfile (standalone output mode), a GHCR image push on merge to main, and a k8s Deployment in receptor-infra (own namespace per app — planner, preference, workforce). Traefik IngressRoute per app. Prometheus/Loki scraping via existing monitoring stack. Production deploy gated behind GitHub Environments required-reviewer (CICD-08). This replaces the original Cloudflare Pages intent."
     },
     {
       "item": "match-backend runtime model (LIFE-02)",
@@ -844,7 +844,7 @@
         "KUBE-03",
         "KUBE-04"
       ],
-      "rationale": "Address supabase-kubernetes gaps in priority order: (1) K8S-01 VSO secret injection \u2014 blocking for production functionality; (2) K8S-02 resource limits \u2014 blocking for cluster stability; (3) ENV-01 test environment \u2014 required for CI isolation; (4) K8S-03 pod security contexts \u2014 hardening; (5) K8S-04 Falco \u2014 runtime monitoring. K8S-01 and K8S-02 may be implemented concurrently."
+      "rationale": "Address supabase-kubernetes gaps in priority order: (1) K8S-01 VSO secret injection — blocking for production functionality; (2) K8S-02 resource limits — blocking for cluster stability; (3) ENV-01 test environment — required for CI isolation; (4) K8S-03 pod security contexts — hardening; (5) K8S-04 Falco — runtime monitoring. K8S-01 and K8S-02 may be implemented concurrently."
     },
     {
       "phase": 7,
@@ -856,7 +856,7 @@
         "SPLIT-01",
         "RBAC-01"
       ],
-      "rationale": "supabase-receptor k3s/ infrastructure gaps: (1) NET-01 Vault egress fix \u2014 needed for auto-unseal to function; (2) ARCH-01 missing values files \u2014 helmfile is not apply-able; (3) CI-03 activate self-hosted runner for staging smoke; (4) SPLIT-01 document or consolidate two-repo helmfile split; (5) RBAC-01 deploy Kyverno to enforce namespace prefix policy."
+      "rationale": "supabase-receptor k3s/ infrastructure gaps: (1) NET-01 Vault egress fix — needed for auto-unseal to function; (2) ARCH-01 missing values files — helmfile is not apply-able; (3) CI-03 activate self-hosted runner for staging smoke; (4) SPLIT-01 document or consolidate two-repo helmfile split; (5) RBAC-01 deploy Kyverno to enforce namespace prefix policy."
     },
     {
       "phase": 8,
@@ -870,7 +870,7 @@
         "LIFE-06",
         "LIFE-07"
       ],
-      "rationale": "All five repos lack deployment automation. Priority: (1) LIFE-01 frontend staging deploy \u2014 blocks all staging verification; (2) LIFE-04 rollback runbook \u2014 prerequisite for any production deploy; (3) LIFE-02/03 backend ADRs \u2014 unblock container/deploy strategy decisions; (4) LIFE-05 per-environment Vault secrets; (5) LIFE-07 CSP hardening \u2014 security regression in production today; (6) LIFE-06 receptor-planner Dependabot \u2014 lowest risk."
+      "rationale": "All five repos lack deployment automation. Priority: (1) LIFE-01 frontend staging deploy — blocks all staging verification; (2) LIFE-04 rollback runbook — prerequisite for any production deploy; (3) LIFE-02/03 backend ADRs — unblock container/deploy strategy decisions; (4) LIFE-05 per-environment Vault secrets; (5) LIFE-07 CSP hardening — security regression in production today; (6) LIFE-06 receptor-planner Dependabot — lowest risk."
     }
   ],
   "deferred": []
