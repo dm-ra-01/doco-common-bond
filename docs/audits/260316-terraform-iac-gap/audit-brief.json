@@ -3,8 +3,8 @@
   "auditSlug": "260316-terraform-iac-gap",
   "status": "implementing",
   "nextAction": "implement",
-  "openTaskCount": 35,
-  "latestHandover": "Session 9: Implemented Phase 2 (IAC-01, IAC-03) in receptor-infra \u2014 created full Terraform root (providers.tf use_oidc=true, backend.tf azurerm/tfstate, variables.tf, outputs.tf, main.tf), modules/key-vault/ (K3sUnlock KV + vault-unseal RSA key + 3 access policies), modules/backup-storage/ (k3sbackups71a475f1dae6 RAGRS + receptor-backups container), and BOOTSTRAP.md (tfstate container creation, role grants, terraform init, all import commands, zero-drift plan verification table). IAC-03 resolved as part of IAC-01-T3. receptor-infra pushed commit 34ac5cc. 35 open tasks remain across phases 3-8. Next: Phase 3 (CI-01, IAC-02) \u2014 terraform-plan.yml, terraform-apply.yml CI workflows, delete azure/ ARM directory.",
+  "openTaskCount": 31,
+  "latestHandover": "Session 10: Implemented Phase 3 (CI-01, IAC-02) in receptor-infra — created .github/workflows/terraform-plan.yml (OIDC→Vault→Azure WIF, plan posted as PR comment) and .github/workflows/terraform-apply.yml (push-to-main trigger, auto-approve apply, Slack failure notification). Deleted azure/ ARM template directory (git rm -r azure/). Updated README.md with terraform/ repo layout entry and Terraform CI section. Added .gitignore and .terraform.lock.hcl. ARM-01-T1 closed as part of IAC-02-T1. receptor-infra pushed commit 53ee0b2. 31 open tasks remain across phases 4–8. terraform validate confirmed clean locally (v1.14.7, azurerm 3.117.1, azuread 2.53.1). Next: Phase 4 (SEC-04) — configure use_azuread_auth=true on Terraform backend, then consumer pre-flight audit before disabling allowSharedKeyAccess. Note: Terraform CLI is now installed (v1.14.7); full terraform init+plan requires Arc runner with network access to Vault and tfstate container.",
   "sessionHistory": [
     {
       "session": 1,
@@ -62,7 +62,6 @@
     },
     {
       "session": 9,
-
       "date": "2026-03-16",
       "summary": "Implementation session 2. Implemented Phase 2 (IAC-01, IAC-03): created terraform root files (providers.tf, backend.tf, variables.tf, outputs.tf, main.tf), modules/key-vault/ (K3sUnlock KV + vault-unseal RSA key + 3 access policies), modules/backup-storage/ (k3sbackups71a475f1dae6 RAGRS + receptor-backups container), and BOOTSTRAP.md (bootstrap steps, import commands, plan verification table). IAC-03-T1 resolved as part of IAC-01-T3. receptor-infra pushed commit 34ac5cc.",
       "completedTasks": [
@@ -72,6 +71,17 @@
         "IAC-01-T4",
         "IAC-01-T5",
         "IAC-03-T1"
+      ]
+    },
+    {
+      "session": 10,
+      "date": "2026-03-16",
+      "summary": "Implementation session 3. Implemented Phase 3 (CI-01, IAC-02): created terraform-plan.yml (PR trigger, OIDC→Vault→Azure WIF, posts plan as PR comment) and terraform-apply.yml (push-to-main, auto-approve, Slack on failure). Deleted azure/ ARM template directory (IAC-02-T1). ARM-01-T1 closed as part of IAC-02-T1. Added .gitignore and .terraform.lock.hcl. Updated README.md with terraform/ layout and Terraform CI section. receptor-infra pushed commit 53ee0b2.",
+      "completedTasks": [
+        "CI-01-T1",
+        "CI-01-T2",
+        "IAC-02-T1",
+        "ARM-01-T1"
       ]
     }
   ]

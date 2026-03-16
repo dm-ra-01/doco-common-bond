@@ -266,11 +266,11 @@
       "tasks": [
         {
           "taskId": "IAC-02-T1",
-          "status": "open",
+          "status": "complete",
           "description": "After Terraform import of the storage account is confirmed (IAC-01-T4/T5), delete the azure/ directory from receptor-infra ('git rm -r azure/'). Update README.md to remove the ARM template reference and replace with a pointer to terraform/. Commit on a feature branch.",
           "targetFile": "/receptor-infra/azure/backup-storage-account.parameters.json",
-          "completedAt": null,
-          "completedBy": null
+          "completedAt": "2026-03-16T05:54:41Z",
+          "completedBy": "session-10-20260316"
         }
       ],
       "severity_history": []
@@ -306,19 +306,19 @@
       "tasks": [
         {
           "taskId": "CI-01-T1",
-          "status": "open",
+          "status": "complete",
           "description": "Create .github/workflows/terraform-plan.yml: trigger on pull_request (paths: terraform/**). Steps: checkout, setup-terraform, OIDC→Vault JWT exchange (reuse pattern from cluster-sync.yml), retrieve Azure Workload Identity credentials from Vault KV secret/infrastructure/azure-terraform, terraform init (AzureRM backend, use_azuread_auth=true), terraform validate, terraform plan. Post plan output as PR comment. Runner: arc-runner-receptor-infra.",
           "targetFile": "/receptor-infra/.github/workflows/terraform-plan.yml",
-          "completedAt": null,
-          "completedBy": null
+          "completedAt": "2026-03-16T05:54:41Z",
+          "completedBy": "session-10-20260316"
         },
         {
           "taskId": "CI-01-T2",
-          "status": "open",
+          "status": "complete",
           "description": "Create .github/workflows/terraform-apply.yml: trigger on push to main (paths: terraform/**). Steps identical to plan workflow with final step 'terraform apply -auto-approve'. No AZURE_CLIENT_SECRET in GitHub Secrets — all credentials from Vault KV via OIDC JWT.",
           "targetFile": "/receptor-infra/.github/workflows/terraform-apply.yml",
-          "completedAt": null,
-          "completedBy": null
+          "completedAt": "2026-03-16T05:54:41Z",
+          "completedBy": "session-10-20260316"
         }
       ],
       "severity_history": []
@@ -458,11 +458,11 @@
       "tasks": [
         {
           "taskId": "ARM-01-T1",
-          "status": "open",
+          "status": "complete",
           "description": "Resolved as part of IAC-02-T1 (delete azure/ directory after Terraform import). No standalone fix required.",
           "targetFile": "/receptor-infra/azure/backup-storage-account.parameters.json",
-          "completedAt": null,
-          "completedBy": null
+          "completedAt": "2026-03-16T05:54:42Z",
+          "completedBy": "session-10-20260316"
         }
       ],
       "severity_history": []

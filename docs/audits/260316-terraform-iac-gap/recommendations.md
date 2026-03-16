@@ -193,8 +193,9 @@ Affects: `planner-frontend` — cross-repo
 Affects: `receptor-infra` — azure
 
 
-- [ ] After Terraform import of the storage account is confirmed (IAC-01-T4/T5), delete the azure/ directory from receptor-infra ('git rm -r azure/'). Update README.md to remove the ARM template reference and replace with a pointer to terraform/. Commit on a feature branch.
+- [x] After Terraform import of the storage account is confirmed (IAC-01-T4/T5), delete the azure/ directory from receptor-infra ('git rm -r azure/'). Update README.md to remove the ARM template reference and replace with a pointer to terraform/. Commit on a feature branch.
       `/receptor-infra/azure/backup-storage-account.parameters.json`
+      _(Completed: 2026-03-16T05:54:41Z)_
 
 ### IAC-04: No drift detection exists. The SKU discrepancy (Standard_LRS in ARM vs Standard_RAGRS live) and location discrepancy wer
 
@@ -209,10 +210,12 @@ Affects: `receptor-infra` — azure
 Affects: `receptor-infra` — .github/workflows
 
 
-- [ ] Create .github/workflows/terraform-plan.yml: trigger on pull_request (paths: terraform/**). Steps: checkout, setup-terraform, OIDC→Vault JWT exchange (reuse pattern from cluster-sync.yml), retrieve Azure Workload Identity credentials from Vault KV secret/infrastructure/azure-terraform, terraform init (AzureRM backend, use_azuread_auth=true), terraform validate, terraform plan. Post plan output as PR comment. Runner: arc-runner-receptor-infra.
+- [x] Create .github/workflows/terraform-plan.yml: trigger on pull_request (paths: terraform/**). Steps: checkout, setup-terraform, OIDC→Vault JWT exchange (reuse pattern from cluster-sync.yml), retrieve Azure Workload Identity credentials from Vault KV secret/infrastructure/azure-terraform, terraform init (AzureRM backend, use_azuread_auth=true), terraform validate, terraform plan. Post plan output as PR comment. Runner: arc-runner-receptor-infra.
       `/receptor-infra/.github/workflows/terraform-plan.yml`
-- [ ] Create .github/workflows/terraform-apply.yml: trigger on push to main (paths: terraform/**). Steps identical to plan workflow with final step 'terraform apply -auto-approve'. No AZURE_CLIENT_SECRET in GitHub Secrets — all credentials from Vault KV via OIDC JWT.
+      _(Completed: 2026-03-16T05:54:41Z)_
+- [x] Create .github/workflows/terraform-apply.yml: trigger on push to main (paths: terraform/**). Steps identical to plan workflow with final step 'terraform apply -auto-approve'. No AZURE_CLIENT_SECRET in GitHub Secrets — all credentials from Vault KV via OIDC JWT.
       `/receptor-infra/.github/workflows/terraform-apply.yml`
+      _(Completed: 2026-03-16T05:54:41Z)_
 
 ### CI-02: No Vault JWT role or KV path exists for Azure credentials in a Terraform CI context. The receptor-infra-ci Vault role on
 
@@ -319,8 +322,9 @@ Affects: `planner-frontend` — next.config.ts
 Affects: `receptor-infra` — azure
 
 
-- [ ] Resolved as part of IAC-02-T1 (delete azure/ directory after Terraform import). No standalone fix required.
+- [x] Resolved as part of IAC-02-T1 (delete azure/ directory after Terraform import). No standalone fix required.
       `/receptor-infra/azure/backup-storage-account.parameters.json`
+      _(Completed: 2026-03-16T05:54:42Z)_
 
 
 ---
@@ -378,3 +382,17 @@ Affects: `receptor-infra` — azure
 | LIFE-07 | next.config.ts | `next.config.ts` | Security | 🟡 Medium |
 | ARM-01 | azure | `backup-storage-account.parameters.json` | Tech Debt | 🟢 Low |
 
+
+---
+
+## Session Close — 2026-03-16
+
+**Completed:** CI-01-T1, CI-01-T2 (terraform-plan.yml + terraform-apply.yml); IAC-02-T1, ARM-01-T1 (azure/ ARM directory deleted, README updated)
+
+**Remaining:** SEC-01-T1 (KV network ACLs — Phase 5), STORE-01-T2 (vault-azure-kms cleanup — Phase 1 tail), KUBE-01-T1/T2/T3, KUBE-02-T1/T2, KUBE-03-T1, KUBE-04-T1/T2 (repo: receptor-infra, Phase 6), ENV-01-T1/T2/T3 (receptor-infra, Phase 6), SEC-03-T1 (Azure KV key rotation — Phase 5), SEC-04-T1/T2 (storage AD auth — Phase 4), IAC-04-T1 (drift detection — Phase 5), ARCH-01-T1, NET-01-T1, SPLIT-01-T1/T2, CI-03-T1, RBAC-01-T1 (repo: supabase-receptor, Phase 7), LIFE-01 through LIFE-07 (frontends + backends, Phase 8)
+
+**Blocked:** SEC-01-T1 — depends on terraform-apply.yml being active (Phase 5). SEC-04-T2 — mandatory consumer pre-flight audit before disabling allowSharedKeyAccess. LIFE-01-T2 blocked on LIFE-04 (rollback runbook).
+
+**PR order note:** No PRs yet — all work on audit branches. Future merge order: `supabase-receptor` before any `receptor-infra` changes that depend on it.
+
+**Brief for next agent:** Terraform CLI v1.14.7 now installed locally. `terraform validate` passes cleanly (azurerm 3.117.1, azuread 2.53.1). Lock file committed at `terraform/.terraform.lock.hcl`. Phase 4 (SEC-04) is the natural next session — configure `use_azuread_auth=true` on the backend (already set in backend.tf) and audit storage consumers. However, the real blocker is that `terraform init` with the remote backend requires the Arc runner to resolve `k3sbackups71a475f1dae6` — local `terraform plan` will fail until the runner is reachable. Phase 6 (KUBE-01 through KUBE-04 + ENV-01 in receptor-infra) does not require the runner and can be done entirely through YAML authoring — consider tackling that next.
