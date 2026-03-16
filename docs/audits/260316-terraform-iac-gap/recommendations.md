@@ -56,10 +56,12 @@ Affects: `receptor-infra` — supabase
 Affects: `receptor-infra` — azure
 
 
-- [ ] Evaluate Azure AD Workload Identity Federation for vault-k3s-unseal: configure federation on the vault-k3s-unseal App Registration, binding it to the Vault Kubernetes service account JWT (sa-vault in vault namespace). Update values/vault.yaml to use the federated identity (AZURE_CLIENT_ID + AZURE_TENANT_ID only, no AZURE_CLIENT_SECRET). On-premise k3s is supported as long as the OIDC issuer URL is reachable by Azure AD (expose via Cloudflare Tunnel or public endpoint).
+- [x] Evaluate Azure AD Workload Identity Federation for vault-k3s-unseal: configure federation on the vault-k3s-unseal App Registration, binding it to the Vault Kubernetes service account JWT (sa-vault in vault namespace). Update values/vault.yaml to use the federated identity (AZURE_CLIENT_ID + AZURE_TENANT_ID only, no AZURE_CLIENT_SECRET). On-premise k3s is supported as long as the OIDC issuer URL is reachable by Azure AD (expose via Cloudflare Tunnel or public endpoint).
       `/receptor-infra/values/vault.yaml`
-- [ ] Once Workload Identity Federation is confirmed working ('vault status' shows unsealed after pod restart), revoke the vault-k3s client secret via 'az ad app credential delete --id aad24e26-8e10-4751-90ea-fb43bd147250 --key-id &#60;credential-id&#62;'. Remove AZURE_CLIENT_SECRET from the vault-azure-kms k8s secret and from values/vault.yaml extraEnvironmentVars. Update Terraform to manage the service principal without a credential.
+      _(Completed: 2026-03-16T05:25:18Z)_
+- [x] Once Workload Identity Federation is confirmed working ('vault status' shows unsealed after pod restart), revoke the vault-k3s client secret via 'az ad app credential delete --id aad24e26-8e10-4751-90ea-fb43bd147250 --key-id &#60;credential-id&#62;'. Remove AZURE_CLIENT_SECRET from the vault-azure-kms k8s secret and from values/vault.yaml extraEnvironmentVars. Update Terraform to manage the service principal without a credential.
       `/receptor-infra/terraform/modules/service-principal/main.tf`
+      _(Completed: 2026-03-16T05:25:18Z)_
 
 ### LIFE-01: No deployment workflow exists in any of the three Next.js frontend repositories (planner-frontend, preference-frontend, 
 
@@ -110,8 +112,9 @@ Affects: `receptor-infra` — azure
 Affects: `receptor-infra` — vault
 
 
-- [ ] Determine where vault-azure-kms is currently sourced: run 'vault kv get secret/infrastructure/azure-unseal'. If the path exists, create vault/vso-azure-kms-secret.yaml as a VaultStaticSecret CRD mirroring vault/vso-github-app-secret.yaml (kv-v2, path=infrastructure/azure-unseal, destination.name=vault-azure-kms, namespace=vault, refreshAfter=1h). If not in Vault KV, store it there first then create the CRD.
+- [x] Determine where vault-azure-kms is currently sourced: run 'vault kv get secret/infrastructure/azure-unseal'. If the path exists, create vault/vso-azure-kms-secret.yaml as a VaultStaticSecret CRD mirroring vault/vso-github-app-secret.yaml (kv-v2, path=infrastructure/azure-unseal, destination.name=vault-azure-kms, namespace=vault, refreshAfter=1h). If not in Vault KV, store it there first then create the CRD.
       `/receptor-infra/vault/vso-azure-kms-secret.yaml`
+      _(Completed: 2026-03-16T05:25:18Z)_
 - [ ] If SEC-02 Workload Identity Federation migration is implemented first, vault-azure-kms becomes unnecessary. Delete the k8s secret, remove the AZURE_CLIENT_SECRET extraEnvironmentVar from values/vault.yaml, and skip STORE-01-T1. This is the preferred path — it eliminates the secret rather than managing its lifecycle.
       `/receptor-infra/values/vault.yaml`
 
@@ -210,10 +213,12 @@ Affects: `receptor-infra` — .github/workflows
 Affects: `receptor-infra` — vault
 
 
-- [ ] Create Vault KV secret at secret/infrastructure/azure-terraform containing: client_id (vault-k3s-unseal appId: aad24e26-8e10-4751-90ea-fb43bd147250 or future federated identity), tenant_id (76c68bd9-6fba-42d1-bf81-471e2e8c1395), subscription_id (303d0b34-0b31-4302-a133-f1bd1e61f4b7). No client_secret if Workload Identity Federation is used.
+- [x] Create Vault KV secret at secret/infrastructure/azure-terraform containing: client_id (vault-k3s-unseal appId: aad24e26-8e10-4751-90ea-fb43bd147250 or future federated identity), tenant_id (76c68bd9-6fba-42d1-bf81-471e2e8c1395), subscription_id (303d0b34-0b31-4302-a133-f1bd1e61f4b7). No client_secret if Workload Identity Federation is used.
       `/receptor-infra/docs/vault-policies.md`
-- [ ] Create Vault policy receptor-infra-tf with read access to secret/data/infrastructure/azure-terraform. Create Vault JWT role receptor-infra-tf-ci bound to this policy, scoped to repo dm-ra-01/receptor-infra (bound_claims: sub=repo:dm-ra-01/receptor-infra:*). Document in supabase-receptor vault-configuration.md.
+      _(Completed: 2026-03-16T05:25:18Z)_
+- [x] Create Vault policy receptor-infra-tf with read access to secret/data/infrastructure/azure-terraform. Create Vault JWT role receptor-infra-tf-ci bound to this policy, scoped to repo dm-ra-01/receptor-infra (bound_claims: sub=repo:dm-ra-01/receptor-infra:*). Document in supabase-receptor vault-configuration.md.
       `/receptor-infra/docs/vault-policies.md`
+      _(Completed: 2026-03-16T05:25:18Z)_
 
 ### SEC-03: The unseal key 'vault-unseal' in Key Vault K3sUnlock has rotationPolicy=null (confirmed via az keyvault key show). No au
 

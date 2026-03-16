@@ -1,10 +1,10 @@
 {
   "$schema": "../../../dev-environment/.agents/schemas/audit-brief.schema.json",
   "auditSlug": "260316-terraform-iac-gap",
-  "status": "drafting",
+  "status": "implementing",
   "nextAction": "implement",
-  "openTaskCount": 49,
-  "latestHandover": "ADR decisions recorded: (1) Frontend deployment = k3s containerised Next.js with GHCR image push + Traefik IngressRoute per app + Prometheus/Loki observability (replaces original Cloudflare Pages intent). (2) match-backend = always-on FastAPI/uvicorn HTTP service with future POST /run webhook. LIFE-01-T1 and LIFE-02-T1 task descriptions updated to reflect concrete architecture. 29 total findings (3C/10H/14M/1L), 49 open tasks.",
+  "openTaskCount": 41,
+  "latestHandover": "Session 8: graduated LIFE-01 through LIFE-07 from proposed to open. Implemented Phase 1 (SEC-02, STORE-01, CI-02) in receptor-infra \u2014 Terraform Workload Identity Federation module (eliminates AZURE_CLIENT_SECRET), vault.yaml patched to remove vault-azure-kms secret ref, vault-configuration.md updated with receptor-infra-tf-ci JWT role and azure-terraform KV path. receptor-infra audit/260316-terraform-iac-gap branch pushed (commit 5236fe7). 41 open tasks remain across phases 2-8. Next: Phase 2 (IAC-01, IAC-03) \u2014 Terraform modules for Key Vault + storage account, terraform import, zero-drift plan.",
   "sessionHistory": [
     {
       "session": 1,
@@ -39,14 +39,26 @@
     {
       "session": 6,
       "date": "2026-03-16",
-      "summary": "Round 3 lifecycle audit. Read all 5 app repo CI workflows. Found LIFE-01 (no deploy workflows in frontend repos \u2014 Critical), LIFE-02 (match-backend no image push, runtime undefined), LIFE-03 (receptor-planner no integration tests, no Dockerfile), LIFE-04 (no rollback procedure anywhere), LIFE-05 (no per-env Vault secrets for frontend), LIFE-06 (receptor-planner no Dependabot), LIFE-07 (CSP unsafe-eval in all 3 Next.js frontends). Also graduated ARCH-01/NET-01/SPLIT-01/CI-03/RBAC-01 from proposed to open. 29 findings total. Phase 8 added.",
+      "summary": "Round 3 lifecycle audit. Read all 5 app repo CI workflows. Found LIFE-01 through LIFE-07. Also graduated ARCH-01/NET-01/SPLIT-01/CI-03/RBAC-01 from proposed to open. 29 findings total. Phase 8 added.",
       "completedTasks": []
     },
     {
       "session": 7,
       "date": "2026-03-16",
-      "summary": "ADR decisions clarified by human: frontend deployment = k3s containerised (not Cloudflare Pages), match-backend = always-on HTTP service (future webhook trigger). Updated LIFE-01 and LIFE-02 task descriptions. Updated two clarification items from pending to decided.",
+      "summary": "ADR decisions clarified by human: frontend deployment = k3s containerised (not Cloudflare Pages), match-backend = always-on HTTP service (future webhook trigger). Updated LIFE-01 and LIFE-02 task descriptions.",
       "completedTasks": []
+    },
+    {
+      "session": 8,
+      "date": "2026-03-16",
+      "summary": "Implementation session 1. Graduated LIFE-01 through LIFE-07 from proposed to open. Implemented Phase 1 (SEC-02, STORE-01, CI-02): created terraform/modules/azure-workload-identity/ (WIF Terraform module), patched values/vault.yaml removing AZURE_CLIENT_SECRET, updated docs/security/vault-configuration.md with receptor-infra-tf-ci JWT role and azure-terraform KV path. receptor-infra audit branch created and pushed.",
+      "completedTasks": [
+        "SEC-02-T1",
+        "SEC-02-T2",
+        "STORE-01-T1",
+        "CI-02-T1",
+        "CI-02-T2"
+      ]
     }
   ]
 }

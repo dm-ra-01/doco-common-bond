@@ -33,7 +33,7 @@ sidebar_position: 1
 
 | Slug | Title | Scope | Auditor | Status | NC Raised | Report |
 | :--- | :---- | :---- | :------ | :----- | :-------- | :----- |
-| `260316-terraform-iac-gap` | Terraform Infrastructure-as-Code Gap Audit | `receptor-infra` — Azure resources (Key Vault, backup storage, managed identities) | Ryan Ammendolea | 🔄 Drafting | — | [audit.md](../audits/260316-terraform-iac-gap/audit.md) · [recommendations.md](../audits/260316-terraform-iac-gap/recommendations.md) |
+| `260316-terraform-iac-gap` | Terraform Infrastructure-as-Code Gap Audit | `receptor-infra` — Azure resources (Key Vault, backup storage, managed identities) | Ryan Ammendolea | 🔧 Implementing | — | [audit.md](../audits/260316-terraform-iac-gap/audit.md) · [recommendations.md](../audits/260316-terraform-iac-gap/recommendations.md) |
 
 ### 🗓️ 2026-03-12
 
