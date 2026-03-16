@@ -29,6 +29,12 @@ sidebar_position: 1
 
 ## Active Registry
 
+### 🗓️ 2026-03-16
+
+| Slug | Title | Scope | Auditor | Status | NC Raised | Report |
+| :--- | :---- | :---- | :------ | :----- | :-------- | :----- |
+| `260316-terraform-iac-gap` | Terraform Infrastructure-as-Code Gap Audit | `receptor-infra` — Azure resources (Key Vault, backup storage, managed identities) | Ryan Ammendolea | 🔧 Implementing | — | [audit.md](../audits/260316-terraform-iac-gap/audit.md) · [recommendations.md](../audits/260316-terraform-iac-gap/recommendations.md) |
+
 ### 🗓️ 2026-03-12
 
 | Slug | Title | Scope | Auditor | Status | NC Raised | Report |
@@ -98,8 +104,9 @@ planner-frontend               5       2026-03-12
 workforce-frontend             4       2026-03-12
 preference-frontend            4       2026-03-12
 common-bond (ISMS docs + eng)  5       2026-03-09
+receptor-infra                 1       2026-03-16
 ────────────────────────────────────── ─────────
-Total                          18+     2026-03-12
+Total                          19+     2026-03-16
 ```
 
 > **Coverage gaps addressed:** `workforce-frontend`, `preference-frontend`, and

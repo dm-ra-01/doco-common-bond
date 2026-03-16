@@ -1,0 +1,99 @@
+{
+  "$schema": "../../../dev-environment/.agents/schemas/audit-brief.schema.json",
+  "auditSlug": "260316-terraform-iac-gap",
+  "status": "implementing",
+  "nextAction": "implement",
+  "openTaskCount": 27,
+  "latestHandover": "Session 11: Phases 4 (SEC-04) and 5 (SEC-03, IAC-04) complete in receptor-infra. STORE-01-T2 closed (WIF preferred path already taken, AZURE_CLIENT_SECRET removed session 8). SEC-04-T1 closed (use_azuread_auth=true already present in backend.tf from IAC-01-T2 session 9). SEC-03-T1 implemented: rotation_policy added to modules/key-vault/main.tf (P180D rotation, P210D expire, P30D notify). IAC-04-T1 implemented: .github/workflows/terraform-drift.yml created (weekly Mon 02:00 UTC, OIDC\u2192Vault\u2192Azure WIF, terraform plan -detailed-exitcode, opens GitHub Issue on drift). SEC-01-T1 BLOCKED: Hyper-V egress IP is dynamic; cannot use static IP rule. Documented in code and task description. terraform validate confirmed clean. 27 open tasks remain. Next session: Phase 6 (KUBE-01 VSO secret injection, KUBE-02 resource limits, ENV-01 test environment, KUBE-03 pod security, KUBE-04 Falco) in receptor-infra supabase/ values files.",
+  "sessionHistory": [
+    {
+      "session": 1,
+      "date": "2026-03-16",
+      "summary": "Initial audit. 7 findings from receptor-infra repo inspection. Feature branch created, audit.md and recommendations.json written.",
+      "completedTasks": []
+    },
+    {
+      "session": 2,
+      "date": "2026-03-16",
+      "summary": "Enriched with live az CLI data. Added SEC-01 (KV network ACLs) and SEC-02 (SP client secret). Confirmed all resource identifiers. 3 ARM template discrepancies found. SEC-02 upgraded to Critical.",
+      "completedTasks": []
+    },
+    {
+      "session": 3,
+      "date": "2026-03-16",
+      "summary": "Iterative improvement round 1. Read values/vault.yaml \u2014 AZURE_CLIENT_SECRET in vault-azure-kms k8s Secret (not plaintext). Added STORE-01 (no VSO sync), SEC-03 (key rotation), SEC-04 (shared key access). Set Supabase review_due_date 2026-06-16. 12 findings.",
+      "completedTasks": []
+    },
+    {
+      "session": 4,
+      "date": "2026-03-16",
+      "summary": "Expanded scope to supabase-kubernetes. Read helmfile.yaml (supabase/supabase v0.5.1 for prod+staging). Found KUBE-01 (critical \u2014 unresolved ${} placeholders in prod values), KUBE-02 (no resource limits), ENV-01 (no test environment), KUBE-03 (no pod security contexts), KUBE-04 (Falco disabled). 17 findings total. 6-phase implementation plan.",
+      "completedTasks": []
+    },
+    {
+      "session": 5,
+      "date": "2026-03-16",
+      "summary": "Iterative improvement round 2. Read supabase-receptor k3s/ directory. Found ARCH-01 (k3s/values/ missing \u2014 helmfile unapply-able), NET-01 (Vault namespace DNS-only egress blocks Azure KV auto-unseal), SPLIT-01 (two-repo helmfile split, no apply order), CI-03 (staging-smoke.yml broken on GitHub-hosted runners per own comment), RBAC-01 (ci-namespace-manager wildcard verbs, no Kyverno enforcement). 22 proposed findings. Phase 7 added.",
+      "completedTasks": []
+    },
+    {
+      "session": 6,
+      "date": "2026-03-16",
+      "summary": "Round 3 lifecycle audit. Read all 5 app repo CI workflows. Found LIFE-01 through LIFE-07. Also graduated ARCH-01/NET-01/SPLIT-01/CI-03/RBAC-01 from proposed to open. 29 findings total. Phase 8 added.",
+      "completedTasks": []
+    },
+    {
+      "session": 7,
+      "date": "2026-03-16",
+      "summary": "ADR decisions clarified by human: frontend deployment = k3s containerised (not Cloudflare Pages), match-backend = always-on HTTP service (future webhook trigger). Updated LIFE-01 and LIFE-02 task descriptions.",
+      "completedTasks": []
+    },
+    {
+      "session": 8,
+      "date": "2026-03-16",
+      "summary": "Implementation session 1. Graduated LIFE-01 through LIFE-07 from proposed to open. Implemented Phase 1 (SEC-02, STORE-01, CI-02): created terraform/modules/azure-workload-identity/ (WIF Terraform module), patched values/vault.yaml removing AZURE_CLIENT_SECRET, updated docs/security/vault-configuration.md with receptor-infra-tf-ci JWT role and azure-terraform KV path. receptor-infra audit branch created and pushed.",
+      "completedTasks": [
+        "SEC-02-T1",
+        "SEC-02-T2",
+        "STORE-01-T1",
+        "CI-02-T1",
+        "CI-02-T2"
+      ]
+    },
+    {
+      "session": 9,
+      "date": "2026-03-16",
+      "summary": "Implementation session 2. Implemented Phase 2 (IAC-01, IAC-03): created terraform root files (providers.tf, backend.tf, variables.tf, outputs.tf, main.tf), modules/key-vault/ (K3sUnlock KV + vault-unseal RSA key + 3 access policies), modules/backup-storage/ (k3sbackups71a475f1dae6 RAGRS + receptor-backups container), and BOOTSTRAP.md (bootstrap steps, import commands, plan verification table). IAC-03-T1 resolved as part of IAC-01-T3. receptor-infra pushed commit 34ac5cc.",
+      "completedTasks": [
+        "IAC-01-T1",
+        "IAC-01-T2",
+        "IAC-01-T3",
+        "IAC-01-T4",
+        "IAC-01-T5",
+        "IAC-03-T1"
+      ]
+    },
+    {
+      "session": 10,
+      "date": "2026-03-16",
+      "summary": "Implementation session 3. Implemented Phase 3 (CI-01, IAC-02): created terraform-plan.yml (PR trigger, OIDC\u2192Vault\u2192Azure WIF, posts plan as PR comment) and terraform-apply.yml (push-to-main, auto-approve, Slack on failure). Deleted azure/ ARM template directory (IAC-02-T1). ARM-01-T1 closed as part of IAC-02-T1. Added .gitignore and .terraform.lock.hcl. Updated README.md with terraform/ layout and Terraform CI section. receptor-infra pushed commit 53ee0b2.",
+      "completedTasks": [
+        "CI-01-T1",
+        "CI-01-T2",
+        "IAC-02-T1",
+        "ARM-01-T1"
+      ]
+    },
+    {
+      "session": 11,
+      "date": "2026-03-16",
+      "summary": "Phase 4 (SEC-04) and Phase 5 (SEC-03, IAC-04) complete. STORE-01-T2 closed (WIF no-op). SEC-04-T1 closed (use_azuread_auth already set). SEC-03-T1: rotation_policy P180D added to key-vault/main.tf. IAC-04-T1: terraform-drift.yml created (weekly, opens GitHub Issue on drift). SEC-01-T1 BLOCKED: dynamic Hyper-V egress IP. Documented in code.",
+      "completedTasks": [
+        "STORE-01-T2",
+        "SEC-04-T1",
+        "SEC-03-T1",
+        "IAC-04-T1"
+      ]
+    }
+  ]
+}
