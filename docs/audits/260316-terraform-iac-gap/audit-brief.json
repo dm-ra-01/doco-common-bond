@@ -1,0 +1,9 @@
+{
+  "$schema": "../../../dev-environment/.agents/schemas/audit-brief.schema.json",
+  "auditSlug": "260316-terraform-iac-gap",
+  "status": "drafting",
+  "nextAction": "implement",
+  "openTaskCount": 12,
+  "latestHandover": "Initial audit complete. 7 findings across receptor-infra (2 High, 4 Medium, 1 Low). Phase 1 priorities: IAC-03-T1 (audit live Azure KV config), CI-02-T1/T2 (create Vault policy + role for Terraform CI). OIDC JWT/Vault credential pattern from cluster-sync.yml is the proven blueprint for Terraform CI. No long-lived Azure creds required.",
+  "sessionHistory": []
+}
