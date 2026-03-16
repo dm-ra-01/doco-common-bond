@@ -89,7 +89,7 @@ Per **ISO 27001:2022 Clause 5.3**, governance records require explicit ownership
 ## Live Register Dashboard
 
 A queryable, Supabase-backed version of this index is available at
-[registers/registers](/docs/registers/registers). It provides real-time status,
+[registers/registers](/docs/registers/live-dashboard). It provides real-time status,
 filtering by type and status, and review-due-date visibility across all registers.
 
 ---

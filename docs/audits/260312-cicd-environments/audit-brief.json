@@ -1,10 +1,404 @@
 {
   "$schema": "../../../dev-environment/.agents/schemas/audit-brief.schema.json",
   "auditSlug": "260312-cicd-environments",
-  "status": "drafting",
-  "nextAction": "implement",
-  "openTaskCount": 103,
-  "latestHandover": "58 findings, 103 open tasks, 12 phases (2 PLAN + 9 IMPLEMENT + 1 FINAL). ARCHITECTURE: k3s on Windows 11 Pro Hyper-V (Intel i7-265KF/32GB/1TB) — homelab-as-production deliberate choice (hospital power grid, 500/50 Mbps fibre). Vault OSS: YubiKey USB-C PKCS#11 primary unseal + TPM 2.0 secondary. Calico CNI, kube-prometheus-stack, Loki, Falco, cert-manager (Let's Encrypt DNS-01 wildcard *.commonbond.au), Traefik, Cloudflare Tunnel. Slack-only notifications (2 webhooks in Vault KV). Edge Functions: git-tag versioning (fn/<name>/vX.Y.Z). Helmfile pins all chart versions with quarterly upgrade review workflow. ROUND 8 (final consistency pass): CICD-10 (Low: 5-layer post-deploy smoke test — Kong, PostgREST, Auth, DB canary, Storage — composite action at .github/actions/smoke-test, integrated in prod-deploy.yml + staging-smoke.yml + CI health gate; replaces --ignore-health-check workaround; Phase 9). PROC-01-T2 added (mandatory check matrix refresh after Phase 5, before Phase 12). DOC-02-T1 updated to extend ENV-09 doc rather than replace. ARCH-07-T2 corrected to Slack-only. ENV-08-T1 specifies VM crontab (not k3s CronJob). DOC-01 description updated to Vault guide (Bitwarden/Doppler TODO closed). ARCH-05-T1 includes community Helm chart caveat + DooD fallback for ADR-001. Phase 2 rationale cleaned (ISO-03 removed). DATA RESIDENCY: All backup storage must remain in Australia — Cloudflare R2 APAC (primary) + Backblaze B2 SYD (secondary). PHASE ORDER: P1(PLAN:ADRs+OPS-01) → P2(PLAN:Helmfile+PROC-01) → P3(k3s+RBAC) → P4(auth fixes) → P5(CI hardening+CICD-09) → P6(supply-chain) → P7(env tiers+backup+SEC-09+ENV-11) → P8(CI arch) → P9(prod gate+CICD-10) → P10(docs) → P11(ISO-03 SoA) → P12(branch protection FINAL). AUDIT COMPLETE — proceed to implementation.",
-  "sessionHistory": []
+  "status": "implementing",
+  "nextAction": "finalise",
+  "openTaskCount": 0,
+  "latestHandover": "Session 28 close (2026-03-16): 260312-cicd-environments audit remains at 0 open tasks. Post-audit work completed: Vault recovery keys rekeyed; root token lifecycle hardened; 16 infra docs migrated from supabase-receptor \u2192 receptor-infra; GitHub App key rotated (due 2027-03-16); Azure KV SP expiry 2028-03-12 documented; Azure Blob key due 2026-06-13 (rotation automation available after ADR-008 Phase 2); ADR-008 OIDC JWT fully live in cluster-sync.yml (no static GitHub Secrets remain in receptor-infra); agent skills commonbond-k3s-operator + vault-write-token created. NEXT: (1) Run /finalise-global-audit workflow (re-audit, PRs, archive). (2) ADR-008 Phase 2: add OIDC auth for supabase-receptor CI when runtime secrets are needed. (3) Migrate Supabase deployment to supabase-community/supabase-kubernetes Helm chart (VSO secretRef integration is supported natively). (4) Azure Blob Storage key rotation due 2026-06-13 \u2014 automate via ADR-008 Phase 2 OIDC workflow.",
+  "sessionHistory": [
+    {
+      "date": "2026-03-12",
+      "completedFindingIds": [
+        "ARCH-05",
+        "DOC-03",
+        "DOC-04",
+        "DOC-05",
+        "ENV-09",
+        "OPS-01",
+        "ARCH-09",
+        "PROC-01"
+      ],
+      "completedTaskIds": [
+        "ARCH-05-T1",
+        "DOC-03-T1",
+        "DOC-04-T1",
+        "DOC-05-T1",
+        "ENV-09-T1",
+        "OPS-01-T1",
+        "OPS-01-T2",
+        "ARCH-09-T1",
+        "ARCH-09-T2",
+        "PROC-01-T1"
+      ],
+      "summary": "Phase 1 (ADRs + pre-implementation docs) and Phase 2 (Helmfile + CI required check matrix) completed. 10 tasks marked complete. supabase-receptor audit branch created and pushed."
+    },
+    {
+      "date": "2026-03-12",
+      "completedFindingIds": [
+        "ARCH-04",
+        "ENV-07",
+        "ARCH-07",
+        "ARCH-08",
+        "ARCH-10",
+        "SEC-05",
+        "SEC-06",
+        "SEC-07",
+        "SEC-08",
+        "PROC-02"
+      ],
+      "completedTaskIds": [
+        "ARCH-04-T1",
+        "ARCH-04-T2",
+        "ARCH-04-T3",
+        "ARCH-04-T4",
+        "ARCH-04-T5",
+        "ENV-07-T1",
+        "ENV-07-T2",
+        "ARCH-07-T1",
+        "ARCH-07-T2",
+        "ARCH-08-T1",
+        "ARCH-08-T2",
+        "ARCH-10-T1",
+        "ARCH-10-T2",
+        "SEC-05-T1",
+        "SEC-06-T1",
+        "SEC-06-T2",
+        "SEC-07-T1",
+        "SEC-08-T1",
+        "SEC-08-T2",
+        "PROC-02-T1",
+        "PROC-02-T2"
+      ],
+      "summary": "Phase 3 (Core Cluster Stack) completed. 21 tasks marked complete across supabase-receptor (9 files created/expanded) and common-bond (SoA 8.16 updated). New files: staging.md, incident-response.md, network-policies.yaml, serviceaccounts.yaml, falco-rules.yaml, cluster-issuer.yaml, alertmanager-config.yaml."
+    },
+    {
+      "date": "2026-03-12",
+      "completedFindingIds": [
+        "KEY-01",
+        "CICD-03"
+      ],
+      "completedTaskIds": [
+        "KEY-01-T1",
+        "KEY-01-T2",
+        "KEY-01-T3",
+        "KEY-01-T4",
+        "CICD-03-T1",
+        "CICD-03-T2",
+        "CICD-03-T3"
+      ],
+      "summary": "Phase 4 (CI Keys) completed. 7 tasks marked complete across planner-frontend and workforce-frontend. Changes: ANON_JWT export added to ci.yml Start Supabase step; SERVICE_ROLE_KEY now dynamically extracted (CICD-03); globalSetup.ts updated to use ANON_JWT for signInWithPassword; LOCAL_SUPABASE_SECRET_KEY GitHub Secret deleted from both repos (CICD-03-T3)."
+    },
+    {
+      "date": "2026-03-12",
+      "completedFindingIds": [
+        "CGEN-01",
+        "CGEN-02",
+        "CICD-04",
+        "BACK-02",
+        "CICD-05",
+        "CICD-07",
+        "ENV-10"
+      ],
+      "completedTaskIds": [
+        "CGEN-01-T1",
+        "CGEN-02-T1",
+        "CICD-04-T1",
+        "BACK-02-T1",
+        "BACK-02-T2",
+        "CICD-05-T1",
+        "CICD-07-T1",
+        "ENV-10-T1",
+        "ENV-10-T2"
+      ],
+      "summary": "Phase 5 (CI Pipeline Hardening) completed. 9 tasks marked complete across 6 repos. Changes: CGEN-01/02 codegen gate now uses git diff instead of --check; CICD-04 --workdir supabase/ added; BACK-02 JWT stubs replaced; CICD-05 timeouts on all jobs; CICD-07 npm/pip cache; ENV-10 deploy-function.yml + edge-function-deployment.md. preference-frontend included for CICD-05/07. 4 new audit branches: planner-frontend, workforce-frontend, preference-frontend, match-backend, receptor-planner all pushed."
+    },
+    {
+      "date": "2026-03-12",
+      "completedFindingIds": [
+        "CICD-02",
+        "SEC-01",
+        "SEC-02",
+        "CICD-06",
+        "SEC-04"
+      ],
+      "completedTaskIds": [
+        "CICD-02-T1",
+        "CICD-02-T2",
+        "SEC-01-T1",
+        "SEC-01-T2",
+        "SEC-02-T1",
+        "SEC-02-T2",
+        "CICD-06-T1",
+        "SEC-04-T1",
+        "SEC-04-T2"
+      ],
+      "summary": "Phase 6 (Supply-Chain & Runtime Security) completed. 9 tasks marked complete across 6 repos. Changes: SEC-01 permissions blocks added to all 6 ci.yml; SEC-02 all Actions SHA-pinned; CICD-02 Supabase CLI pinned to 2.75.0; CICD-06 dependabot.yml added to all 6 repos; Renovate github-actions manager added/created in all 6 repos; SEC-04 ADR-004-docker-image-digest-pinning.md added to supabase-receptor; soa.md 8.3 and 8.8 updated."
+    },
+    {
+      "date": "2026-03-12",
+      "completedFindingIds": [
+        "ENV-01",
+        "ENV-02",
+        "KEY-02",
+        "DOC-02",
+        "ENV-06",
+        "ARCH-06",
+        "ENV-08",
+        "SEC-09",
+        "ENV-11"
+      ],
+      "completedTaskIds": [
+        "ENV-01-T1",
+        "ENV-01-T2",
+        "ENV-02-T1",
+        "KEY-02-T1",
+        "DOC-02-T1",
+        "ENV-06-T1",
+        "ENV-06-T2",
+        "ARCH-06-T1",
+        "ENV-08-T2",
+        "ENV-11-T2",
+        "SEC-09-T1",
+        "SEC-09-T2"
+      ],
+      "deferredFindingIds": [
+        "CICD-08"
+      ],
+      "summary": "Phase 7 (Environment Tiers, Backup, pgaudit, Key Rotation, ARCH-06) completed. 12 tasks marked complete; CICD-08 deferred (Vault supersedes GitHub Environments secret scoping). New files: environment-tiers.md, setup.conf.staging.example, setup.conf.prod.example, supabase/schemas/12_extensions/pgaudit.sql, docs/infrastructure/security/audit-logging.md, .github/workflows/key-rotation-reminder.yml. Updated: key-management.md (rewritten), disaster-recovery.md (backup + dual-provider topology), promotion-runbook.md (live URLs), kubernetes-cluster.md (Zot pull-through cache). common-bond soa.md: 8.13 dual-provider backup, 8.15 Implemented (pgaudit), 5.28 Partial. Open tasks: 34."
+    },
+    {
+      "date": "2026-03-13",
+      "completedFindingIds": [],
+      "completedTaskIds": [],
+      "summary": "Phase 7.5 pre-flight interval gate created. 5 gaps and 5 enhancements from comprehensive audit review accepted. recommendations.json amended: ARCH-11 finding added, ARCH-02-T0 / ARCH-03-T0 / ISO-01-T2 tasks added, CICD-10 task descriptions fixed (removed CICD-08 dep), CICD-09 moved Phase 5\u21928, Phase 7.5 inserted. Slack app created and credentials stored in Vault. Open task count: 38."
+    },
+    {
+      "date": "2026-03-13",
+      "completedFindingIds": [],
+      "completedTaskIds": [
+        "ARCH-11-T1",
+        "ARCH-02-T0",
+        "ARCH-03-T0",
+        "CICD-10-T1",
+        "CICD-10-T2",
+        "CICD-10-T3",
+        "PROC-01-T2",
+        "ISO-01-T1",
+        "ISO-01-T2",
+        "ISO-01-T3"
+      ],
+      "openTaskCountAfter": 33,
+      "summary": "Phase 7.5 gate: ADR-008 Vault OIDC bridge, setup.sh idempotency + health gate, 7-run runner trial protocol, smoke-test composite action + staging workflow, ci-required-checks v2, ISO-01 test org cleanup in all 3 frontends"
+    },
+    {
+      "date": "2026-03-13",
+      "completedFindingIds": [
+        "ARCH-02",
+        "ENV-03",
+        "ISO-02",
+        "ENV-04",
+        "BACK-01",
+        "DOC-06"
+      ],
+      "completedTaskIds": [
+        "ARCH-02-T1",
+        "ARCH-02-T2",
+        "ENV-03-T1",
+        "ISO-02-T1",
+        "ENV-04-T1",
+        "ENV-04-T2",
+        "BACK-01-T1",
+        "BACK-01-T2",
+        "DOC-06-T1",
+        "CICD-09-T1"
+      ],
+      "openTaskCountAfter": 22,
+      "summary": "Session 11 (Phase 8 Gate 8A+8B). 10 tasks completed. Gate 8A/8B close-outs confirmed already implemented: --ci/--teardown/--force in setup scripts, seed files already split, test_cleanup.sql + pg_cron live, __test_* convention in testing-guide.md. New code: BACK-01-T1 (receptor-planner pytest scoped), BACK-01-T2 (match-backend integration-tests job with Supabase boot), DOC-06-T1 (ONBOARDING.md), CICD-09-T1 (supabase-start composite action with health poll + masked key outputs). All 3 repos pushed. Open tasks: 22."
+    },
+    {
+      "date": "2026-03-13",
+      "completedFindingIds": [],
+      "completedTaskIds": [],
+      "openTaskCountAfter": 22,
+      "summary": "Session 12 (scoping only). 0 tasks completed. Confirmed starting state: no Hyper-V VMs exist, WSL2 toolchain not installed, external Hyper-V switch configured. User moving provisioning session to Windows host (PowerShell access needed for Hyper-V). Handover brief updated with full provisioning order and environment split (Windows host for VM creation, WSL2 for cluster toolchain and kubectl). vm-setup.md flagged as stale \u2014 rewrite during provisioning session."
+    },
+    {
+      "date": "2026-03-13",
+      "completedFindingIds": [
+        "ENV-05",
+        "CICD-09"
+      ],
+      "completedTaskIds": [
+        "ENV-05-T0",
+        "ENV-05-T1",
+        "ENV-05-T2",
+        "CICD-09-T2a",
+        "CICD-09-T2b"
+      ],
+      "openTaskCountAfter": 27,
+      "summary": "Session 15 (Phase 9 partial + cluster deploy). Helm stack fully deployed on ctrl-01: vault (initialised+unsealed), traefik, calico, kube-prometheus-stack (grafana 3/3), loki-stack, falco-falcosidekick, cert-manager, cloudflared. vault.yaml TLS fixed (global.tlsDisable:true, no cert refs). Grafana datasource conflict fixed (loki-stack ConfigMap isDefault patched). ENV-05 complete: prod-deploy.yml created with backup gate + manual approval (T0+T1), soa.md 8.32 Implemented (T2). CICD-09-T2a: EVALUATION.md written \u2014 composite action recommended over reusable workflow. CICD-09-T2b: not-applicable. supabase-receptor committed (041c6d8). Workers still NotReady \u2014 Hyper-V VM-to-VM networking issue. Open tasks: 27."
+    },
+    {
+      "date": "2026-03-13",
+      "completedFindingIds": [],
+      "completedTaskIds": [],
+      "openTaskCountAfter": 27,
+      "summary": "Session 17 (Redundant Ingress Tier). Refactored ingress architecture: moved `cloudflared` to `traefik` namespace, scaled to 2 replicas with `podAntiAffinity` for redundancy. Fixed critical NetworkPolicy gaps: allowed TCP 7844 for Cloudflare edge connectivity and 192.168.0.0/16 for internal pod-to-pod communication. Verified connectivity to Grafana/Vault via redundant tunnels. `supabase-receptor` committed `ce3437f`. All connectivity restored after Calico-aware NetworkPolicy updates."
+    },
+    {
+      "date": "2026-03-13",
+      "completedFindingIds": [],
+      "completedTaskIds": [
+        "DOC-01-T1"
+      ],
+      "openTaskCountAfter": 15,
+      "summary": "Session 18: Established stable API access via SSH tunnel. Resolved vault-unsealer volume mount and egress issues (NetworkPolicy fix). Pivoted auto-unseal strategy from YubiKey/PKCS#11 to Azure Key Vault for robustness. Authored vault-configuration.md documenting the new architecture."
+    },
+    {
+      "date": "2026-03-13",
+      "completedFindingIds": [
+        "ARCH-01",
+        "DOC-03",
+        "OPS-01"
+      ],
+      "completedTaskIds": [
+        "ARCH-01-T1",
+        "DOC-03-T1",
+        "OPS-01-T3"
+      ],
+      "deferredFindingIds": [
+        "SEC-07"
+      ],
+      "summary": "Session 19: Infrastructure Robustness & CI/CD Architecture. Refreshed as-built documentation (kubernetes-cluster.md, vm-setup.md) for 3-node topology. Authored cicd-architecture.md merging Option A detail with K3s-native lifecycle. Deferred Falco implementation (SEC-07) and uninstalled release. Standardized audit metadata paths for Linux environment."
+    },
+    {
+      "date": "2026-03-13",
+      "completedFindingIds": [
+        "ARCH-01",
+        "ARCH-03"
+      ],
+      "completedTaskIds": [
+        "ARCH-01-T2",
+        "ARCH-01-T3",
+        "ARCH-03-T2",
+        "ENV-05-T3",
+        "ARCH-05-T2"
+      ],
+      "summary": "Session 20: Infrastructure Stabilization & Multi-Repo Runners. Resolved systemic DNS issues via Calico IP pool realignment. Deployed 6 CI runners across 6 repositories. Activated self-hosted runner in supabase-receptor. Marked ARCH-01-T2, ARCH-01-T3, ARCH-03-T2, ENV-05-T3, and ARCH-05-T2 as complete."
+    },
+    {
+      "date": "2026-03-14",
+      "completedFindingIds": [
+        "CICD-01",
+        "ISO-03"
+      ],
+      "completedTaskIds": [
+        "CICD-01-T1",
+        "CICD-01-T2",
+        "CICD-01-T3",
+        "SEC-03-T0",
+        "ISO-03-T1",
+        "ENV-08-T3"
+      ],
+      "deferredFindingIds": [],
+      "deferredTaskIds": [
+        "SEC-03-T2"
+      ],
+      "openTaskCountAfter": 2,
+      "summary": "Session 21: Infrastructure Gap Analysis & Audit Close-out. Full cluster inspection (60+ pods, 15 namespaces, 8 Helm releases). 17 infrastructure gaps identified and resolved (staging NetworkPolicies, Traefik dedup, Zot registry, TLS removal, CI image SHA pinning, VM registries.yaml). 6 audit tasks closed, 1 deferred (SEC-03 branch protection to May 2026). SoA v1.1 updated for physical controls 7.1-7.5/7.8 and network segregation 8.22. ci.yml refactored to use supabase-start composite action. Validation script confirmed ci-required-checks.md matrix is stale."
+    },
+    {
+      "date": "2026-03-14",
+      "completedFindingIds": [],
+      "completedTaskIds": [],
+      "openTaskCountAfter": 2,
+      "summary": "Session 22: CI Matrix Refresh. Installed gh 2.88.1 + jq on WSL2; gh auth as dm-ra-01. Cloned all 5 missing repos. Audited all 6 ci.yml files and verified actual GitHub check display names against live main-branch runs. ci-required-checks.md refreshed to v3 (20 checks, 6 repos). validate-branch-protection.sh MATRIX updated to display names; fixed ((N++)) set -e bug. Validation: 20/20 PASSED exit 0. Pushed b6b6ca6 to supabase-receptor audit branch. SEC-03-T2 CI-side readiness confirmed for 2026-05-09."
+    },
+    {
+      "date": "2026-03-15",
+      "completedFindingIds": [],
+      "completedTaskIds": [],
+      "summary": "Session 23: Vault Runner Migration + Documentation Modernisation. Rotated exposed GitHub PAT. Migrated all 6 CI runner Deployments from ACCESS_TOKEN (PAT) to GitHub App auth (App ID 3095294, dm-ra-01). Private key stored in Vault KV (secret/ci/github-app). k8s Secret github-app-credentials created in-cluster without key touching workstation. All 6 runners confirmed online. Updated supabase-receptor docs: ADR-001 (runner arch), ADR-003 (implemented vs planned Vault features), vault-configuration.md (actual state), cicd-architecture.md (removed stale Docker Compose install steps), ci-troubleshooting.md (Failure Mode 5 added), arc-migration-handover.md created for next agent. Committed and pushed to audit/260312-cicd-environments."
+    },
+    {
+      "date": "2026-03-15",
+      "completedFindingIds": [],
+      "completedTaskIds": [
+        "CICD-11-T3"
+      ],
+      "openTaskCountAfter": 5,
+      "summary": "Session 24: ARC Migration (code/config complete; cluster steps pending sudo). Added CICD-11 finding to recommendations.json. Updated all 6 repos ci.yml runs-on labels from [self-hosted, k3s] to repo-specific ARC runner set labels (e.g. arc-runner-supabase-receptor). Added arc-controller.yaml, arc-runner-sets.yaml, and DEPLOY.md runbook to supabase-receptor/k3s/ci-runner/. CICD-11-T3 (ci.yml label updates) marked complete. CICD-11-T1 (install ARC controller), CICD-11-T2 (AutoscalingRunnerSets), CICD-11-T4 (decommission myoung34) remain open \u2014 blocked on passwordless sudo on ctrl-01. ENV-08-T1 and ENV-11-T1 still blocked (same sudo requirement)."
+    },
+    {
+      "date": "2026-03-15",
+      "completedFindingIds": [
+        "CICD-11"
+      ],
+      "completedTaskIds": [
+        "CICD-11-T1",
+        "CICD-11-T2",
+        "CICD-11-T4"
+      ],
+      "openTaskCountAfter": 2,
+      "summary": "Session 24 (continued): ARC cluster deployment complete. ARC controller installed (arc-systems), 6 AutoscalingRunnerSets installed (arc-runners), all 6 listener pods Running. All 6 myoung34 Deployments deleted. All old runner-token Secrets (planner-frontend-token etc.) deleted. /tmp/get_install_id.py cleaned from ctrl-01. Security review: no credentials in committed files. CICD-11 fully complete. Open tasks: 2 (ENV-08-T1, ENV-11-T1 \u2014 blocked on sudo apt install postgresql-client rclone on ctrl-01, now unblocked with passwordless sudo)."
+    },
+    {
+      "date": "2026-03-15",
+      "completedFindingIds": [],
+      "completedTaskIds": [],
+      "openTaskCountAfter": 2,
+      "summary": "Session 25 (2026-03-15): ARC fully operational and verified. Fixed ARC dispatch routing (bare runs-on label \u2014 self-hosted array was routing to traditional pool). Fixed pip ENOSPC from 6 concurrent heavy installs (TMPDIR redirect). Engine bug fixed in receptor-planner: engine.py was returning SUCCESS+data:[] when allow_partial_filling=True and all capacity=0 \u2014 now returns INFEASIBLE. CI green on receptor-planner audit branch (950c737). Security review: no credentials in git, /tmp script cleaned from ctrl-01."
+    },
+    {
+      "date": "2026-03-15",
+      "completedFindingIds": [
+        "CICD-01",
+        "ARCH-01",
+        "ARCH-02",
+        "ARCH-03",
+        "PROC-01",
+        "DOC-06",
+        "CICD-09",
+        "CICD-10",
+        "ARCH-11",
+        "CICD-11",
+        "ENV-03",
+        "ENV-04",
+        "ISO-01",
+        "ISO-02",
+        "DOC-01",
+        "BACK-01",
+        "ARCH-05",
+        "ISO-03"
+      ],
+      "completedTaskIds": [],
+      "openTaskCountAfter": 2,
+      "summary": "Session 26: Comprehensive Gap Analysis & Documentation Remediation. Full cross-check: live cluster vs. committed manifests vs. docs vs. audit register. 9 gaps identified and resolved: (1) ADR-001 updated to document ARC as current architecture (myoung34 moved to 'Previous Approach' section). (2) vault-configuration.md CI Secret Flow updated to show ARC path. (3) arc-migration-handover.md replaced with completion notice. (4) helmfile.yaml vault version corrected 0.28.1\u21920.32.0; ARC controller and 6 runner sets added as helmfile releases for full k8s lifecycle management. (5) Stale secrets github-runner-pat and github-app-credentials deleted from ci-runner namespace (ci-runner namespace now empty). (6) ARC supabase-receptor runner set confirmed healthy (runner-scale-set-id=1, blank CURRENT RUNNERS is cosmetic display issue, not a fault). (7) 10 findings with all-complete tasks closed: CICD-01, ARCH-01, ARCH-02, ARCH-03, PROC-01, DOC-06, CICD-09, CICD-10, ARCH-11, CICD-11. (8) scripts/backup-prod.sh written (pg_dumpall \u2192 gzip \u2192 dual-stream R2 + B2 via tee, Slack alerts, 30-day retention). (9) scripts/rclone-config-from-vault.sh + .service written (systemd oneshot populates rclone.conf from Vault KV at VM boot). ENV-08-T1 and ENV-11-T1 remain open \u2014 scripts committed, operational deploy + crontab install on ctrl-01 is a manual step requiring live cluster access. Additionally closed 8 more findings with all-complete tasks: ENV-03, ENV-04, ISO-01, ISO-02, DOC-01, BACK-01, ARCH-05, ISO-03. Final state: 55 complete, 2 accepted, 1 deferred, 2 open (ENV-08, ENV-11)."
+    },
+    {
+      "date": "2026-03-15",
+      "completedFindingIds": [
+        "ENV-08",
+        "ENV-11"
+      ],
+      "completedTaskIds": [
+        "ENV-08-T1",
+        "ENV-11-T1"
+      ],
+      "openTaskCountAfter": 0,
+      "summary": "Session 27: Backup scripts operationalised on ctrl-01. Fixed vault CLI absence on host (rewrote rclone-config-from-vault.sh to use kubectl exec). Fixed quoted token in vault-token.env. Created Vault policy backup-rclone-reader (secret/data/infrastructure/*). Issued scoped periodic token (768h) instead of root token. rclone v1.73.2 installed. Azure Blob connectivity confirmed (lsd exit 0). Crontab installed. B2 optional pending Backblaze account provisioning. ARM template committed. Docs updated: disaster-recovery.md, ADR-004, vault-configuration.md, host-reboot-recovery.md. ENV-08-T1 + ENV-11-T1 complete. 0 open tasks remain. Audit ready for finalise workflow."
+    },
+    {
+      "date": "2026-03-16",
+      "completedFindingIds": [],
+      "completedTaskIds": [],
+      "openTaskCountAfter": 0,
+      "summary": "Session 28 (2026-03-16): Post-audit security hardening and infrastructure work. (1) Vault recovery keys rekeyed \u2014 new 5-of-5 shares generated, old shares invalidated. (2) Root token lifecycle hardened \u2014 generate-root procedure documented with secure delegation pattern (root \u2192 scoped write token \u2192 revoke root). (3) Documentation migrated: 16 infrastructure-scoped docs moved from supabase-receptor/docs \u2192 receptor-infra/docs (environment/, security/, operations/). supabase-receptor retains only app-scoped content. (4) GitHub App private key rotated (2026-03-16, due 2027-03-16). installation_id=116472161 added to Vault secret (secret/ci/github-app). VSO force-synced. (5) Azure credential expiry documented: vault-k3s SP expires 2028-03-12; Azure Blob key last rotated 2026-03-15, due 2026-06-13. GitHub repo variables set: APP_KEY_ROTATION_DUE, AZURE_KV_SP_ROTATION_DUE, AZURE_BLOB_KEY_ROTATION_DUE. (6) ADR-008 (Vault OIDC JWT auth) fully implemented: JWT auth method enabled, ci-slack-notifier policy, receptor-infra-ci role with bound_claims. cluster-sync.yml updated to retrieve SLACK_INCIDENTS_WEBHOOK from Vault at runtime \u2014 no static GitHub Secrets remain in receptor-infra. (7) Agent skills created: commonbond-k3s-operator (WSL\u2192ctrl-01\u2192kubectl patterns, vault constraints) and vault-write-token (interactive generate-root script). (8) Evaluated supabase-community Helm charts: supabase-traefik is Docker Compose (not k8s); supabase-kubernetes is the correct chart \u2014 supports secretRef on all secrets for VSO integration. 0 audit tasks remain. nextAction: finalise."
+    }
+  ],
+  "sessionGates": [
+    "Gate 8A: ARCH-02-T1 + ENV-03 \u2014 setup.sh CI-native mode + RESET --force flag (supabase-receptor only)",
+    "Gate 8B: ISO-01-T1 + ISO-01-T2 + ISO-02-T1 + ENV-04-T1 \u2014 test isolation + seed namespacing (supabase-receptor + 3 frontends)",
+    "Gate 8C: ARCH-03-T0 verified \u2192 ARCH-01-T1 + ARCH-03-T1 + CICD-01-T1 + CICD-09-T1 \u2014 runner migration + composite action (all 6 repos, CICD-09 prerequisite in place)"
+  ]
 }
-

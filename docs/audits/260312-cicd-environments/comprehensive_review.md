@@ -146,7 +146,7 @@ Developer commits → GitHub PR
   └─ GitHub Actions (self-hosted runner on k3s — ARCH-04-T5)
        │
        ├─ [CICD-09] Composite supabase-start action
-       │     Boots ephemeral Supabase in receptor-ci-<branch> namespace
+       │     Boots ephemeral Supabase in receptor-ci-&#60;branch&#62; namespace
        │     (~30-60s warm, vs 4min cold before Phase 3)
        │
        ├─ Integration tests → unit tests → codegen gate → E2E
@@ -160,7 +160,7 @@ Developer commits → GitHub PR
             │
             └─ Stakeholder review → trigger prod-deploy.yml
                   [ENV-05] GitHub Environment protection: human approval required
-                  [ENV-10] Edge Functions: fn/<name>/vX.Y.Z tag triggers deploy
+                  [ENV-10] Edge Functions: fn/&#60;name&#62;/vX.Y.Z tag triggers deploy
                   [CICD-10 proposed] Prod smoke test fires
                   [PROC-02] Slack #deployments notification sent
                        │

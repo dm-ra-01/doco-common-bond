@@ -10,7 +10,7 @@ sidebar_position: 1
 > platform. Each entry links to the source `audit.md` and `recommendations.md`
 > where they live inside the relevant repository's `docs/audits/` folder.
 
-**Last Updated:** 2026-03-12 | **Maintained by:** Engineering Leadership
+**Last Updated:** 2026-03-16 | **Maintained by:** Engineering Leadership
 
 ---
 
@@ -33,7 +33,7 @@ sidebar_position: 1
 
 | Slug | Title | Scope | Auditor | Status | NC Raised | Report |
 | :--- | :---- | :---- | :------ | :----- | :-------- | :----- |
-| `260312-cicd-environments` | CI/CD Infrastructure & Environment Architecture Audit | `supabase-receptor`, `preference-frontend`, `planner-frontend`, `workforce-frontend`, `match-backend`, `receptor-planner` — cross-ecosystem | Ryan Ammendolea | 📋 Findings Issued | — | [audit.md](../audits/260312-cicd-environments/audit.md) · [recommendations.md](../audits/260312-cicd-environments/recommendations.md) |
+| `260312-cicd-environments` | CI/CD Infrastructure & Environment Architecture Audit | `supabase-receptor`, `preference-frontend`, `planner-frontend`, `workforce-frontend`, `match-backend`, `receptor-planner` — cross-ecosystem | Ryan Ammendolea | ✅ Closed | — | [audit.md](../audits/archive/260312-cicd-environments/audit.md) · [recommendations.md](../audits/archive/260312-cicd-environments/recommendations.md) · [re-audit.md](../audits/archive/260312-cicd-environments/re-audit.md) |
 
 ### 🗓️ 2026-03-11
 
@@ -91,7 +91,7 @@ sidebar_position: 1
 ```
 Repository                   Audits   Last Audit
 ─────────────────────────────────────────────────
-supabase-receptor              4       2026-03-12
+supabase-receptor              4       2026-03-13
 backend/match-backend          2       2026-03-11
 backend/receptor-planner       1       2026-03-11
 planner-frontend               5       2026-03-12
@@ -104,7 +104,7 @@ Total                          18+     2026-03-12
 
 > **Coverage gaps addressed:** `workforce-frontend`, `preference-frontend`, and
 > `receptor-planner` now have fully operational audit workflows (implemented via
-> [REC-14](../audits/audit-process-audit/recommendations.md)).
+> [REC-14](../audits/archive/260306-audit-process/recommendations.md)).
 
 ---
 

@@ -62,7 +62,7 @@
 
 **Gaps:**
 
-- [CICD-03] `planner-frontend/.github/workflows/ci.yml:105` and `workforce-frontend/.github/workflows/ci.yml:102` pass `SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.LOCAL_SUPABASE_SECRET_KEY }}` — a hardcoded GitHub Secret — rather than extracting the dynamically generated key from the running CI instance via `supabase status`. This means the key used is the developer's local dev key, not the ephemeral CI instance key. If the local dev key rotates or differs, integration tests will silently fail auth.
+- [CICD-03] `planner-frontend/.github/workflows/ci.yml:105` and `workforce-frontend/.github/workflows/ci.yml:102` pass `SUPABASE_SERVICE_ROLE_KEY: $&#123;&#123; secrets.LOCAL_SUPABASE_SECRET_KEY &#125;&#125;` — a hardcoded GitHub Secret — rather than extracting the dynamically generated key from the running CI instance via `supabase status`. This means the key used is the developer's local dev key, not the ephemeral CI instance key. If the local dev key rotates or differs, integration tests will silently fail auth.
 - [CICD-04] `supabase-receptor/.github/workflows/ci.yml:27` runs `supabase start --ignore-health-check` with no `--workdir` flag, meaning it starts against whatever `supabase/config.toml` is found at the invocation directory. The step is fragile to CWD assumptions and any future directory restructure.
 
 ---
@@ -73,7 +73,7 @@
 
 **Strengths:**
 
-- `preference-frontend` correctly exports both `NEXT_PUBLIC_SUPABASE_ANON_KEY` (publishable, for REST/GraphQL) and `NEXT_PUBLIC_SUPABASE_ANON_JWT` (legacy JWT, for `signInWithPassword`) in `.github/workflows/ci.yml:138-143`.
+- `preference-frontend` correctly exports both `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` (publishable, for REST/GraphQL) and `NEXT_PUBLIC_SUPABASE_ANON_JWT` (legacy JWT, for `signInWithPassword`) in `.github/workflows/ci.yml:138-143`.
 
 **Gaps:**
 
@@ -182,7 +182,7 @@ The available Windows 11 Pro workstation (Intel i7-265KF — 8 P-cores + 12 E-co
 │  │  Ubuntu Server VM — k3s Worker Node 2        │   │
 │  │  6 cores, 10 GB RAM                          │   │
 │  │  - Branch CI namespaces (ephemeral)          │   │
-│  │  - receptor-ci-<branch-slug> namespaces      │   │
+│  │  - receptor-ci-&lt;branch-slug&gt; namespaces      │   │
 │  └──────────────────────────────────────────────┘   │
 └─────────────────────────────────────────────────────┘
 ```
@@ -191,7 +191,7 @@ The available Windows 11 Pro workstation (Intel i7-265KF — 8 P-cores + 12 E-co
 
 1. **Namespace-per-branch CI isolation** — each feature branch gets its own `receptor-ci-<slug>` Kubernetes namespace with a dedicated Supabase pod, Postgres PVC, and ephemeral lifecycle.
 2. **Shared container image pull cache** — Supabase Docker images (~3 GB) are pulled once and cached in the cluster's container registry. Branch instances start from cached layers, reducing boot time from ~4 min to ~30–60 sec.
-3. **Ingress reverse proxy** — a Traefik/nginx ingress controller can route `<branch>.ci.commonbond.local` to the correct namespace, solving the URL-per-branch problem without port juggling.
+3. **Ingress reverse proxy** — a Traefik/nginx ingress controller can route `&#60;branch&#62;.ci.commonbond.local` to the correct namespace, solving the URL-per-branch problem without port juggling.
 4. **Persistent named environments** — dev and staging are just named namespaces with persistent PVCs. Promotion from CI → staging is a `kubectl apply` with the staging namespace config.
 5. **No Docker-in-Docker issues** — pods run natively on the k3s containerd runtime; no privileged containers or DinD required.
 6. **RTX 5080 available for future ML workloads** — the GPU is accessible via device plugin if the match-backend allocator adopts GPU-accelerated work.
