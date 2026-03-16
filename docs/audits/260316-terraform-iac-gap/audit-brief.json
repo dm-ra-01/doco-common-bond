@@ -3,7 +3,20 @@
   "auditSlug": "260316-terraform-iac-gap",
   "status": "drafting",
   "nextAction": "implement",
-  "openTaskCount": 12,
-  "latestHandover": "Initial audit complete. 7 findings across receptor-infra (2 High, 4 Medium, 1 Low). Phase 1 priorities: IAC-03-T1 (audit live Azure KV config), CI-02-T1/T2 (create Vault policy + role for Terraform CI). OIDC JWT/Vault credential pattern from cluster-sync.yml is the proven blueprint for Terraform CI. No long-lived Azure creds required.",
-  "sessionHistory": []
+  "openTaskCount": 16,
+  "latestHandover": "Audit enriched with live az CLI data (2026-03-16). 9 findings: 1 Critical (SEC-02 — vault-k3s-unseal SP client secret, expires 2028-03-12, storage location unconfirmed), 3 High (IAC-01 no Terraform, IAC-03 KV untracked, SEC-01 KV network ACLs open), 4 Medium, 1 Low. Live identifiers confirmed: subscription 303d0b34-0b31-4302-a133-f1bd1e61f4b7, RG Receptor, KV K3sUnlock (https://k3sunlock.vault.azure.net/), storage k3sbackups71a475f1dae6 (Standard_RAGRS), SP appId aad24e26-8e10-4751-90ea-fb43bd147250, tenant 76c68bd9-6fba-42d1-bf81-471e2e8c1395. Phase 1 must start with SEC-02-T1 (locate client secret) before any Terraform work.",
+  "sessionHistory": [
+    {
+      "session": 1,
+      "date": "2026-03-16",
+      "summary": "Initial audit. Identified 7 findings from receptor-infra repo inspection. Created feature branch, wrote audit.md and recommendations.json.",
+      "completedTasks": []
+    },
+    {
+      "session": 2,
+      "date": "2026-03-16",
+      "summary": "Enriched with live az CLI data. Added SEC-01 (KV network ACLs) and SEC-02 (SP client secret) findings. Confirmed all resource identifiers. Discovered ARM template has 3 discrepancies from live state (not just placeholder). Upgraded SEC-02 to Critical.",
+      "completedTasks": []
+    }
+  ]
 }
