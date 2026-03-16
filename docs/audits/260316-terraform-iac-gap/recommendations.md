@@ -372,3 +372,17 @@ Affects: `receptor-infra` — azure
 | LIFE-07 | next.config.ts | `next.config.ts` | Security | 🟡 Medium |
 | ARM-01 | azure | `backup-storage-account.parameters.json` | Tech Debt | 🟢 Low |
 
+
+---
+
+## Session Close — 2026-03-16
+
+**Completed:** SEC-02 (Workload Identity Federation Terraform module + vault.yaml patch), STORE-01 (vault-azure-kms secret ref removed — preferred path via SEC-02), CI-02 (Vault JWT role `receptor-infra-tf-ci` + `secret/infrastructure/azure-terraform` KV path documented in vault-configuration.md). LIFE-01 through LIFE-07 graduated from `proposed` → `open`.
+
+**Remaining:** IAC-01, IAC-03 (Phase 2 — Terraform Key Vault + storage modules, terraform import), CI-01, IAC-02 (Phase 3 — CI workflow, ARM retirement), SEC-04 (Phase 4 — storage AD auth), SEC-01, SEC-03, IAC-04, ARM-01 (Phase 5 — Azure hardening), KUBE-01, KUBE-02, ENV-01, KUBE-03, KUBE-04 (Phase 6 — supabase-kubernetes), NET-01, ARCH-01, CI-03, SPLIT-01, RBAC-01 (Phase 7 — supabase-receptor), LIFE-01 through LIFE-07 (Phase 8 — lifecycle). 41 open tasks total.
+
+**Blocked:** None.
+
+**PR order note:** receptor-infra audit branch created and pushed. No PRs raised yet — per workflow, merge is deferred to `/finalise-global-audit`.
+
+**Brief for next agent:** Phase 2 is the logical next step (IAC-01, IAC-03 in receptor-infra). It requires creating `terraform/main.tf` (root module), `terraform/modules/azure-keyvault/`, `terraform/modules/azure-storage/`, running `terraform import` for the two existing Azure resources, and confirming a zero-drift plan. The `terraform/modules/azure-workload-identity/` module from this session provides the auth pattern. Use the WIF approach (no client secret) in the provider config. The tfstate container name is `tfstate` in storage account `k3sbackups71a475f1dae6`. Backend uses `use_azuread_auth=true`.
