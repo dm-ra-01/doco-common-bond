@@ -71,14 +71,18 @@ Affects: `receptor-infra` — azure
 Affects: `receptor-infra` — k3s storage
 
 
-- [ ] Create 'longhorn-backups' container in storage account k3sbackups71a475f1dae6 via Terraform (modules/backup-storage/main.tf). This will serve as the off-cluster backup target for Longhorn snapshots.
+- [x] Create 'longhorn-backups' container in storage account k3sbackups71a475f1dae6 via Terraform (modules/backup-storage/main.tf). This will serve as the off-cluster backup target for Longhorn snapshots.
       `/receptor-infra/terraform/modules/backup-storage/main.tf`
-- [ ] Add Longhorn release to receptor-infra/helmfile.yaml. Configuration should use the 'longhorn' namespace. Use version pinning for the longhorn/longhorn chart.
+      _(Completed: 2026-03-17T03:08:48Z)_
+- [x] Add Longhorn release to receptor-infra/helmfile.yaml. Configuration should use the 'longhorn' namespace. Use version pinning for the longhorn/longhorn chart.
       `/receptor-infra/helmfile.yaml`
-- [ ] Create receptor-infra/values/longhorn.yaml. Configure defaultDataPath, replication factor (3 for HA), and backupTarget (pointing to the Azure container created in T1). Ensure it references the appropriate secret for Azure storage account key access.
+      _(Completed: 2026-03-17T03:08:48Z)_
+- [x] Create receptor-infra/values/longhorn.yaml. Configure defaultDataPath, replication factor (3 for HA), and backupTarget (pointing to the Azure container created in T1). Ensure it references the appropriate secret for Azure storage account key access.
       `/receptor-infra/values/longhorn.yaml`
-- [ ] Update supabase/production/values.yaml to use 'longhorn' as the persistence.storageClass for the database. Note: migration of existing data from local-path to longhorn will require a backup/restore cycle or volume-migration-tooling.
+      _(Completed: 2026-03-17T03:08:48Z)_
+- [x] Update supabase/production/values.yaml to use 'longhorn' as the persistence.storageClass for the database. Note: migration of existing data from local-path to longhorn will require a backup/restore cycle or volume-migration-tooling.
       `/receptor-infra/supabase/production/values.yaml`
+      _(Completed: 2026-03-17T03:08:48Z)_
 
 ### LIFE-01: No deployment workflow exists in any of the three Next.js frontend repositories (planner-frontend, preference-frontend, 
 
@@ -414,4 +418,8 @@ Affects: `receptor-infra` — azure
 | LIFE-06 | .github | `dependabot.yml` | Process Gap | 🟡 Medium |
 | LIFE-07 | next.config.ts | `next.config.ts` | Security | 🟡 Medium |
 | ARM-01 | azure | `backup-storage-account.parameters.json` | Tech Debt | 🟢 Low |
+
+## Session Close — 2026-03-17
+
+**Completed:** STORE-02 **Remaining:** 14 findings  **Blocked:** None **PR order note:** None **Brief for next agent:** STORE-02 was implemented in the codebase by previous sessions but was not marked complete. Validated the changes and marked them off.
 

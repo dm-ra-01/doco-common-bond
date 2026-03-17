@@ -586,35 +586,35 @@
       "tasks": [
         {
           "taskId": "STORE-02-T1",
-          "status": "open",
+          "status": "complete",
           "description": "Create 'longhorn-backups' container in storage account k3sbackups71a475f1dae6 via Terraform (modules/backup-storage/main.tf). This will serve as the off-cluster backup target for Longhorn snapshots.",
           "targetFile": "/receptor-infra/terraform/modules/backup-storage/main.tf",
-          "completedAt": null,
-          "completedBy": null
+          "completedAt": "2026-03-17T03:08:48Z",
+          "completedBy": "session-16"
         },
         {
           "taskId": "STORE-02-T2",
-          "status": "open",
+          "status": "complete",
           "description": "Add Longhorn release to receptor-infra/helmfile.yaml. Configuration should use the 'longhorn' namespace. Use version pinning for the longhorn/longhorn chart.",
           "targetFile": "/receptor-infra/helmfile.yaml",
-          "completedAt": null,
-          "completedBy": null
+          "completedAt": "2026-03-17T03:08:48Z",
+          "completedBy": "session-16"
         },
         {
           "taskId": "STORE-02-T3",
-          "status": "open",
+          "status": "complete",
           "description": "Create receptor-infra/values/longhorn.yaml. Configure defaultDataPath, replication factor (3 for HA), and backupTarget (pointing to the Azure container created in T1). Ensure it references the appropriate secret for Azure storage account key access.",
           "targetFile": "/receptor-infra/values/longhorn.yaml",
-          "completedAt": null,
-          "completedBy": null
+          "completedAt": "2026-03-17T03:08:48Z",
+          "completedBy": "session-16"
         },
         {
           "taskId": "STORE-02-T4",
-          "status": "open",
+          "status": "complete",
           "description": "Update supabase/production/values.yaml to use 'longhorn' as the persistence.storageClass for the database. Note: migration of existing data from local-path to longhorn will require a backup/restore cycle or volume-migration-tooling.",
           "targetFile": "/receptor-infra/supabase/production/values.yaml",
-          "completedAt": null,
-          "completedBy": null
+          "completedAt": "2026-03-17T03:08:48Z",
+          "completedBy": "session-16"
         }
       ],
       "severity_history": []
