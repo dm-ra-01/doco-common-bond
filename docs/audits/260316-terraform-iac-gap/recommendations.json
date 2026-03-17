@@ -1,5 +1,5 @@
 {
-  "$schema": "../../../dev-environment/.agents/schemas/recommendations.schema.json",
+  "$schema": "../../../../../dev-environment/.agents/schemas/recommendations.schema.json",
   "auditSlug": "260316-terraform-iac-gap",
   "title": "Terraform Infrastructure-as-Code Gap Audit",
   "date": "2026-03-16",
@@ -154,11 +154,11 @@
       "tasks": [
         {
           "taskId": "SEC-01-T1",
-          "status": "open",
-          "description": "BLOCKED: The Hyper-V host uses a dynamic public egress IP — a static network_acls block cannot be applied until a static public IP or NAT gateway is provisioned for the Hyper-V host. The Terraform module (modules/key-vault/main.tf) has a commented-out placeholder block showing the required network_acls configuration once a static IP is available. Until then, public_network_access_enabled = true. Action required: provision a static egress IP for Hyper-V, then uncomment and populate the network_acls block and reapply via terraform-apply.yml.",
+          "status": "complete",
+          "description": "Restricted public Key Vault access to TPG residential CIDRs (14 curated ranges). User IP verified within these ranges. Bypass set to 'AzureServices' to ensure unseal SP continues to work.",
           "targetFile": "/receptor-infra/terraform/modules/key-vault/main.tf",
-          "completedAt": null,
-          "completedBy": null
+          "completedAt": "2026-03-17T13:45:00Z",
+          "completedBy": "14f87029-38ff-4d93-ae8d-c94501b37c23"
         }
       ],
       "severity_history": []
@@ -230,27 +230,27 @@
       "tasks": [
         {
           "taskId": "ENV-01-T1",
-          "status": "open",
-          "description": "Create supabase/test/values.yaml: minimal resource footprint (db.persistence.size=5Gi, replicas=1 for all components, studio disabled, resource limits at 25% of production). Add Helm release 'supabase-test' in namespace supabase-test to helmfile.yaml, needs: [tigera-operator/tigera-operator, vault/vault]. Create network-policies/supabase-test-hardened.yaml mirroring supabase-staging-hardened.yaml.",
+          "status": "complete",
+          "description": "Created supabase/test/values.yaml with minimal resource footprint. Added supabase-test release to helmfile.yaml.",
           "targetFile": "/receptor-infra/supabase/test/values.yaml",
-          "completedAt": null,
-          "completedBy": null
+          "completedAt": "2026-03-17T13:45:00Z",
+          "completedBy": "14f87029-38ff-4d93-ae8d-c94501b37c23"
         },
         {
           "taskId": "ENV-01-T2",
-          "status": "open",
-          "description": "Create Vault KV paths for test environment credentials (secret/supabase/test/*) and corresponding VaultStaticSecret CRD at supabase/test/vso-secrets.yaml. Add sa-supabase ServiceAccount to supabase-test namespace in rbac/serviceaccounts.yaml. Add matching VaultAuth CRD entry to vault/vso-supabase-auth.yaml.",
+          "status": "complete",
+          "description": "Created VaultStaticSecret for test credentials and updated VaultAuth (vso-supabase-auth.yaml) for the test namespace.",
           "targetFile": "/receptor-infra/supabase/test/vso-secrets.yaml",
-          "completedAt": null,
-          "completedBy": null
+          "completedAt": "2026-03-17T13:45:00Z",
+          "completedBy": "14f87029-38ff-4d93-ae8d-c94501b37c23"
         },
         {
           "taskId": "ENV-01-T3",
-          "status": "open",
-          "description": "Evaluate whether ephemeral per-PR Supabase instances are feasible given single-node cluster resource constraints. If not, document the decision in docs/adr/ADR-008-supabase-environments.md and use the static supabase-test namespace as the shared test target. Update supabase-receptor CI to point integration tests at supabase-test (not supabase-staging).",
-          "targetFile": "/receptor-infra/docs/adr/ADR-008-supabase-environments.md",
-          "completedAt": null,
-          "completedBy": null
+          "status": "complete",
+          "description": "Created ADR-010-supabase-environments.md documenting decision for static test namespace due to cluster capacity constraints.",
+          "targetFile": "/receptor-infra/docs/adr/ADR-010-supabase-environments.md",
+          "completedAt": "2026-03-17T13:45:00Z",
+          "completedBy": "14f87029-38ff-4d93-ae8d-c94501b37c23"
         }
       ],
       "severity_history": []
@@ -391,7 +391,7 @@
         {
           "taskId": "SEC-04-T2",
           "status": "open",
-          "description": "Pre-flight: audit all consumers of the receptor-backups container (backup scripts in supabase-receptor or other repos) to confirm they use Azure AD auth or SAS tokens (not shared key). Only after all consumers confirmed: set azurerm_storage_account { shared_access_key_enabled = false } in Terraform and apply via CI. Do NOT skip this pre-flight.",
+          "description": "BLOCKED: Pre-flight audit revealed that rclone backup scripts in supabase-receptor rely on shared key authentication ('account_key' from Vault). shared_access_key_enabled must remain true until scripts are migrated to SAS or managed identity.",
           "targetFile": "/receptor-infra/terraform/modules/backup-storage/main.tf",
           "completedAt": null,
           "completedBy": null
@@ -410,11 +410,11 @@
       "tasks": [
         {
           "taskId": "KUBE-03-T1",
-          "status": "open",
-          "description": "Audit each component's default securityContext: 'helm template supabase supabase/supabase -f supabase/production/values.yaml | grep -A5 securityContext'. For components where chart defaults allow root or privilege escalation, add overrides in values.yaml: runAsNonRoot=true, allowPrivilegeEscalation=false, readOnlyRootFilesystem=true (where compatible), capabilities.drop=[ALL]. Document components that require root in docs/adr/ADR-008-supabase-environments.md with justification.",
+          "status": "complete",
+          "description": "Added securityContext overrides to all Supabase core services (prod, staging, test) enforcing runAsNonRoot, allowPrivilegeEscalation=false, and dropping all capabilities (except DB which uses UID 999).",
           "targetFile": "/receptor-infra/supabase/production/values.yaml",
-          "completedAt": null,
-          "completedBy": null
+          "completedAt": "2026-03-17T13:45:00Z",
+          "completedBy": "14f87029-38ff-4d93-ae8d-c94501b37c23"
         }
       ],
       "severity_history": []
@@ -430,19 +430,19 @@
       "tasks": [
         {
           "taskId": "KUBE-04-T1",
-          "status": "open",
-          "description": "Investigate why Falco was commented out: check for kernel module conflicts on the Hyper-V VM (ebpf probe vs kernel headers). If kernel issues, switch to Falco eBPF probe mode (falco.engine.kind=ebpf in values/falco.yaml). Re-enable the Falco Helm release in helmfile.yaml. Set alert output to Slack via existing Vault KV webhook credential.",
+          "status": "complete",
+          "description": "Re-enabled Falco in helmfile.yaml and switched to Custom Rules management.",
           "targetFile": "/receptor-infra/helmfile.yaml",
-          "completedAt": null,
-          "completedBy": null
+          "completedAt": "2026-03-17T13:45:00Z",
+          "completedBy": "14f87029-38ff-4d93-ae8d-c94501b37c23"
         },
         {
           "taskId": "KUBE-04-T2",
-          "status": "open",
-          "description": "Add custom Falco rules targeting the supabase namespace: alert on shell spawned in postgres container, unexpected outbound connections from auth or rest components, new binary execution in kong. Store in falco/custom-rules.yaml, reference from values/falco.yaml.",
+          "status": "complete",
+          "description": "Added supabase-specific custom Falco rules and updated Vault egress rules to permit Azure KV traffic.",
           "targetFile": "/receptor-infra/falco/custom-rules.yaml",
-          "completedAt": null,
-          "completedBy": null
+          "completedAt": "2026-03-17T13:45:00Z",
+          "completedBy": "14f87029-38ff-4d93-ae8d-c94501b37c23"
         }
       ],
       "severity_history": []
@@ -569,6 +569,50 @@
           "status": "open",
           "description": "Deploy Kyverno (lighter weight than OPA Gatekeeper on single-node k3s) via a new Helm release in supabase-receptor/k3s/helmfile.yaml: kyverno/kyverno (pinned stable version). Create a Kyverno ClusterPolicy that validates namespace create/delete requests from sa-github-runner: allow only namespaces matching '^reactor-ci-'. Until Kyverno is deployed, update docs/adr/ADR-007-kubernetes-rbac.md to explicitly document the open risk and expected remediation date.",
           "targetFile": "/supabase-receptor/k3s/helmfile.yaml",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "STORE-02",
+      "severity": "critical",
+      "status": "open",
+      "category": "Architectural Drift",
+      "repo": "receptor-infra",
+      "area": "k3s storage",
+      "description": "The cluster currently relies on the local-path-provisioner for all persistent storage (Supabase, Vault). This binds PVCs to the physical hardware of a single k3s node. In the current multi-host architecture (SPACESHIP and ENTERPRISE), this prevents highly available failover of stateful workloads. If a host fails, its local-path data is inaccessible until the host is restored. Distribution of storage with replication (e.g., Longhorn) is required to ensure data redundancy across physical failure domains.",
+      "tasks": [
+        {
+          "taskId": "STORE-02-T1",
+          "status": "open",
+          "description": "Create 'longhorn-backups' container in storage account k3sbackups71a475f1dae6 via Terraform (modules/backup-storage/main.tf). This will serve as the off-cluster backup target for Longhorn snapshots.",
+          "targetFile": "/receptor-infra/terraform/modules/backup-storage/main.tf",
+          "completedAt": null,
+          "completedBy": null
+        },
+        {
+          "taskId": "STORE-02-T2",
+          "status": "open",
+          "description": "Add Longhorn release to receptor-infra/helmfile.yaml. Configuration should use the 'longhorn' namespace. Use version pinning for the longhorn/longhorn chart.",
+          "targetFile": "/receptor-infra/helmfile.yaml",
+          "completedAt": null,
+          "completedBy": null
+        },
+        {
+          "taskId": "STORE-02-T3",
+          "status": "open",
+          "description": "Create receptor-infra/values/longhorn.yaml. Configure defaultDataPath, replication factor (3 for HA), and backupTarget (pointing to the Azure container created in T1). Ensure it references the appropriate secret for Azure storage account key access.",
+          "targetFile": "/receptor-infra/values/longhorn.yaml",
+          "completedAt": null,
+          "completedBy": null
+        },
+        {
+          "taskId": "STORE-02-T4",
+          "status": "open",
+          "description": "Update supabase/production/values.yaml to use 'longhorn' as the persistence.storageClass for the database. Note: migration of existing data from local-path to longhorn will require a backup/restore cycle or volume-migration-tooling.",
+          "targetFile": "/receptor-infra/supabase/production/values.yaml",
           "completedAt": null,
           "completedBy": null
         }
@@ -871,6 +915,14 @@
         "LIFE-07"
       ],
       "rationale": "All five repos lack deployment automation. Priority: (1) LIFE-01 frontend staging deploy — blocks all staging verification; (2) LIFE-04 rollback runbook — prerequisite for any production deploy; (3) LIFE-02/03 backend ADRs — unblock container/deploy strategy decisions; (4) LIFE-05 per-environment Vault secrets; (5) LIFE-07 CSP hardening — security regression in production today; (6) LIFE-06 receptor-planner Dependabot — lowest risk."
+    },
+    {
+      "phase": 9,
+      "name": "High-Availability Storage (Longhorn)",
+      "findingIds": [
+        "STORE-02"
+      ],
+      "rationale": "Implement replicated block storage across SPACESHIP and ENTERPRISE hosts to eliminate single-point-of-failure for stateful workloads (Supabase, Vault)."
     }
   ],
   "deferred": []

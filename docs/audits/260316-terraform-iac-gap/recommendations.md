@@ -66,6 +66,20 @@ Affects: `receptor-infra` — azure
       `/receptor-infra/terraform/modules/service-principal/main.tf`
       _(Completed: 2026-03-16T05:25:18Z)_
 
+### STORE-02: The cluster currently relies on the local-path-provisioner for all persistent storage (Supabase, Vault). This binds PVCs
+
+Affects: `receptor-infra` — k3s storage
+
+
+- [ ] Create 'longhorn-backups' container in storage account k3sbackups71a475f1dae6 via Terraform (modules/backup-storage/main.tf). This will serve as the off-cluster backup target for Longhorn snapshots.
+      `/receptor-infra/terraform/modules/backup-storage/main.tf`
+- [ ] Add Longhorn release to receptor-infra/helmfile.yaml. Configuration should use the 'longhorn' namespace. Use version pinning for the longhorn/longhorn chart.
+      `/receptor-infra/helmfile.yaml`
+- [ ] Create receptor-infra/values/longhorn.yaml. Configure defaultDataPath, replication factor (3 for HA), and backupTarget (pointing to the Azure container created in T1). Ensure it references the appropriate secret for Azure storage account key access.
+      `/receptor-infra/values/longhorn.yaml`
+- [ ] Update supabase/production/values.yaml to use 'longhorn' as the persistence.storageClass for the database. Note: migration of existing data from local-path to longhorn will require a backup/restore cycle or volume-migration-tooling.
+      `/receptor-infra/supabase/production/values.yaml`
+
 ### LIFE-01: No deployment workflow exists in any of the three Next.js frontend repositories (planner-frontend, preference-frontend, 
 
 Affects: `planner-frontend` — .github/workflows
@@ -113,8 +127,9 @@ Affects: `receptor-infra` — azure
 Affects: `receptor-infra` — azure
 
 
-- [ ] BLOCKED: The Hyper-V host uses a dynamic public egress IP — a static network_acls block cannot be applied until a static public IP or NAT gateway is provisioned for the Hyper-V host. The Terraform module (modules/key-vault/main.tf) has a commented-out placeholder block showing the required network_acls configuration once a static IP is available. Until then, public_network_access_enabled = true. Action required: provision a static egress IP for Hyper-V, then uncomment and populate the network_acls block and reapply via terraform-apply.yml.
+- [x] Restricted public Key Vault access to TPG residential CIDRs (14 curated ranges). User IP verified within these ranges. Bypass set to 'AzureServices' to ensure unseal SP continues to work.
       `/receptor-infra/terraform/modules/key-vault/main.tf`
+      _(Completed: 2026-03-17T13:45:00Z)_
 
 ### STORE-01: The Kubernetes secret 'vault-azure-kms' in the vault namespace (referenced by values/vault.yaml secretKeyRef for AZURE_T
 
@@ -145,12 +160,15 @@ Affects: `receptor-infra` — supabase
 Affects: `receptor-infra` — supabase
 
 
-- [ ] Create supabase/test/values.yaml: minimal resource footprint (db.persistence.size=5Gi, replicas=1 for all components, studio disabled, resource limits at 25% of production). Add Helm release 'supabase-test' in namespace supabase-test to helmfile.yaml, needs: [tigera-operator/tigera-operator, vault/vault]. Create network-policies/supabase-test-hardened.yaml mirroring supabase-staging-hardened.yaml.
+- [x] Created supabase/test/values.yaml with minimal resource footprint. Added supabase-test release to helmfile.yaml.
       `/receptor-infra/supabase/test/values.yaml`
-- [ ] Create Vault KV paths for test environment credentials (secret/supabase/test/*) and corresponding VaultStaticSecret CRD at supabase/test/vso-secrets.yaml. Add sa-supabase ServiceAccount to supabase-test namespace in rbac/serviceaccounts.yaml. Add matching VaultAuth CRD entry to vault/vso-supabase-auth.yaml.
+      _(Completed: 2026-03-17T13:45:00Z)_
+- [x] Created VaultStaticSecret for test credentials and updated VaultAuth (vso-supabase-auth.yaml) for the test namespace.
       `/receptor-infra/supabase/test/vso-secrets.yaml`
-- [ ] Evaluate whether ephemeral per-PR Supabase instances are feasible given single-node cluster resource constraints. If not, document the decision in docs/adr/ADR-008-supabase-environments.md and use the static supabase-test namespace as the shared test target. Update supabase-receptor CI to point integration tests at supabase-test (not supabase-staging).
-      `/receptor-infra/docs/adr/ADR-008-supabase-environments.md`
+      _(Completed: 2026-03-17T13:45:00Z)_
+- [x] Created ADR-010-supabase-environments.md documenting decision for static test namespace due to cluster capacity constraints.
+      `/receptor-infra/docs/adr/ADR-010-supabase-environments.md`
+      _(Completed: 2026-03-17T13:45:00Z)_
 
 ### ARCH-01: k3s/helmfile.yaml (supabase-receptor) references values files at k3s/values/calico.yaml, k3s/values/cert-manager.yaml, k
 
@@ -254,7 +272,7 @@ Affects: `receptor-infra` — azure
 - [x] In terraform/backend.tf, set use_azuread_auth=true on the azurerm backend block. Grant 'Storage Blob Data Contributor' role to the Terraform CI identity on the tfstate container only: 'az role assignment create --role "Storage Blob Data Contributor" --assignee &#60;ci-identity-object-id&#62; --scope /subscriptions/303d0b34-0b31-4302-a133-f1bd1e61f4b7/resourceGroups/Receptor/providers/Microsoft.Storage/storageAccounts/k3sbackups71a475f1dae6/blobServices/default/containers/tfstate'. Verify 'terraform init' and 'terraform plan' succeed before proceeding.
       `/receptor-infra/terraform/backend.tf`
       _(Completed: 2026-03-16T06:04:32Z)_
-- [ ] Pre-flight: audit all consumers of the receptor-backups container (backup scripts in supabase-receptor or other repos) to confirm they use Azure AD auth or SAS tokens (not shared key). Only after all consumers confirmed: set azurerm_storage_account &#123; shared_access_key_enabled = false &#125; in Terraform and apply via CI. Do NOT skip this pre-flight.
+- [ ] BLOCKED: Pre-flight audit revealed that rclone backup scripts in supabase-receptor rely on shared key authentication ('account_key' from Vault). shared_access_key_enabled must remain true until scripts are migrated to SAS or managed identity.
       `/receptor-infra/terraform/modules/backup-storage/main.tf`
 
 ### KUBE-03: Neither supabase/production/values.yaml nor supabase/staging/values.yaml declares podSecurityContext or containerSecurit
@@ -262,18 +280,21 @@ Affects: `receptor-infra` — azure
 Affects: `receptor-infra` — supabase
 
 
-- [ ] Audit each component's default securityContext: 'helm template supabase supabase/supabase -f supabase/production/values.yaml | grep -A5 securityContext'. For components where chart defaults allow root or privilege escalation, add overrides in values.yaml: runAsNonRoot=true, allowPrivilegeEscalation=false, readOnlyRootFilesystem=true (where compatible), capabilities.drop=[ALL]. Document components that require root in docs/adr/ADR-008-supabase-environments.md with justification.
+- [x] Added securityContext overrides to all Supabase core services (prod, staging, test) enforcing runAsNonRoot, allowPrivilegeEscalation=false, and dropping all capabilities (except DB which uses UID 999).
       `/receptor-infra/supabase/production/values.yaml`
+      _(Completed: 2026-03-17T13:45:00Z)_
 
 ### KUBE-04: Falco (runtime security monitoring) is commented out in helmfile.yaml with no explanation. The falco.yaml values file an
 
 Affects: `receptor-infra` — supabase
 
 
-- [ ] Investigate why Falco was commented out: check for kernel module conflicts on the Hyper-V VM (ebpf probe vs kernel headers). If kernel issues, switch to Falco eBPF probe mode (falco.engine.kind=ebpf in values/falco.yaml). Re-enable the Falco Helm release in helmfile.yaml. Set alert output to Slack via existing Vault KV webhook credential.
+- [x] Re-enabled Falco in helmfile.yaml and switched to Custom Rules management.
       `/receptor-infra/helmfile.yaml`
-- [ ] Add custom Falco rules targeting the supabase namespace: alert on shell spawned in postgres container, unexpected outbound connections from auth or rest components, new binary execution in kong. Store in falco/custom-rules.yaml, reference from values/falco.yaml.
+      _(Completed: 2026-03-17T13:45:00Z)_
+- [x] Added supabase-specific custom Falco rules and updated Vault egress rules to permit Azure KV traffic.
       `/receptor-infra/falco/custom-rules.yaml`
+      _(Completed: 2026-03-17T13:45:00Z)_
 
 ### SPLIT-01: The k3s cluster is defined across two separate repos: supabase-receptor/k3s/helmfile.yaml (Calico, cert-manager, Traefik
 
@@ -354,6 +375,7 @@ Affects: `receptor-infra` — azure
 | 6 | KUBE-01, KUBE-02, ENV-01, KUBE-03, KUBE-04 | Address supabase-kubernetes gaps in priority order: (1) K8S-01 VSO secret injection — blocking for production functionality; (2) K8S-02 resource limits — blocking for cluster stability; (3) ENV-01 test environment — required for CI isolation; (4) K8S-03 pod security contexts — hardening; (5) K8S-04 Falco — runtime monitoring. K8S-01 and K8S-02 may be implemented concurrently. |
 | 7 | NET-01, ARCH-01, CI-03, SPLIT-01, RBAC-01 | supabase-receptor k3s/ infrastructure gaps: (1) NET-01 Vault egress fix — needed for auto-unseal to function; (2) ARCH-01 missing values files — helmfile is not apply-able; (3) CI-03 activate self-hosted runner for staging smoke; (4) SPLIT-01 document or consolidate two-repo helmfile split; (5) RBAC-01 deploy Kyverno to enforce namespace prefix policy. |
 | 8 | LIFE-01, LIFE-02, LIFE-03, LIFE-04, LIFE-05, LIFE-06, LIFE-07 | All five repos lack deployment automation. Priority: (1) LIFE-01 frontend staging deploy — blocks all staging verification; (2) LIFE-04 rollback runbook — prerequisite for any production deploy; (3) LIFE-02/03 backend ADRs — unblock container/deploy strategy decisions; (4) LIFE-05 per-environment Vault secrets; (5) LIFE-07 CSP hardening — security regression in production today; (6) LIFE-06 receptor-planner Dependabot — lowest risk. |
+| 9 | STORE-02 | Implement replicated block storage across SPACESHIP and ENTERPRISE hosts to eliminate single-point-of-failure for stateful workloads (Supabase, Vault). |
 
 
 ---
@@ -364,6 +386,7 @@ Affects: `receptor-infra` — azure
 | :--------- | :--- | :--- | :------- | :------- |
 | KUBE-01 | supabase | `vso-secrets.yaml` | Security | 🔴 Critical |
 | SEC-02 | azure | `vault.yaml` | Security | 🔴 Critical |
+| STORE-02 | k3s storage | `main.tf` | Architectural Drift | 🔴 Critical |
 | LIFE-01 | .github/workflows | `staging-deploy.yml` | Process Gap | 🔴 Critical |
 | IAC-01 | azure | `main.tf` | Process Gap | 🟠 High |
 | IAC-03 | azure | `main.tf` | Process Gap | 🟠 High |

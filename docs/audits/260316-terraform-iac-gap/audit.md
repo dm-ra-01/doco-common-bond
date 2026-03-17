@@ -34,6 +34,7 @@ The audit examined the `receptor-infra` repository, live Azure state, the supaba
 | `supabase-receptor` — CI smoke test | ❌ | 1 | Silently broken |
 | Two-repo helmfile split | ⚠️ | 1 | No apply-order doc |
 | `supabase-receptor` — RBAC (CI runner) | ⚠️ | 1 | Wildcard verbs, no admission control |
+| **Storage Redundancy** | ❌ | 1 | Single point of failure (local-path) |
 | **Frontend/Backend Lifecycle** | | | |
 | No deployment workflows (5 repos) | ❌ | 1 | All 5 app repos — CI only, no deploy |
 | No rollback procedure | ❌ | 1 | No runbook, no automation |
@@ -125,6 +126,14 @@ The audit examined the `receptor-infra` repository, live Azure state, the supaba
 
 ---
 
+## 2.2 Storage Redundancy
+
+**Gaps:**
+
+- **STORE-02 (Critical)** — The cluster currently uses the `local-path-provisioner` for all persistent volumes (Supabase, Vault). This binds data to the physical disk of the specific node where the pod is scheduled. While the k3s cluster spans two physical hosts (`SPACESHIP` and `ENTERPRISE`), the storage is not replicated between them. A host-level hardware failure or partition will result in immediate and potentially permanent data loss or unavailability for stateful services. Implementing a distributed block store (Longhorn) with cross-host replication is required for production HA.
+
+---
+
 ## 3. CI Workflow Coverage
 
 ### 3.1 Existing Workflow
@@ -203,6 +212,7 @@ The audit examined the `receptor-infra` repository, live Azure state, the supaba
 | ---------- | ----------------- | --------------- | -------- | -------- |
 | KUBE-01 | `receptor-infra` — supabase | `supabase/production/values.yaml` — unresolved `${...}` placeholders | Security | 🔴 Critical |
 | SEC-02 | Azure / `vault-k3s-unseal` + k8s `vault-azure-kms` | `values/vault.yaml` + App Registration | Security | 🔴 Critical |
+| STORE-02 | `receptor-infra` — k3s storage | *(absent)* — missing replication | Architectural Drift | 🔴 Critical |
 | LIFE-01 ⚑ | frontend repos | No deployment workflow in planner/preference/workforce frontends | Process Gap | 🔴 Critical |
 | IAC-01 | `receptor-infra` — Azure IaC | *(absent)* | Process Gap | 🔴 High |
 | IAC-03 | `receptor-infra` — Key Vault | *(absent)* | Process Gap | 🔴 High |
