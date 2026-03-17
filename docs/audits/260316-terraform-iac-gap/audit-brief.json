@@ -3,8 +3,8 @@
   "auditSlug": "260316-terraform-iac-gap",
   "status": "implementing",
   "nextAction": "implement",
-  "openTaskCount": 22,
-  "latestHandover": "Session 13: Phase 6 partial — KUBE-01 and KUBE-02 complete. (1) Committed side-session changes across 3 repos: receptor-infra SSH egress CIDR fix (172.29.80.0/24→10.10.0.0/24) + provisioning updates; documentation 3-node CP docs (ctrl-10, ctrl-11, ctrl-50) + vm-provisioning skill; dev-environment 4 new skills. (2) KUBE-01 (3 tasks): Created vault/vso-supabase-auth.yaml (VaultAuth + ServiceAccount for supabase and supabase-staging namespaces), supabase/production/vso-secrets.yaml and supabase/staging/vso-secrets.yaml (VaultStaticSecret CRDs syncing from Vault KV). Updated both values.yaml to use chart secretRef pattern — all ${} placeholders removed. Vault bootstrap instructions included in vso-supabase-auth.yaml comments. (3) KUBE-02 (2 tasks): Resource requests/limits for all 12 Supabase components in both prod and staging values.yaml. Production: db 500m/1Gi→2Gi, auth/rest/realtime/storage/kong/analytics/functions/imgproxy 100m/256Mi→512Mi, studio/meta/vector 50m/128Mi→256Mi. Staging: ~50% of production. User action required before helmfile sync: seed Vault KV paths (secret/supabase/production/credentials and staging), create Vault policies and k8s auth roles, apply VaultAuth + VaultStaticSecret CRDs. 22 open tasks remain. Next session: Phase 6 remainder (ENV-01 test environment, KUBE-03 pod security contexts, KUBE-04 Falco) or Phase 7 (supabase-receptor).",
+  "openTaskCount": 21,
+  "latestHandover": "Session 14: Vault kubernetes auth restoration + NET-01 complete. (1) Diagnosed and fixed Vault kubernetes auth 403 errors — two root causes: (a) allow-vault-egress NetworkPolicy excluded 10.0.0.0/8 from port 443 egress, blocking Vault TokenReview calls to the k8s API (ClusterIP 10.43.0.1 + endpoints 10.10.0.{10,30,50}:6443); (b) stale token_reviewer_jwt from Raft data restore. Fixed by adding egress rules for 10.43.0.1/32:443 and 10.10.0.0/24:6443, and clearing token_reviewer_jwt. (2) VSO now syncs supabase-credentials (12 keys each) in both supabase and supabase-staging namespaces. (3) Updated vault-configuration.md: Supabase secret paths, k8s auth config table with Raft restore caveat, NetworkPolicy requirement with Calico pre/post-DNAT explanation, all 4 k8s auth roles, Supabase VSO flow diagram. (4) NET-01-T1 marked complete — vault egress policy now allows Azure KV + k8s API. 21 open tasks remain. Next session: Phase 6 remainder (ENV-01, KUBE-03, KUBE-04) or Phase 7 (supabase-receptor).",
   "sessionHistory": [
     {
       "session": 1,
@@ -111,6 +111,14 @@
         "KUBE-01-T3",
         "KUBE-02-T1",
         "KUBE-02-T2"
+      ]
+    },
+    {
+      "session": 14,
+      "date": "2026-03-17",
+      "summary": "Vault kubernetes auth restoration + NET-01. Diagnosed two root causes for VSO 403 errors: (a) allow-vault-egress NetworkPolicy excluded 10.0.0.0/8, blocking TokenReview to k8s API; (b) stale token_reviewer_jwt from Raft restore. Fixed NetworkPolicy (added 10.43.0.1/32:443 + 10.10.0.0/24:6443 egress rules). Cleared token_reviewer_jwt. VSO now syncs supabase-credentials (12 keys) in both namespaces. Updated vault-configuration.md with Supabase secret paths, k8s auth config, NetworkPolicy requirement, Raft restore caveat.",
+      "completedTasks": [
+        "NET-01-T1"
       ]
     }
   ]

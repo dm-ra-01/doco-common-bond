@@ -498,11 +498,11 @@
       "tasks": [
         {
           "taskId": "NET-01-T1",
-          "status": "open",
+          "status": "complete",
           "description": "Add an egress rule to the vault namespace NetworkPolicy allowing outbound port 443 to the Azure Key Vault endpoint (k3sunlock.vault.azure.net). Use an ipBlock cidr covering Azure Key Vault IPs for australiasoutheast, or configure an FQDN-based egress policy if Calico GlobalNetworkPolicy is available. Verify by restarting the Vault pod and confirming 'vault status' reports Initialized=true, Sealed=false.",
           "targetFile": "/supabase-receptor/k3s/network-policies/network-policies.yaml",
-          "completedAt": null,
-          "completedBy": null
+          "completedAt": "2026-03-17T01:10:57Z",
+          "completedBy": "session-14"
         }
       ],
       "severity_history": []

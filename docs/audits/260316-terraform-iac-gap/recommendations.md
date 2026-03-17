@@ -165,8 +165,9 @@ Affects: `supabase-receptor` — k3s
 Affects: `supabase-receptor` — k3s
 
 
-- [ ] Add an egress rule to the vault namespace NetworkPolicy allowing outbound port 443 to the Azure Key Vault endpoint (k3sunlock.vault.azure.net). Use an ipBlock cidr covering Azure Key Vault IPs for australiasoutheast, or configure an FQDN-based egress policy if Calico GlobalNetworkPolicy is available. Verify by restarting the Vault pod and confirming 'vault status' reports Initialized=true, Sealed=false.
+- [x] Add an egress rule to the vault namespace NetworkPolicy allowing outbound port 443 to the Azure Key Vault endpoint (k3sunlock.vault.azure.net). Use an ipBlock cidr covering Azure Key Vault IPs for australiasoutheast, or configure an FQDN-based egress policy if Calico GlobalNetworkPolicy is available. Verify by restarting the Vault pod and confirming 'vault status' reports Initialized=true, Sealed=false.
       `/supabase-receptor/k3s/network-policies/network-policies.yaml`
+      _(Completed: 2026-03-17T01:10:57Z)_
 
 ### LIFE-02: match-backend has a Dockerfile and a full CI pipeline (unit + integration tests) but no image build/push workflow and no
 
@@ -391,12 +392,3 @@ Affects: `receptor-infra` — azure
 | LIFE-07 | next.config.ts | `next.config.ts` | Security | 🟡 Medium |
 | ARM-01 | azure | `backup-storage-account.parameters.json` | Tech Debt | 🟢 Low |
 
----
-
-## Session Close — 2026-03-17
-
-**Completed:** KUBE-01-T1, KUBE-01-T2, KUBE-01-T3, KUBE-02-T1, KUBE-02-T2
-**Remaining:** SEC-01-T1 (BLOCKED — receptor-infra), SEC-04-T2 (receptor-infra), ENV-01-T1/T2/T3 (receptor-infra), KUBE-03-T1 (receptor-infra), KUBE-04-T1/T2 (receptor-infra), ARCH-01-T1 (supabase-receptor), NET-01-T1 (supabase-receptor), SPLIT-01-T1/T2 (supabase-receptor), CI-03-T1 (supabase-receptor), RBAC-01-T1 (supabase-receptor), LIFE-01-T1/T2 (planner-frontend), LIFE-02-T1 (match-backend), LIFE-03-T1 (receptor-planner), LIFE-04-T1 (planner-frontend), LIFE-05-T1 (planner-frontend), LIFE-06-T1 (receptor-planner), LIFE-07-T1 (planner-frontend)
-**Blocked:** SEC-01-T1 (dynamic Hyper-V egress IP — need static IP or NAT gateway)
-**PR order note:** receptor-infra changes include Vault CRDs that must be applied (kubectl apply) before helmfile sync picks up the new values.yaml secretRef. No cross-repo PR dependency for this session.
-**Brief for next agent:** (1) Side-session changes committed: SSH CIDR fix, 3-node CP docs, vm-provisioning skill. (2) Supabase chart uses `secret.<section>.secretRef` + `secretRefKey` pattern (not `existingSecret`). Values.yaml references `supabase-credentials` k8s Secret in each namespace. (3) User action required before helmfile sync: Vault policies, k8s auth roles, and KV secret seeding — full bootstrap instructions in `vault/vso-supabase-auth.yaml` header comments. (4) Supabase generates JWT secrets at init time; user may need to extract from running cluster or generate new ones (instructions in comments). (5) Next: Phase 6 remainder (ENV-01 test env, KUBE-03 pod security, KUBE-04 Falco) or Phase 7 (supabase-receptor gaps).
