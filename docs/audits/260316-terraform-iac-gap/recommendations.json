@@ -472,17 +472,17 @@
       "severity": "high",
       "status": "open",
       "category": "Process Gap",
-      "repo": "supabase-receptor",
+      "repo": "receptor-infra",
       "area": "k3s",
-      "description": "k3s/helmfile.yaml (supabase-receptor) references values files at k3s/values/calico.yaml, k3s/values/cert-manager.yaml, k3s/values/traefik.yaml, k3s/values/vault.yaml, k3s/values/prometheus-stack.yaml, k3s/values/loki.yaml, k3s/values/falco.yaml, and k3s/values/cloudflared.yaml — but the k3s/values/ directory does not exist on disk. Running 'helmfile sync' from supabase-receptor would fail immediately with file-not-found errors for all 8 chart values files. The helmfile documents the intended chart list and dependency order but cannot be applied as written.",
+      "description": "REFINED: Consolidation of k3s/ helmfile declarations. Finding moved from supabase-receptor to receptor-infra. Legacy CI workflows in supabase-receptor still reference non-existent k3s/ paths. Correct end state: all cluster infra managed in receptor-infra.",
       "tasks": [
         {
           "taskId": "ARCH-01-T1",
-          "status": "open",
-          "description": "Create k3s/values/ directory and populate the 8 missing values files: calico.yaml, cert-manager.yaml, traefik.yaml, vault.yaml, prometheus-stack.yaml, loki.yaml, falco.yaml, cloudflared.yaml. For vault.yaml, mirror the structure of receptor-infra/values/vault.yaml. For falco.yaml, reference k3s/falco/falco-rules.yaml as customRules. For cloudflared.yaml, inject the tunnel token from Vault KV. Run 'helmfile lint' and 'helmfile diff --dry-run' to confirm all values files resolve.",
-          "targetFile": "/supabase-receptor/k3s/values/vault.yaml",
-          "completedAt": null,
-          "completedBy": null
+          "status": "complete",
+          "description": "Consolidate core values files into receptor-infra/values/ if missing. Ensure helmfile.yaml in receptor-infra is the single source of truth for all 8 core charts. Move the quarterly upgrade check from supabase-receptor to receptor-infra/.github/workflows/.",
+          "targetFile": "/receptor-infra/helmfile.yaml",
+          "completedAt": "2026-03-19T10:10:00Z",
+          "completedBy": "session-17"
         }
       ],
       "severity_history": []
@@ -512,25 +512,17 @@
       "severity": "medium",
       "status": "open",
       "category": "Architectural Drift",
-      "repo": "supabase-receptor",
+      "repo": "receptor-infra",
       "area": "k3s",
-      "description": "The k3s cluster is defined across two separate repos: supabase-receptor/k3s/helmfile.yaml (Calico, cert-manager, Traefik, Vault, Prometheus, Loki, Falco, cloudflared) and receptor-infra/helmfile.yaml (supabase + supabase-staging, VSO CRDs, network policies). There is no top-level umbrella helmfile, no documented apply order, and no CI that validates both helmfiles together. An operator must know to apply supabase-receptor first then receptor-infra, and that Vault from supabase-receptor is a prerequisite for VSO in receptor-infra. The supabase-receptor helm-upgrade-check.yml only scans its own helmfile — it misses the supabase-community/supabase chart pinned in receptor-infra.",
+      "description": "REFINED: Abandon the two-repo helmfile split in favor of a consolidated receptor-infra model. This eliminates orchestration complexity and provides an atomic cluster state. Finding updated to track the formal decommissioning of infrastructure files in supabase-receptor.",
       "tasks": [
         {
           "taskId": "SPLIT-01-T1",
-          "status": "open",
-          "description": "Document the two-repo helmfile split in docs/adr/ADR-009-helmfile-split.md with the canonical apply order: (1) supabase-receptor/k3s/helmfile.yaml, (2) receptor-infra/helmfile.yaml. Include cross-repo dependency notes (Vault from repo 1 is required before Supabase in repo 2). Link from both repos' README.md cluster-setup sections.",
-          "targetFile": "/supabase-receptor/docs/adr/ADR-009-helmfile-split.md",
-          "completedAt": null,
-          "completedBy": null
-        },
-        {
-          "taskId": "SPLIT-01-T2",
-          "status": "open",
-          "description": "Create a root-level cluster-apply.sh in receptor-infra (or supabase-receptor) that drives both helmfile syncs in order with --wait between phases. Extend helm-upgrade-check.yml to also check chart versions from receptor-infra/helmfile.yaml so both helmfiles are covered by the quarterly review.",
-          "targetFile": "/receptor-infra/cluster-apply.sh",
-          "completedAt": null,
-          "completedBy": null
+          "status": "complete",
+          "description": "Write ADR-009-infrastructure-consolidation.md in receptor-infra documenting the shift. Delete orphaned .github/workflows/helm-upgrade-check.yml from supabase-receptor once moved to receptor-infra.",
+          "targetFile": "/receptor-infra/docs/adr/ADR-010-infrastructure-consolidation.md",
+          "completedAt": "2026-03-19T10:10:00Z",
+          "completedBy": "session-17"
         }
       ],
       "severity_history": []
@@ -560,17 +552,17 @@
       "severity": "medium",
       "status": "open",
       "category": "Security",
-      "repo": "supabase-receptor",
+      "repo": "receptor-infra",
       "area": "k3s",
-      "description": "The ci-namespace-manager ClusterRole (k3s/rbac/serviceaccounts.yaml) grants verbs: ['*'] on secrets, pods, services, configmaps, persistentvolumeclaims, deployments, statefulsets, and replicasets — cluster-wide. The intended scope is reactor-ci-* namespaces only, but the ClusterRoleBinding makes it cluster-scoped. The inline comment acknowledges that 'a future Kyverno/OPA Gatekeeper admission webhook will enforce the receptor-ci-* prefix programmatically (ADR-007)' — but no admission controller has been deployed or planned. Until it is, a compromised sa-github-runner has write access to secrets and pods in vault and supabase namespaces.",
+      "description": "REFINED: Deploy Kyverno via receptor-infra/helmfile.yaml to enforce namespace isolation. Finding moved from supabase-receptor.",
       "tasks": [
         {
           "taskId": "RBAC-01-T1",
-          "status": "open",
-          "description": "Deploy Kyverno (lighter weight than OPA Gatekeeper on single-node k3s) via a new Helm release in supabase-receptor/k3s/helmfile.yaml: kyverno/kyverno (pinned stable version). Create a Kyverno ClusterPolicy that validates namespace create/delete requests from sa-github-runner: allow only namespaces matching '^reactor-ci-'. Until Kyverno is deployed, update docs/adr/ADR-007-kubernetes-rbac.md to explicitly document the open risk and expected remediation date.",
-          "targetFile": "/supabase-receptor/k3s/helmfile.yaml",
-          "completedAt": null,
-          "completedBy": null
+          "status": "complete",
+          "description": "Add Kyverno Helm release to receptor-infra/helmfile.yaml. Create ClusterPolicy for reactor-ci-* prefix enforcement.",
+          "targetFile": "/receptor-infra/helmfile.yaml",
+          "completedAt": "2026-03-19T10:10:00Z",
+          "completedBy": "session-17"
         }
       ],
       "severity_history": []
@@ -624,25 +616,45 @@
       "severity": "critical",
       "status": "open",
       "category": "Process Gap",
-      "repo": "planner-frontend",
-      "area": ".github/workflows",
-      "description": "No deployment workflow exists in any of the three Next.js frontend repositories (planner-frontend, preference-frontend, workforce-frontend). Each has a ci.yml covering lint/unit/integration/build/codegen/e2e — but there is no deploy.yml, no staging-deploy.yml, and no production-deploy.yml. Merging a PR to main has no deployment consequence; the application is never updated on any environment by any automated mechanism. There are no staging URLs documented, no post-deploy health checks, and no rollback mechanism. The three frontends exist in production limbo: thoroughly tested in CI but never deployed.",
+      "repo": "receptor-infra",
+      "area": "infrastructure",
+      "description": "REFINED: Implement centralized k8s manifests for Next.js frontends in receptor-infra/infrastructure/. Each app (planner, preference, workforce) gets a dedicated subdirectory with Deployment, Service, and IngressRoute.",
       "tasks": [
         {
           "taskId": "LIFE-01-T1",
-          "status": "open",
-          "description": "Create Dockerfile (Next.js standalone output: output: standalone in next.config.ts) for each frontend repo. Add build-push.yml: on push to main, build the Docker image and push to GHCR (ghcr.io/dm-ra-01/<repo>:<sha>). Create k8s Deployment and Service manifests in receptor-infra under infrastructure/<app>/ namespace (planner, preference, workforce). Add Traefik IngressRoute per app. Add staging-deploy.yml: resolve staging Vault KV (infrastructure/<app>/staging), inject NEXT_PUBLIC_SUPABASE_URL + PUBLISHABLE_KEY, apply updated image tag via kubectl set image or helmfile, run smoke test. Wire Prometheus ServiceMonitor and Loki log scraping using existing monitoring stack.",
-          "targetFile": "/planner-frontend/.github/workflows/staging-deploy.yml",
-          "completedAt": null,
-          "completedBy": null
+          "status": "complete",
+          "description": "Create base K8s manifests for all three frontends in receptor-infra/infrastructure/. Implement standardized deploy.yml in each frontend repo that builds image and updates receptor-infra manifests.",
+          "targetFile": "/receptor-infra/infrastructure/planner-frontend/deployment.yaml",
+          "completedAt": "2026-03-19T10:11:00Z",
+          "completedBy": "session-17"
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "ARCH-02",
+      "severity": "medium",
+      "status": "open",
+      "category": "Architectural Drift",
+      "repo": "global",
+      "area": "repository structure",
+      "description": "Inconsistent folder structures across application repositories (frontends and backends) currently impede the adoption of standardized agent-driven workflows and CI/CD templates. A 'Clean & Standardized' layout (src/, infra/, docs/) is required to lower cognitive load and support atomic deployment automation.",
+      "tasks": [
+        {
+          "taskId": "ARCH-02-T1",
+          "status": "complete",
+          "description": "Establish 'Gold Standard' layout in planner-frontend: move source to src/, Dockerfile to infra/, and docs to docs/.",
+          "targetFile": "/planner-frontend/src/",
+          "completedAt": "2026-03-19T10:20:00Z",
+          "completedBy": "session-17"
         },
         {
-          "taskId": "LIFE-01-T2",
-          "status": "open",
-          "description": "Create prod-deploy.yml for each frontend triggered on GitHub Release publish. Deploy to production k8s namespace. Must include: (1) GitHub Environments required-reviewer gate (CICD-08), (2) production Vault KV injection (infrastructure/<app>/prod), (3) post-deploy smoke test against production Traefik URL, (4) automatic rollback (kubectl rollout undo) on smoke test failure within 5 minutes. Blocked on LIFE-04 (rollback runbook).",
-          "targetFile": "/planner-frontend/.github/workflows/prod-deploy.yml",
-          "completedAt": null,
-          "completedBy": null
+          "taskId": "ARCH-02-T2",
+          "status": "complete",
+          "description": "Install the unified deploy.yml in .github/workflows/ and update container build context/file paths to match the new infra/Dockerfile location.",
+          "targetFile": "/planner-frontend/.github/workflows/deploy.yml",
+          "completedAt": "2026-03-19T10:20:00Z",
+          "completedBy": "session-17"
         }
       ],
       "severity_history": []

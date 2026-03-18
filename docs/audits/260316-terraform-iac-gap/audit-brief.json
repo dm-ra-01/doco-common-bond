@@ -3,8 +3,8 @@
   "auditSlug": "260316-terraform-iac-gap",
   "status": "implementing",
   "nextAction": "implement",
-  "openTaskCount": 14,
-  "latestHandover": "Session 16: Implemented STORE-02 (Longhorn High-Availability Storage). Verified longhorn-backups container in Terraform, longhorn helm release, and Supabase storageClass updates. 14 open tasks remain.",
+  "openTaskCount": 8,
+  "latestHandover": "Session 17: Implemented ARCH-01 (infrastructure consolidation into receptor-infra), SPLIT-01 (unified CI), RBAC-01 (Kyverno namespace isolation policy), ARCH-02 (Gold Standard repo layout across all 5 app repos), and LIFE-01 (deploy.yml + GitHub App auth). helmfile lint passes (0 failures). All 5 repos now have infra/Dockerfile, .github/workflows/deploy.yml, and DEPLOY_BOT_APP_ID/DEPLOY_BOT_PRIVATE_KEY secrets set. 8 open tasks remain (primarily lifecycle LIFE-02 through LIFE-07 and remaining security findings SEC-01, NET-01).",
   "sessionHistory": [
     {
       "sessionDate": "2026-03-16",
@@ -87,6 +87,17 @@
         "STORE-02"
       ],
       "summary": "Implementation session 4. Implemented Phase 9 (STORE-02): Verified longhorn-backups container in Terraform, longhorn release in helmfile, and updated Supabase storageClass to longhorn. 14 findings remain."
+    },
+    {
+      "sessionDate": "2026-03-19",
+      "completedFindingIds": [
+        "ARCH-01",
+        "SPLIT-01",
+        "RBAC-01",
+        "ARCH-02",
+        "LIFE-01"
+      ],
+      "summary": "Implementation session 5. Consolidated all k3s cluster management into receptor-infra (ARCH-01/SPLIT-01, ADR-010). Deployed Kyverno with receptor-ci-* namespace isolation ClusterPolicy (RBAC-01). Created centralized K8s manifests for all 5 app repos in receptor-infra/infrastructure/. Established Gold Standard repo layout (src/, infra/Dockerfile, .github/workflows/deploy.yml) across planner-frontend, preference-frontend, workforce-frontend, match-backend, receptor-planner (ARCH-02/LIFE-01). Implemented GitHub App auth (app-lifecycle-deployment, ID 3127975) replacing PAT pattern. helmfile lint 0 failures. 8 open tasks remain."
     }
   ]
 }

@@ -84,15 +84,14 @@ Affects: `receptor-infra` — k3s storage
       `/receptor-infra/supabase/production/values.yaml`
       _(Completed: 2026-03-17T03:08:48Z)_
 
-### LIFE-01: No deployment workflow exists in any of the three Next.js frontend repositories (planner-frontend, preference-frontend, 
+### LIFE-01: REFINED: Implement centralized k8s manifests for Next.js frontends in receptor-infra/infrastructure/. Each app (planner,
 
-Affects: `planner-frontend` — .github/workflows
+Affects: `receptor-infra` — infrastructure
 
 
-- [ ] Create Dockerfile (Next.js standalone output: output: standalone in next.config.ts) for each frontend repo. Add build-push.yml: on push to main, build the Docker image and push to GHCR (ghcr.io/dm-ra-01/&#60;repo&#62;:&#60;sha&#62;). Create k8s Deployment and Service manifests in receptor-infra under infrastructure/&#60;app&#62;/ namespace (planner, preference, workforce). Add Traefik IngressRoute per app. Add staging-deploy.yml: resolve staging Vault KV (infrastructure/&#60;app&#62;/staging), inject NEXT_PUBLIC_SUPABASE_URL + PUBLISHABLE_KEY, apply updated image tag via kubectl set image or helmfile, run smoke test. Wire Prometheus ServiceMonitor and Loki log scraping using existing monitoring stack.
-      `/planner-frontend/.github/workflows/staging-deploy.yml`
-- [ ] Create prod-deploy.yml for each frontend triggered on GitHub Release publish. Deploy to production k8s namespace. Must include: (1) GitHub Environments required-reviewer gate (CICD-08), (2) production Vault KV injection (infrastructure/&#60;app&#62;/prod), (3) post-deploy smoke test against production Traefik URL, (4) automatic rollback (kubectl rollout undo) on smoke test failure within 5 minutes. Blocked on LIFE-04 (rollback runbook).
-      `/planner-frontend/.github/workflows/prod-deploy.yml`
+- [x] Create base K8s manifests for all three frontends in receptor-infra/infrastructure/. Implement standardized deploy.yml in each frontend repo that builds image and updates receptor-infra manifests.
+      `/receptor-infra/infrastructure/planner-frontend/deployment.yaml`
+      _(Completed: 2026-03-19T10:11:00Z)_
 
 ## 🟠 High
 
@@ -174,13 +173,14 @@ Affects: `receptor-infra` — supabase
       `/receptor-infra/docs/adr/ADR-010-supabase-environments.md`
       _(Completed: 2026-03-17T13:45:00Z)_
 
-### ARCH-01: k3s/helmfile.yaml (supabase-receptor) references values files at k3s/values/calico.yaml, k3s/values/cert-manager.yaml, k
+### ARCH-01: REFINED: Consolidation of k3s/ helmfile declarations. Finding moved from supabase-receptor to receptor-infra. Legacy CI 
 
-Affects: `supabase-receptor` — k3s
+Affects: `receptor-infra` — k3s
 
 
-- [ ] Create k3s/values/ directory and populate the 8 missing values files: calico.yaml, cert-manager.yaml, traefik.yaml, vault.yaml, prometheus-stack.yaml, loki.yaml, falco.yaml, cloudflared.yaml. For vault.yaml, mirror the structure of receptor-infra/values/vault.yaml. For falco.yaml, reference k3s/falco/falco-rules.yaml as customRules. For cloudflared.yaml, inject the tunnel token from Vault KV. Run 'helmfile lint' and 'helmfile diff --dry-run' to confirm all values files resolve.
-      `/supabase-receptor/k3s/values/vault.yaml`
+- [x] Consolidate core values files into receptor-infra/values/ if missing. Ensure helmfile.yaml in receptor-infra is the single source of truth for all 8 core charts. Move the quarterly upgrade check from supabase-receptor to receptor-infra/.github/workflows/.
+      `/receptor-infra/helmfile.yaml`
+      _(Completed: 2026-03-19T10:10:00Z)_
 
 ### NET-01: The vault namespace NetworkPolicy in k3s/network-policies/network-policies.yaml restricts all egress to DNS only (port 5
 
@@ -300,15 +300,14 @@ Affects: `receptor-infra` — supabase
       `/receptor-infra/falco/custom-rules.yaml`
       _(Completed: 2026-03-17T13:45:00Z)_
 
-### SPLIT-01: The k3s cluster is defined across two separate repos: supabase-receptor/k3s/helmfile.yaml (Calico, cert-manager, Traefik
+### SPLIT-01: REFINED: Abandon the two-repo helmfile split in favor of a consolidated receptor-infra model. This eliminates orchestrat
 
-Affects: `supabase-receptor` — k3s
+Affects: `receptor-infra` — k3s
 
 
-- [ ] Document the two-repo helmfile split in docs/adr/ADR-009-helmfile-split.md with the canonical apply order: (1) supabase-receptor/k3s/helmfile.yaml, (2) receptor-infra/helmfile.yaml. Include cross-repo dependency notes (Vault from repo 1 is required before Supabase in repo 2). Link from both repos' README.md cluster-setup sections.
-      `/supabase-receptor/docs/adr/ADR-009-helmfile-split.md`
-- [ ] Create a root-level cluster-apply.sh in receptor-infra (or supabase-receptor) that drives both helmfile syncs in order with --wait between phases. Extend helm-upgrade-check.yml to also check chart versions from receptor-infra/helmfile.yaml so both helmfiles are covered by the quarterly review.
-      `/receptor-infra/cluster-apply.sh`
+- [x] Write ADR-009-infrastructure-consolidation.md in receptor-infra documenting the shift. Delete orphaned .github/workflows/helm-upgrade-check.yml from supabase-receptor once moved to receptor-infra.
+      `/receptor-infra/docs/adr/ADR-010-infrastructure-consolidation.md`
+      _(Completed: 2026-03-19T10:10:00Z)_
 
 ### CI-03: staging-smoke.yml runs on 'ubuntu-latest' (GitHub-hosted runner). The workflow's inline comment explicitly states: 'On G
 
@@ -318,13 +317,26 @@ Affects: `supabase-receptor` — .github/workflows
 - [ ] Check whether the ARCH-03 7-run trial gate from 260312-cicd-environments has been met. If met: uncomment 'runs-on: [self-hosted, k3s]' and comment out 'ubuntu-latest' in staging-smoke.yml. If not met: document the remaining count and continue the trial with ci.yml first. Confirm the arc-runner-receptor-infra runner is registered and labelled 'k3s' before switching.
       `/supabase-receptor/.github/workflows/staging-smoke.yml`
 
-### RBAC-01: The ci-namespace-manager ClusterRole (k3s/rbac/serviceaccounts.yaml) grants verbs: ['*'] on secrets, pods, services, con
+### RBAC-01: REFINED: Deploy Kyverno via receptor-infra/helmfile.yaml to enforce namespace isolation. Finding moved from supabase-rec
 
-Affects: `supabase-receptor` — k3s
+Affects: `receptor-infra` — k3s
 
 
-- [ ] Deploy Kyverno (lighter weight than OPA Gatekeeper on single-node k3s) via a new Helm release in supabase-receptor/k3s/helmfile.yaml: kyverno/kyverno (pinned stable version). Create a Kyverno ClusterPolicy that validates namespace create/delete requests from sa-github-runner: allow only namespaces matching '^reactor-ci-'. Until Kyverno is deployed, update docs/adr/ADR-007-kubernetes-rbac.md to explicitly document the open risk and expected remediation date.
-      `/supabase-receptor/k3s/helmfile.yaml`
+- [x] Add Kyverno Helm release to receptor-infra/helmfile.yaml. Create ClusterPolicy for reactor-ci-* prefix enforcement.
+      `/receptor-infra/helmfile.yaml`
+      _(Completed: 2026-03-19T10:10:00Z)_
+
+### ARCH-02: Inconsistent folder structures across application repositories (frontends and backends) currently impede the adoption of
+
+Affects: `global` — repository structure
+
+
+- [x] Establish 'Gold Standard' layout in planner-frontend: move source to src/, Dockerfile to infra/, and docs to docs/.
+      `/planner-frontend/src/`
+      _(Completed: 2026-03-19T10:20:00Z)_
+- [x] Install the unified deploy.yml in .github/workflows/ and update container build context/file paths to match the new infra/Dockerfile location.
+      `/planner-frontend/.github/workflows/deploy.yml`
+      _(Completed: 2026-03-19T10:20:00Z)_
 
 ### LIFE-05: The three Next.js frontend CI pipelines all run integration tests against a locally booted Supabase instance but have no
 
@@ -391,14 +403,14 @@ Affects: `receptor-infra` — azure
 | KUBE-01 | supabase | `vso-secrets.yaml` | Security | 🔴 Critical |
 | SEC-02 | azure | `vault.yaml` | Security | 🔴 Critical |
 | STORE-02 | k3s storage | `main.tf` | Architectural Drift | 🔴 Critical |
-| LIFE-01 | .github/workflows | `staging-deploy.yml` | Process Gap | 🔴 Critical |
+| LIFE-01 | infrastructure | `deployment.yaml` | Process Gap | 🔴 Critical |
 | IAC-01 | azure | `main.tf` | Process Gap | 🟠 High |
 | IAC-03 | azure | `main.tf` | Process Gap | 🟠 High |
 | SEC-01 | azure | `main.tf` | Security | 🟠 High |
 | STORE-01 | vault | `vso-azure-kms-secret.yaml` | Process Gap | 🟠 High |
 | KUBE-02 | supabase | `values.yaml` | Security | 🟠 High |
 | ENV-01 | supabase | `values.yaml` | Process Gap | 🟠 High |
-| ARCH-01 | k3s | `vault.yaml` | Process Gap | 🟠 High |
+| ARCH-01 | k3s | `helmfile.yaml` | Process Gap | 🟠 High |
 | NET-01 | k3s | `network-policies.yaml` | Security | 🟠 High |
 | LIFE-02 | .github/workflows | `build-push.yml` | Process Gap | 🟠 High |
 | LIFE-03 | .github/workflows | `Dockerfile` | Process Gap | 🟠 High |
@@ -411,15 +423,12 @@ Affects: `receptor-infra` — azure
 | SEC-04 | azure | `backend.tf` | Security | 🟡 Medium |
 | KUBE-03 | supabase | `values.yaml` | Security | 🟡 Medium |
 | KUBE-04 | supabase | `helmfile.yaml` | Process Gap | 🟡 Medium |
-| SPLIT-01 | k3s | `ADR-009-helmfile-split.md` | Architectural Drift | 🟡 Medium |
+| SPLIT-01 | k3s | `ADR-010-infrastructure-consolidation.md` | Architectural Drift | 🟡 Medium |
 | CI-03 | .github/workflows | `staging-smoke.yml` | Process Gap | 🟡 Medium |
 | RBAC-01 | k3s | `helmfile.yaml` | Security | 🟡 Medium |
+| ARCH-02 | repository structure | `src` | Architectural Drift | 🟡 Medium |
 | LIFE-05 | .github/workflows | `staging-deploy.yml` | Process Gap | 🟡 Medium |
 | LIFE-06 | .github | `dependabot.yml` | Process Gap | 🟡 Medium |
 | LIFE-07 | next.config.ts | `next.config.ts` | Security | 🟡 Medium |
 | ARM-01 | azure | `backup-storage-account.parameters.json` | Tech Debt | 🟢 Low |
-
-## Session Close — 2026-03-17
-
-**Completed:** STORE-02 **Remaining:** 14 findings  **Blocked:** None **PR order note:** None **Brief for next agent:** STORE-02 was implemented in the codebase by previous sessions but was not marked complete. Validated the changes and marked them off.
 

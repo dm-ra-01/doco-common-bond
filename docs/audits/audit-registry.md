@@ -10,7 +10,7 @@ sidebar_position: 1
 > platform. Each entry links to the source `audit.md` and `recommendations.md`
 > where they live inside the relevant repository's `docs/audits/` folder.
 
-**Last Updated:** 2026-03-16 | **Maintained by:** Engineering Leadership
+**Last Updated:** 2026-03-19 | **Maintained by:** Engineering Leadership
 
 ---
 
