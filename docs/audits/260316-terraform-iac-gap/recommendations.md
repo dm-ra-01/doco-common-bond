@@ -432,3 +432,46 @@ Affects: `receptor-infra` — azure
 | LIFE-07 | next.config.ts | `next.config.ts` | Security | 🟡 Medium |
 | ARM-01 | azure | `backup-storage-account.parameters.json` | Tech Debt | 🟢 Low |
 
+
+---
+
+## Session Close — 2026-03-19 (Session 17)
+
+### Completed
+
+| Finding | Title | Status |
+|---|---|---|
+| ARCH-01 | Infrastructure Consolidation | ✅ Complete |
+| SPLIT-01 | Helmfile Split / Apply Order | ✅ Complete |
+| RBAC-01 | CI Namespace Isolation | ✅ Complete |
+| ARCH-02 | Repository Structure Standardization | ✅ Complete |
+| LIFE-01 | Deployment Workflow — All Repos | ✅ Complete |
+
+**Key deliverables:**
+- `receptor-infra` is now the single source of truth for all k3s cluster management (ADR-010)
+- Kyverno `ClusterPolicy` enforces `receptor-ci-*` namespace prefix for all CI runners
+- K8s manifests created for all 5 app repos in `receptor-infra/infrastructure/`
+- Gold Standard layout (`src/`, `infra/Dockerfile`, `.github/workflows/deploy.yml`) applied to all 5 app repos
+- GitHub App (`app-lifecycle-deployment`, ID 3127975) replaces PAT for cross-repo deploy auth
+- `helmfile lint` — 0 failures
+
+### Remaining (8 open tasks)
+
+| Finding | Title | Remaining |
+|---|---|---|
+| SEC-01 | KV Network ACLs | Blocked — dynamic Hyper-V egress IP |
+| NET-01 | Vault Egress NetworkPolicy | 1 task |
+| LIFE-02 | Smoke test after first deploy | 1 task |
+| LIFE-03 through LIFE-07 | Lifecycle remaining | 5 tasks |
+
+### Blocked
+
+- **SEC-01-T1**: Azure Key Vault network ACL requires static egress IP from Hyper-V host. Unblocks when a static NAT or Cloudflare tunnel egress is configured.
+
+### PR Order Note
+
+All changes committed directly to `main` in each repo (agreed with human for this session; pre-production environment). No PRs required. `/finalise-global-audit` applies when all 8 remaining tasks are resolved.
+
+### Brief for Next Agent
+
+Pick up `LIFE-02` (first smoke test deployment) once Vault KV paths are seeded at `secret/infrastructure/<app>/staging`. `NET-01` (egress NetworkPolicy for Vault auto-unseal) can be addressed independently. `SEC-01` remains blocked on a static egress IP decision. All 5 app repos are fully standardized and ready for their first `main` push to trigger the end-to-end CI/CD pipeline.
