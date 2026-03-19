@@ -200,15 +200,210 @@ The most significant structural finding is that **the Standards Register has no 
 | STD-01 | Standards Register | `docs/registers/standards-register.md` | Process Gap | 🔴 Critical |
 | STD-02 | Standards Register | `docs/registers/standards-register.md` | Compliance | 🔴 Critical |
 | AVAIL-01 | Business Continuity | `docs/compliance/iso27001/operations/business-continuity.md` | Compliance | 🔴 Critical |
+| PROP-01 | Statement of Applicability | `docs/compliance/iso27001/statement-of-applicability.md` | Compliance | 🔴 Critical |
 | SEC-01 | Application security tests | Cross-ecosystem | Compliance | 🟠 High |
 | SEC-02 | Supply-chain / SHA-pinning | Cross-ecosystem workflows | Compliance | 🟠 High |
 | SEC-03 | Kubernetes cluster security | `supabase-receptor` k3s, `receptor-infra` | Compliance | 🟠 High |
 | AVAIL-02 | ICT readiness | Cross-ecosystem infrastructure | Compliance | 🟠 High |
 | INT-01 | Secure dev lifecycle | Cross-ecosystem CI/CD | Compliance | 🟠 High |
 | AI-01 | AI governance register | `docs/registers/standards-register.md` | Process Gap | 🟠 High |
+| PROP-02 | Risk register standard citations | `docs/compliance/iso27001/risk-management/risk-register.md` | Process Gap | 🟠 High |
+| PROP-03 | Agent security boundary | `dev-environment/.agents/` | Security | 🟠 High |
+| PROP-04 | Penetration testing procedure | `docs/compliance/iso27001/operations/` | Compliance | 🟠 High |
+| PROP-05 | Privacy Impact Assessment | `docs/compliance/` | Compliance | 🟠 High |
 | INT-02 | IaC / cloud security baseline | `receptor-infra` | Compliance | 🟡 Medium |
 | TEST-01 | Security test verification | Cross-ecosystem | Compliance | 🟡 Medium |
 | TEST-02 | Accessibility testing | Frontend repos | Compliance | 🟡 Medium |
 | PERF-01 | SLO definitions | Cross-ecosystem | Process Gap | 🟡 Medium |
 | PERF-02 | Observability standard | `supabase-receptor` k3s | Process Gap | 🟡 Medium |
+| PROP-07 | Change management procedure | `docs/compliance/iso27001/operations/` | Process Gap | 🟡 Medium |
+| PROP-09 | Email security (ASD E8) | `docs/compliance/email-security.md` | Compliance | 🟡 Medium |
+| PROP-10 | Vault secrets management policy | Vault k3s cluster | Compliance | 🟡 Medium |
 | AI-02 | LLM risk register citation | `docs/compliance/iso27001/risk-management/risk-register.md` | Compliance | 🟢 Low |
+
+---
+
+## 10. Iterative Improvements — Round 2
+
+_Five additional findings accepted 2026-03-19. PROP-08 enhanced with 7-year healthcare workforce data retention requirement._
+
+### PROP-06 — No Supplier Security Assessment Register
+
+**Severity:** 🟠 High
+
+Critical SaaS suppliers — Cloudflare, GitHub, Supabase cloud, Azure, Sentry — have no documented security assessments, no verified contractual security clauses, and no review cadence. ISO 27001 A.5.19–A.5.22 requires formal supplier security management. Compromise of any single supplier affects all production services.
+
+**Task:** Create a supplier assessment register documenting each critical supplier's security posture, data classification, contractual security clauses, and review schedule.
+
+### PROP-07 — No Formal Change Management Procedure
+
+**Severity:** 🟡 Medium
+
+No documented definition of what constitutes a "significant change" requiring formal risk assessment. ISO 27001 A.8.32 expects change categories (standard/normal/emergency), approval thresholds, and rollback procedures for production systems.
+
+**Task:** Create a change management procedure defining change categories and required risk assessments for schema migrations, new third-party integrations, and infrastructure changes.
+
+### PROP-08 — No Data Retention Schedule (7-Year Healthcare Requirement)
+
+**Severity:** 🟠 High
+
+No data retention or deletion schedule is documented. **CRITICAL:** Hospital workforce employment records are subject to a 7-year retention requirement under the Fair Work Act 2009 (s.535). NSW health service records must be retained 7 years from the last entry under the Health Records and Information Privacy Act 2002 (or until age 25 for records relating to minors). No retention periods, enforcement mechanism, or legal basis is documented per data category.
+
+**Task:** Create a data retention schedule documenting each category's retention period (employee records: 7 years), legal basis, deletion method, and responsible system.
+
+### PROP-09 — Email Security Not Assessed Against ASD Essential Eight
+
+**Severity:** 🟡 Medium
+
+DMARC/DKIM/SPF for commonbond.au and myjmo.com.au have never been audited despite ASD Essential Eight (REF-STD-004) being a registered standard. Email impersonation of a hospital supplier is a material social engineering risk.
+
+**Task:** Verify and document SPF/DKIM/DMARC configuration for both domains and update the Standards Register compliance notes for REF-STD-004.
+
+### PROP-10 — Vault Secrets Management Has No Governing Standard
+
+**Severity:** 🟡 Medium
+
+Vault rotation cadence, access audit frequency, and emergency revocation are practiced but undocumented, with no citation to ISO 27001 A.8.24 (cryptography) or NIST SP 800-57 (Key Management Guideline).
+
+**Task:** Create a secrets management policy documenting rotation cadences by credential category, access audit frequency, and emergency revocation procedure.
+
+
+---
+
+## 9. Iterative Improvements — Round 1
+
+_Five additional findings identified during post-initial-draft adversarial review. All approved by Ryan Ammendolea 2026-03-19._
+
+### PROP-01 — SoA Does Not Cross-Reference External Framework Controls
+
+**Severity:** 🔴 Critical
+
+The Statement of Applicability only maps ISO 27001 Annex A controls. It does not record how those controls are supplemented or evidenced by the 10 newly registered external frameworks (OWASP ASVS, SLSA, NIST SSDF, CIS Kubernetes, CIS Azure, etc.). ISO 27001 Clause 6.1.3(c) requires the SoA to be comprehensive and evidenced. An ISO 27001 Stage 1 auditor reviewing an SoA that omits 10 registered but uncited standards will raise an immediate NC.
+
+**Task:** Add a "Supporting External Standards" column to the SoA mapping each Annex A control to any supplementary external framework control references.
+
+### PROP-02 — Risk Register Has No Standard-Control Citations
+
+**Severity:** 🟠 High
+
+Risk register entries document treatments (e.g. "RLS + RBAC") but do not cite which specific standard controls those treatments satisfy. ISO 27001 Clause 8.3 requires risk treatment outputs to be traceable to their controlling requirements.
+
+**Task:** Add a "Standard Controls" column to the risk register table listing specific control references for each risk treatment.
+
+### PROP-03 — Antigravity Agent Framework Has No Security Boundary Standard
+
+**Severity:** 🟠 High
+
+The `.agents/` framework has write access to all production repositories, Vault secrets, and protected branches, but has never been treated as an ISMS security boundary. Relevant standards: ISO/IEC 42001:2023 Clause 6.1.2, OWASP LLM Top 10 LLM06 (Excessive Agency), ISO 27001 A.8.2.
+
+**Tasks:** (1) Document the agent's permissions surface. (2) Add a human-approval gate to `global-audit.md` for protected branch pushes, workflow edits, and Vault policy changes.
+
+### PROP-04 — No Penetration Testing Procedure or Schedule
+
+**Severity:** 🟠 High
+
+No penetration test has been conducted. ISO 27001 A.8.8 and hospital procurement require annual pentest evidence. Proposes OWASP Testing Guide v4.2 as methodology.
+
+**Tasks:** (1) Register OWASP Testing Guide v4.2 as REF-STD-017. (2) Create a penetration testing procedure document.
+
+### PROP-05 — No Privacy Impact Assessment Procedure
+
+**Severity:** 🟠 High
+
+No PIA procedure exists. OAIC strongly recommends a PIA before deploying systems handling sensitive PII. Each new hospital customer adds unassessed privacy risks against the Privacy Act and APPs.
+
+**Tasks:** (1) Create a PIA procedure with a trigger checklist and template. (2) Conduct a retrospective PIA for the Reactor platform.
+
+---
+
+## 10. Iterative Improvements — Round 2
+
+_Five additional findings accepted 2026-03-19. PROP-08 enhanced with 7-year healthcare workforce data retention requirement._
+
+### PROP-06 — Supplier Register Exists But DPAs Not Fully Executed
+
+**Severity:** 🟠 High
+
+`operations/supplier-register.mdx` exists backed by Supabase with ISO 27001 A.5.19–A.5.22 compliance columns. However, the SoA confirms Data Processing Agreements are not yet executed for all critical suppliers. APP 8 (cross-border disclosure) requires active DPAs before PII is shared with any supplier.
+
+**Task:** Complete DPA execution for all suppliers marked outstanding in the Supplier Register dashboard.
+
+### PROP-07 — No Formal Change Management Procedure
+
+**Severity:** 🟡 Medium
+
+No documented definition of what constitutes a "significant change" requiring formal risk assessment. ISO 27001 A.8.32 expects change categories (standard/normal/emergency) and approval thresholds.
+
+**Task:** Create a change management procedure defining change categories and required risk assessments for schema migrations, new third-party integrations, and infrastructure changes.
+
+### PROP-08 — No Data Retention Schedule (7-Year Healthcare Requirement)
+
+**Severity:** 🟠 High
+
+No data retention or deletion schedule is documented. **CRITICAL:** Hospital workforce employment records are subject to a **7-year retention requirement** under the Fair Work Act 2009 (s.535). NSW health service records must be retained 7 years from the last entry (HRIP Act 2002). No retention periods, enforcement mechanisms, or legal bases are documented per data category. The SoA records control 8.10 (information deletion) as "Partial" with a note that legal review is recommended.
+
+**Task:** Create a data retention schedule documenting each category's retention period (employee records: 7 years), legal basis, deletion method, and responsible system.
+
+### PROP-09 — Email Security Not Assessed Against ASD Essential Eight
+
+**Severity:** 🟡 Medium
+
+DMARC/DKIM/SPF for commonbond.au and myjmo.com.au have never been audited despite ASD Essential Eight (REF-STD-004) being a registered standard. Email impersonation of a hospital supplier is a material social engineering risk.
+
+**Task:** Verify and document SPF/DKIM/DMARC configuration for both domains.
+
+### PROP-10 — Vault Secrets Management Has No Governing Standard
+
+**Severity:** 🟡 Medium
+
+Vault rotation cadence, access audit frequency, and emergency revocation are practiced but undocumented, with no citation to ISO 27001 A.8.24 or NIST SP 800-57 (Key Management Guideline).
+
+**Task:** Create a secrets management policy documenting rotation cadences by category, access audit frequency, and emergency revocation procedure.
+
+---
+
+## 11. Iterative Improvements — Round 3
+
+_Based on ISMS document review conducted 2026-03-19. PROP-11 and PROP-15 withdrawn as false findings (documents confirmed to exist). Two replacement findings added: PROP-16, PROP-17._
+
+### PROP-11 — ~~ISMS Scope Missing~~ WITHDRAWN
+
+`governance/scope.md` (v1.0, CEO-approved 2026-03-05) is a comprehensive scope document covering all required Clause 4.3 elements. **Finding invalid — closed without action.**
+
+### PROP-12 — Internal Audit Records Have Three Clause 9.2 Gaps
+
+**Severity:** 🟠 High _(downgraded from Critical — procedure exists)_
+
+`assurance/internal-audit.mdx` exists and correctly references Clause 9.2 and the adversarial review workflow. Three specific gaps remain: (1) **IA-2026-01** (referenced in SoA control 5.35 as scheduled for 2026-04-15) is absent from the audit registry — no scheduled-audit evidence trail exists; (2) no auditor independence compensating controls are documented for the sole-founder context; (3) `audit.md` is not formally labelled as the Clause 9.2 report format.
+
+**Tasks:** (1) Add IA-2026-01 to the audit registry as Scheduled. (2) Document independence compensating controls in the internal audit procedure.
+
+### PROP-13 — Management Review Template Exists But No Completed Record
+
+**Severity:** 🔴 Critical _(confirmed — template exists, completed record does not)_
+
+`governance/management-review.md` is a comprehensive 151-line Clause 9.3 agenda template with all required inputs. **However: the template has never been executed.** There are no minutes, no signed outputs, no action owners, and no dated review cycle. ISO 27001 Clause 9.3.3 requires documented outputs retained per Clause 7.5. A certification body will request the completed record — a template alone is not accepted as evidence.
+
+**Task:** Complete the first management review using the template and produce `governance/management-review-record-2026-Q1.md` with meeting date, attendees, all agenda outputs, and CEO sign-off.
+
+### PROP-14 — No TLS Certificate Inventory
+
+**Severity:** 🟠 High
+
+No certificate inventory exists recording: which certs serve `*.commonbond.au`, their expiry dates, renewal mechanism (Cloudflare auto vs. manual), and the Vault PKI CA root certificate expiry. The SoA marks 8.24 (cryptography) as "Implemented" citing provider-managed KMS, but this does not cover certificate lifecycle visibility. Certificate expiry is the leading cause of production availability incidents globally.
+
+**Task:** Create `docs/compliance/certificate-inventory.md` listing all certificates with expiry, renewal mechanism, alert threshold (30 days), and owner — including the Vault internal PKI CA.
+
+### PROP-15 — ~~Asset Register Missing~~ WITHDRAWN
+
+`operations/asset-register.mdx` is a live Supabase-backed register (public.assets) with IA/SA/HW/PA categories, annual review cycle, and decommission tracking. SoA records control 5.9 as "Implemented". **Finding invalid — closed without action.**
+
+### PROP-16 — ~~SoA Unconfirmed Markers~~ REJECTED
+
+_Not applicable at current stage._ The `⚠️ Confirm` markers in `soa.md` are expected artefacts of an ISMS in active build. The organisation is using ISO 27001 to guide development toward future certification readiness. SoA formal confirmation is a pre-certification milestone, not a development-phase requirement.
+
+### PROP-17 — ~~No NC/CA Records~~ REJECTED
+
+_Not applicable at current stage._ Formal NC/CA record creation (ISO 27001 Clause 10.1) is a pre-certification maturity requirement. The Clause 9.2 → Clause 10.1 → management review traceability chain is a future obligation to be established when approaching Stage 1 audit, not during the ISMS build phase.
+
+

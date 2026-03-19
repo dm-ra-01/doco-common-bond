@@ -394,6 +394,342 @@
         }
       ],
       "severity_history": []
+    },
+    {
+      "id": "PROP-01",
+      "severity": "critical",
+      "status": "open",
+      "category": "Compliance",
+      "repo": "common-bond",
+      "area": "docs/compliance/iso27001/",
+      "description": "No Statement of Applicability (SoA) cross-references external framework controls. ISO 27001 Clause 6.1.3(c) requires an SoA listing all controls and their applicability. The SoA only maps Annex A controls — it does not record how controls are supplemented by the 10 newly registered frameworks (OWASP ASVS, SLSA, NIST SSDF, CIS Benchmarks). A Stage 1 ISO 27001 auditor will raise an immediate NC if the SoA omits registered but uncited standards.",
+      "tasks": [
+        {
+          "taskId": "PROP-01-T1",
+          "status": "open",
+          "description": "Locate or create docs/compliance/iso27001/statement-of-applicability.md. Add a 'Supporting External Standards' column mapping each Annex A control to any supplementary external framework references (OWASP ASVS V-chapter, SLSA control, NIST SSDF practice, CIS Benchmark section) where applicable.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/compliance/iso27001/statement-of-applicability.md",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "PROP-02",
+      "severity": "high",
+      "status": "open",
+      "category": "Process Gap",
+      "repo": "common-bond",
+      "area": "docs/compliance/iso27001/risk-management/risk-register.md",
+      "description": "Risk register entries document treatments but do not cite which standard controls each treatment satisfies. An external auditor cannot trace R-001 (Unauthorised access — treatment: RLS + RBAC) to ISO 27001 A.5.15, OWASP ASVS V4.1, or CIS K8s 5.1 without cross-referencing multiple documents. ISO 27001 Clause 8.3 requires risk treatment outputs be traceable back to controlling requirements.",
+      "tasks": [
+        {
+          "taskId": "PROP-02-T1",
+          "status": "open",
+          "description": "Add a 'Standard Controls' column to the risk register table. For each risk, list the specific control references that justify the treatment (e.g. 'ISO 27001 A.5.15; OWASP ASVS V4.1; CIS Kubernetes 5.1.6'). Prioritise the top 10 risks by severity.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/compliance/iso27001/risk-management/risk-register.md",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "PROP-03",
+      "severity": "high",
+      "status": "open",
+      "category": "Security",
+      "repo": "cross-ecosystem",
+      "area": "dev-environment/.agents/ — all agent skills, workflows, and scripts",
+      "description": "The Antigravity agent framework has no governing security standard despite having write access to all production repositories, Vault secret access, and the ability to push directly to protected branches. No prior audit has treated the agent framework as a security boundary. Relevant standards: ISO/IEC 42001:2023 Clause 6.1.2 (AI capability controls), OWASP LLM Top 10 LLM06 (Excessive Agency), ISO 27001 A.8.2 (privileged access rights). The agent's permissions represent the single largest undocumented privileged-access surface in the ecosystem.",
+      "tasks": [
+        {
+          "taskId": "PROP-03-T1",
+          "status": "open",
+          "description": "Enumerate the Antigravity agent's permissions: repository write-access grants, Vault policy paths, GitHub App permissions, and protected branch bypass rights. Document in docs/compliance/agent-security-boundary.md citing ISO 27001 A.8.2 and OWASP LLM06.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/compliance/agent-security-boundary.md",
+          "completedAt": null,
+          "completedBy": null
+        },
+        {
+          "taskId": "PROP-03-T2",
+          "status": "open",
+          "description": "Add a human-approval gate requirement to global-audit.md for any agent action that: (a) pushes directly to a protected branch, (b) creates or modifies GitHub Actions workflows, or (c) updates Vault policies. Document as a control against OWASP LLM06 Excessive Agency.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/dev-environment/.agents/workflows/global-audit.md",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "PROP-04",
+      "severity": "high",
+      "status": "open",
+      "category": "Compliance",
+      "repo": "cross-ecosystem",
+      "area": "docs/compliance/iso27001/operations/",
+      "description": "No penetration test has been conducted and no standard governs when one is required. ISO 27001 A.8.8 (management of technical vulnerabilities) and most healthcare customer procurement questionnaires require annual evidence of penetration testing. OWASP Testing Guide v4.2 is the appropriate methodology standard. Without a pentest schedule, the ecosystem will fail procurement due diligence for hospital contracts.",
+      "tasks": [
+        {
+          "taskId": "PROP-04-T1",
+          "status": "open",
+          "description": "Add REF-STD-017 (OWASP Web Security Testing Guide v4.2) to the Standards Register as Planned with scope covering all production web services at *.commonbond.au.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/registers/standards-register.md",
+          "completedAt": null,
+          "completedBy": null
+        },
+        {
+          "taskId": "PROP-04-T2",
+          "status": "open",
+          "description": "Create docs/compliance/iso27001/operations/penetration-testing.md defining: scope (all *.commonbond.au endpoints), frequency (annual + pre-launch), methodology (OWASP Testing Guide v4.2), provider type (external), and output artefacts required. Reference ISO 27001 A.8.8.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/compliance/iso27001/operations/penetration-testing.md",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "PROP-05",
+      "severity": "high",
+      "status": "open",
+      "category": "Compliance",
+      "repo": "common-bond",
+      "area": "docs/compliance/",
+      "description": "No Privacy Impact Assessment (PIA) procedure exists. The OAIC strongly recommends a PIA before deploying systems handling sensitive personal information. The ecosystem stores hospital workforce PII (names, roles, shift data) and is expanding to more hospital customers — each new customer adds new personal data processing. Without a PIA procedure, new customer onboarding creates unassessed privacy risks against REF-STD-002 (Privacy Act), REF-STD-003 (APPs), and REF-STD-006 (OAIC AI guidance). ISO 27001 Clause 6.1.2 requires privacy risks be assessed as part of the ISMS risk process.",
+      "tasks": [
+        {
+          "taskId": "PROP-05-T1",
+          "status": "open",
+          "description": "Create docs/compliance/privacy-impact-assessment.md defining: when a PIA is required (new data processing activity, new customer, new AI feature, architectural change affecting PII), the PIA template (data flows, risk assessment, mitigation, sign-off), and approver (CEO). Reference OAIC PIA guidance and Privacy Act s.33D.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/compliance/privacy-impact-assessment.md",
+          "completedAt": null,
+          "completedBy": null
+        },
+        {
+          "taskId": "PROP-05-T2",
+          "status": "open",
+          "description": "Conduct and document a retrospective PIA for the current Reactor platform covering: categories of PII processed, hospital customer data flows, Antigravity agent access to PII, and identified risks with mitigations.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/compliance/pia-reactor-platform.md",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "PROP-06",
+      "severity": "high",
+      "status": "open",
+      "category": "Compliance",
+      "repo": "common-bond",
+      "area": "docs/compliance/iso27001/",
+      "description": "No supplier security assessment register or procedure exists. ISO 27001 A.5.19–A.5.22 (Information security in supplier relationships) requires formal assessment of suppliers, contractual security requirements, and ongoing monitoring. The ecosystem relies on critical SaaS suppliers — Cloudflare (DNS/WAF/R2), GitHub (code hosting/CI), Supabase cloud (database), Azure (Key Vault/storage), Sentry (error tracking) — with no documented security assessments, no contractual security clauses verified, and no review cadence. A single compromised SaaS provider (e.g. Cloudflare DNS hijack, GitHub Actions supply chain) would affect all production services.",
+      "tasks": [
+        {
+          "taskId": "PROP-06-T1",
+          "status": "open",
+          "description": "Create docs/compliance/iso27001/supplier-assessment-register.md listing each critical SaaS supplier with: name, service, data classification of data shared, security assessment status (e.g. SOC2/ISO27001 certification check), contractual security clauses, review frequency, and last reviewed date. Reference ISO 27001 A.5.19.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/compliance/iso27001/supplier-assessment-register.md",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "PROP-07",
+      "severity": "medium",
+      "status": "open",
+      "category": "Process Gap",
+      "repo": "common-bond",
+      "area": "docs/compliance/iso27001/operations/",
+      "description": "No formal change management procedure is anchored to ISO 27001 A.8.32 (change management). Code changes flow through pull requests and CI/CD, but there is no documented definition of what constitutes a 'significant change' requiring formal risk assessment (e.g. schema migrations, new third-party integrations, infrastructure changes). ITIL / ISO/IEC 20000-1 defines change categories (standard, normal, emergency) — without this, all changes are treated equally. An ISO 27001 assessor expects a documented change management procedure for production systems.",
+      "tasks": [
+        {
+          "taskId": "PROP-07-T1",
+          "status": "open",
+          "description": "Create docs/compliance/iso27001/operations/change-management.md defining: change categories (standard/normal/emergency), approval thresholds, required risk assessment for significant changes (new third parties, schema changes touching PII, infrastructure changes), and rollback procedures. Reference ISO 27001 A.8.32.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/compliance/iso27001/operations/change-management.md",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "PROP-08",
+      "severity": "high",
+      "status": "open",
+      "category": "Compliance",
+      "repo": "common-bond",
+      "area": "docs/compliance/iso27001/",
+      "description": "No data retention or deletion schedule is documented. Australian Privacy Principle 11.2 (APP 11.2) requires personal information to be destroyed or de-identified when no longer needed. CRITICALLY: hospital workforce employment records are subject to a 7-year retention requirement under the Fair Work Act 2009 (s.535) and some state health legislation (e.g. NSW Health Records and Information Privacy Act 2002 requires health service records kept 7 years from last entry, or until age 25 for minors). The ecosystem retains worker shift data, user records, and audit logs with no documented retention periods, no enforcement mechanism, and no legal basis documented per category. Supabase PITR is configured but retention duration is undocumented from a governance perspective.",
+      "tasks": [
+        {
+          "taskId": "PROP-08-T1",
+          "status": "open",
+          "description": "Create docs/compliance/data-retention-schedule.md defining: each data category (worker PII, shift records, audit logs, application logs, backup data), retention period, legal basis, deletion method, and responsible system. Reference APP 11.2 and ISO 27001 A.8.10 (information deletion).",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/compliance/data-retention-schedule.md",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "PROP-09",
+      "severity": "medium",
+      "status": "open",
+      "category": "Compliance",
+      "repo": "common-bond",
+      "area": "docs/registers/standards-register.md — REF-STD-004 (ASD Essential Eight)",
+      "description": "Email security for *.commonbond.au has not been audited against ASD Essential Eight Maturity Level 1, which requires DMARC, DKIM, and SPF records for all domains used for email. ASD Essential Eight is already registered as REF-STD-004 but no audit has ever assessed email security under it. Email impersonation of commonbond.au is a material social engineering risk for a company communicating with hospitals. Current email infrastructure coverage is unknown.",
+      "tasks": [
+        {
+          "taskId": "PROP-09-T1",
+          "status": "open",
+          "description": "Verify and document the SPF, DKIM, and DMARC configuration for commonbond.au and myjmo.com.au. Record results in docs/compliance/email-security.md and update the Standards Register compliance notes for REF-STD-004 with email security posture. Reference ASD Essential Eight control: 'Configure Microsoft Office macros / Email' and DMARC policy requirement.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/compliance/email-security.md",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "PROP-10",
+      "severity": "medium",
+      "status": "open",
+      "category": "Compliance",
+      "repo": "cross-ecosystem",
+      "area": "HashiCorp Vault — receptor-infra k3s cluster",
+      "description": "Vault is used for secrets management but no standard formally governs the secrets management policy: rotation cadence, access audit frequency, emergency revocation procedure, or key lifecycle. ISO 27001 A.8.24 (use of cryptography) and A.8.2 (privileged access rights) apply. CIS Controls v8 Control 4 (Secure Configuration of Enterprise Assets) and NIST SP 800-57 (Key Management Guideline) provide specific secrets management requirements. Without a governing standard, Vault configuration decisions are made ad hoc with no documented audit trail of why rotation periods were chosen.",
+      "tasks": [
+        {
+          "taskId": "PROP-10-T1",
+          "status": "open",
+          "description": "Create docs/compliance/secrets-management-policy.md referencing ISO 27001 A.8.24 and NIST SP 800-57, documenting: Vault secret rotation cadences by category (database credentials: 90 days, API keys: 180 days, TLS certificates: auto-renew), access audit frequency (quarterly), emergency revocation procedure, and who can approve root token generation.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/compliance/secrets-management-policy.md",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "PROP-11",
+      "severity": "critical",
+      "status": "closed",
+      "category": "Compliance",
+      "repo": "common-bond",
+      "area": "docs/compliance/iso27001/governance/scope.md",
+      "description": "[WITHDRAWN — finding found to be invalid] ISMS Scope document already exists. governance/scope.md is a comprehensive v1.0 document approved by Ryan Ammendolea (CEO) on 2026-03-05, covering services in scope, cloud infrastructure boundaries, out-of-scope exclusions, interested parties, and the full regulatory framework table. Finding closed without action.",
+      "tasks": [],
+      "severity_history": []
+    },
+    {
+      "id": "PROP-12",
+      "severity": "high",
+      "status": "proposed",
+      "category": "Process Gap",
+      "repo": "common-bond",
+      "area": "docs/compliance/iso27001/assurance/internal-audit.mdx",
+      "description": "Internal audit procedure (assurance/internal-audit.mdx) exists and correctly cites Clause 9.2, using the adversarial review workflow as the documented mechanism. However, three Clause 9.2 compliance gaps remain: (1) IA-2026-01 is referenced in the SoA (control 5.35) as scheduled for 2026-04-15 but does not appear in the audit registry, meaning there is no scheduled-audit evidence trail; (2) no auditor independence declaration is documented — for a sole-founder ISMS, compensating controls must be explicit; (3) the existing audit.md format is not formally labelled as the organisation's Clause 9.2 audit report template. A certification body will request these three artefacts specifically.",
+      "tasks": [
+        {
+          "taskId": "PROP-12-T1",
+          "status": "open",
+          "description": "Add IA-2026-01 to the audit registry (audit-registry.md and Supabase public.audits) with status 'Scheduled', scope 'Full ISMS — ISO 27001 Clause 9.2 annual audit', and scheduled date 2026-04-15. This creates the required Clause 9.2 evidence trail for the planned internal audit.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/audits/audit-registry.md",
+          "completedAt": null,
+          "completedBy": null
+        },
+        {
+          "taskId": "PROP-12-T2",
+          "status": "open",
+          "description": "Add a section to assurance/internal-audit.mdx documenting auditor independence compensating controls: for a sole-founder ISMS, independence is achieved through (a) the structured adversarial review workflow preventing informal knowledge bias, (b) Antigravity agent as the review instrument (no vested interest in findings), and (c) all audit outputs being committed to public.audits for external review. Reference ISO 27001 Clause 9.2.2(b).",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/compliance/iso27001/assurance/internal-audit.mdx",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "PROP-13",
+      "severity": "critical",
+      "status": "proposed",
+      "category": "Process Gap",
+      "repo": "common-bond",
+      "area": "docs/compliance/iso27001/governance/management-review.md",
+      "description": "Management review procedure exists (governance/management-review.md — a comprehensive 151-line Clause 9.3 agenda template with all required inputs). However: no completed management review record exists. The template has never been executed — there are no minutes, no signed outputs, no action owner assignments, and no dated review cycle. ISO 27001 Clause 9.3.3 requires documented outputs retained per Clause 7.5. A certification body will request the completed review record as primary evidence; a template alone will not suffice. The next review is scheduled for 2027-03-01, meaning a completed 2026 review cycle must be documented before then.",
+      "tasks": [
+        {
+          "taskId": "PROP-13-T1",
+          "status": "open",
+          "description": "Complete the first management review using the governance/management-review.md agenda template and produce docs/compliance/iso27001/governance/management-review-record-2026-Q1.md containing: meeting date, attendees, completed agenda outputs, action items (owner + due date), and CEO approval signature. This document is retained as Clause 7.5 documented information. Reference ISO 27001 Clause 9.3.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/compliance/iso27001/governance/management-review-record-2026-Q1.md",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "PROP-14",
+      "severity": "high",
+      "status": "proposed",
+      "category": "Compliance",
+      "repo": "cross-ecosystem",
+      "area": "TLS certificates — *.commonbond.au, Vault PKI",
+      "description": "No certificate inventory or lifecycle procedure exists. The ecosystem serves production traffic over TLS for *.commonbond.au but has no document recording: which certificates exist, their expiry dates, who manages them (Cloudflare vs Let's Encrypt vs Vault PKI CA), the renewal mechanism, and the alert threshold. Certificate expiry is the most common cause of production incidents globally — an unmonitored expiry causes immediate service unavailability. ISO 27001 A.8.24 requires cryptographic key and certificate management. This gap is especially sharp given the Vault PKI CA used for internal mTLS which has its own root CA expiry.",
+      "tasks": [
+        {
+          "taskId": "PROP-14-T1",
+          "status": "open",
+          "description": "Create docs/compliance/certificate-inventory.md listing all certificates: domain, issuer, expiry date, renewal mechanism (auto/manual), alert threshold (30 days), and owner. Include Cloudflare-managed wildcard cert, any Let's Encrypt certs, and the Vault internal PKI CA certificate. Reference ISO 27001 A.8.24.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/compliance/certificate-inventory.md",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "PROP-15",
+      "severity": "critical",
+      "status": "closed",
+      "category": "Compliance",
+      "repo": "common-bond",
+      "area": "docs/compliance/iso27001/operations/asset-register.mdx",
+      "description": "[WITHDRAWN — finding found to be invalid] Information Asset Register already exists. operations/asset-register.mdx is a live Supabase-backed register (public.assets) with four asset categories (IA/SA/HW/PA prefixes), annual review cycle, decommission tracking, and an AssetsDashboard Docusaurus component. The SoA records control 5.9 as 'Implemented'. Finding closed without action.",
+      "tasks": [],
+      "severity_history": []
+    },
+    {
+      "id": "PROP-16",
+      "severity": "critical",
+      "status": "closed",
+      "category": "Compliance",
+      "repo": "common-bond",
+      "area": "docs/compliance/iso27001/operations/soa.md",
+      "description": "[REJECTED — not applicable at current stage] SoA ⚠️ Confirm markers are expected during the active ISMS build phase. The organisation is using ISO 27001 to prepare for future certification readiness, not undergoing certification audit. SoA confirmation is a pre-certification task, not a development-phase requirement. Finding closed without action.",
+      "tasks": [],
+      "severity_history": []
+    },
+    {
+      "id": "PROP-17",
+      "severity": "critical",
+      "status": "closed",
+      "category": "Process Gap",
+      "repo": "common-bond",
+      "area": "docs/compliance/iso27001/assurance/",
+      "description": "[REJECTED — not applicable at current stage] NC/CA record creation is a pre-certification maturity requirement. The organisation is using ISO 27001 to guide ISMS development, not operating in a certification audit context. The NC/CA traceability chain (Clause 9.2 → Clause 10.1 → management review) is a future obligation to be established when approaching Stage 1 audit. Finding closed without action.",
+      "tasks": [],
+      "severity_history": []
     }
   ],
   "clarifications": [
@@ -440,6 +776,18 @@
       "name": "Testability and AI Governance",
       "rationale": "TEST-01, TEST-02, AI-02 require document edits across compliance and engineering standards. Lower urgency — no operational blocker.",
       "findingIds": ["TEST-01", "TEST-02", "AI-02"]
+    },
+    {
+      "phase": 6,
+      "name": "Governance, Privacy, and Agent Security",
+      "rationale": "PROP-01 (SoA multi-framework mapping), PROP-02 (risk register standard citations), and PROP-05 (PIA procedure) are cross-cutting compliance documentation tasks. PROP-03 (agent security boundary) and PROP-04 (pentest procedure) address structural security governance gaps and can be drafted in parallel.",
+      "findingIds": ["PROP-01", "PROP-02", "PROP-03", "PROP-04", "PROP-05"]
+    },
+    {
+      "phase": 7,
+      "name": "Supplier, Retention, and Operational Policies",
+      "rationale": "PROP-06 (supplier register), PROP-07 (change management), PROP-08 (data retention — 7-year healthcare requirement), PROP-09 (email security), and PROP-10 (secrets management policy) are all operational procedure documents. They can be drafted concurrently as they are independent of each other.",
+      "findingIds": ["PROP-06", "PROP-07", "PROP-08", "PROP-09", "PROP-10"]
     }
   ],
   "deferred": []
