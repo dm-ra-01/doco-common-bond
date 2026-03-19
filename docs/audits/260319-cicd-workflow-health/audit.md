@@ -9,18 +9,21 @@
 
 ## Executive Summary
 
-This audit evaluates the current CI/CD setup across all Receptor ecosystem repositories for its ability to execute workflows successfully, promote code through test → staging → production, enable rollback, and securely manage keys. **16 findings** were identified: **4 Critical**, **5 High**, **5 Medium**, **2 Low**. The audit found that all three backend/infrastructure deploy workflows (`match-backend`, `receptor-planner`, and `supabase-receptor` prod-deploy) have structural defects that will cause them to fail in production. The frontend CI workflows are substantially correct but carry a stale env-var reference and a broken cleanup job pattern. `website-frontend` has no CI workflow at all.
+This audit evaluates the current CI/CD setup across all Receptor ecosystem repositories for its ability to execute workflows successfully, promote code through test → staging → production, enable rollback, and securely manage keys. **17 findings** were identified: **5 Critical**, **6 High**, **4 Medium**, **2 Low**. The audit found that all three backend/infrastructure deploy workflows (`match-backend`, `receptor-planner`, and `supabase-receptor` prod-deploy) have structural defects that will cause them to fail in production. The frontend CI workflows are substantially correct but carry a stale env-var reference and a broken cleanup job pattern. `website-frontend` has no CI workflow at all. None of the three Next.js frontend applications have a deploy pipeline.
 
 | Repository / Area | Coverage | Issues Found | Overall |
 | --- | --- | --- | --- |
 | `supabase-receptor` — ci.yml | ✅ | 1 | ⚠️ |
-| `supabase-receptor` — staging-smoke.yml | ✅ | 1 | ⚠️ |
+| `supabase-receptor` — staging-smoke.yml | ✅ | 2 | ❌ |
 | `supabase-receptor` — prod-deploy.yml | ✅ | 3 | ❌ |
 | `supabase-receptor` — deploy-function.yml | ✅ | 2 | ❌ |
 | `supabase-receptor` — key-rotation-reminder.yml | ✅ | 1 | ⚠️ |
 | `planner-frontend` — ci.yml | ✅ | 2 | ⚠️ |
+| `planner-frontend` — deploy.yml | ❌ | 1 | ❌ |
 | `preference-frontend` — ci.yml | ✅ | 2 | ⚠️ |
+| `preference-frontend` — deploy.yml | ❌ | 1 | ❌ |
 | `workforce-frontend` — ci.yml | ✅ | 2 | ⚠️ |
+| `workforce-frontend` — deploy.yml | ❌ | 1 | ❌ |
 | `match-backend` — ci.yml + deploy.yml | ✅ | 2 | ❌ |
 | `receptor-planner` — ci.yml + deploy.yml | ✅ | 2 | ❌ |
 | `website-frontend` | ❌ | 1 | ❌ |
@@ -52,7 +55,8 @@ This audit evaluates the current CI/CD setup across all Receptor ecosystem repos
 
 **Gaps:**
 
-- `DR-02` — `staging-smoke.yml` line 60: retrieves secret at path `secret/infrastructure/supabase-anon-key` but the `smoke-test` composite action (`action.yml` line 83) queries `organisations` table. If the `organisations` table does not exist in the staging schema (it was renamed to `orgs` in recent migrations), the DB canary (Check 4/5) will return a 404 and the smoke test will always fail.
+- `DR-02` — `staging-smoke.yml` line 60: the `smoke-test` composite action (`action.yml` line 83) queries the `organisations` table. The canonical schema table name is `orgs` (confirmed). The DB canary (Check 4/5) will return a 404 and the smoke test will always fail.
+- `DR-17` — `staging-smoke.yml` lines 62–63: reads Slack webhook URLs from `secret/infrastructure/slack-webhook-incidents` and `secret/infrastructure/slack-webhook-deployments`. The canonical Vault path standard is `secret/infrastructure/slack-{channel}-webhook` (e.g. `slack-incidents-webhook`). These `vault kv get` calls reference non-existent paths — Slack notifications are silently broken and a Vault error would abort the workflow before the smoke test runs.
 
 ### 1.3 prod-deploy.yml (Database Deploy Gate)
 
@@ -65,7 +69,7 @@ This audit evaluates the current CI/CD setup across all Receptor ecosystem repos
 **Gaps:**
 
 - `DR-03` — `prod-deploy.yml` line 243: `smoke-test-prod` job calls `./.github/actions/smoke-test` but passes only 2 inputs (`base-url` and `slack-webhook-url`). The `smoke-test` composite action (`action.yml` lines 13–23) **requires 5 inputs**: `base-url`, `anon-key`, `anon-jwt`, `incidents-webhook-url`, and `deployments-webhook-url`. The `anon-key` and `anon-jwt` inputs are not passed — they have no defaults — so the composite action will fail on the PostgREST and DB canary checks immediately. The DB canary (Check 4/5) will return 401 (missing API key).
-- `DR-04` — `prod-deploy.yml` line 260: `notify` job `SLACK_WEBHOOK: ${{ secrets.SLACK_DEPLOYMENTS_WEBHOOK }}` but the `key-rotation-reminder.yml` and `smoke-test` action use `SLACK_DEPLOYMENTS_WEBHOOK_URL` (with `_URL` suffix). Inconsistent secret naming means one of these will silently receive an empty string and post no notification.
+- `DR-04` — `prod-deploy.yml` line 260: `notify` job reads `secrets.SLACK_DEPLOYMENTS_WEBHOOK` via GitHub Actions secrets, bypassing Vault entirely. The canonical standard for workflows with Vault OIDC access is to read from `secret/infrastructure/slack-deployments-webhook`. The GitHub secret `SLACK_DEPLOYMENTS_WEBHOOK` (no `_URL` suffix) is also inconsistent with the standard GitHub-secret name `SLACK_DEPLOYMENTS_WEBHOOK_URL` used by `key-rotation-reminder.yml`.
 - `DR-05` — `prod-deploy.yml` `approve` job (line 162): `runs-on: ubuntu-latest` is a GitHub-hosted runner. If GitHub Environments for `production` are not yet configured with required reviewers, this job will auto-approve with no gate. The audit 260312 re-audit noted GitHub Environments were formally deferred. If they remain unconfigured, the production approval gate does not exist.
 
 ### 1.4 deploy-function.yml (Edge Function Deploy)
@@ -91,13 +95,13 @@ This audit evaluates the current CI/CD setup across all Receptor ecosystem repos
 
 **Gaps:**
 
-- `DR-08` — `key-rotation-reminder.yml` line 79: secret reference is `secrets.SLACK_DEPLOYMENTS_WEBHOOK_URL` but `prod-deploy.yml` line 260 uses `secrets.SLACK_DEPLOYMENTS_WEBHOOK` (no `_URL` suffix). One of these two references is wrong. If `SLACK_DEPLOYMENTS_WEBHOOK_URL` is not set as a secret, the rotation reminder will silently fail to post to Slack on alert conditions.
+- `DR-08` — `key-rotation-reminder.yml` line 79: runs on a GitHub-hosted runner with no Vault access — reading from a GitHub Actions secret is correct for this runner type. However `secrets.SLACK_DEPLOYMENTS_WEBHOOK_URL` must be set and documented as the canonical GitHub-secret name for platform runners. See DR-04 for the two-tier standardisation task.
 
 ---
 
 ## 2. Frontend Repositories (planner-frontend, preference-frontend, workforce-frontend)
 
-### 2.1 Common Patterns (All Three)
+### 2.1 CI Pipeline (All Three)
 
 **Strengths:**
 
@@ -112,6 +116,12 @@ This audit evaluates the current CI/CD setup across all Receptor ecosystem repos
 
 - `DR-09` — All three frontend `ci.yml` files, `unit-tests` job: env var `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: stub-key-unit-only` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: stub-key-build-only` (build job) still use the old variable name. The LIFE-05 rename (260316 audit) changed the live production variable to `NEXT_PUBLIC_SUPABASE_ANON_KEY`, but the CI stubs still reference the old name. If any source file imports `process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY` (the renamed variable), the unit test environment will provide `undefined` for that variable while providing `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` (which the source no longer reads). This causes unit tests to silently test against incorrect configuration. Affects: `planner-frontend/ci.yml` lines 85, 189; `preference-frontend/ci.yml` lines 83, 232; `workforce-frontend/ci.yml` lines 83, 184.
 - `DR-10` — All three frontend `ci.yml` files, `ci-cleanup` job: `NEXT_PUBLIC_SUPABASE_URL: http://127.0.0.1:54321` is the stub URL, but the integration-tests job boots a live Supabase instance whose `$GITHUB_ENV` exported `NEXT_PUBLIC_SUPABASE_URL` from `supabase status`. The `ci-cleanup` job is a **separate job** and does not inherit `$GITHUB_ENV` from `integration-tests`. It uses a hardcoded `127.0.0.1:54321` and a stale `SUPABASE_SERVICE_ROLE_KEY` env var that — because of job boundary isolation — will be empty string. The cleanup Supabase client will authenticate with an empty service role key against a stub URL and fail silently. Test org data from integration tests is **not being cleaned up** by this job.
+
+### 2.2 Deploy Mechanism (All Three)
+
+**Gaps:**
+
+- `DR-15` — None of the three frontend repositories have a `.github/workflows/deploy.yml`. The deployment target is k3s prod via Cloudflare Tunnel (same GitOps pattern as `match-backend` and `receptor-planner` — build Docker image, push to GHCR, update `receptor-infra` deployment manifest via `sed`). Currently there is no workflow-as-code for environment promotion, no production approval gate, and no automated rollback path for any frontend application. A merge to `main` triggers the CI pipeline but does not deploy — the running production containers will not update until an engineer intervenes manually.
 
 ---
 
@@ -138,7 +148,7 @@ This audit evaluates the current CI/CD setup across all Receptor ecosystem repos
 
 **Gaps:**
 
-- `DR-13` — `website-frontend/.github/workflows/` does not exist. `website-frontend` has no CI pipeline: no lint, no type-check, no build validation, no deploy workflow. This means broken commits can merge directly to main with no automated gate. The website-frontend is an Active repository per the ecosystem map.
+- `DR-13` — `website-frontend/.github/workflows/` does not exist. `website-frontend` has no CI pipeline: no lint, no type-check, no build validation, no deploy workflow. This means broken commits can merge directly to main with no automated gate. The website-frontend is an Active repository per the ecosystem map. Deployment target: k3s prod via Cloudflare Tunnel.
 
 ---
 
@@ -148,13 +158,9 @@ This audit evaluates the current CI/CD setup across all Receptor ecosystem repos
 
 - `DR-14` — No GitHub Actions workflow in any repository implements an explicit **rollback trigger**. The `rollback-runbook.md` (LIFE-04) documents manual rollback procedures, but there is no automated `rollback.yml` workflow that can be triggered via `workflow_dispatch` to revert to a prior image tag or database migration. ISO 27001 A.8.32 (Change management) requires recovery procedures; currently rollback is entirely manual.
 
-### 5.2 No Staging Promotion Workflow (Frontend)
+### 5.2 Smoke Test Table Naming
 
-- `DR-15` — Frontend repositories (planner-frontend, preference-frontend, workforce-frontend) have `ci.yml` but no `deploy.yml`. There is no automated workflow to promote a validated commit to staging or production environments for the Next.js frontends. The Cloudflare Pages integration presumably handles this externally, but no workflow-as-code captures environment promotion, approval gates, or rollback for frontend deployments.
-
-### 5.3 Smoke Test Table Naming Inconsistency
-
-- `DR-16` — `smoke-test/action.yml` line 93 queries `/rest/v1/organisations?select=id&limit=1`. Recent schema migrations renamed `organisations` to `orgs` in the application schema. If this table rename occurred, the DB canary will return a 404 on every staging smoke test run after every push to main, silently reporting staging as broken. Requires verification against current schema.
+- `DR-16` — `smoke-test/action.yml` line 93 queries `/rest/v1/organisations?select=id&limit=1`. The canonical table name is `orgs` (confirmed). This single action file is shared by both `staging-smoke.yml` and `prod-deploy.yml` — the wrong table name blocks both smoke test pipelines simultaneously.
 
 ---
 
@@ -166,6 +172,7 @@ This audit evaluates the current CI/CD setup across all Receptor ecosystem repos
 | DR-05 | `supabase-receptor` | `prod-deploy.yml` | Security | 🔴 Critical |
 | DR-10 | `planner-frontend`, `preference-frontend`, `workforce-frontend` | `ci.yml` (ci-cleanup job) | Process Gap | 🔴 Critical |
 | DR-13 | `website-frontend` | — | Process Gap | 🔴 Critical |
+| DR-17 | `supabase-receptor` | `staging-smoke.yml` | Process Gap | 🔴 Critical |
 | DR-02 | `supabase-receptor` | `smoke-test/action.yml` | Process Gap | 🟠 High |
 | DR-09 | `planner-frontend`, `preference-frontend`, `workforce-frontend` | `ci.yml` (unit-tests job) | Test Coverage | 🟠 High |
 | DR-11 | `match-backend`, `receptor-planner` | `deploy.yml` | Security | 🟠 High |
