@@ -170,19 +170,22 @@ This audit evaluates the current CI/CD setup across all Receptor ecosystem repos
 
 The following URL scheme is approved as the canonical deployment target for all Receptor services. This informs DR-13-T2, DR-15, and future Cloudflare Tunnel and k3s Ingress configuration.
 
-| Service | Production | Staging | Test |
-| --- | --- | --- | --- |
-| Planner frontend | `receptor-planner.commonbond.au` | `receptor-planner-staging.commonbond.au` | `receptor-planner-test.commonbond.au` |
-| Workforce frontend | `receptor-workforce.commonbond.au` | `receptor-workforce-staging.commonbond.au` | `receptor-workforce-test.commonbond.au` |
-| Preference frontend | `receptor-preference.commonbond.au` | `receptor-preference-staging.commonbond.au` | `receptor-preference-test.commonbond.au` |
-| Supabase API (PostgREST) | `receptor-api.commonbond.au` | `receptor-api-staging.commonbond.au` | `receptor-api-test.commonbond.au` |
-| Supabase Auth function | `receptor-auth.commonbond.au` | `receptor-auth-staging.commonbond.au` | `receptor-auth-test.commonbond.au` |
-| Match orchestrator function | `receptor-match-orchestrator.commonbond.au` | `receptor-match-orchestrator-staging.commonbond.au` | `receptor-match-orchestrator-test.commonbond.au` |
-| Planner orchestrator function | `receptor-planner-orchestrator.commonbond.au` | `receptor-planner-orchestrator-staging.commonbond.au` | `receptor-planner-orchestrator-test.commonbond.au` |
+> **Test tier:** Ephemeral — handled by GitHub Actions on ARC k3s runners per CI run. No persistent `*-test.commonbond.au` DNS entries are required.
 
-**Pattern:** `receptor-{service}[-staging|-test].commonbond.au`\
+| Service | Production | Staging |
+| --- | --- | --- |
+| Planner frontend | `receptor-planner.commonbond.au` | `receptor-planner-staging.commonbond.au` |
+| Workforce frontend | `receptor-workforce.commonbond.au` | `receptor-workforce-staging.commonbond.au` |
+| Preferencer frontend | `receptor-preferencer.commonbond.au` | `receptor-preferencer-staging.commonbond.au` |
+| Supabase API (PostgREST) | `receptor-api.commonbond.au` | `receptor-api-staging.commonbond.au` |
+| Supabase Auth function | `receptor-auth.commonbond.au` | `receptor-auth-staging.commonbond.au` |
+| Match orchestrator (middleware) | `receptor-matchsvc.commonbond.au` | `receptor-matchsvc-staging.commonbond.au` |
+| Planner orchestrator | `receptor-planner-orchestrator.commonbond.au` | `receptor-planner-orchestrator-staging.commonbond.au` |
+
+**Pattern:** `receptor-{service}[-staging].commonbond.au`\
 **DNS provider:** Cloudflare (routed via Cloudflare Tunnel to k3s Ingress)\
 **Decision date:** 2026-03-19
+
 
 ---
 
