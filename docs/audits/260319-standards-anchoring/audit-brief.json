@@ -1,0 +1,28 @@
+{
+  "auditSlug": "260319-standards-anchoring",
+  "sessionStart": "2026-03-19",
+  "status": "findings-issued",
+  "description": "Standards Anchoring Ecosystem Audit — assessing how well prior audit findings are anchored to formal external standards, proposing missing framework registrations, and documenting compliance posture across security, availability, integrity, accountability, performance, and testability domains.",
+  "roundsCompleted": 1,
+  "findingsCount": 15,
+  "severity": {
+    "critical": 3,
+    "high": 6,
+    "medium": 5,
+    "low": 1
+  },
+  "keyDecisions": [
+    "Commit directly to main — no PR required.",
+    "Standards Register at docs/registers/standards-register.md is the canonical home for all external framework entries (REF-STD-NNN IDs).",
+    "Compliance Posture values: Implemented | Partially Implemented | Planned | Non-Compliant.",
+    "ISO 22301:2019 is the highest-priority new standard — BCP exists but has no standard anchor.",
+    "OWASP ASVS v4 is the highest-value addition for testability evidence against ISO 27001 Clause 8.2.",
+    "SLSA Level 2 is largely already implemented (SHA-pinning) — register entry only.",
+    "ISO/IEC 42001:2023 deferred status from 260307-iso27001-ai-gaps should be formalised as a Planned registry entry."
+  ],
+  "artefacts": {
+    "auditMd": "docs/audits/260319-standards-anchoring/audit.md",
+    "recommendationsJson": "docs/audits/260319-standards-anchoring/recommendations.json",
+    "recommendationsMd": "docs/audits/260319-standards-anchoring/recommendations.md"
+  }
+}
