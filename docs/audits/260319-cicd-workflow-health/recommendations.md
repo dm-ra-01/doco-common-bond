@@ -227,3 +227,19 @@ Affects: `supabase-receptor` — .github/workflows/key-rotation-reminder.yml
 **Phase 3 (session 3):** DR-11, DR-12, DR-24, DR-25, DR-27 — match-backend + receptor-planner deploy hardening
 
 **PRs to raise:** planner-frontend, preference-frontend, workforce-frontend → main (after DR-09/32 complete)
+
+
+---
+
+## Phase 2 Close — 2026-03-19 (Session 2, continued)
+
+**Completed (DR-09 + DR-32):**
+
+| Finding | What was done |
+| :------ | :------------ |
+| DR-09-T1/T2/T3 | All 3 frontend repos: renamed `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` → `NEXT_PUBLIC_SUPABASE_ANON_KEY` in all ci.yml env stubs, GITHUB_ENV grep/sed pipelines, and env references. Also fixed 12 source code references across 9 files in `planner-frontend` (graphql/client, graphql/server, supabase/middleware, supabase/server, test-utils, setup, globalSetup, middleware.unit.test, seedingService) — these were pre-existing LIFE-05 rename gaps caught by the tsc pre-push hook. |
+| DR-32-T1 | All 3 frontend repos: removed `TEST_ADMIN_EMAIL/PASSWORD` + `TEST_WORKER_EMAIL/PASSWORD` from unit-tests job env block. Credentials remain in integration-tests where they are actually used. |
+
+**Phase 2 fully complete.** All 5 findings committed to `audit/260319-cicd-workflow-health` across planner-frontend, preference-frontend, workforce-frontend.
+
+**PRs ready to raise:** planner-frontend, preference-frontend, workforce-frontend → main.

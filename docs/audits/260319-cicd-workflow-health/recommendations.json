@@ -178,7 +178,7 @@
     {
       "id": "DR-09",
       "severity": "high",
-      "status": "open",
+      "status": "complete",
       "category": "Test Coverage",
       "repo": "planner-frontend, preference-frontend, workforce-frontend",
       "area": ".github/workflows/ci.yml (unit-tests and build jobs)",
@@ -186,27 +186,27 @@
       "tasks": [
         {
           "taskId": "DR-09-T1",
-          "status": "open",
+          "status": "complete",
           "description": "Update planner-frontend ci.yml unit-tests and build job env blocks: rename NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY stubs to NEXT_PUBLIC_SUPABASE_ANON_KEY (matching the LIFE-05 application rename).",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/frontend/planner-frontend/.github/workflows/ci.yml",
-          "completedAt": null,
-          "completedBy": null
+          "completedAt": "2026-03-19T18:34:00Z",
+          "completedBy": "Antigravity (260319-cicd-workflow-health session 2 phase-2-close)"
         },
         {
           "taskId": "DR-09-T2",
-          "status": "open",
+          "status": "complete",
           "description": "Same rename for preference-frontend ci.yml unit-tests and build jobs.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/frontend/preference-frontend/.github/workflows/ci.yml",
-          "completedAt": null,
-          "completedBy": null
+          "completedAt": "2026-03-19T18:34:00Z",
+          "completedBy": "Antigravity (260319-cicd-workflow-health session 2 phase-2-close)"
         },
         {
           "taskId": "DR-09-T3",
-          "status": "open",
+          "status": "complete",
           "description": "Same rename for workforce-frontend ci.yml unit-tests and build jobs.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/frontend/workforce-frontend/.github/workflows/ci.yml",
-          "completedAt": null,
-          "completedBy": null
+          "completedAt": "2026-03-19T18:34:00Z",
+          "completedBy": "Antigravity (260319-cicd-workflow-health session 2 phase-2-close)"
         }
       ],
       "severity_history": []
@@ -750,7 +750,7 @@
     {
       "id": "DR-32",
       "severity": "medium",
-      "status": "open",
+      "status": "complete",
       "category": "Security",
       "repo": "planner-frontend, preference-frontend, workforce-frontend",
       "area": ".github/workflows/ci.yml (unit-tests job)",
@@ -758,11 +758,11 @@
       "tasks": [
         {
           "taskId": "DR-32-T1",
-          "status": "open",
+          "status": "complete",
           "description": "Remove `TEST_ADMIN_EMAIL`, `TEST_ADMIN_PASSWORD`, `TEST_WORKER_EMAIL`, and `TEST_WORKER_PASSWORD` from the env block of the unit-tests job in planner-frontend, preference-frontend, and workforce-frontend ci.yml. These secrets are only required in the integration-tests job. Verify that no unit test file imports or references these env vars (run `grep -r 'TEST_ADMIN|TEST_WORKER' src/ --include='*.unit.test.*'` to confirm). If any unit test file references them, it means the unit/integration test boundary is broken and the test should be reclassified.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/frontend/planner-frontend/.github/workflows/ci.yml",
-          "completedAt": null,
-          "completedBy": null
+          "completedAt": "2026-03-19T18:34:00Z",
+          "completedBy": "Antigravity (260319-cicd-workflow-health session 2 phase-2-close)"
         }
       ],
       "severity_history": []
