@@ -74,7 +74,7 @@
       "category": "Process Gap",
       "repo": "supabase-receptor",
       "area": ".github/workflows/prod-deploy.yml",
-      "description": "prod-deploy.yml notify job reads secrets.SLACK_DEPLOYMENTS_WEBHOOK (no _URL suffix) via GitHub Actions secrets \u2014 bypassing Vault entirely. Canonical standard is to read from Vault path secret/infrastructure/slack-deployments-webhook for workflows with Vault OIDC access, and GitHub secret SLACK_DEPLOYMENTS_WEBHOOK_URL for runners without Vault access. prod-deploy.yml has Vault access and should use Vault.",
+      "description": "prod-deploy.yml notify job reads secrets.SLACK_DEPLOYMENTS_WEBHOOK (no _URL suffix) via GitHub Actions secrets — bypassing Vault entirely. Canonical standard is to read from Vault path secret/infrastructure/slack-deployments-webhook for workflows with Vault OIDC access, and GitHub secret SLACK_DEPLOYMENTS_WEBHOOK_URL for runners without Vault access. prod-deploy.yml has Vault access and should use Vault.",
       "tasks": [
         {
           "taskId": "DR-04-T1",
@@ -94,7 +94,7 @@
       "category": "Security",
       "repo": "supabase-receptor",
       "area": ".github/workflows/prod-deploy.yml",
-      "description": "prod-deploy.yml approve job depends on the GitHub 'production' environment for the manual approval gate. The 260312 audit formally deferred GitHub Environments. If the production environment has no required reviewers configured, every prod-deploy will auto-approve with no human gate \u2014 enabling unreviewed database migrations to production.",
+      "description": "prod-deploy.yml approve job depends on the GitHub 'production' environment for the manual approval gate. The 260312 audit formally deferred GitHub Environments. If the production environment has no required reviewers configured, every prod-deploy will auto-approve with no human gate — enabling unreviewed database migrations to production.",
       "tasks": [
         {
           "taskId": "DR-05-T1",
@@ -147,7 +147,7 @@
         {
           "taskId": "DR-07-T1",
           "status": "complete",
-          "description": "Add 'permissions: contents: read' at the workflow level in deploy-function.yml. The deploy job requires id-token: write for any future Vault OIDC auth \u2014 add that per-job if needed.",
+          "description": "Add 'permissions: contents: read' at the workflow level in deploy-function.yml. The deploy job requires id-token: write for any future Vault OIDC auth — add that per-job if needed.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/.github/workflows/deploy-function.yml",
           "completedAt": "2026-03-19T08:39:19Z",
           "completedBy": "Antigravity (260319-cicd-workflow-health session 1 supabase-reactor)"
@@ -218,7 +218,7 @@
       "category": "Process Gap",
       "repo": "planner-frontend, preference-frontend, workforce-frontend",
       "area": ".github/workflows/ci.yml (ci-cleanup job)",
-      "description": "ci-cleanup job hardcodes NEXT_PUBLIC_SUPABASE_URL: http://127.0.0.1:54321 and reads SUPABASE_SERVICE_ROLE_KEY from ${{ env.SUPABASE_SERVICE_ROLE_KEY }} which is empty at job start because GITHUB_ENV is not carried across job boundaries. The cleanup Supabase client authenticates with empty credentials \u2014 test org cleanup never runs and __ci_{run_id} organisations accumulate permanently.",
+      "description": "ci-cleanup job hardcodes NEXT_PUBLIC_SUPABASE_URL: http://127.0.0.1:54321 and reads SUPABASE_SERVICE_ROLE_KEY from ${{ env.SUPABASE_SERVICE_ROLE_KEY }} which is empty at job start because GITHUB_ENV is not carried across job boundaries. The cleanup Supabase client authenticates with empty credentials — test org cleanup never runs and __ci_{run_id} organisations accumulate permanently.",
       "tasks": [
         {
           "taskId": "DR-10-T1",
@@ -298,7 +298,7 @@
     {
       "id": "DR-13",
       "severity": "critical",
-      "status": "open",
+      "status": "complete",
       "category": "Process Gap",
       "repo": "website-frontend",
       "area": ".github/workflows/",
@@ -306,19 +306,19 @@
       "tasks": [
         {
           "taskId": "DR-13-T1",
-          "status": "open",
+          "status": "complete",
           "description": "Create .github/workflows/ci.yml for website-frontend with: lint job (npm run lint), type-check job (npx tsc --noEmit), build job (npm run build). Use SHA-pinned actions and arc-runner-website-frontend ARC runner label. Model on planner-frontend/ci.yml but omit Supabase, integration test, and codegen-check jobs (no Supabase dependency in website-frontend).",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/frontend/website-frontend/.github/workflows/ci.yml",
-          "completedAt": null,
-          "completedBy": null
+          "completedAt": "2026-03-19T09:30:00Z",
+          "completedBy": "Antigravity (260319-cicd-workflow-health session 5 phase4)"
         },
         {
           "taskId": "DR-13-T2",
-          "status": "open",
+          "status": "complete",
           "description": "Create .github/workflows/deploy.yml for website-frontend. Deployment target is k3s prod via Cloudflare Tunnel (same pattern as match-backend/deploy.yml). On push to main, build Docker image, push to GHCR, update receptor-infra deployment manifest. Gate with GitHub 'production' environment approval.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/frontend/website-frontend/.github/workflows/deploy.yml",
-          "completedAt": null,
-          "completedBy": null
+          "completedAt": "2026-03-19T09:30:00Z",
+          "completedBy": "Antigravity (260319-cicd-workflow-health session 5 phase4)"
         }
       ],
       "severity_history": []
@@ -326,43 +326,43 @@
     {
       "id": "DR-14",
       "severity": "high",
-      "status": "open",
+      "status": "complete",
       "category": "Process Gap",
       "repo": "all",
       "area": ".github/workflows/",
-      "description": "No repository has an automated rollback workflow. The rollback-runbook.md (LIFE-04) documents manual rollback only. ISO 27001 A.8.32 (Change management) requires recovery procedures \u2014 automated rollback enables faster MTTR and reduces human error in incidents.",
+      "description": "No repository has an automated rollback workflow. The rollback-runbook.md (LIFE-04) documents manual rollback only. ISO 27001 A.8.32 (Change management) requires recovery procedures — automated rollback enables faster MTTR and reduces human error in incidents.",
       "tasks": [
         {
           "taskId": "DR-14-T1",
-          "status": "open",
+          "status": "complete",
           "description": "Create rollback.yml for match-backend: a workflow_dispatch with input 'rollback-tag' that checks out receptor-infra, updates deployment.yaml image to the specified tag using the same sed pattern, and pushes. Gate with production environment approval.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/backend/match-backend/.github/workflows/rollback.yml",
-          "completedAt": null,
-          "completedBy": null
+          "completedAt": "2026-03-19T09:30:00Z",
+          "completedBy": "Antigravity (260319-cicd-workflow-health session 5 phase4)"
         },
         {
           "taskId": "DR-14-T2",
-          "status": "open",
+          "status": "complete",
           "description": "Create rollback.yml for receptor-planner with same pattern.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/backend/receptor-planner/.github/workflows/rollback.yml",
-          "completedAt": null,
-          "completedBy": null
+          "completedAt": "2026-03-19T09:30:00Z",
+          "completedBy": "Antigravity (260319-cicd-workflow-health session 5 phase4)"
         },
         {
           "taskId": "DR-14-T3",
-          "status": "open",
+          "status": "complete",
           "description": "Create rollback.yml for supabase-receptor DB: workflow_dispatch with target migration version input, runs supabase db push with a rollback flag or targets a specific migration tag. Gate with production environment approval.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/.github/workflows/rollback.yml",
-          "completedAt": null,
-          "completedBy": null
+          "completedAt": "2026-03-19T09:30:00Z",
+          "completedBy": "Antigravity (260319-cicd-workflow-health session 5 phase4)"
         },
         {
           "taskId": "DR-14-T4",
-          "status": "open",
+          "status": "complete",
           "description": "Create rollback.yml for website-frontend with same GitOps pattern as match-backend/receptor-planner.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/frontend/website-frontend/.github/workflows/rollback.yml",
-          "completedAt": null,
-          "completedBy": null
+          "completedAt": "2026-03-19T09:30:00Z",
+          "completedBy": "Antigravity (260319-cicd-workflow-health session 5 phase4)"
         }
       ],
       "severity_history": []
@@ -370,35 +370,35 @@
     {
       "id": "DR-15",
       "severity": "high",
-      "status": "open",
+      "status": "complete",
       "category": "Process Gap",
       "repo": "planner-frontend, preference-frontend, workforce-frontend",
       "area": ".github/workflows/",
-      "description": "Frontend repositories (planner-frontend, preference-frontend, workforce-frontend) have no deploy.yml. Deployment target is k3s prod via Cloudflare Tunnel (same pattern as backend services \u2014 build Docker image, push to GHCR, update receptor-infra GitOps manifest). Currently no workflow-as-code exists for environment promotion, approval gates, or rollback for these frontends.",
+      "description": "Frontend repositories (planner-frontend, preference-frontend, workforce-frontend) have no deploy.yml. Deployment target is k3s prod via Cloudflare Tunnel (same pattern as backend services — build Docker image, push to GHCR, update receptor-infra GitOps manifest). Currently no workflow-as-code exists for environment promotion, approval gates, or rollback for these frontends.",
       "tasks": [
         {
           "taskId": "DR-15-T1",
-          "status": "open",
+          "status": "complete",
           "description": "Create .github/workflows/deploy.yml for planner-frontend. On push to main, build Docker image using the project Dockerfile, push to GHCR under ghcr.io/dm-ra-01/planner-frontend:sha, update the receptor-infra deployment manifest (same sed pattern as match-backend/deploy.yml). Gate with GitHub 'production' environment approval. Use SHA-pinned actions throughout.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/frontend/planner-frontend/.github/workflows/deploy.yml",
-          "completedAt": null,
-          "completedBy": null
+          "completedAt": "2026-03-19T09:30:00Z",
+          "completedBy": "Antigravity (260319-cicd-workflow-health session 5 phase4)"
         },
         {
           "taskId": "DR-15-T2",
-          "status": "open",
+          "status": "complete",
           "description": "Same deploy.yml for preference-frontend.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/frontend/preference-frontend/.github/workflows/deploy.yml",
-          "completedAt": null,
-          "completedBy": null
+          "completedAt": "2026-03-19T09:30:00Z",
+          "completedBy": "Antigravity (260319-cicd-workflow-health session 5 phase4)"
         },
         {
           "taskId": "DR-15-T3",
-          "status": "open",
+          "status": "complete",
           "description": "Same deploy.yml for workforce-frontend.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/frontend/workforce-frontend/.github/workflows/deploy.yml",
-          "completedAt": null,
-          "completedBy": null
+          "completedAt": "2026-03-19T09:30:00Z",
+          "completedBy": "Antigravity (260319-cicd-workflow-health session 5 phase4)"
         }
       ],
       "severity_history": []
@@ -410,7 +410,7 @@
       "category": "Process Gap",
       "repo": "supabase-receptor",
       "area": ".github/actions/smoke-test/action.yml",
-      "description": "The smoke-test composite action is called from both staging-smoke.yml and prod-deploy.yml. The incorrect table name (organisations vs orgs, confirmed as orgs) blocks both staging and production smoke test pipelines simultaneously. See DR-02 for the fix \u2014 this finding flags the blast radius.",
+      "description": "The smoke-test composite action is called from both staging-smoke.yml and prod-deploy.yml. The incorrect table name (organisations vs orgs, confirmed as orgs) blocks both staging and production smoke test pipelines simultaneously. See DR-02 for the fix — this finding flags the blast radius.",
       "tasks": [
         {
           "taskId": "DR-16-T1",
@@ -458,12 +458,12 @@
       "category": "Process Gap",
       "repo": "supabase-receptor",
       "area": ".github/workflows/prod-deploy.yml",
-      "description": "prod-deploy.yml has no concurrency group. A tag push (release/*) and a simultaneous workflow_dispatch can both reach the deploy job concurrently \u2014 two parallel `supabase db push` runs against the same production DB will race on the migration lock table, potentially applying migrations twice or in undefined order. No workflow-level queuing or cancellation exists to prevent this.",
+      "description": "prod-deploy.yml has no concurrency group. A tag push (release/*) and a simultaneous workflow_dispatch can both reach the deploy job concurrently — two parallel `supabase db push` runs against the same production DB will race on the migration lock table, potentially applying migrations twice or in undefined order. No workflow-level queuing or cancellation exists to prevent this.",
       "tasks": [
         {
           "taskId": "DR-18-T1",
           "status": "complete",
-          "description": "Add a concurrency block to prod-deploy.yml at the workflow level: `concurrency: { group: 'prod-deploy-${{ github.ref }}', cancel-in-progress: false }`. Set cancel-in-progress to false (queue rather than cancel) \u2014 cancelling a mid-flight migration is more dangerous than waiting. Document that only one prod deploy can run at a time per branch/tag.",
+          "description": "Add a concurrency block to prod-deploy.yml at the workflow level: `concurrency: { group: 'prod-deploy-${{ github.ref }}', cancel-in-progress: false }`. Set cancel-in-progress to false (queue rather than cancel) — cancelling a mid-flight migration is more dangerous than waiting. Document that only one prod deploy can run at a time per branch/tag.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/.github/workflows/prod-deploy.yml",
           "completedAt": "2026-03-19T08:58:21Z",
           "completedBy": "Antigravity (260319-cicd-workflow-health session 4 supabase-receptor)"
@@ -478,7 +478,7 @@
       "category": "Security",
       "repo": "supabase-receptor",
       "area": ".github/workflows/prod-deploy.yml, staging-smoke.yml",
-      "description": "In prod-deploy.yml (backup-pre-deploy, diff, and deploy jobs) and staging-smoke.yml (Authenticate with Vault step), VAULT_TOKEN is written to GITHUB_ENV on one line and ::add-mask:: is called on the next line. GitHub Actions processes env writes and masking sequentially \u2014 the raw token is visible in the step log between these two lines. The correct pattern is to call ::add-mask:: before echoing to GITHUB_ENV.",
+      "description": "In prod-deploy.yml (backup-pre-deploy, diff, and deploy jobs) and staging-smoke.yml (Authenticate with Vault step), VAULT_TOKEN is written to GITHUB_ENV on one line and ::add-mask:: is called on the next line. GitHub Actions processes env writes and masking sequentially — the raw token is visible in the step log between these two lines. The correct pattern is to call ::add-mask:: before echoing to GITHUB_ENV.",
       "tasks": [
         {
           "taskId": "DR-19-T1",
@@ -498,7 +498,7 @@
       "category": "Process Gap",
       "repo": "supabase-receptor",
       "area": ".github/workflows/prod-deploy.yml",
-      "description": "prod-deploy.yml deploy job (lines 215\u2013216): `git tag deployed/... || true` and `git push --tags || true` silently suppress all errors. If the deployment tag cannot be created or pushed (permissions issue, network error, SHA conflict), the job continues green with no audit record of which migrations were deployed. ISO 27001 A.8.32 requires a change audit trail \u2014 silent tag failures break it.",
+      "description": "prod-deploy.yml deploy job (lines 215–216): `git tag deployed/... || true` and `git push --tags || true` silently suppress all errors. If the deployment tag cannot be created or pushed (permissions issue, network error, SHA conflict), the job continues green with no audit record of which migrations were deployed. ISO 27001 A.8.32 requires a change audit trail — silent tag failures break it.",
       "tasks": [
         {
           "taskId": "DR-20-T1",
@@ -518,12 +518,12 @@
       "category": "Architectural Drift",
       "repo": "supabase-receptor",
       "area": ".github/workflows/staging-smoke.yml",
-      "description": "staging-smoke.yml lines 18 and 77 hardcode the staging base URL as `https://staging-api-829c83.commonbond.au` (an internal hash-suffixed URL). The 260319 Domain Naming Standard (\u00a76.1 of this audit) approved `receptor-api-staging.commonbond.au` as the canonical staging URL. The smoke test targets a non-standard URL that will not exist once Cloudflare Tunnel DNS is aligned to the canonical naming standard.",
+      "description": "staging-smoke.yml lines 18 and 77 hardcode the staging base URL as `https://staging-api-829c83.commonbond.au` (an internal hash-suffixed URL). The 260319 Domain Naming Standard (§6.1 of this audit) approved `receptor-api-staging.commonbond.au` as the canonical staging URL. The smoke test targets a non-standard URL that will not exist once Cloudflare Tunnel DNS is aligned to the canonical naming standard.",
       "tasks": [
         {
           "taskId": "DR-21-T1",
           "status": "complete",
-          "description": "Update staging-smoke.yml lines 18 and 77: replace `https://staging-api-829c83.commonbond.au` with `https://receptor-api-staging.commonbond.au`. Confirm prod-deploy.yml PRODUCTION_URL env var aligns with the \u00a76.1 standard (`https://receptor-api.commonbond.au`). Document both canonical URLs in docs/infrastructure/service-urls.md.",
+          "description": "Update staging-smoke.yml lines 18 and 77: replace `https://staging-api-829c83.commonbond.au` with `https://receptor-api-staging.commonbond.au`. Confirm prod-deploy.yml PRODUCTION_URL env var aligns with the §6.1 standard (`https://receptor-api.commonbond.au`). Document both canonical URLs in docs/infrastructure/service-urls.md.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/.github/workflows/staging-smoke.yml",
           "completedAt": "2026-03-19T08:58:21Z",
           "completedBy": "Antigravity (260319-cicd-workflow-health session 4 supabase-receptor)"
@@ -538,7 +538,7 @@
       "category": "Process Gap",
       "repo": "all",
       "area": ".github/workflows/ci.yml",
-      "description": "No CI workflow across any repository defines a concurrency group with cancel-in-progress. On rapid successive pushes (fixup commits during review), multiple CI runs queue on the shared ARC runner pool. Older runs cannot be cancelled, so the runner queue grows \u2014 new PRs wait behind stale runs consuming scarce self-hosted ARC runner capacity.",
+      "description": "No CI workflow across any repository defines a concurrency group with cancel-in-progress. On rapid successive pushes (fixup commits during review), multiple CI runs queue on the shared ARC runner pool. Older runs cannot be cancelled, so the runner queue grows — new PRs wait behind stale runs consuming scarce self-hosted ARC runner capacity.",
       "tasks": [
         {
           "taskId": "DR-22-T1",
@@ -558,12 +558,12 @@
       "category": "Security",
       "repo": "supabase-receptor",
       "area": ".github/actions/supabase-start/action.yml",
-      "description": "The supabase-start composite action (line 106) writes service-role-key to GITHUB_OUTPUT via `echo \"service-role-key=${SERVICE_ROLE_KEY}\" >> $GITHUB_OUTPUT`. GitHub Actions step outputs are not masked \u2014 even though ::add-mask:: is called on line 105, the value written to GITHUB_OUTPUT is stored in the workflow run's internal output store and is visible in the Actions UI under 'Outputs' for the step. Any caller that re-echoes or logs `steps.<id>.outputs.service-role-key` will expose the service role JWT in plaintext. The service role key bypasses all RLS policies and grants full database access.",
+      "description": "The supabase-start composite action (line 106) writes service-role-key to GITHUB_OUTPUT via `echo \"service-role-key=${SERVICE_ROLE_KEY}\" >> $GITHUB_OUTPUT`. GitHub Actions step outputs are not masked — even though ::add-mask:: is called on line 105, the value written to GITHUB_OUTPUT is stored in the workflow run's internal output store and is visible in the Actions UI under 'Outputs' for the step. Any caller that re-echoes or logs `steps.<id>.outputs.service-role-key` will expose the service role JWT in plaintext. The service role key bypasses all RLS policies and grants full database access.",
       "tasks": [
         {
           "taskId": "DR-23-T1",
           "status": "complete",
-          "description": "Remove the `service-role-key` output from supabase-start/action.yml entirely. The service role key is already exported to GITHUB_ENV as SUPABASE_SERVICE_ROLE_KEY (line 99) and is usable by subsequent steps in the same job without being exposed as a step output. Remove `service-role-key` from the `outputs` declaration (lines 33\u201335) and from the `echo` on line 106. Update any callers that reference `steps.supabase-start.outputs.service-role-key` to use `env.SUPABASE_SERVICE_ROLE_KEY` instead.",
+          "description": "Remove the `service-role-key` output from supabase-start/action.yml entirely. The service role key is already exported to GITHUB_ENV as SUPABASE_SERVICE_ROLE_KEY (line 99) and is usable by subsequent steps in the same job without being exposed as a step output. Remove `service-role-key` from the `outputs` declaration (lines 33–35) and from the `echo` on line 106. Update any callers that reference `steps.supabase-start.outputs.service-role-key` to use `env.SUPABASE_SERVICE_ROLE_KEY` instead.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/.github/actions/supabase-start/action.yml",
           "completedAt": "2026-03-19T08:58:21Z",
           "completedBy": "Antigravity (260319-cicd-workflow-health session 4 supabase-receptor)"
@@ -574,11 +574,11 @@
     {
       "id": "DR-24",
       "severity": "high",
-      "status": "deferred",
+      "status": "complete",
       "category": "Security",
       "repo": "match-backend, receptor-planner",
       "area": ".github/workflows/deploy.yml",
-      "description": "Both match-backend/deploy.yml and receptor-planner/deploy.yml run on `ubuntu-latest` (GitHub-hosted runners) with no `id-token: write` permission. This means: (1) these jobs have no Vault OIDC access \u2014 they rely solely on GitHub Actions secrets for DEPLOY_BOT_APP_ID and DEPLOY_BOT_PRIVATE_KEY, bypassing the Vault secret management standard, and (2) the GitHub App private key is stored as a plain GitHub Actions secret rather than in Vault KV. If the repository is successfully attacked (e.g. via a malicious PR with workflow access to secrets), the private key is exfiltrated and can be used to push to receptor-infra indefinitely until manually rotated. The canonical pattern for Vault-enabled repos is to store the private key in Vault KV and fetch it via OIDC at runtime.",
+      "description": "Both match-backend/deploy.yml and receptor-planner/deploy.yml run on `ubuntu-latest` (GitHub-hosted runners) with no `id-token: write` permission. This means: (1) these jobs have no Vault OIDC access — they rely solely on GitHub Actions secrets for DEPLOY_BOT_APP_ID and DEPLOY_BOT_PRIVATE_KEY, bypassing the Vault secret management standard, and (2) the GitHub App private key is stored as a plain GitHub Actions secret rather than in Vault KV. If the repository is successfully attacked (e.g. via a malicious PR with workflow access to secrets), the private key is exfiltrated and can be used to push to receptor-infra indefinitely until manually rotated. The canonical pattern for Vault-enabled repos is to store the private key in Vault KV and fetch it via OIDC at runtime.",
       "tasks": [
         {
           "taskId": "DR-24-T1",
@@ -611,7 +611,7 @@
         {
           "taskId": "DR-25-T1",
           "status": "complete",
-          "description": "Add a two-step cleanup block to match-backend/ci.yml integration-tests job, placed after 'Run integration tests' with `if: always()` on both steps: (1) `supabase stop` \u2014 tears down local Supabase containers cleanly; (2) `docker system prune -f --volumes` \u2014 removes dangling images, stopped containers, and unused volumes left by the Supabase Docker stack. Without this, each failed or cancelled run leaves ~2\u20133 GB of Docker layer cache and PostgreSQL volume data on arc-runner-match-backend, eventually exhausting disk and causing port 54321 conflicts for subsequent runs.",
+          "description": "Add a two-step cleanup block to match-backend/ci.yml integration-tests job, placed after 'Run integration tests' with `if: always()` on both steps: (1) `supabase stop` — tears down local Supabase containers cleanly; (2) `docker system prune -f --volumes` — removes dangling images, stopped containers, and unused volumes left by the Supabase Docker stack. Without this, each failed or cancelled run leaves ~2–3 GB of Docker layer cache and PostgreSQL volume data on arc-runner-match-backend, eventually exhausting disk and causing port 54321 conflicts for subsequent runs.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/backend/match-backend/.github/workflows/ci.yml",
           "completedAt": "2026-03-19T08:42:53Z",
           "completedBy": "Antigravity (260319-cicd-workflow-health session 3 phase-3)"
@@ -646,15 +646,15 @@
       "category": "Process Gap",
       "repo": "match-backend, receptor-planner",
       "area": ".github/workflows/deploy.yml",
-      "description": "Both match-backend/deploy.yml and receptor-planner/deploy.yml are named 'Deploy to Staging' but trigger on every push to main and update the receptor-infra GitOps manifest with a `staging-` prefixed image tag. Since receptor-infra drives k3s deployments via ArgoCD/Flux, a push to main in either backend repo immediately triggers a production-equivalent rollout with no approval gate, no smoke test, and no rollback checkpoint. This means 'staging' is functionally equivalent to production with no promotion barrier \u2014 a broken commit reaches the live cluster within minutes of merge.",
+      "description": "Both match-backend/deploy.yml and receptor-planner/deploy.yml are named 'Deploy to Staging' but trigger on every push to main and update the receptor-infra GitOps manifest with a `staging-` prefixed image tag. Since receptor-infra drives k3s deployments via ArgoCD/Flux, a push to main in either backend repo immediately triggers a production-equivalent rollout with no approval gate, no smoke test, and no rollback checkpoint. This means 'staging' is functionally equivalent to production with no promotion barrier — a broken commit reaches the live cluster within minutes of merge.",
       "tasks": [
         {
           "taskId": "DR-27-T1",
           "status": "complete",
-          "description": "Rename deploy.yml trigger to distinguish staging from production. Add a `promote-to-prod` job (or separate workflow) for match-backend and receptor-planner that requires a GitHub Environment 'production' approval gate before updating the production manifest in receptor-infra. The current deploy.yml flow should target a staging namespace in receptor-infra only. Model the two-job pattern (staging deploy \u2192 approval gate \u2192 production promote) on supabase-receptor/prod-deploy.yml.",
+          "description": "Rename deploy.yml trigger to distinguish staging from production. Add a `promote-to-prod` job (or separate workflow) for match-backend and receptor-planner that requires a GitHub Environment 'production' approval gate before updating the production manifest in receptor-infra. The current deploy.yml flow should target a staging namespace in receptor-infra only. Model the two-job pattern (staging deploy → approval gate → production promote) on supabase-receptor/prod-deploy.yml.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/backend/match-backend/.github/workflows/deploy.yml",
           "completedAt": "2026-03-19T08:58:21Z",
-          "completedBy": "Antigravity (260319-cicd-workflow-health session 4 match-backend receptor-planner \u2014 staging namespace split remains deferred)"
+          "completedBy": "Antigravity (260319-cicd-workflow-health session 4 match-backend receptor-planner — staging namespace split remains deferred)"
         },
         {
           "taskId": "DR-27-T2",
@@ -662,7 +662,7 @@
           "description": "Same staging/production promotion separation for receptor-planner/deploy.yml.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/backend/receptor-planner/.github/workflows/deploy.yml",
           "completedAt": "2026-03-19T08:42:53Z",
-          "completedBy": "Antigravity (260319-cicd-workflow-health session 3 phase-3 \u2014 deferred: staging/prod split requires receptor-infra namespace decision)"
+          "completedBy": "Antigravity (260319-cicd-workflow-health session 3 phase-3 — deferred: staging/prod split requires receptor-infra namespace decision)"
         }
       ],
       "severity_history": []
@@ -674,7 +674,7 @@
       "category": "Security",
       "repo": "planner-frontend, preference-frontend, workforce-frontend",
       "area": ".github/workflows/ci.yml (integration-tests, codegen-check, e2e-axe jobs)",
-      "description": "All three frontend CI workflows use `secrets.EXTERNAL_REPO_TOKEN` \u2014 a long-lived GitHub Personal Access Token \u2014 to checkout `dm-ra-01/supabase-receptor` in at least 3 jobs per repo (integration-tests, codegen-check, e2e-axe). This is a manually rotated PAT stored as a GitHub Actions secret, bypassing the Vault secret management standard. A compromised frontend repo (e.g. via a malicious PR that reads workflow secrets) permanently exfiltrates a token with read access to supabase-receptor \u2014 including schema definitions, migration history, and function source \u2014 until the PAT is manually rotated. The canonical pattern for cross-repo checkout in this ecosystem is the GitHub App (`app-lifecycle-deployment`, ID 3127975) with scoped repository access and no permanent secret storage.",
+      "description": "All three frontend CI workflows use `secrets.EXTERNAL_REPO_TOKEN` — a long-lived GitHub Personal Access Token — to checkout `dm-ra-01/supabase-receptor` in at least 3 jobs per repo (integration-tests, codegen-check, e2e-axe). This is a manually rotated PAT stored as a GitHub Actions secret, bypassing the Vault secret management standard. A compromised frontend repo (e.g. via a malicious PR that reads workflow secrets) permanently exfiltrates a token with read access to supabase-receptor — including schema definitions, migration history, and function source — until the PAT is manually rotated. The canonical pattern for cross-repo checkout in this ecosystem is the GitHub App (`app-lifecycle-deployment`, ID 3127975) with scoped repository access and no permanent secret storage.",
       "tasks": [
         {
           "taskId": "DR-28-T1",
@@ -694,7 +694,7 @@
       "category": "Process Gap",
       "repo": "planner-frontend, preference-frontend, workforce-frontend",
       "area": ".github/workflows/ci.yml (integration-tests, codegen-check, e2e-axe jobs)",
-      "description": "planner-frontend/ci.yml starts Supabase with `--ignore-health-check` in three separate jobs (integration-tests line 124, codegen-check line 222, e2e-axe line 274) and calls `supabase stop` in none of them. Each job uses `--workdir supabase-backend/supabase` with no `if: always()` teardown step. On job failure or cancellation, all three Supabase stacks remain running on `arc-runner-planner-frontend`, consuming port 54321 and accumulating Docker volumes. This pattern almost certainly exists in preference-frontend and workforce-frontend ci.yml as well (same job structure). The same pattern was flagged for match-backend in DR-25, but the frontend blast radius is 3x worse \u2014 three concurrent Supabase instances per workflow run.",
+      "description": "planner-frontend/ci.yml starts Supabase with `--ignore-health-check` in three separate jobs (integration-tests line 124, codegen-check line 222, e2e-axe line 274) and calls `supabase stop` in none of them. Each job uses `--workdir supabase-backend/supabase` with no `if: always()` teardown step. On job failure or cancellation, all three Supabase stacks remain running on `arc-runner-planner-frontend`, consuming port 54321 and accumulating Docker volumes. This pattern almost certainly exists in preference-frontend and workforce-frontend ci.yml as well (same job structure). The same pattern was flagged for match-backend in DR-25, but the frontend blast radius is 3x worse — three concurrent Supabase instances per workflow run.",
       "tasks": [
         {
           "taskId": "DR-29-T1",
@@ -714,7 +714,7 @@
       "category": "Process Gap",
       "repo": "supabase-receptor",
       "area": ".github/actions/smoke-test/action.yml line 93",
-      "description": "smoke-test/action.yml Check 4/5 (DB canary) still queries `/rest/v1/organisations?select=id&limit=1` (line 93) and prints 'organisations table accessible' (line 104). DR-02 (raised 2026-03-19) identifies this as the wrong table name \u2014 canonical is `orgs` \u2014 and DR-16 documents the blast radius across both staging and production smoke tests. Both DR-02 and DR-16 are marked `open` with tasks assigned, but the underlying file has not been fixed. This tells us that the DR-02 task description alone (fix the path) has not been actioned. Every staging-smoke.yml and prod-deploy.yml smoke-test run is currently failing on Check 4 with a 404. This is the single highest-leverage open fix in the entire audit.",
+      "description": "smoke-test/action.yml Check 4/5 (DB canary) still queries `/rest/v1/organisations?select=id&limit=1` (line 93) and prints 'organisations table accessible' (line 104). DR-02 (raised 2026-03-19) identifies this as the wrong table name — canonical is `orgs` — and DR-16 documents the blast radius across both staging and production smoke tests. Both DR-02 and DR-16 are marked `open` with tasks assigned, but the underlying file has not been fixed. This tells us that the DR-02 task description alone (fix the path) has not been actioned. Every staging-smoke.yml and prod-deploy.yml smoke-test run is currently failing on Check 4 with a 404. This is the single highest-leverage open fix in the entire audit.",
       "tasks": [
         {
           "taskId": "DR-30-T1",
@@ -734,7 +734,7 @@
       "category": "Process Gap",
       "repo": "planner-frontend, preference-frontend, workforce-frontend",
       "area": ".github/workflows/ci.yml (e2e-axe job)",
-      "description": "The e2e-axe accessibility audit job in planner-frontend/ci.yml (and equivalents in preference-frontend, workforce-frontend) has `continue-on-error: true` (line 251). This means WCAG accessibility violations on public-facing pages are reported to the log but **never block merge**. A PR that introduces a colour-contrast failure, missing ARIA label, or keyboard navigation regression can land on main with CI green. The frontends are used by hospital staff \u2014 accessibility failures expose Common Bond Pty Ltd to disability discrimination liability under the Disability Discrimination Act 1992 (Cth) and WCAG 2.1 AA obligations. ISO 27001 A.8.25 (Secure development lifecycle) requires accessibility controls to be enforced in the pipeline, not merely observed.",
+      "description": "The e2e-axe accessibility audit job in planner-frontend/ci.yml (and equivalents in preference-frontend, workforce-frontend) has `continue-on-error: true` (line 251). This means WCAG accessibility violations on public-facing pages are reported to the log but **never block merge**. A PR that introduces a colour-contrast failure, missing ARIA label, or keyboard navigation regression can land on main with CI green. The frontends are used by hospital staff — accessibility failures expose Common Bond Pty Ltd to disability discrimination liability under the Disability Discrimination Act 1992 (Cth) and WCAG 2.1 AA obligations. ISO 27001 A.8.25 (Secure development lifecycle) requires accessibility controls to be enforced in the pipeline, not merely observed.",
       "tasks": [
         {
           "taskId": "DR-31-T1",
@@ -742,7 +742,7 @@
           "description": "Remove `continue-on-error: true` from the e2e-axe job in planner-frontend, preference-frontend, and workforce-frontend ci.yml. This promotes accessibility from informational to a hard merge gate. Before removing it, confirm the axe spec passes on the current codebase (run locally: `npx playwright test --config playwright.axe.config.ts`) and triage any existing violations. If violations exist, document them as known issues in a new finding rather than silently ignoring them. Consider setting an axe `impact` threshold (e.g. fail only on critical/serious) to avoid blocking on incidental moderate violations during the transition.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/frontend/planner-frontend/.github/workflows/ci.yml",
           "completedAt": "2026-03-19T08:42:53Z",
-          "completedBy": "Antigravity (260319-cicd-workflow-health \u2014 deferred: enforce accessibility gate after frontends reach baseline quality)"
+          "completedBy": "Antigravity (260319-cicd-workflow-health — deferred: enforce accessibility gate after frontends reach baseline quality)"
         }
       ],
       "severity_history": []
@@ -754,7 +754,7 @@
       "category": "Security",
       "repo": "planner-frontend, preference-frontend, workforce-frontend",
       "area": ".github/workflows/ci.yml (unit-tests job)",
-      "description": "planner-frontend/ci.yml unit-tests job injects `TEST_ADMIN_EMAIL`, `TEST_ADMIN_PASSWORD`, `TEST_WORKER_EMAIL`, and `TEST_WORKER_PASSWORD` from GitHub Actions secrets into the environment (lines 88\u201391). This job is explicitly DB-free \u2014 all Supabase calls are mocked via MSW \u2014 and these credentials are never consumed by any unit test code. They are live production/staging Supabase user credentials unnecessarily present in every unit test runner environment. Any compromised dependency, test helper, or leaked log line can exfiltrate them. The credentials should only be injected in the integration-tests job where they are actually required.",
+      "description": "planner-frontend/ci.yml unit-tests job injects `TEST_ADMIN_EMAIL`, `TEST_ADMIN_PASSWORD`, `TEST_WORKER_EMAIL`, and `TEST_WORKER_PASSWORD` from GitHub Actions secrets into the environment (lines 88–91). This job is explicitly DB-free — all Supabase calls are mocked via MSW — and these credentials are never consumed by any unit test code. They are live production/staging Supabase user credentials unnecessarily present in every unit test runner environment. Any compromised dependency, test helper, or leaked log line can exfiltrate them. The credentials should only be injected in the integration-tests job where they are actually required.",
       "tasks": [
         {
           "taskId": "DR-32-T1",
@@ -774,7 +774,7 @@
       "category": "Security",
       "repo": "planner-frontend, preference-frontend, workforce-frontend",
       "area": ".github/workflows/renovate.yml",
-      "description": "renovate.yml in all three frontend repos uses `renovatebot/github-action@v46.1.3` \u2014 a mutable semver tag, not SHA-pinned \u2014 violating SEC-02. More critically, `RENOVATE_TOKEN` is set to `secrets.EXTERNAL_REPO_TOKEN`, the same long-lived PAT targeted for deletion by DR-28. When DR-28 is implemented and the PAT is revoked, Renovate immediately breaks across all three repos with a silent auth failure. Additionally, the action runs on `ubuntu-latest` with no `permissions:` block, meaning the default GITHUB_TOKEN scope is inherited and potentially broader than needed. Renovate requires `contents: write` and `pull-requests: write` \u2014 these should be declared explicitly, not inherited.",
+      "description": "renovate.yml in all three frontend repos uses `renovatebot/github-action@v46.1.3` — a mutable semver tag, not SHA-pinned — violating SEC-02. More critically, `RENOVATE_TOKEN` is set to `secrets.EXTERNAL_REPO_TOKEN`, the same long-lived PAT targeted for deletion by DR-28. When DR-28 is implemented and the PAT is revoked, Renovate immediately breaks across all three repos with a silent auth failure. Additionally, the action runs on `ubuntu-latest` with no `permissions:` block, meaning the default GITHUB_TOKEN scope is inherited and potentially broader than needed. Renovate requires `contents: write` and `pull-requests: write` — these should be declared explicitly, not inherited.",
       "tasks": [
         {
           "taskId": "DR-33-T1",
@@ -787,7 +787,7 @@
         {
           "taskId": "DR-33-T2",
           "status": "complete",
-          "description": "Replace `RENOVATE_TOKEN: ${{ secrets.EXTERNAL_REPO_TOKEN }}` with the GitHub App token pattern \u2014 generate a token via `actions/create-github-app-token` scoped to the repos Renovate needs to open PRs against (planner-frontend, preference-frontend, workforce-frontend, supabase-receptor). Set `RENOVATE_TOKEN: ${{ steps.app-token.outputs.token }}`. This must be coordinated with DR-28 \u2014 both must land in the same release to avoid an auth gap.",
+          "description": "Replace `RENOVATE_TOKEN: ${{ secrets.EXTERNAL_REPO_TOKEN }}` with the GitHub App token pattern — generate a token via `actions/create-github-app-token` scoped to the repos Renovate needs to open PRs against (planner-frontend, preference-frontend, workforce-frontend, supabase-receptor). Set `RENOVATE_TOKEN: ${{ steps.app-token.outputs.token }}`. This must be coordinated with DR-28 — both must land in the same release to avoid an auth gap.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/frontend/planner-frontend/.github/workflows/renovate.yml",
           "completedAt": "2026-03-19T08:42:53Z",
           "completedBy": "Antigravity (260319-cicd-workflow-health session 2)"
@@ -802,12 +802,12 @@
       "category": "Process Gap",
       "repo": "preference-frontend",
       "area": ".github/workflows/ci.yml (integration-tests, codegen-check, e2e-axe jobs)",
-      "description": "preference-frontend/ci.yml runs `supabase stop --workdir supabase-backend/supabase --no-backup 2>/dev/null || true` as the first line of every Supabase start block (lines 168, 262, 313). The `|| true` silently suppresses all errors from this pre-clean stop \u2014 including legitimate failures like 'Docker daemon not running' or 'permission denied' that would indicate a broken runner state. A runner with a broken Docker daemon would proceed past the stop, attempt to start Supabase, and fail with a confusing error that appears to be a Supabase bug rather than a runner infrastructure problem. planner-frontend and workforce-frontend have no pre-stop at all \u2014 the pattern is asymmetric across repos with no documented rationale. The `2>/dev/null || true` is a smell that this was added to paper over runner issues rather than fix them.",
+      "description": "preference-frontend/ci.yml runs `supabase stop --workdir supabase-backend/supabase --no-backup 2>/dev/null || true` as the first line of every Supabase start block (lines 168, 262, 313). The `|| true` silently suppresses all errors from this pre-clean stop — including legitimate failures like 'Docker daemon not running' or 'permission denied' that would indicate a broken runner state. A runner with a broken Docker daemon would proceed past the stop, attempt to start Supabase, and fail with a confusing error that appears to be a Supabase bug rather than a runner infrastructure problem. planner-frontend and workforce-frontend have no pre-stop at all — the pattern is asymmetric across repos with no documented rationale. The `2>/dev/null || true` is a smell that this was added to paper over runner issues rather than fix them.",
       "tasks": [
         {
           "taskId": "DR-34-T1",
           "status": "complete",
-          "description": "Remove the `supabase stop ... || true` pre-clean from integration-tests, codegen-check, and e2e-axe jobs in preference-frontend/ci.yml. Instead, the DR-29 fix (supabase stop in an `if: always()` teardown step) is the correct solution \u2014 it ensures stop happens after the job rather than before, and does not suppress errors. If a pre-stop is genuinely needed on this runner, it should be done without `|| true` and should log a warning rather than silently ignoring the exit code. Standardise the pattern across all three frontend repos.",
+          "description": "Remove the `supabase stop ... || true` pre-clean from integration-tests, codegen-check, and e2e-axe jobs in preference-frontend/ci.yml. Instead, the DR-29 fix (supabase stop in an `if: always()` teardown step) is the correct solution — it ensures stop happens after the job rather than before, and does not suppress errors. If a pre-stop is genuinely needed on this runner, it should be done without `|| true` and should log a warning rather than silently ignoring the exit code. Standardise the pattern across all three frontend repos.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/frontend/preference-frontend/.github/workflows/ci.yml",
           "completedAt": "2026-03-19T08:58:21Z",
           "completedBy": "Antigravity (260319-cicd-workflow-health session 4 preference-frontend)"
@@ -822,12 +822,12 @@
       "category": "Security",
       "repo": "planner-frontend, preference-frontend, workforce-frontend, match-backend, receptor-planner",
       "area": ".github/workflows/ci.yml (all Install dependencies steps)",
-      "description": "Every frontend and backend CI workflow uses `npm install` (or `pip install`) rather than `npm ci`. `npm install` can silently update `package-lock.json` when there is a version range mismatch between what is committed and what npm resolves at runtime \u2014 meaning CI may run against a different dependency tree than what developers committed and code review approved. This is a supply-chain integrity failure: a dependency could be silently bumped to a version containing a vulnerability or breaking change, and CI would still pass. `npm ci` enforces exact lockfile reproducibility, fails if `package-lock.json` is out of sync, and is the industry standard for CI pipelines. The current `npm install` usage also means the lockfile drift goes undetected until a developer runs it locally.",
+      "description": "Every frontend and backend CI workflow uses `npm install` (or `pip install`) rather than `npm ci`. `npm install` can silently update `package-lock.json` when there is a version range mismatch between what is committed and what npm resolves at runtime — meaning CI may run against a different dependency tree than what developers committed and code review approved. This is a supply-chain integrity failure: a dependency could be silently bumped to a version containing a vulnerability or breaking change, and CI would still pass. `npm ci` enforces exact lockfile reproducibility, fails if `package-lock.json` is out of sync, and is the industry standard for CI pipelines. The current `npm install` usage also means the lockfile drift goes undetected until a developer runs it locally.",
       "tasks": [
         {
           "taskId": "DR-35-T1",
           "status": "complete",
-          "description": "Replace all `npm install` with `npm ci` in the Install dependencies steps across planner-frontend, preference-frontend, and workforce-frontend ci.yml. `npm ci` requires `package-lock.json` to be present and up-to-date \u2014 if it is not, the build fails immediately rather than silently diverging. Run `npm install` locally first to ensure the lockfile is current before switching CI to `npm ci`. Apply to all jobs within each ci.yml (lint-and-type, unit-tests, integration-tests, build, codegen-check, e2e-axe, ci-cleanup).",
+          "description": "Replace all `npm install` with `npm ci` in the Install dependencies steps across planner-frontend, preference-frontend, and workforce-frontend ci.yml. `npm ci` requires `package-lock.json` to be present and up-to-date — if it is not, the build fails immediately rather than silently diverging. Run `npm install` locally first to ensure the lockfile is current before switching CI to `npm ci`. Apply to all jobs within each ci.yml (lint-and-type, unit-tests, integration-tests, build, codegen-check, e2e-axe, ci-cleanup).",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/frontend/planner-frontend/.github/workflows/ci.yml",
           "completedAt": "2026-03-19T08:42:53Z",
           "completedBy": "Antigravity (260319-cicd-workflow-health session 2)"
@@ -842,7 +842,7 @@
       "category": "Process Gap",
       "repo": "preference-frontend, workforce-frontend",
       "area": ".github/workflows/ci.yml (ci-cleanup job)",
-      "description": "preference-frontend/ci.yml (and its counterpart in workforce-frontend) has a `ci-cleanup` job (lines 335\u2013368) that runs as a separate job after `integration-tests` with `if: always()`. It connects to `http://127.0.0.1:54321` using `${{ env.SUPABASE_SERVICE_ROLE_KEY }}` to delete the `__ci_{run_id}` test org. However: (1) `${{ env.SUPABASE_SERVICE_ROLE_KEY }}` is not propagated across job boundaries \u2014 it was written to GITHUB_ENV in `integration-tests` but GITHUB_ENV does not carry over to separate jobs. The service role key is empty. (2) The Supabase instance started in `integration-tests` is not running by the time `ci-cleanup` executes \u2014 it is a separate job on a freshly initialised runner environment. The cleanup Supabase client connects to a dead port with empty credentials, the delete silently fails, and test orgs accumulate forever. This is the same structural defect documented in DR-10 for planner-frontend \u2014 it was not fixed when porting the pattern to preference/workforce frontends.",
+      "description": "preference-frontend/ci.yml (and its counterpart in workforce-frontend) has a `ci-cleanup` job (lines 335–368) that runs as a separate job after `integration-tests` with `if: always()`. It connects to `http://127.0.0.1:54321` using `${{ env.SUPABASE_SERVICE_ROLE_KEY }}` to delete the `__ci_{run_id}` test org. However: (1) `${{ env.SUPABASE_SERVICE_ROLE_KEY }}` is not propagated across job boundaries — it was written to GITHUB_ENV in `integration-tests` but GITHUB_ENV does not carry over to separate jobs. The service role key is empty. (2) The Supabase instance started in `integration-tests` is not running by the time `ci-cleanup` executes — it is a separate job on a freshly initialised runner environment. The cleanup Supabase client connects to a dead port with empty credentials, the delete silently fails, and test orgs accumulate forever. This is the same structural defect documented in DR-10 for planner-frontend — it was not fixed when porting the pattern to preference/workforce frontends.",
       "tasks": [
         {
           "taskId": "DR-36-T1",
@@ -861,13 +861,13 @@
       "status": "open",
       "category": "Process Gap",
       "repo": "planner-frontend",
-      "area": ".github/workflows/ci.yml (integration-tests job, line 124\u2013128)",
-      "description": "planner-frontend/ci.yml integration-tests job starts Supabase with `--ignore-health-check` (line 124) and immediately reads `supabase status -o env` on the next line with no polling loop or health gate. If Kong/Auth/PostgREST are not yet ready when `supabase status` is called, PUBLISHABLE_KEY will be empty \u2014 the env var `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` will be blank, and integration tests will run against an unauthenticated stack and fail with confusing auth errors rather than a clear 'Supabase not ready' message. The match-backend ci.yml (lines 93\u2013109) has a correct 24-retry polling loop for exactly this scenario. The supabase-start composite action also has the correct health poll. planner-frontend bypasses both and goes straight to reading status \u2014 the codegen-check and e2e-axe jobs have the same gap. preference-frontend has the same issue.",
+      "area": ".github/workflows/ci.yml (integration-tests job, line 124–128)",
+      "description": "planner-frontend/ci.yml integration-tests job starts Supabase with `--ignore-health-check` (line 124) and immediately reads `supabase status -o env` on the next line with no polling loop or health gate. If Kong/Auth/PostgREST are not yet ready when `supabase status` is called, PUBLISHABLE_KEY will be empty — the env var `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` will be blank, and integration tests will run against an unauthenticated stack and fail with confusing auth errors rather than a clear 'Supabase not ready' message. The match-backend ci.yml (lines 93–109) has a correct 24-retry polling loop for exactly this scenario. The supabase-start composite action also has the correct health poll. planner-frontend bypasses both and goes straight to reading status — the codegen-check and e2e-axe jobs have the same gap. preference-frontend has the same issue.",
       "tasks": [
         {
           "taskId": "DR-37-T1",
           "status": "open",
-          "description": "Replace the immediate `supabase status` call in planner-frontend and preference-frontend integration-tests, codegen-check, and e2e-axe jobs with the PUBLISHABLE_KEY polling loop from match-backend/ci.yml (lines 93\u2013109) or better yet, switch to using the supabase-start composite action from supabase-receptor/.github/actions/supabase-start (which already implements the correct health gate). This removes boilerplate from 6 jobs across 2 repos and ensures consistent, tested health-gate behaviour.",
+          "description": "Replace the immediate `supabase status` call in planner-frontend and preference-frontend integration-tests, codegen-check, and e2e-axe jobs with the PUBLISHABLE_KEY polling loop from match-backend/ci.yml (lines 93–109) or better yet, switch to using the supabase-start composite action from supabase-receptor/.github/actions/supabase-start (which already implements the correct health gate). This removes boilerplate from 6 jobs across 2 repos and ensures consistent, tested health-gate behaviour.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/frontend/planner-frontend/.github/workflows/ci.yml",
           "completedAt": null,
           "completedBy": null
@@ -882,12 +882,12 @@
       "category": "Security",
       "repo": "supabase-receptor",
       "area": ".github/workflows/deploy-function.yml",
-      "description": "deploy-function.yml has no top-level `permissions:` block and no job-level permissions declarations. Both jobs run with the default GITHUB_TOKEN permissions, which on most repos default to read/write for contents and metadata. The deploy job runs on `self-hosted` with `kubectl` access to the production k3s cluster \u2014 if a malicious workflow or compromised action can inherit an overly-permissive token in this context, it can write to the repo or trigger further workflows. Additionally, both `actions/checkout@v4` (lines 21, 55) and `denoland/setup-deno@v2` (line 24) are mutable semver tags, not SHA-pinned \u2014 violating SEC-02. A supply-chain compromise of either action would execute arbitrary code on the k3s production cluster runner with `kubectl` access.",
+      "description": "deploy-function.yml has no top-level `permissions:` block and no job-level permissions declarations. Both jobs run with the default GITHUB_TOKEN permissions, which on most repos default to read/write for contents and metadata. The deploy job runs on `self-hosted` with `kubectl` access to the production k3s cluster — if a malicious workflow or compromised action can inherit an overly-permissive token in this context, it can write to the repo or trigger further workflows. Additionally, both `actions/checkout@v4` (lines 21, 55) and `denoland/setup-deno@v2` (line 24) are mutable semver tags, not SHA-pinned — violating SEC-02. A supply-chain compromise of either action would execute arbitrary code on the k3s production cluster runner with `kubectl` access.",
       "tasks": [
         {
           "taskId": "DR-38-T1",
           "status": "complete",
-          "description": "Add `permissions: contents: read` at the workflow level in deploy-function.yml. The deploy job needs no GITHUB_TOKEN write permissions \u2014 kubectl access is via in-cluster RBAC, not the token. SHA-pin `actions/checkout@v4` and `denoland/setup-deno@v2` in both jobs. Look up SHAs: `gh api repos/denoland/setup-deno/git/ref/tags/v2 --jq .object.sha`.",
+          "description": "Add `permissions: contents: read` at the workflow level in deploy-function.yml. The deploy job needs no GITHUB_TOKEN write permissions — kubectl access is via in-cluster RBAC, not the token. SHA-pin `actions/checkout@v4` and `denoland/setup-deno@v2` in both jobs. Look up SHAs: `gh api repos/denoland/setup-deno/git/ref/tags/v2 --jq .object.sha`.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/.github/workflows/deploy-function.yml",
           "completedAt": "2026-03-19T08:39:20Z",
           "completedBy": "Antigravity (260319-cicd-workflow-health session 1 supabase-reactor)"
@@ -901,8 +901,8 @@
       "status": "complete",
       "category": "Security",
       "repo": "supabase-receptor",
-      "area": ".github/workflows/deploy-function.yml lines 31\u201339",
-      "description": "deploy-function.yml extracts the edge function name directly from the git tag using `cut -d'/' -f2` with no allowlist validation (lines 31\u201339). The function name is then used in `deno check \"supabase/functions/${FUNCTION_NAME}/index.ts\"` (line 39), `kubectl cp \"supabase/functions/${FUNCTION}\"` (lines 79\u201381), and the smoke-test curl URL (line 101). An attacker with push-tag access (any repo collaborator) could push tag `fn/../../../etc/shadow/v1.0.0` and have `deno check` or `kubectl cp` operate on an arbitrary path. The function name is also interpolated directly into a `kubectl cp` destination path \u2014 if the runner's shell is bash and the name is not sanitised, path traversal is possible.",
+      "area": ".github/workflows/deploy-function.yml lines 31–39",
+      "description": "deploy-function.yml extracts the edge function name directly from the git tag using `cut -d'/' -f2` with no allowlist validation (lines 31–39). The function name is then used in `deno check \"supabase/functions/${FUNCTION_NAME}/index.ts\"` (line 39), `kubectl cp \"supabase/functions/${FUNCTION}\"` (lines 79–81), and the smoke-test curl URL (line 101). An attacker with push-tag access (any repo collaborator) could push tag `fn/../../../etc/shadow/v1.0.0` and have `deno check` or `kubectl cp` operate on an arbitrary path. The function name is also interpolated directly into a `kubectl cp` destination path — if the runner's shell is bash and the name is not sanitised, path traversal is possible.",
       "tasks": [
         {
           "taskId": "DR-39-T1",
@@ -922,7 +922,7 @@
       "category": "Security",
       "repo": "supabase-receptor",
       "area": ".github/workflows/deploy-function.yml line 47",
-      "description": "deploy-function.yml deploy job uses `runs-on: self-hosted` without any additional runner labels (line 47). With no labels, any self-hosted runner registered to the dm-ra-01 organisation \u2014 including runners for other repos \u2014 can pick up this job. A deploy job that runs `kubectl cp` to the production k3s cluster and performs a `kubectl rollout restart` on supabase-edge-runtime should only ever run on the dedicated `supabase-receptor` k3s runner. Without a specific label like `arc-runner-supabase-receptor`, a misconfigured or compromised runner in another repo could be assigned this job and gain production cluster access.",
+      "description": "deploy-function.yml deploy job uses `runs-on: self-hosted` without any additional runner labels (line 47). With no labels, any self-hosted runner registered to the dm-ra-01 organisation — including runners for other repos — can pick up this job. A deploy job that runs `kubectl cp` to the production k3s cluster and performs a `kubectl rollout restart` on supabase-edge-runtime should only ever run on the dedicated `supabase-receptor` k3s runner. Without a specific label like `arc-runner-supabase-receptor`, a misconfigured or compromised runner in another repo could be assigned this job and gain production cluster access.",
       "tasks": [
         {
           "taskId": "DR-40-T1",
@@ -941,8 +941,8 @@
       "status": "complete",
       "category": "Process Gap",
       "repo": "supabase-receptor",
-      "area": ".github/workflows/deploy-function.yml lines 93\u2013106",
-      "description": "deploy-function.yml smoke-test step (lines 93\u2013106) treats any non-5xx HTTP status as a pass \u2014 including 401, 403, and 404. A function that has been deployed but has a broken Deno import (causing the edge runtime to return 404 for the specific function path) will pass the smoke test and leave the runtime in a partially broken state. More critically, there is no rollback step: if the smoke test fails (5xx), the workflow exits 1 and the deployment is considered failed, but the `kubectl rollout restart` has already been executed and the pod is running the new (broken) function code. There is no `kubectl rollout undo` on failure.",
+      "area": ".github/workflows/deploy-function.yml lines 93–106",
+      "description": "deploy-function.yml smoke-test step (lines 93–106) treats any non-5xx HTTP status as a pass — including 401, 403, and 404. A function that has been deployed but has a broken Deno import (causing the edge runtime to return 404 for the specific function path) will pass the smoke test and leave the runtime in a partially broken state. More critically, there is no rollback step: if the smoke test fails (5xx), the workflow exits 1 and the deployment is considered failed, but the `kubectl rollout restart` has already been executed and the pod is running the new (broken) function code. There is no `kubectl rollout undo` on failure.",
       "tasks": [
         {
           "taskId": "DR-41-T1",
@@ -962,7 +962,7 @@
       "category": "Security",
       "repo": "supabase-receptor",
       "area": ".github/workflows/key-rotation-reminder.yml line 82",
-      "description": "key-rotation-reminder.yml line 82 interpolates a GitHub Actions step output directly into a shell string that is passed to `python3 -c`: `python3 -c \"import sys,urllib.parse; print(urllib.parse.unquote('${{ steps.rotation-check.outputs.alerts }}'))\"`. The `alerts` output is constructed from GitHub variable values (`SERVICE_ROLE_KEY_ROTATION_DUE`, `CLOUDFLARE_TUNNEL_ROTATION_DUE`, etc.). If any of those variables contains a single quote, the shell string is broken; if it contains `'); import os; os.system(...)  #`, arbitrary shell commands execute in the context of the workflow runner. GitHub Actions variables can be set by repository admins \u2014 this is a stored shell injection vector. The correct pattern is to pass the value via an environment variable and read it in Python as `os.environ['ALERTS']`.",
+      "description": "key-rotation-reminder.yml line 82 interpolates a GitHub Actions step output directly into a shell string that is passed to `python3 -c`: `python3 -c \"import sys,urllib.parse; print(urllib.parse.unquote('${{ steps.rotation-check.outputs.alerts }}'))\"`. The `alerts` output is constructed from GitHub variable values (`SERVICE_ROLE_KEY_ROTATION_DUE`, `CLOUDFLARE_TUNNEL_ROTATION_DUE`, etc.). If any of those variables contains a single quote, the shell string is broken; if it contains `'); import os; os.system(...)  #`, arbitrary shell commands execute in the context of the workflow runner. GitHub Actions variables can be set by repository admins — this is a stored shell injection vector. The correct pattern is to pass the value via an environment variable and read it in Python as `os.environ['ALERTS']`.",
       "tasks": [
         {
           "taskId": "DR-42-T1",
@@ -982,7 +982,7 @@
       "category": "Process Gap",
       "repo": "supabase-receptor",
       "area": ".github/workflows/key-rotation-reminder.yml line 12",
-      "description": "key-rotation-reminder.yml uses `cron: '0 23 28-31 * *'` with a day-of-month filter applied in the step (skip if day != 01). This is a well-known GitHub Actions anti-pattern: the cron fires on days 28, 29, 30, and 31 \u2014 meaning in February (28 days), the cron fires only on day 28, then the step skips because it is not the 1st. The workflow therefore never runs in February at all unless manually triggered. A security-relevant key rotation reminder for a short month is silently skipped. The canonical fix is `cron: '0 23 L * *'` (last day of month) \u2014 but GitHub Actions does not support 'L'. The correct approach is `cron: '0 23 * * *'` with a day-of-month check, or simply `cron: '0 23 1 * *'` which fires on the 1st of each month at 23:00 UTC directly.",
+      "description": "key-rotation-reminder.yml uses `cron: '0 23 28-31 * *'` with a day-of-month filter applied in the step (skip if day != 01). This is a well-known GitHub Actions anti-pattern: the cron fires on days 28, 29, 30, and 31 — meaning in February (28 days), the cron fires only on day 28, then the step skips because it is not the 1st. The workflow therefore never runs in February at all unless manually triggered. A security-relevant key rotation reminder for a short month is silently skipped. The canonical fix is `cron: '0 23 L * *'` (last day of month) — but GitHub Actions does not support 'L'. The correct approach is `cron: '0 23 * * *'` with a day-of-month check, or simply `cron: '0 23 1 * *'` which fires on the 1st of each month at 23:00 UTC directly.",
       "tasks": [
         {
           "taskId": "DR-43-T1",
@@ -1001,8 +1001,8 @@
       "status": "complete",
       "category": "Process Gap",
       "repo": "supabase-receptor",
-      "area": ".github/workflows/key-rotation-reminder.yml lines 40\u201365",
-      "description": "key-rotation-reminder.yml monitors 4 keys: SERVICE_ROLE_KEY, PUBLISHABLE_KEY (staging), CLOUDFLARE_TUNNEL_TOKEN, and SMTP_PASS. The audit has now identified at minimum 8 additional secrets that require rotation tracking: Deploy Bot private key (DR-24), Vault root token (used during bootstrap), Codecov token (CODECOV_TOKEN), EXTERNAL_REPO_TOKEN PAT (being replaced by DR-28 but still live until then), SUPABASE_ANON_KEY (referenced in deploy-function.yml), SENTRY_DSN tokens (per-repo secrets). None of these are included in the rotation reminder. ISO 27001 A.8.24 requires all cryptographic keys to have documented rotation schedules \u2014 partial monitoring is functionally equivalent to no monitoring for the uncovered keys.",
+      "area": ".github/workflows/key-rotation-reminder.yml lines 40–65",
+      "description": "key-rotation-reminder.yml monitors 4 keys: SERVICE_ROLE_KEY, PUBLISHABLE_KEY (staging), CLOUDFLARE_TUNNEL_TOKEN, and SMTP_PASS. The audit has now identified at minimum 8 additional secrets that require rotation tracking: Deploy Bot private key (DR-24), Vault root token (used during bootstrap), Codecov token (CODECOV_TOKEN), EXTERNAL_REPO_TOKEN PAT (being replaced by DR-28 but still live until then), SUPABASE_ANON_KEY (referenced in deploy-function.yml), SENTRY_DSN tokens (per-repo secrets). None of these are included in the rotation reminder. ISO 27001 A.8.24 requires all cryptographic keys to have documented rotation schedules — partial monitoring is functionally equivalent to no monitoring for the uncovered keys.",
       "tasks": [
         {
           "taskId": "DR-44-T1",
@@ -1022,7 +1022,7 @@
       "category": "Security",
       "repo": "planner-frontend, preference-frontend, workforce-frontend, supabase-receptor, match-backend, receptor-planner",
       "area": ".github/workflows/ (all pipelines)",
-      "description": "No CI workflow in any repository runs secret scanning (e.g. `truffleHog`, `gitleaks`, or GitHub's native secret scanning push protection). The audit has already found credentials in awkward positions: a service-role-key written to GITHUB_OUTPUT (DR-23), a Deploy Bot private key in GitHub secrets (DR-24), and production test credentials in DB-free unit test jobs (DR-32). Without active scanning, a committed API key, Vault token, or private key would not be detected by CI \u2014 only by GitHub's passive secret scanning (which has a notification delay and only covers known patterns). ISO 27001 A.8.12 (Data leakage prevention) requires controls that actively prevent credential exfiltration at commit time.",
+      "description": "No CI workflow in any repository runs secret scanning (e.g. `truffleHog`, `gitleaks`, or GitHub's native secret scanning push protection). The audit has already found credentials in awkward positions: a service-role-key written to GITHUB_OUTPUT (DR-23), a Deploy Bot private key in GitHub secrets (DR-24), and production test credentials in DB-free unit test jobs (DR-32). Without active scanning, a committed API key, Vault token, or private key would not be detected by CI — only by GitHub's passive secret scanning (which has a notification delay and only covers known patterns). ISO 27001 A.8.12 (Data leakage prevention) requires controls that actively prevent credential exfiltration at commit time.",
       "tasks": [
         {
           "taskId": "DR-45-T1",
@@ -1042,7 +1042,7 @@
       "category": "Process Gap",
       "repo": "planner-frontend, preference-frontend, workforce-frontend, match-backend",
       "area": ".github/workflows/ci.yml (Supabase CLI version pins)",
-      "description": "All frontend and match-backend CI workflows pin Supabase CLI to version 2.75.0 via `supabase/setup-cli@... version: 2.75.0`. There is no automated check that this pinned version matches the version running in the production k3s cluster. If the production Supabase CLI or server version drifts ahead of 2.75.0, integration tests may pass against a locally-started 2.75.0 schema while the production environment exposes slightly different API behaviour (e.g. changed column defaults, new RLS evaluation semantics, or schema introspection differences). The reverse is also dangerous \u2014 if 2.75.0 has known bugs, the tests validate against buggy behaviour. The supabase-receptor ci.yml uses a different version or the self-hosted CLI \u2014 that version should be the source of truth for all CI environments.",
+      "description": "All frontend and match-backend CI workflows pin Supabase CLI to version 2.75.0 via `supabase/setup-cli@... version: 2.75.0`. There is no automated check that this pinned version matches the version running in the production k3s cluster. If the production Supabase CLI or server version drifts ahead of 2.75.0, integration tests may pass against a locally-started 2.75.0 schema while the production environment exposes slightly different API behaviour (e.g. changed column defaults, new RLS evaluation semantics, or schema introspection differences). The reverse is also dangerous — if 2.75.0 has known bugs, the tests validate against buggy behaviour. The supabase-receptor ci.yml uses a different version or the self-hosted CLI — that version should be the source of truth for all CI environments.",
       "tasks": [
         {
           "taskId": "DR-46-T1",
@@ -1062,12 +1062,12 @@
       "category": "Process Gap",
       "repo": "workforce-frontend",
       "area": ".github/workflows/ci.yml",
-      "description": "workforce-frontend/ci.yml has no `codegen-check` job and no `e2e-axe` job \u2014 unlike planner-frontend and preference-frontend which both have these jobs. workforce-frontend CI runs only: lint-and-type, unit-tests, integration-tests, build, and ci-cleanup. This means: (1) GraphQL type drift (CROSS-11) is not detected for workforce-frontend \u2014 a schema change in supabase-receptor can silently break the workforce GraphQL types without failing CI. (2) There is no accessibility audit job at all, even informational. workforce-frontend serves hospital staff who schedule and manage workforce \u2014 it is the highest operational risk app in the ecosystem and has the least CI coverage. The omission appears to be an oversight during initial CI setup rather than a deliberate decision.",
+      "description": "workforce-frontend/ci.yml has no `codegen-check` job and no `e2e-axe` job — unlike planner-frontend and preference-frontend which both have these jobs. workforce-frontend CI runs only: lint-and-type, unit-tests, integration-tests, build, and ci-cleanup. This means: (1) GraphQL type drift (CROSS-11) is not detected for workforce-frontend — a schema change in supabase-receptor can silently break the workforce GraphQL types without failing CI. (2) There is no accessibility audit job at all, even informational. workforce-frontend serves hospital staff who schedule and manage workforce — it is the highest operational risk app in the ecosystem and has the least CI coverage. The omission appears to be an oversight during initial CI setup rather than a deliberate decision.",
       "tasks": [
         {
           "taskId": "DR-47-T1",
           "status": "complete",
-          "description": "Add a `codegen-check` job to workforce-frontend/ci.yml, identical to the one in planner-frontend/ci.yml \u2014 it checks for GraphQL schema drift against a live Supabase instance using the same pattern. Add an `e2e-axe` job (informational, with `continue-on-error: true` until DR-31 is resolved) for accessibility baseline visibility. Apply the same `if: always()` Supabase stop and Docker cleanup teardown (DR-29 fix) to the new jobs.",
+          "description": "Add a `codegen-check` job to workforce-frontend/ci.yml, identical to the one in planner-frontend/ci.yml — it checks for GraphQL schema drift against a live Supabase instance using the same pattern. Add an `e2e-axe` job (informational, with `continue-on-error: true` until DR-31 is resolved) for accessibility baseline visibility. Apply the same `if: always()` Supabase stop and Docker cleanup teardown (DR-29 fix) to the new jobs.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/frontend/workforce-frontend/.github/workflows/ci.yml",
           "completedAt": "2026-03-19T08:58:21Z",
           "completedBy": "Antigravity (260319-cicd-workflow-health session 4 workforce-frontend)"
@@ -1078,23 +1078,23 @@
   ],
   "clarifications": [
     {
-      "item": "DR-02/DR-16 \u2014 Table name in smoke-test DB canary",
-      "decision": "Resolved 2026-03-19 \u2014 canonical table name is orgs. Update smoke-test/action.yml to query /rest/v1/orgs."
+      "item": "DR-02/DR-16 — Table name in smoke-test DB canary",
+      "decision": "Resolved 2026-03-19 — canonical table name is orgs. Update smoke-test/action.yml to query /rest/v1/orgs."
     },
     {
-      "item": "DR-13/DR-15 \u2014 Frontend deployment mechanism",
-      "decision": "Resolved 2026-03-19 \u2014 frontend apps deploy to k3s prod via Cloudflare Tunnel, same pattern as backend services (Docker image \u2192 GHCR \u2192 receptor-infra GitOps manifest). Cloudflare Pages is deferred minimum 6 months."
+      "item": "DR-13/DR-15 — Frontend deployment mechanism",
+      "decision": "Resolved 2026-03-19 — frontend apps deploy to k3s prod via Cloudflare Tunnel, same pattern as backend services (Docker image → GHCR → receptor-infra GitOps manifest). Cloudflare Pages is deferred minimum 6 months."
     },
     {
-      "item": "DR-04/DR-08/DR-17 \u2014 Canonical Slack webhook Vault path and GitHub secret name",
-      "decision": "Resolved 2026-03-19 \u2014 canonical Vault path: secret/infrastructure/slack-{channel}-webhook (e.g. slack-incidents-webhook, slack-deployments-webhook). Canonical GitHub secret name for platform runners without Vault: SLACK_{CHANNEL}_WEBHOOK_URL. staging-smoke.yml was reading from wrong paths (slack-webhook-{channel}) \u2014 see DR-17."
+      "item": "DR-04/DR-08/DR-17 — Canonical Slack webhook Vault path and GitHub secret name",
+      "decision": "Resolved 2026-03-19 — canonical Vault path: secret/infrastructure/slack-{channel}-webhook (e.g. slack-incidents-webhook, slack-deployments-webhook). Canonical GitHub secret name for platform runners without Vault: SLACK_{CHANNEL}_WEBHOOK_URL. staging-smoke.yml was reading from wrong paths (slack-webhook-{channel}) — see DR-17."
     }
   ],
   "implementationPhases": [
     {
       "phase": 1,
       "name": "Critical CI/CD Failures",
-      "rationale": "Fix workflow defects that cause immediate failures: prod-deploy smoke-test missing inputs, wrong Vault paths in staging-smoke, wrong table name in smoke-test canary (DR-30 \u2014 action file never updated despite DR-02/DR-16), ci-cleanup broken across job boundaries for all three frontend repos (DR-36), and concurrent prod-deploy race on migration lock table. Restore all functional CI paths before security hardening.",
+      "rationale": "Fix workflow defects that cause immediate failures: prod-deploy smoke-test missing inputs, wrong Vault paths in staging-smoke, wrong table name in smoke-test canary (DR-30 — action file never updated despite DR-02/DR-16), ci-cleanup broken across job boundaries for all three frontend repos (DR-36), and concurrent prod-deploy race on migration lock table. Restore all functional CI paths before security hardening.",
       "findingIds": [
         "DR-30",
         "DR-03",
@@ -1108,7 +1108,7 @@
     },
     {
       "phase": 2,
-      "name": "Security Gate \u2014 Production Approval, Website CI, and Frontend Deploy",
+      "name": "Security Gate — Production Approval, Website CI, and Frontend Deploy",
       "rationale": "Configure GitHub Environment protection for production approval (prevents auto-approve on prod-deploy), create website-frontend CI and deploy pipeline (k8s/Cloudflare Tunnel), create deploy.yml for all other frontend repos using the same k8s pattern, and introduce staging-to-production promotion gates for backend deploy workflows.",
       "findingIds": [
         "DR-05",
@@ -1197,7 +1197,7 @@
   "deferred": [
     {
       "item": "DR-31",
-      "reason": "Deferred 2026-03-19 \u2014 accessibility enforcement gate agreed in principle but blocked on stable production-ready UI first. Re-evaluate once all three frontends reach their baseline quality bar. At that point, triage existing axe violations, document as known issues if needed, and remove continue-on-error."
+      "reason": "Deferred 2026-03-19 — accessibility enforcement gate agreed in principle but blocked on stable production-ready UI first. Re-evaluate once all three frontends reach their baseline quality bar. At that point, triage existing axe violations, document as known issues if needed, and remove continue-on-error."
     }
   ]
 }

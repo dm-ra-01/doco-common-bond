@@ -2,30 +2,15 @@
   "auditSlug": "260319-cicd-workflow-health",
   "status": "implementing",
   "nextAction": "implement",
-  "openTaskCount": 14,
-  "latestHandover": "Session 4 complete (2026-03-19). Reconciled 34 prior-session tasks in recommendations.json. Implemented: DR-18/19/20/21/22/23 in supabase-receptor; DR-10-T2/T3/22/34 in preference-frontend and workforce-frontend; DR-47 (codegen-check + e2e-axe) in workforce-frontend; DR-24 (un-deferred: Vault OIDC on ARC runners) and DR-27 (production gate) in match-backend and receptor-planner. Remaining 14 open: DR-05 (GitHub Env protection, manual), DR-13 (website-frontend CI/deploy), DR-14 (rollback workflows x4), DR-15 (frontend deploy.yml x3), DR-37 (Supabase health polling), DR-45 (secret scanning), DR-46 (CLI version pin).",
+  "openTaskCount": 5,
+  "latestHandover": "Session 5 complete (2026-03-19). Phase 4 implemented: DR-13 (website-frontend CI+deploy+rollback+Dockerfile), DR-14 (rollback.yml x4: match-backend, receptor-planner, supabase-receptor, website-frontend), DR-15 (deploy.yml+Dockerfile for planner/preference/workforce-frontend), DR-24 (finding fully closed). Bonus: fixed preference-frontend codegen.check.ts PUBLISHABLE_KEY→ANON_KEY bug. Remaining 5 open: DR-05 (GitHub Env protection, manual UI), DR-37 (Supabase health polling), DR-45 (secret scanning), DR-46 (CLI version pin), DR-27-T1 deferred (staging namespace split).",
   "sessionHistory": [
     {
       "date": "2026-03-19",
       "completedFindingIds": [
-        "DR-01",
-        "DR-02",
-        "DR-03",
-        "DR-04",
-        "DR-06",
-        "DR-07",
-        "DR-08",
-        "DR-16",
-        "DR-17",
-        "DR-26",
-        "DR-30",
-        "DR-38",
-        "DR-39",
-        "DR-40",
-        "DR-41",
-        "DR-42",
-        "DR-43",
-        "DR-44"
+        "DR-01", "DR-02", "DR-03", "DR-04", "DR-06", "DR-07", "DR-08",
+        "DR-16", "DR-17", "DR-26", "DR-30", "DR-38", "DR-39", "DR-40",
+        "DR-41", "DR-42", "DR-43", "DR-44"
       ],
       "summary": "Session 1: all supabase-receptor workflow fixes implemented. 7 files changed: smoke-test/action.yml (DR-02/16/30), staging-smoke.yml (DR-17/26), prod-deploy.yml (DR-03/04), deploy-function.yml (DR-06/07/38/39/40/41), key-rotation-reminder.yml (DR-08/42/43/44), ci.yml (DR-01), new .github/scripts/post-rotation-reminder.py (DR-42 helper)."
     },
@@ -34,22 +19,22 @@
       "date": "2026-03-19",
       "summary": "JSON reconciliation (34 tasks); supabase-receptor Phase 5; frontend carry-overs; DR-24 un-deferred; DR-27 production gate",
       "tasksCompleted": [
-        "DR-10-T2",
-        "DR-10-T3",
-        "DR-17-T2",
-        "DR-18-T1",
-        "DR-19-T1",
-        "DR-20-T1",
-        "DR-21-T1",
-        "DR-22-T1",
-        "DR-23-T1",
-        "DR-24-T1",
-        "DR-24-T2",
-        "DR-27-T1",
-        "DR-34-T1",
-        "DR-47-T1"
+        "DR-10-T2", "DR-10-T3", "DR-17-T2", "DR-18-T1", "DR-19-T1",
+        "DR-20-T1", "DR-21-T1", "DR-22-T1", "DR-23-T1", "DR-24-T1",
+        "DR-24-T2", "DR-27-T1", "DR-34-T1", "DR-47-T1"
       ],
       "openTasksAtClose": 14
+    },
+    {
+      "session": 5,
+      "date": "2026-03-19",
+      "summary": "Phase 4: website-frontend CI/deploy/rollback, Dockerfiles for all frontends, rollback.yml x4 backends, 3 frontend deploy.yml. Bonus: preference-frontend codegen env fix.",
+      "tasksCompleted": [
+        "DR-13-T1", "DR-13-T2",
+        "DR-14-T1", "DR-14-T2", "DR-14-T3", "DR-14-T4",
+        "DR-15-T1", "DR-15-T2", "DR-15-T3"
+      ],
+      "openTasksAtClose": 5
     }
   ]
 }
