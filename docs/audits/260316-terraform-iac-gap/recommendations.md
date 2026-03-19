@@ -430,5 +430,18 @@ Affects: `receptor-infra` — azure
 | LIFE-05 | .github/workflows | `staging-deploy.yml` | Process Gap | 🟡 Medium |
 | LIFE-06 | .github | `dependabot.yml` | Process Gap | 🟡 Medium |
 | LIFE-07 | next.config.ts | `next.config.ts` | Security | 🟡 Medium |
-| ARM-01 | azure | `backup-storage-account.parameters.json` | Tech Debt | 🟢 Low |
 
+
+---
+
+## Session Close — 2026-03-19
+
+**Completed:** CI-03, LIFE-02, LIFE-03, LIFE-04, LIFE-05, LIFE-06, LIFE-07 — all findings implemented and re-audit verified.
+
+**Remaining:** None — audit complete.
+
+**Blocked:** SEC-04-T2 (disable `allowSharedKeyAccess`) remains blocked — rclone backup scripts in `supabase-receptor` still rely on shared key auth; shared key must stay enabled until scripts migrate to SAS/managed identity. This is formally deferred.
+
+**PR order note:** All 8 PRs raised simultaneously. doco-common-bond (#23) and receptor-infra (#3) required a force-push correction to replace empty MCP placeholder commits before merging.
+
+**Brief for next agent:** The `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` → `NEXT_PUBLIC_SUPABASE_ANON_KEY` rename (LIFE-05) was incomplete in the initial implementation — `graphql/client.ts`, `lib/supabase/client.ts`, and test utility files in `preference-frontend` and `workforce-frontend` were missed and fixed during re-audit. The pattern to check in future audits: when an env var rename touches `env.ts`, also search for the old name in all `src/**/*.ts` files. Coverage gate in `receptor-planner` is pre-existing (67% vs required 95%) — `planner/api.py` and `planner/supabase_service.py` lack tests. Not introduced by this audit.
