@@ -200,3 +200,30 @@ Affects: `supabase-receptor` — .github/workflows/key-rotation-reminder.yml
 | DR-12 | deploy.yml | Process Gap | 🟡 Medium |
 | DR-06 | deploy-function.yml | Security | 🟢 Low |
 | DR-08 | key-rotation-reminder.yml | Process Gap | 🟢 Low |
+
+
+---
+
+## Session Close — 2026-03-19 (Session 2)
+
+**Completed this session:**
+
+| Finding | Description |
+| :------ | :---------- |
+| DR-10-T1 | planner-frontend ci-cleanup: re-fetches SUPABASE_SERVICE_ROLE_KEY via fresh Supabase start (cross-job boundary fix) |
+| DR-28-T1 | All 3 frontend repos: EXTERNAL_REPO_TOKEN → GITHUB_APP_TOKEN in ci.yml + renovate.yml |
+| DR-29-T1 | All 3 frontend repos: `supabase stop` teardown added after integration-tests (if: always()) |
+| DR-33-T1/T2 | All 3 frontend renovate.yml: SHA-pinned renovatebot/github-action@7b4b65bf + GITHUB_APP_TOKEN |
+| DR-35-T1 | All 3 frontend ci.yml: `npm install` → `npm ci` (deterministic installs) |
+| DR-36-T1 | preference-frontend + workforce-frontend ci-cleanup: same cross-job key re-fetch fix as DR-10 |
+| (bonus) | Husky shebang fix: `#!/usr/bin/env sh` → `#!/bin/sh` in all 45 hook files across 3 repos. Root cause: core.hooksPath=.husky/_ means git calls .husky/_/* shims directly; env cannot find sh in git's restricted PATH on macOS. |
+
+**Findings reconciled to complete:** DR-28, DR-29, DR-33, DR-35, DR-36
+
+**Remaining Phase 2:**
+- DR-09: NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY → NEXT_PUBLIC_SUPABASE_ANON_KEY rename in CI stubs
+- DR-32: Remove test credentials from unit-tests job env block (credentials only needed in integration-tests)
+
+**Phase 3 (session 3):** DR-11, DR-12, DR-24, DR-25, DR-27 — match-backend + receptor-planner deploy hardening
+
+**PRs to raise:** planner-frontend, preference-frontend, workforce-frontend → main (after DR-09/32 complete)

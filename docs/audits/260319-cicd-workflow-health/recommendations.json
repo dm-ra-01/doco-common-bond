@@ -222,11 +222,11 @@
       "tasks": [
         {
           "taskId": "DR-10-T1",
-          "status": "open",
+          "status": "complete",
           "description": "Fix ci-cleanup in planner-frontend ci.yml: move the cleanup inline into the integration-tests job as an always() step at the end (after the 'Run integration tests' step). This avoids cross-job GITHUB_ENV propagation. The Supabase instance is still running at that point and keys are available in $GITHUB_ENV from the earlier 'Start Supabase' step.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/frontend/planner-frontend/.github/workflows/ci.yml",
-          "completedAt": null,
-          "completedBy": null
+          "completedAt": "2026-03-19T18:28:00Z",
+          "completedBy": "Antigravity (260319-cicd-workflow-health session 2)"
         },
         {
           "taskId": "DR-10-T2",
@@ -550,8 +550,7 @@
         }
       ],
       "severity_history": []
-    }
-    ,
+    },
     {
       "id": "DR-23",
       "severity": "critical",
@@ -671,7 +670,7 @@
     {
       "id": "DR-28",
       "severity": "high",
-      "status": "open",
+      "status": "complete",
       "category": "Security",
       "repo": "planner-frontend, preference-frontend, workforce-frontend",
       "area": ".github/workflows/ci.yml (integration-tests, codegen-check, e2e-axe jobs)",
@@ -679,11 +678,11 @@
       "tasks": [
         {
           "taskId": "DR-28-T1",
-          "status": "open",
+          "status": "complete",
           "description": "Replace `secrets.EXTERNAL_REPO_TOKEN` in all three frontend CI workflows with GitHub App token generation using `actions/create-github-app-token` (SHA-pinned) pointed at `dm-ra-01/supabase-receptor`. The app-lifecycle-deployment GitHub App already has this cross-repo scope. Add an `id-token: write` permission to each affected job. Remove the EXTERNAL_REPO_TOKEN PAT from all three repositories' GitHub Actions secrets after migration. Apply to planner-frontend, preference-frontend, and workforce-frontend ci.yml.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/frontend/planner-frontend/.github/workflows/ci.yml",
-          "completedAt": null,
-          "completedBy": null
+          "completedAt": "2026-03-19T18:28:00Z",
+          "completedBy": "Antigravity (260319-cicd-workflow-health session 2)"
         }
       ],
       "severity_history": []
@@ -691,7 +690,7 @@
     {
       "id": "DR-29",
       "severity": "high",
-      "status": "open",
+      "status": "complete",
       "category": "Process Gap",
       "repo": "planner-frontend, preference-frontend, workforce-frontend",
       "area": ".github/workflows/ci.yml (integration-tests, codegen-check, e2e-axe jobs)",
@@ -699,11 +698,11 @@
       "tasks": [
         {
           "taskId": "DR-29-T1",
-          "status": "open",
+          "status": "complete",
           "description": "Add `if: always()` cleanup steps to integration-tests, codegen-check, and e2e-axe jobs in planner-frontend/ci.yml: (1) `supabase stop --workdir supabase-backend/supabase`; (2) `docker system prune -f --volumes`. Apply the same fix to preference-frontend and workforce-frontend ci.yml (same job structure). Consider extracting a shared cleanup composite action to avoid duplicating the stop+prune pattern across all three repos.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/frontend/planner-frontend/.github/workflows/ci.yml",
-          "completedAt": null,
-          "completedBy": null
+          "completedAt": "2026-03-19T18:28:00Z",
+          "completedBy": "Antigravity (260319-cicd-workflow-health session 2)"
         }
       ],
       "severity_history": []
@@ -771,7 +770,7 @@
     {
       "id": "DR-33",
       "severity": "high",
-      "status": "open",
+      "status": "complete",
       "category": "Security",
       "repo": "planner-frontend, preference-frontend, workforce-frontend",
       "area": ".github/workflows/renovate.yml",
@@ -779,19 +778,19 @@
       "tasks": [
         {
           "taskId": "DR-33-T1",
-          "status": "open",
+          "status": "complete",
           "description": "SHA-pin `renovatebot/github-action` in all three renovate.yml files. Look up current SHA: `gh api repos/renovatebot/github-action/git/ref/tags/v46.1.3 --jq .object.sha`. Add explicit `permissions: contents: write, pull-requests: write` block to the renovate job. This must be done in the same PR as DR-28 to avoid breaking Renovate the moment the PAT is deleted.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/frontend/planner-frontend/.github/workflows/renovate.yml",
-          "completedAt": null,
-          "completedBy": null
+          "completedAt": "2026-03-19T18:28:00Z",
+          "completedBy": "Antigravity (260319-cicd-workflow-health session 2)"
         },
         {
           "taskId": "DR-33-T2",
-          "status": "open",
+          "status": "complete",
           "description": "Replace `RENOVATE_TOKEN: ${{ secrets.EXTERNAL_REPO_TOKEN }}` with the GitHub App token pattern — generate a token via `actions/create-github-app-token` scoped to the repos Renovate needs to open PRs against (planner-frontend, preference-frontend, workforce-frontend, supabase-receptor). Set `RENOVATE_TOKEN: ${{ steps.app-token.outputs.token }}`. This must be coordinated with DR-28 — both must land in the same release to avoid an auth gap.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/frontend/planner-frontend/.github/workflows/renovate.yml",
-          "completedAt": null,
-          "completedBy": null
+          "completedAt": "2026-03-19T18:28:00Z",
+          "completedBy": "Antigravity (260319-cicd-workflow-health session 2)"
         }
       ],
       "severity_history": []
@@ -819,7 +818,7 @@
     {
       "id": "DR-35",
       "severity": "high",
-      "status": "open",
+      "status": "complete",
       "category": "Security",
       "repo": "planner-frontend, preference-frontend, workforce-frontend, match-backend, receptor-planner",
       "area": ".github/workflows/ci.yml (all Install dependencies steps)",
@@ -827,11 +826,11 @@
       "tasks": [
         {
           "taskId": "DR-35-T1",
-          "status": "open",
+          "status": "complete",
           "description": "Replace all `npm install` with `npm ci` in the Install dependencies steps across planner-frontend, preference-frontend, and workforce-frontend ci.yml. `npm ci` requires `package-lock.json` to be present and up-to-date — if it is not, the build fails immediately rather than silently diverging. Run `npm install` locally first to ensure the lockfile is current before switching CI to `npm ci`. Apply to all jobs within each ci.yml (lint-and-type, unit-tests, integration-tests, build, codegen-check, e2e-axe, ci-cleanup).",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/frontend/planner-frontend/.github/workflows/ci.yml",
-          "completedAt": null,
-          "completedBy": null
+          "completedAt": "2026-03-19T18:28:00Z",
+          "completedBy": "Antigravity (260319-cicd-workflow-health session 2)"
         }
       ],
       "severity_history": []
@@ -839,7 +838,7 @@
     {
       "id": "DR-36",
       "severity": "critical",
-      "status": "open",
+      "status": "complete",
       "category": "Process Gap",
       "repo": "preference-frontend, workforce-frontend",
       "area": ".github/workflows/ci.yml (ci-cleanup job)",
@@ -847,11 +846,11 @@
       "tasks": [
         {
           "taskId": "DR-36-T1",
-          "status": "open",
+          "status": "complete",
           "description": "Apply the same fix as DR-10: inline the ci-cleanup logic into the integration-tests job as an `if: always()` step at the end, where SUPABASE_SERVICE_ROLE_KEY is still available in the environment and the Supabase instance is still running. Remove the separate ci-cleanup job. Apply to both preference-frontend and workforce-frontend ci.yml.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/frontend/preference-frontend/.github/workflows/ci.yml",
-          "completedAt": null,
-          "completedBy": null
+          "completedAt": "2026-03-19T18:28:00Z",
+          "completedBy": "Antigravity (260319-cicd-workflow-health session 2)"
         }
       ],
       "severity_history": []
@@ -1096,49 +1095,103 @@
       "phase": 1,
       "name": "Critical CI/CD Failures",
       "rationale": "Fix workflow defects that cause immediate failures: prod-deploy smoke-test missing inputs, wrong Vault paths in staging-smoke, wrong table name in smoke-test canary (DR-30 — action file never updated despite DR-02/DR-16), ci-cleanup broken across job boundaries for all three frontend repos (DR-36), and concurrent prod-deploy race on migration lock table. Restore all functional CI paths before security hardening.",
-      "findingIds": ["DR-30", "DR-03", "DR-17", "DR-10", "DR-02", "DR-16", "DR-18", "DR-36"]
+      "findingIds": [
+        "DR-30",
+        "DR-03",
+        "DR-17",
+        "DR-10",
+        "DR-02",
+        "DR-16",
+        "DR-18",
+        "DR-36"
+      ]
     },
     {
       "phase": 2,
       "name": "Security Gate — Production Approval, Website CI, and Frontend Deploy",
       "rationale": "Configure GitHub Environment protection for production approval (prevents auto-approve on prod-deploy), create website-frontend CI and deploy pipeline (k8s/Cloudflare Tunnel), create deploy.yml for all other frontend repos using the same k8s pattern, and introduce staging-to-production promotion gates for backend deploy workflows.",
-      "findingIds": ["DR-05", "DR-13", "DR-15", "DR-27"]
+      "findingIds": [
+        "DR-05",
+        "DR-13",
+        "DR-15",
+        "DR-27"
+      ]
     },
     {
       "phase": 3,
       "name": "Secret Naming, Vault Hygiene, and Action SHA Pins",
       "rationale": "Standardise Slack webhook secret references, delete orphaned Vault paths, SHA-pin all unversioned actions, fix the VAULT_TOKEN mask ordering, remove service-role-key from composite action outputs, migrate Deploy Bot private key to Vault, replace the long-lived EXTERNAL_REPO_TOKEN PAT with a GitHub App token (DR-28), and update Renovate to use the GitHub App token in the same release to avoid an auth gap (DR-33).",
-      "findingIds": ["DR-04", "DR-08", "DR-06", "DR-07", "DR-11", "DR-12", "DR-19", "DR-23", "DR-24", "DR-28", "DR-33"]
+      "findingIds": [
+        "DR-04",
+        "DR-08",
+        "DR-06",
+        "DR-07",
+        "DR-11",
+        "DR-12",
+        "DR-19",
+        "DR-23",
+        "DR-24",
+        "DR-28",
+        "DR-33"
+      ]
     },
     {
       "phase": 4,
       "name": "Environment Variable Consistency and Supply-Chain Integrity",
       "rationale": "Apply the NEXT_PUBLIC_SUPABASE_ANON_KEY rename to CI stubs, update hardcoded staging URLs to match the Domain Naming Standard, remove production credentials from DB-free unit test jobs (DR-32), switch all frontend CI to npm ci for lockfile-exact reproducibility (DR-35), and establish a single source of truth for the Supabase CLI version across all repos (DR-46).",
-      "findingIds": ["DR-09", "DR-21", "DR-32", "DR-35", "DR-46"]
+      "findingIds": [
+        "DR-09",
+        "DR-21",
+        "DR-32",
+        "DR-35",
+        "DR-46"
+      ]
     },
     {
       "phase": 5,
       "name": "Process, Governance, and Runner Health",
       "rationale": "Implement automated rollback workflows, fix the Deno glob pattern, repair silent deployment tag failures, add Supabase stop and Docker disk cleanup to all affected jobs (DR-25, DR-29), remove the asymmetric supabase-stop pre-clean from preference-frontend (DR-34), add Supabase health polling to frontend jobs that skip it (DR-37), standardise VAULT_ADDR to use repository variables (DR-26), add missing codegen-check and e2e-axe jobs to workforce-frontend (DR-47).",
-      "findingIds": ["DR-14", "DR-01", "DR-20", "DR-25", "DR-26", "DR-29", "DR-34", "DR-37", "DR-47"]
+      "findingIds": [
+        "DR-14",
+        "DR-01",
+        "DR-20",
+        "DR-25",
+        "DR-26",
+        "DR-29",
+        "DR-34",
+        "DR-37",
+        "DR-47"
+      ]
     },
     {
       "phase": 6,
       "name": "CI Concurrency and Runner Health",
       "rationale": "Add cancel-in-progress concurrency groups to all CI workflows to prevent ARC runner queue starvation from rapid fixup commits.",
-      "findingIds": ["DR-22"]
+      "findingIds": [
+        "DR-22"
+      ]
     },
     {
       "phase": 7,
       "name": "Edge Function Deploy Hardening",
       "rationale": "Harden deploy-function.yml against supply-chain and infrastructure attacks: add permissions block, SHA-pin all action references (DR-38), add function-name allowlist validation against path traversal (DR-39), restrict the deploy job to a labelled runner (DR-40), tighten smoke-test success criteria and add automatic rollback on failure (DR-41).",
-      "findingIds": ["DR-38", "DR-39", "DR-40", "DR-41"]
+      "findingIds": [
+        "DR-38",
+        "DR-39",
+        "DR-40",
+        "DR-41"
+      ]
     },
     {
       "phase": 8,
       "name": "Governance, Observability, and Secret Inventory",
       "rationale": "Fix the shell injection in key-rotation-reminder (DR-42), fix the broken February cron (DR-43), expand rotation monitoring to cover all identified secrets (DR-44), add secret scanning to all CI pipelines (DR-45).",
-      "findingIds": ["DR-42", "DR-43", "DR-44", "DR-45"]
+      "findingIds": [
+        "DR-42",
+        "DR-43",
+        "DR-44",
+        "DR-45"
+      ]
     }
   ],
   "deferred": [
