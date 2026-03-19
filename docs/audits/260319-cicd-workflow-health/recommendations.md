@@ -243,3 +243,25 @@ Affects: `supabase-receptor` — .github/workflows/key-rotation-reminder.yml
 **Phase 2 fully complete.** All 5 findings committed to `audit/260319-cicd-workflow-health` across planner-frontend, preference-frontend, workforce-frontend.
 
 **PRs ready to raise:** planner-frontend, preference-frontend, workforce-frontend → main.
+
+
+---
+
+## Phase 3 Close — 2026-03-19 (Session 3)
+
+**Completed:**
+
+| Finding | What was done |
+| :------ | :------------ |
+| DR-11-T1/T2 | Both backend deploy.yml files: SHA-pinned all 5 actions — `checkout@11bd719`, `docker/login-action@c94ce9f`, `docker/metadata-action@c299e40`, `docker/build-push-action@ca052bb`, `create-github-app-token@d72941d` |
+| DR-12-T1 | Both backend deploy.yml files: `timeout-minutes: 20` added to `build-and-deploy` job |
+| DR-25-T1 | match-backend `ci.yml`: `supabase stop + docker prune` cleanup steps added after integration tests with `if: always()` |
+
+**Formally deferred:**
+
+| Finding | Reason |
+| :------ | :----- |
+| DR-24-T1/T2 | DEPLOY_BOT_PRIVATE_KEY → Vault migration: deploy jobs run on `ubuntu-latest` (GitHub-hosted), not ARC. OIDC to self-hosted Vault requires network routing decision. Deferred until Cloudflare Tunnel or Vault public ingress is confirmed. |
+| DR-27-T1/T2 | Staging/production promotion separation: requires receptor-infra namespace split and GitHub Environment gate. Deferred until infra team decides how staging vs production namespaces are laid out in receptor-infra. |
+
+**Phase 3 complete.** Both repos committed to `audit/260319-cicd-workflow-health`. Deferred items documented.

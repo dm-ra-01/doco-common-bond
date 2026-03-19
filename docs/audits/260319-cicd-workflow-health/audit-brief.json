@@ -2,8 +2,8 @@
   "auditSlug": "260319-cicd-workflow-health",
   "status": "implementing",
   "nextAction": "implement",
-  "openTaskCount": 11,
-  "latestHandover": "Phase 2 fully complete (2026-03-19). All 3 frontend repos: DR-09 (ANON_KEY rename in CI stubs + 9 planner-frontend source files), DR-32 (test creds removed from unit-tests). PRs ready to raise for planner-frontend, preference-frontend, workforce-frontend. Next: Phase 3 (match-backend + receptor-planner: DR-11/12/24/25/27).",
+  "openTaskCount": 7,
+  "latestHandover": "Phase 3 complete (2026-03-19). match-backend + receptor-planner: DR-11 (5 actions SHA-pinned), DR-12 (timeout-minutes: 20). DR-25 (supabase stop) applied to match-backend only (receptor-planner ci.yml is unit-tests only). DR-24 and DR-27 formally deferred: Vault OIDC requires network routing decision for ubuntu-latest runners; staging/production split requires receptor-infra namespace decision. Remaining open: DR-06, DR-07, DR-08 (supabase-receptor deploy-function hardening — previously tracked, still open in Phase 7/8). Phase 4 items next.",
   "sessionHistory": []
 }
 

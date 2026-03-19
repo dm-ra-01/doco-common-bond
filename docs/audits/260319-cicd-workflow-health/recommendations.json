@@ -250,7 +250,7 @@
     {
       "id": "DR-11",
       "severity": "high",
-      "status": "open",
+      "status": "complete",
       "category": "Security",
       "repo": "match-backend, receptor-planner",
       "area": ".github/workflows/deploy.yml",
@@ -258,19 +258,19 @@
       "tasks": [
         {
           "taskId": "DR-11-T1",
-          "status": "open",
+          "status": "complete",
           "description": "For match-backend/deploy.yml: Pin actions/checkout, docker/login-action, docker/metadata-action, docker/build-push-action, and actions/create-github-app-token to their current commit SHAs. Use `gh api repos/docker/login-action/git/ref/heads/main` or equivalent to look up SHA for each action.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/backend/match-backend/.github/workflows/deploy.yml",
-          "completedAt": null,
-          "completedBy": null
+          "completedAt": "2026-03-19T19:01:58Z",
+          "completedBy": "Antigravity (260319-cicd-workflow-health session 3 phase-3)"
         },
         {
           "taskId": "DR-11-T2",
-          "status": "open",
+          "status": "complete",
           "description": "Same SHA-pin updates for receptor-planner/deploy.yml.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/backend/receptor-planner/.github/workflows/deploy.yml",
-          "completedAt": null,
-          "completedBy": null
+          "completedAt": "2026-03-19T19:01:58Z",
+          "completedBy": "Antigravity (260319-cicd-workflow-health session 3 phase-3)"
         }
       ],
       "severity_history": []
@@ -278,7 +278,7 @@
     {
       "id": "DR-12",
       "severity": "medium",
-      "status": "open",
+      "status": "complete",
       "category": "Process Gap",
       "repo": "match-backend, receptor-planner",
       "area": ".github/workflows/deploy.yml",
@@ -286,11 +286,11 @@
       "tasks": [
         {
           "taskId": "DR-12-T1",
-          "status": "open",
+          "status": "complete",
           "description": "Add timeout-minutes: 20 to the build-and-deploy job in match-backend/deploy.yml and receptor-planner/deploy.yml.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/backend/match-backend/.github/workflows/deploy.yml",
-          "completedAt": null,
-          "completedBy": null
+          "completedAt": "2026-03-19T19:01:58Z",
+          "completedBy": "Antigravity (260319-cicd-workflow-health session 3 phase-3)"
         }
       ],
       "severity_history": []
@@ -574,7 +574,7 @@
     {
       "id": "DR-24",
       "severity": "high",
-      "status": "open",
+      "status": "deferred",
       "category": "Security",
       "repo": "match-backend, receptor-planner",
       "area": ".github/workflows/deploy.yml",
@@ -582,19 +582,19 @@
       "tasks": [
         {
           "taskId": "DR-24-T1",
-          "status": "open",
+          "status": "deferred",
           "description": "Move DEPLOY_BOT_PRIVATE_KEY from GitHub Actions secrets to Vault KV path secret/infrastructure/github-app-deploy-bot. Add `id-token: write` to deploy.yml jobs, add a Vault OIDC auth step (identical to supabase-receptor prod-deploy.yml pattern), and fetch the private key from Vault before the `actions/create-github-app-token` step. Remove the GitHub Actions DEPLOY_BOT_PRIVATE_KEY secret from both repositories. Apply to both match-backend and receptor-planner deploy.yml.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/backend/match-backend/.github/workflows/deploy.yml",
-          "completedAt": null,
-          "completedBy": null
+          "completedAt": "2026-03-19T19:01:58Z",
+          "completedBy": "Antigravity (260319-cicd-workflow-health session 3 phase-3)"
         },
         {
           "taskId": "DR-24-T2",
-          "status": "open",
+          "status": "deferred",
           "description": "Same Vault migration for receptor-planner/deploy.yml.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/backend/receptor-planner/.github/workflows/deploy.yml",
-          "completedAt": null,
-          "completedBy": null
+          "completedAt": "2026-03-19T19:01:58Z",
+          "completedBy": "Antigravity (260319-cicd-workflow-health session 3 phase-3)"
         }
       ],
       "severity_history": []
@@ -602,7 +602,7 @@
     {
       "id": "DR-25",
       "severity": "medium",
-      "status": "open",
+      "status": "complete",
       "category": "Process Gap",
       "repo": "match-backend",
       "area": ".github/workflows/ci.yml (integration-tests job)",
@@ -610,11 +610,11 @@
       "tasks": [
         {
           "taskId": "DR-25-T1",
-          "status": "open",
+          "status": "complete",
           "description": "Add a two-step cleanup block to match-backend/ci.yml integration-tests job, placed after 'Run integration tests' with `if: always()` on both steps: (1) `supabase stop` — tears down local Supabase containers cleanly; (2) `docker system prune -f --volumes` — removes dangling images, stopped containers, and unused volumes left by the Supabase Docker stack. Without this, each failed or cancelled run leaves ~2–3 GB of Docker layer cache and PostgreSQL volume data on arc-runner-match-backend, eventually exhausting disk and causing port 54321 conflicts for subsequent runs.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/backend/match-backend/.github/workflows/ci.yml",
-          "completedAt": null,
-          "completedBy": null
+          "completedAt": "2026-03-19T19:01:58Z",
+          "completedBy": "Antigravity (260319-cicd-workflow-health session 3 phase-3)"
         }
       ],
       "severity_history": []
@@ -642,7 +642,7 @@
     {
       "id": "DR-27",
       "severity": "high",
-      "status": "open",
+      "status": "deferred",
       "category": "Process Gap",
       "repo": "match-backend, receptor-planner",
       "area": ".github/workflows/deploy.yml",
@@ -650,19 +650,19 @@
       "tasks": [
         {
           "taskId": "DR-27-T1",
-          "status": "open",
+          "status": "deferred",
           "description": "Rename deploy.yml trigger to distinguish staging from production. Add a `promote-to-prod` job (or separate workflow) for match-backend and receptor-planner that requires a GitHub Environment 'production' approval gate before updating the production manifest in receptor-infra. The current deploy.yml flow should target a staging namespace in receptor-infra only. Model the two-job pattern (staging deploy → approval gate → production promote) on supabase-receptor/prod-deploy.yml.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/backend/match-backend/.github/workflows/deploy.yml",
-          "completedAt": null,
-          "completedBy": null
+          "completedAt": "2026-03-19T19:01:58Z",
+          "completedBy": "Antigravity (260319-cicd-workflow-health session 3 phase-3)"
         },
         {
           "taskId": "DR-27-T2",
-          "status": "open",
+          "status": "deferred",
           "description": "Same staging/production promotion separation for receptor-planner/deploy.yml.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/backend/receptor-planner/.github/workflows/deploy.yml",
-          "completedAt": null,
-          "completedBy": null
+          "completedAt": "2026-03-19T19:01:58Z",
+          "completedBy": "Antigravity (260319-cicd-workflow-health session 3 phase-3)"
         }
       ],
       "severity_history": []
