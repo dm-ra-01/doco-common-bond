@@ -29,6 +29,12 @@ sidebar_position: 1
 
 ## Active Registry
 
+### 🗓️ 2026-03-19
+
+| Slug | Title | Scope | Auditor | Status | NC Raised | Report |
+| :--- | :---- | :---- | :------ | :----- | :-------- | :----- |
+| `260319-cicd-workflow-health` | CI/CD Workflow Health Audit | Cross-ecosystem — `supabase-receptor`, `planner-frontend`, `preference-frontend`, `workforce-frontend`, `match-backend`, `receptor-planner`, `website-frontend` | Ryan Ammendolea | 🔄 Drafting | — | [audit.md](../audits/260319-cicd-workflow-health/audit.md) · [recommendations.md](../audits/260319-cicd-workflow-health/recommendations.md) |
+
 ### 🗓️ 2026-03-16
 
 | Slug | Title | Scope | Auditor | Status | NC Raised | Report |
@@ -88,7 +94,7 @@ sidebar_position: 1
 
 | Slug         | Title                                 | Scope                                | Auditor         | Status    | NC Raised                                                                      | Report                                                                                                                                                                                                                                        |
 | :----------- | :------------------------------------ | :----------------------------------- | :-------------- | :-------- | :----------------------------------------------------------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `260304-acl` | Access Control & Authentication Audit | `supabase-receptor` — RLS, JWT, RBAC | Ryan Ammendolea | ✅ Closed | [NC-003](/docs/compliance/iso27001/assurance/nonconformity-log#nc-003--detail) | [audit.md](https://github.com/dm-ra-01/supabase-receptor/blob/main/docs/audits/archive/260304-acl/audit.md) · [recommendations.md](https://github.com/dm-ra-01/supabase-receptor/blob/main/docs/audits/archive/260304-acl/recommendations.md) |
+| `260304-acl` | Access Control & Authentication Audit | `supabase-receptor` — RLS, JWT, RBAC | Ryan Ammendolea | ✅ Closed | [NC-003](/docs/compliance/iso27001/assurance/nonconformity-log#nc-005--detail) | [audit.md](https://github.com/dm-ra-01/supabase-receptor/blob/main/docs/audits/archive/260304-acl/audit.md) · [recommendations.md](https://github.com/dm-ra-01/supabase-receptor/blob/main/docs/audits/archive/260304-acl/recommendations.md) |
 
 ---
 
@@ -97,16 +103,17 @@ sidebar_position: 1
 ```
 Repository                   Audits   Last Audit
 ─────────────────────────────────────────────────
-supabase-receptor              4       2026-03-13
-backend/match-backend          2       2026-03-11
-backend/receptor-planner       1       2026-03-11
-planner-frontend               5       2026-03-12
-workforce-frontend             4       2026-03-12
-preference-frontend            4       2026-03-12
+supabase-receptor              5       2026-03-19
+backend/match-backend          3       2026-03-19
+backend/receptor-planner       2       2026-03-19
+planner-frontend               6       2026-03-19
+workforce-frontend             5       2026-03-19
+preference-frontend            5       2026-03-19
+website-frontend               1       2026-03-19
 common-bond (ISMS docs + eng)  5       2026-03-09
 receptor-infra                 1       2026-03-16
-────────────────────────────────────── ─────────
-Total                          19+     2026-03-16
+──────────────────────────────────── ─────────
+Total                          21+     2026-03-19
 ```
 
 > **Coverage gaps addressed:** `workforce-frontend`, `preference-frontend`, and
