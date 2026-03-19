@@ -10,7 +10,7 @@
     {
       "id": "KUBE-01",
       "severity": "critical",
-      "status": "open",
+      "status": "complete",
       "category": "Security",
       "repo": "receptor-infra",
       "area": "supabase",
@@ -46,7 +46,7 @@
     {
       "id": "SEC-02",
       "severity": "critical",
-      "status": "open",
+      "status": "complete",
       "category": "Security",
       "repo": "receptor-infra",
       "area": "azure",
@@ -74,7 +74,7 @@
     {
       "id": "IAC-01",
       "severity": "high",
-      "status": "open",
+      "status": "complete",
       "category": "Process Gap",
       "repo": "receptor-infra",
       "area": "azure",
@@ -126,7 +126,7 @@
     {
       "id": "IAC-03",
       "severity": "high",
-      "status": "open",
+      "status": "complete",
       "category": "Process Gap",
       "repo": "receptor-infra",
       "area": "azure",
@@ -146,7 +146,7 @@
     {
       "id": "SEC-01",
       "severity": "high",
-      "status": "open",
+      "status": "complete",
       "category": "Security",
       "repo": "receptor-infra",
       "area": "azure",
@@ -194,7 +194,7 @@
     {
       "id": "KUBE-02",
       "severity": "high",
-      "status": "open",
+      "status": "complete",
       "category": "Security",
       "repo": "receptor-infra",
       "area": "supabase",
@@ -222,7 +222,7 @@
     {
       "id": "ENV-01",
       "severity": "high",
-      "status": "open",
+      "status": "complete",
       "category": "Process Gap",
       "repo": "receptor-infra",
       "area": "supabase",
@@ -258,7 +258,7 @@
     {
       "id": "IAC-02",
       "severity": "medium",
-      "status": "open",
+      "status": "complete",
       "category": "Tech Debt",
       "repo": "receptor-infra",
       "area": "azure",
@@ -298,7 +298,7 @@
     {
       "id": "CI-01",
       "severity": "medium",
-      "status": "open",
+      "status": "complete",
       "category": "Process Gap",
       "repo": "receptor-infra",
       "area": ".github/workflows",
@@ -326,7 +326,7 @@
     {
       "id": "CI-02",
       "severity": "medium",
-      "status": "open",
+      "status": "complete",
       "category": "Process Gap",
       "repo": "receptor-infra",
       "area": "vault",
@@ -402,7 +402,7 @@
     {
       "id": "KUBE-03",
       "severity": "medium",
-      "status": "open",
+      "status": "complete",
       "category": "Security",
       "repo": "receptor-infra",
       "area": "supabase",
@@ -422,7 +422,7 @@
     {
       "id": "KUBE-04",
       "severity": "medium",
-      "status": "open",
+      "status": "complete",
       "category": "Process Gap",
       "repo": "receptor-infra",
       "area": "supabase",
@@ -450,7 +450,7 @@
     {
       "id": "ARM-01",
       "severity": "low",
-      "status": "open",
+      "status": "complete",
       "category": "Tech Debt",
       "repo": "receptor-infra",
       "area": "azure",
@@ -470,7 +470,7 @@
     {
       "id": "ARCH-01",
       "severity": "high",
-      "status": "open",
+      "status": "complete",
       "category": "Process Gap",
       "repo": "receptor-infra",
       "area": "k3s",
@@ -490,7 +490,7 @@
     {
       "id": "NET-01",
       "severity": "high",
-      "status": "open",
+      "status": "complete",
       "category": "Security",
       "repo": "supabase-receptor",
       "area": "k3s",
@@ -510,7 +510,7 @@
     {
       "id": "SPLIT-01",
       "severity": "medium",
-      "status": "open",
+      "status": "complete",
       "category": "Architectural Drift",
       "repo": "receptor-infra",
       "area": "k3s",
@@ -550,7 +550,7 @@
     {
       "id": "RBAC-01",
       "severity": "medium",
-      "status": "open",
+      "status": "complete",
       "category": "Security",
       "repo": "receptor-infra",
       "area": "k3s",
@@ -570,7 +570,7 @@
     {
       "id": "STORE-02",
       "severity": "critical",
-      "status": "open",
+      "status": "complete",
       "category": "Architectural Drift",
       "repo": "receptor-infra",
       "area": "k3s storage",
@@ -614,7 +614,7 @@
     {
       "id": "LIFE-01",
       "severity": "critical",
-      "status": "open",
+      "status": "complete",
       "category": "Process Gap",
       "repo": "receptor-infra",
       "area": "infrastructure",
@@ -634,7 +634,7 @@
     {
       "id": "ARCH-02",
       "severity": "medium",
-      "status": "open",
+      "status": "complete",
       "category": "Architectural Drift",
       "repo": "global",
       "area": "repository structure",
