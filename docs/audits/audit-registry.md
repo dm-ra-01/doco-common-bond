@@ -34,7 +34,7 @@ sidebar_position: 1
 | Slug | Title | Scope | Auditor | Status | NC Raised | Report |
 | :--- | :---- | :---- | :------ | :----- | :-------- | :----- |
 | `260319-standards-anchoring` | Standards Anchoring Ecosystem Audit | Cross-ecosystem — all prior global audits; `docs/registers/standards-register.md`; `docs/compliance/iso27001/` | Ryan Ammendolea | 📋 Findings Issued | — | [audit.md](../audits/260319-standards-anchoring/audit.md) · [recommendations.md](../audits/260319-standards-anchoring/recommendations.md) |
-| `260319-cicd-workflow-health` | CI/CD Workflow Health Audit | All Receptor ecosystem repositories with GitHub Actions workflows | Ryan Ammendolea | 🔧 Implementing | — | [audit.md](../audits/260319-cicd-workflow-health/audit.md) · [recommendations.md](../audits/260319-cicd-workflow-health/recommendations.md) |
+| `260319-cicd-workflow-health` | CI/CD Workflow Health Audit | All Receptor ecosystem repositories with GitHub Actions workflows | Ryan Ammendolea | ✅ Closed | — | [audit.md](../audits/archive/260319-cicd-workflow-health/audit.md) · [recommendations.md](../audits/archive/260319-cicd-workflow-health/recommendations.md) · [re-audit.md](../audits/archive/260319-cicd-workflow-health/re-audit.md) |
 
 ### 🗓️ 2026-03-16
 
