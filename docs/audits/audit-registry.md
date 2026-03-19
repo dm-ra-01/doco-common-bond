@@ -10,7 +10,7 @@ sidebar_position: 1
 > platform. Each entry links to the source `audit.md` and `recommendations.md`
 > where they live inside the relevant repository's `docs/audits/` folder.
 
-**Last Updated:** 2026-03-16 | **Maintained by:** Engineering Leadership
+**Last Updated:** 2026-03-19 | **Maintained by:** Engineering Leadership
 
 ---
 
@@ -33,7 +33,7 @@ sidebar_position: 1
 
 | Slug | Title | Scope | Auditor | Status | NC Raised | Report |
 | :--- | :---- | :---- | :------ | :----- | :-------- | :----- |
-| `260316-terraform-iac-gap` | Terraform Infrastructure-as-Code Gap Audit | `receptor-infra` — Azure resources (Key Vault, backup storage, managed identities) | Ryan Ammendolea | 🔧 Implementing | — | [audit.md](../audits/260316-terraform-iac-gap/audit.md) · [recommendations.md](../audits/260316-terraform-iac-gap/recommendations.md) |
+| `260316-terraform-iac-gap` | Terraform Infrastructure-as-Code Gap Audit | `receptor-infra` — Azure resources (KV, storage), `supabase-receptor` k3s storage redundancy | Ryan Ammendolea | ✅ Closed | — | [audit.md](../audits/archive/260316-terraform-iac-gap/audit.md) · [recommendations.md](../audits/archive/260316-terraform-iac-gap/recommendations.md) · [re-audit.md](../audits/archive/260316-terraform-iac-gap/re-audit.md) |
 
 ### 🗓️ 2026-03-12
 
