@@ -9,7 +9,7 @@
 
 ## Executive Summary
 
-This audit evaluates the current CI/CD setup across all Receptor ecosystem repositories for its ability to execute workflows successfully, promote code through test → staging → production, enable rollback, and securely manage keys. **17 findings** were identified: **5 Critical**, **6 High**, **4 Medium**, **2 Low**. The audit found that all three backend/infrastructure deploy workflows (`match-backend`, `receptor-planner`, and `supabase-receptor` prod-deploy) have structural defects that will cause them to fail in production. The frontend CI workflows are substantially correct but carry a stale env-var reference and a broken cleanup job pattern. `website-frontend` has no CI workflow at all. None of the three Next.js frontend applications have a deploy pipeline.
+This audit evaluates the current CI/CD setup across all Receptor ecosystem repositories for its ability to execute workflows successfully, promote code through test → staging → production, enable rollback, and securely manage keys. **17 findings** were identified: **5 Critical**, **6 High**, **4 Medium**, **2 Low**. The audit found that all backend/infrastructure deploy workflows (`match-backend`, `receptor-planner`, `supabase-receptor` prod-deploy) have structural defects that will cause failures in production. `staging-smoke.yml` reads from wrong Vault paths for Slack webhooks. The frontend CI workflows are substantially correct but carry a stale env-var reference and a broken cleanup job pattern. `website-frontend` has no CI workflow at all. None of the three Next.js frontend applications have a deploy pipeline.
 
 | Repository / Area | Coverage | Issues Found | Overall |
 | --- | --- | --- | --- |
@@ -121,7 +121,7 @@ This audit evaluates the current CI/CD setup across all Receptor ecosystem repos
 
 **Gaps:**
 
-- `DR-15` — None of the three frontend repositories have a `.github/workflows/deploy.yml`. The deployment target is k3s prod via Cloudflare Tunnel (same GitOps pattern as `match-backend` and `receptor-planner` — build Docker image, push to GHCR, update `receptor-infra` deployment manifest via `sed`). Currently there is no workflow-as-code for environment promotion, no production approval gate, and no automated rollback path for any frontend application. A merge to `main` triggers the CI pipeline but does not deploy — the running production containers will not update until an engineer intervenes manually.
+- `DR-15` — None of the three frontend repositories have a `.github/workflows/deploy.yml`. The deployment target is k3s prod via Cloudflare Tunnel (same GitOps pattern as `match-backend` and `receptor-planner` — build Docker image, push to GHCR, update `receptor-infra` deployment manifest via `sed`). Currently there is no workflow-as-code for environment promotion, no production approval gate, and no automated rollback path for any frontend application. A merge to `main` triggers the CI pipeline but does not deploy — the running production containers will not update until an engineer intervenes manually. Target URLs are defined in §6.1.
 
 ---
 
@@ -148,7 +148,7 @@ This audit evaluates the current CI/CD setup across all Receptor ecosystem repos
 
 **Gaps:**
 
-- `DR-13` — `website-frontend/.github/workflows/` does not exist. `website-frontend` has no CI pipeline: no lint, no type-check, no build validation, no deploy workflow. This means broken commits can merge directly to main with no automated gate. The website-frontend is an Active repository per the ecosystem map. Deployment target: k3s prod via Cloudflare Tunnel.
+- `DR-13` — `website-frontend/.github/workflows/` does not exist. `website-frontend` has no CI pipeline: no lint, no type-check, no build validation, no deploy workflow. This means broken commits can merge directly to main with no automated gate. The website-frontend is an Active repository per the ecosystem map. Deployment mechanism: Cloudflare Tunnel routing to k3s prod (same pattern as backend services). Target URL: see §6.1.
 
 ---
 
@@ -161,6 +161,28 @@ This audit evaluates the current CI/CD setup across all Receptor ecosystem repos
 ### 5.2 Smoke Test Table Naming
 
 - `DR-16` — `smoke-test/action.yml` line 93 queries `/rest/v1/organisations?select=id&limit=1`. The canonical table name is `orgs` (confirmed). This single action file is shared by both `staging-smoke.yml` and `prod-deploy.yml` — the wrong table name blocks both smoke test pipelines simultaneously.
+
+---
+
+## 6. Design Decisions
+
+### 6.1 Approved Service Domain Naming Standard
+
+The following URL scheme is approved as the canonical deployment target for all Receptor services. This informs DR-13-T2, DR-15, and future Cloudflare Tunnel and k3s Ingress configuration.
+
+| Service | Production | Staging | Test |
+| --- | --- | --- | --- |
+| Planner frontend | `receptor-planner.commonbond.au` | `receptor-planner-staging.commonbond.au` | `receptor-planner-test.commonbond.au` |
+| Workforce frontend | `receptor-workforce.commonbond.au` | `receptor-workforce-staging.commonbond.au` | `receptor-workforce-test.commonbond.au` |
+| Preference frontend | `receptor-preference.commonbond.au` | `receptor-preference-staging.commonbond.au` | `receptor-preference-test.commonbond.au` |
+| Supabase API (PostgREST) | `receptor-api.commonbond.au` | `receptor-api-staging.commonbond.au` | `receptor-api-test.commonbond.au` |
+| Supabase Auth function | `receptor-auth.commonbond.au` | `receptor-auth-staging.commonbond.au` | `receptor-auth-test.commonbond.au` |
+| Match orchestrator function | `receptor-match-orchestrator.commonbond.au` | `receptor-match-orchestrator-staging.commonbond.au` | `receptor-match-orchestrator-test.commonbond.au` |
+| Planner orchestrator function | `receptor-planner-orchestrator.commonbond.au` | `receptor-planner-orchestrator-staging.commonbond.au` | `receptor-planner-orchestrator-test.commonbond.au` |
+
+**Pattern:** `receptor-{service}[-staging|-test].commonbond.au`\
+**DNS provider:** Cloudflare (routed via Cloudflare Tunnel to k3s Ingress)\
+**Decision date:** 2026-03-19
 
 ---
 
