@@ -21,7 +21,7 @@ sidebar_position: 1
 | **Slug**      | Unique audit identifier in `YYMMDD-short-name` format                                 |
 | **Scope**     | Repository / subsystem covered                                                        |
 | **Auditor**   | Who performed the audit                                                               |
-| **Status**    | `✅ Closed` · `🔄 Implementing` · `📋 Findings Issued` · `🔄 Drafting` · `📋 Planned` |
+| **Status**    | `✅ Closed` · `🔧 Implementing` · `📋 Findings Issued` · `🔄 Drafting` · `📋 Planned` |
 | **NC Raised** | Non-conformity log entries raised as a result                                         |
 | **Report**    | Links to `audit.md` and `recommendations.md`                                          |
 
@@ -33,13 +33,15 @@ sidebar_position: 1
 
 | Slug | Title | Scope | Auditor | Status | NC Raised | Report |
 | :--- | :---- | :---- | :------ | :----- | :-------- | :----- |
-| `260319-cicd-workflow-health` | CI/CD Workflow Health Audit | Cross-ecosystem — `supabase-receptor`, `planner-frontend`, `preference-frontend`, `workforce-frontend`, `match-backend`, `receptor-planner`, `website-frontend` | Ryan Ammendolea | 🔧 Implementing | — | [audit.md](../audits/260319-cicd-workflow-health/audit.md) · [recommendations.md](../audits/260319-cicd-workflow-health/recommendations.md) |
+| `260319-standards-anchoring` | Standards Anchoring Ecosystem Audit | Cross-ecosystem — all prior global audits; `docs/registers/standards-register.md`; `docs/compliance/iso27001/` | Ryan Ammendolea | 📋 Findings Issued | — | [audit.md](../audits/260319-standards-anchoring/audit.md) · [recommendations.md](../audits/260319-standards-anchoring/recommendations.md) |
+| `260319-cicd-workflow-health` | CI/CD Workflow Health Audit | All Receptor ecosystem repositories with GitHub Actions workflows | Ryan Ammendolea | 📋 Findings Issued | — | [audit.md](../audits/260319-cicd-workflow-health/audit.md) · [recommendations.md](../audits/260319-cicd-workflow-health/recommendations.md) |
 
 ### 🗓️ 2026-03-16
 
 | Slug | Title | Scope | Auditor | Status | NC Raised | Report |
 | :--- | :---- | :---- | :------ | :----- | :-------- | :----- |
 | `260316-terraform-iac-gap` | Terraform Infrastructure-as-Code Gap Audit | `receptor-infra` — Azure resources (KV, storage), `supabase-receptor` k3s storage redundancy | Ryan Ammendolea | ✅ Closed | — | [audit.md](../audits/archive/260316-terraform-iac-gap/audit.md) · [recommendations.md](../audits/archive/260316-terraform-iac-gap/recommendations.md) · [re-audit.md](../audits/archive/260316-terraform-iac-gap/re-audit.md) |
+
 
 ### 🗓️ 2026-03-12
 
@@ -110,10 +112,10 @@ planner-frontend               6       2026-03-19
 workforce-frontend             5       2026-03-19
 preference-frontend            5       2026-03-19
 website-frontend               1       2026-03-19
-common-bond (ISMS docs + eng)  5       2026-03-09
+common-bond (ISMS docs + eng)  6       2026-03-19
 receptor-infra                 1       2026-03-16
 ──────────────────────────────────── ─────────
-Total                          21+     2026-03-19
+Total                          22+     2026-03-19
 ```
 
 > **Coverage gaps addressed:** `workforce-frontend`, `preference-frontend`, and
