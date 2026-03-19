@@ -858,7 +858,7 @@
     {
       "id": "DR-37",
       "severity": "medium",
-      "status": "open",
+      "status": "complete",
       "category": "Process Gap",
       "repo": "planner-frontend",
       "area": ".github/workflows/ci.yml (integration-tests job, line 124–128)",
@@ -866,11 +866,11 @@
       "tasks": [
         {
           "taskId": "DR-37-T1",
-          "status": "open",
+          "status": "complete",
           "description": "Replace the immediate `supabase status` call in planner-frontend and preference-frontend integration-tests, codegen-check, and e2e-axe jobs with the PUBLISHABLE_KEY polling loop from match-backend/ci.yml (lines 93–109) or better yet, switch to using the supabase-start composite action from supabase-receptor/.github/actions/supabase-start (which already implements the correct health gate). This removes boilerplate from 6 jobs across 2 repos and ensures consistent, tested health-gate behaviour.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/frontend/planner-frontend/.github/workflows/ci.yml",
-          "completedAt": null,
-          "completedBy": null
+          "completedAt": "2026-03-19T09:55:00Z",
+          "completedBy": "Antigravity (260319-cicd-workflow-health session 5 phase4+5)"
         }
       ],
       "severity_history": []
@@ -1018,7 +1018,7 @@
     {
       "id": "DR-45",
       "severity": "high",
-      "status": "open",
+      "status": "complete",
       "category": "Security",
       "repo": "planner-frontend, preference-frontend, workforce-frontend, supabase-receptor, match-backend, receptor-planner",
       "area": ".github/workflows/ (all pipelines)",
@@ -1026,11 +1026,11 @@
       "tasks": [
         {
           "taskId": "DR-45-T1",
-          "status": "open",
+          "status": "complete",
           "description": "Add a `secret-scan` job to the CI workflow of each repository using `trufflesecurity/trufflehog-actions-scan` (SHA-pinned) or GitHub's `secret-scanning` native push protection (enable in repo settings: Security > Code security > Secret scanning > Push protection). The truffleHog approach scans every commit in the PR diff for high-entropy strings and known secret patterns. Run it as the first job (before lint-and-type) so it fails fast. Alternatively, enable GitHub's native push protection org-wide via the org security settings.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/.github/workflows/ci.yml",
-          "completedAt": null,
-          "completedBy": null
+          "completedAt": "2026-03-19T09:55:00Z",
+          "completedBy": "Antigravity (260319-cicd-workflow-health session 5 phase4+5)"
         }
       ],
       "severity_history": []
@@ -1038,7 +1038,7 @@
     {
       "id": "DR-46",
       "severity": "medium",
-      "status": "open",
+      "status": "complete",
       "category": "Process Gap",
       "repo": "planner-frontend, preference-frontend, workforce-frontend, match-backend",
       "area": ".github/workflows/ci.yml (Supabase CLI version pins)",
@@ -1046,11 +1046,11 @@
       "tasks": [
         {
           "taskId": "DR-46-T1",
-          "status": "open",
+          "status": "complete",
           "description": "Create a single source of truth for the required Supabase CLI version. Add a `.supabase-cli-version` file to supabase-receptor root containing the pinned version string (e.g. `2.75.0`). Update all frontend and backend CI workflows to read this file and fail if the installed CLI version doesn't match. Alternatively, use a GitHub Actions reusable workflow or composite action for the Supabase setup step that centralises the version pin. Update renovate.json to track `supabase/setup-cli` version bumps and apply them uniformly across all repos.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/frontend/planner-frontend/.github/workflows/ci.yml",
-          "completedAt": null,
-          "completedBy": null
+          "completedAt": "2026-03-19T09:55:00Z",
+          "completedBy": "Antigravity (260319-cicd-workflow-health session 5 phase4+5)"
         }
       ],
       "severity_history": []

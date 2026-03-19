@@ -2,8 +2,8 @@
   "auditSlug": "260319-cicd-workflow-health",
   "status": "implementing",
   "nextAction": "implement",
-  "openTaskCount": 5,
-  "latestHandover": "Session 5 complete (2026-03-19). Phase 4 implemented: DR-13 (website-frontend CI+deploy+rollback+Dockerfile), DR-14 (rollback.yml x4: match-backend, receptor-planner, supabase-receptor, website-frontend), DR-15 (deploy.yml+Dockerfile for planner/preference/workforce-frontend), DR-24 (finding fully closed). Bonus: fixed preference-frontend codegen.check.ts PUBLISHABLE_KEY→ANON_KEY bug. Remaining 5 open: DR-05 (GitHub Env protection, manual UI), DR-37 (Supabase health polling), DR-45 (secret scanning), DR-46 (CLI version pin), DR-27-T1 deferred (staging namespace split).",
+  "openTaskCount": 2,
+  "latestHandover": "Session 6 complete (2026-03-19). DR-37 (Supabase health polling, planner+preference), DR-45 (secret-scan.yml all 7 repos), DR-46 (.supabase-cli-version all repos). Also fixed comment-eating-pipe bugs in planner (1) + preference (3) ci.yml. Remaining: DR-05 (manual GitHub UI — add required reviewer to 'production' environment in all repos), DR-27-T1 (deferred — staging namespace split).",
   "sessionHistory": [
     {
       "date": "2026-03-19",
