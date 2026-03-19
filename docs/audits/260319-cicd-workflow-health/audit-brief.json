@@ -2,8 +2,8 @@
   "auditSlug": "260319-cicd-workflow-health",
   "status": "implementing",
   "nextAction": "implement",
-  "openTaskCount": 2,
-  "latestHandover": "Session 6 complete (2026-03-19). DR-37 (Supabase health polling, planner+preference), DR-45 (secret-scan.yml all 7 repos), DR-46 (.supabase-cli-version all repos). Also fixed comment-eating-pipe bugs in planner (1) + preference (3) ci.yml. Remaining: DR-05 (manual GitHub UI — add required reviewer to 'production' environment in all repos), DR-27-T1 (deferred — staging namespace split).",
+  "openTaskCount": 1,
+  "latestHandover": "Session 6 complete (2026-03-19). DR-37 health polls (planner+preference), DR-45 secret-scan.yml (all 7 repos), DR-46 .supabase-cli-version (all repos), DR-05 branch protection (all 7 repos, require 1 PR review, dismiss stale, no force push). DR-05 environment required-reviewer deferred (GitHub Team plan required). Remaining: DR-27-T1 deferred (staging namespace split, needs receptor-infra work).",
   "sessionHistory": [
     {
       "date": "2026-03-19",
