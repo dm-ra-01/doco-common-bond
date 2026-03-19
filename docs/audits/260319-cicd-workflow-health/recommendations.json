@@ -21,8 +21,8 @@
           "status": "complete",
           "description": "Replace the glob pattern in deno-check step with explicit enumeration (e.g. `find supabase/functions -name '*.ts' | xargs deno check`) or use a shell-safe glob expansion. Add a guard that fails if no files are found.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/.github/workflows/ci.yml",
-          "completedAt": "2026-03-19T06:55:21Z",
-          "completedBy": "session-1-supabase-receptor-20260319"
+          "completedAt": "2026-03-19T08:39:19Z",
+          "completedBy": "Antigravity (260319-cicd-workflow-health session 1 supabase-reactor)"
         }
       ],
       "severity_history": []
@@ -41,8 +41,8 @@
           "status": "complete",
           "description": "Update smoke-test/action.yml line 93: change the DB canary query from /rest/v1/organisations?select=id&limit=1 to /rest/v1/orgs?select=id&limit=1. Add a comment: '# table name confirmed as orgs per schema standard (260319 audit)'.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/.github/actions/smoke-test/action.yml",
-          "completedAt": "2026-03-19T06:55:21Z",
-          "completedBy": "session-1-supabase-receptor-20260319"
+          "completedAt": "2026-03-19T08:39:19Z",
+          "completedBy": "Antigravity (260319-cicd-workflow-health session 1 supabase-reactor)"
         }
       ],
       "severity_history": []
@@ -61,8 +61,8 @@
           "status": "complete",
           "description": "Update prod-deploy.yml smoke-test-prod job: add a Vault KV fetch step to retrieve anon-key and anon-jwt from secret/supabase/production/credentials, and incidents/deployments webhook URLs from secret/infrastructure/slack-incidents-webhook and secret/infrastructure/slack-deployments-webhook. Pass all 5 required inputs to the smoke-test composite action. Model the Vault OIDC auth on staging-smoke.yml pattern.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/.github/workflows/prod-deploy.yml",
-          "completedAt": "2026-03-19T06:55:21Z",
-          "completedBy": "session-1-supabase-receptor-20260319"
+          "completedAt": "2026-03-19T08:39:19Z",
+          "completedBy": "Antigravity (260319-cicd-workflow-health session 1 supabase-reactor)"
         }
       ],
       "severity_history": []
@@ -81,8 +81,8 @@
           "status": "complete",
           "description": "Update prod-deploy.yml notify job: remove the secrets.SLACK_DEPLOYMENTS_WEBHOOK reference. Read the deployments webhook URL from Vault KV path secret/infrastructure/slack-deployments-webhook (field: url) in the same Vault fetch step as DR-03-T1. Expose as env var SLACK_DEPLOYMENTS_URL and use in the curl POST.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/.github/workflows/prod-deploy.yml",
-          "completedAt": "2026-03-19T06:55:21Z",
-          "completedBy": "session-1-supabase-receptor-20260319"
+          "completedAt": "2026-03-19T08:39:19Z",
+          "completedBy": "Antigravity (260319-cicd-workflow-health session 1 supabase-reactor)"
         }
       ],
       "severity_history": []
@@ -129,8 +129,8 @@
           "status": "complete",
           "description": "Replace actions/checkout@v4 with actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4, and denoland/setup-deno@v2 with denoland/setup-deno@e95548e56dfa95d4e1a28d6f422fafe75c4c26fb # v2 in deploy-function.yml.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/.github/workflows/deploy-function.yml",
-          "completedAt": "2026-03-19T06:55:21Z",
-          "completedBy": "session-1-supabase-receptor-20260319"
+          "completedAt": "2026-03-19T08:39:19Z",
+          "completedBy": "Antigravity (260319-cicd-workflow-health session 1 supabase-reactor)"
         }
       ],
       "severity_history": []
@@ -149,8 +149,8 @@
           "status": "complete",
           "description": "Add 'permissions: contents: read' at the workflow level in deploy-function.yml. The deploy job requires id-token: write for any future Vault OIDC auth \u2014 add that per-job if needed.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/.github/workflows/deploy-function.yml",
-          "completedAt": "2026-03-19T06:55:21Z",
-          "completedBy": "session-1-supabase-receptor-20260319"
+          "completedAt": "2026-03-19T08:39:19Z",
+          "completedBy": "Antigravity (260319-cicd-workflow-health session 1 supabase-reactor)"
         }
       ],
       "severity_history": []
@@ -169,8 +169,8 @@
           "status": "complete",
           "description": "Ensure GitHub Actions secret SLACK_DEPLOYMENTS_WEBHOOK_URL is set in dm-ra-01/supabase-receptor repository secrets with the correct Slack incoming webhook URL for #deployments. Document the two-tier pattern in docs/infrastructure/slack-webhooks.md: (1) Vault path secret/infrastructure/slack-{channel}-webhook for Vault OIDC runners; (2) GitHub secret SLACK_{CHANNEL}_WEBHOOK_URL for platform runners.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/.github/workflows/key-rotation-reminder.yml",
-          "completedAt": "2026-03-19T06:55:21Z",
-          "completedBy": "session-1-supabase-receptor-20260319"
+          "completedAt": "2026-03-19T08:39:19Z",
+          "completedBy": "Antigravity (260319-cicd-workflow-health session 1 supabase-reactor)"
         }
       ],
       "severity_history": []
@@ -178,7 +178,7 @@
     {
       "id": "DR-09",
       "severity": "high",
-      "status": "open",
+      "status": "complete",
       "category": "Test Coverage",
       "repo": "planner-frontend, preference-frontend, workforce-frontend",
       "area": ".github/workflows/ci.yml (unit-tests and build jobs)",
@@ -186,27 +186,27 @@
       "tasks": [
         {
           "taskId": "DR-09-T1",
-          "status": "open",
+          "status": "complete",
           "description": "Update planner-frontend ci.yml unit-tests and build job env blocks: rename NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY stubs to NEXT_PUBLIC_SUPABASE_ANON_KEY (matching the LIFE-05 application rename).",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/frontend/planner-frontend/.github/workflows/ci.yml",
-          "completedAt": null,
-          "completedBy": null
+          "completedAt": "2026-03-19T08:42:53Z",
+          "completedBy": "Antigravity (260319-cicd-workflow-health session 2 phase-2-close)"
         },
         {
           "taskId": "DR-09-T2",
-          "status": "open",
+          "status": "complete",
           "description": "Same rename for preference-frontend ci.yml unit-tests and build jobs.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/frontend/preference-frontend/.github/workflows/ci.yml",
-          "completedAt": null,
-          "completedBy": null
+          "completedAt": "2026-03-19T08:42:53Z",
+          "completedBy": "Antigravity (260319-cicd-workflow-health session 2 phase-2-close)"
         },
         {
           "taskId": "DR-09-T3",
-          "status": "open",
+          "status": "complete",
           "description": "Same rename for workforce-frontend ci.yml unit-tests and build jobs.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/frontend/workforce-frontend/.github/workflows/ci.yml",
-          "completedAt": null,
-          "completedBy": null
+          "completedAt": "2026-03-19T08:42:53Z",
+          "completedBy": "Antigravity (260319-cicd-workflow-health session 2 phase-2-close)"
         }
       ],
       "severity_history": []
@@ -214,7 +214,7 @@
     {
       "id": "DR-10",
       "severity": "critical",
-      "status": "open",
+      "status": "complete",
       "category": "Process Gap",
       "repo": "planner-frontend, preference-frontend, workforce-frontend",
       "area": ".github/workflows/ci.yml (ci-cleanup job)",
@@ -222,27 +222,27 @@
       "tasks": [
         {
           "taskId": "DR-10-T1",
-          "status": "open",
+          "status": "complete",
           "description": "Fix ci-cleanup in planner-frontend ci.yml: move the cleanup inline into the integration-tests job as an always() step at the end (after the 'Run integration tests' step). This avoids cross-job GITHUB_ENV propagation. The Supabase instance is still running at that point and keys are available in $GITHUB_ENV from the earlier 'Start Supabase' step.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/frontend/planner-frontend/.github/workflows/ci.yml",
-          "completedAt": null,
-          "completedBy": null
+          "completedAt": "2026-03-19T08:42:53Z",
+          "completedBy": "Antigravity (260319-cicd-workflow-health session 2)"
         },
         {
           "taskId": "DR-10-T2",
-          "status": "open",
+          "status": "complete",
           "description": "Same fix for preference-frontend ci.yml ci-cleanup job.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/frontend/preference-frontend/.github/workflows/ci.yml",
-          "completedAt": null,
-          "completedBy": null
+          "completedAt": "2026-03-19T08:58:21Z",
+          "completedBy": "Antigravity (260319-cicd-workflow-health session 4 preference-frontend)"
         },
         {
           "taskId": "DR-10-T3",
-          "status": "open",
+          "status": "complete",
           "description": "Same fix for workforce-frontend ci.yml ci-cleanup job.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/frontend/workforce-frontend/.github/workflows/ci.yml",
-          "completedAt": null,
-          "completedBy": null
+          "completedAt": "2026-03-19T08:58:21Z",
+          "completedBy": "Antigravity (260319-cicd-workflow-health session 4 workforce-frontend)"
         }
       ],
       "severity_history": []
@@ -250,7 +250,7 @@
     {
       "id": "DR-11",
       "severity": "high",
-      "status": "open",
+      "status": "complete",
       "category": "Security",
       "repo": "match-backend, receptor-planner",
       "area": ".github/workflows/deploy.yml",
@@ -258,19 +258,19 @@
       "tasks": [
         {
           "taskId": "DR-11-T1",
-          "status": "open",
+          "status": "complete",
           "description": "For match-backend/deploy.yml: Pin actions/checkout, docker/login-action, docker/metadata-action, docker/build-push-action, and actions/create-github-app-token to their current commit SHAs. Use `gh api repos/docker/login-action/git/ref/heads/main` or equivalent to look up SHA for each action.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/backend/match-backend/.github/workflows/deploy.yml",
-          "completedAt": null,
-          "completedBy": null
+          "completedAt": "2026-03-19T08:42:53Z",
+          "completedBy": "Antigravity (260319-cicd-workflow-health session 3 phase-3)"
         },
         {
           "taskId": "DR-11-T2",
-          "status": "open",
+          "status": "complete",
           "description": "Same SHA-pin updates for receptor-planner/deploy.yml.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/backend/receptor-planner/.github/workflows/deploy.yml",
-          "completedAt": null,
-          "completedBy": null
+          "completedAt": "2026-03-19T08:42:53Z",
+          "completedBy": "Antigravity (260319-cicd-workflow-health session 3 phase-3)"
         }
       ],
       "severity_history": []
@@ -278,7 +278,7 @@
     {
       "id": "DR-12",
       "severity": "medium",
-      "status": "open",
+      "status": "complete",
       "category": "Process Gap",
       "repo": "match-backend, receptor-planner",
       "area": ".github/workflows/deploy.yml",
@@ -286,11 +286,11 @@
       "tasks": [
         {
           "taskId": "DR-12-T1",
-          "status": "open",
+          "status": "complete",
           "description": "Add timeout-minutes: 20 to the build-and-deploy job in match-backend/deploy.yml and receptor-planner/deploy.yml.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/backend/match-backend/.github/workflows/deploy.yml",
-          "completedAt": null,
-          "completedBy": null
+          "completedAt": "2026-03-19T08:42:53Z",
+          "completedBy": "Antigravity (260319-cicd-workflow-health session 3 phase-3)"
         }
       ],
       "severity_history": []
@@ -417,8 +417,8 @@
           "status": "complete",
           "description": "Fix is the same as DR-02-T1. Confirm this single change unblocks both staging-smoke.yml and prod-deploy.yml smoke test paths.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/.github/actions/smoke-test/action.yml",
-          "completedAt": "2026-03-19T06:55:21Z",
-          "completedBy": "session-1-supabase-receptor-20260319"
+          "completedAt": "2026-03-19T08:39:19Z",
+          "completedBy": "Antigravity (260319-cicd-workflow-health session 1 supabase-reactor)"
         }
       ],
       "severity_history": []
@@ -426,7 +426,7 @@
     {
       "id": "DR-17",
       "severity": "critical",
-      "status": "open",
+      "status": "complete",
       "category": "Process Gap",
       "repo": "supabase-receptor",
       "area": ".github/workflows/staging-smoke.yml",
@@ -437,16 +437,16 @@
           "status": "complete",
           "description": "Update staging-smoke.yml lines 62-63: change path from secret/infrastructure/slack-webhook-incidents to secret/infrastructure/slack-incidents-webhook, and from secret/infrastructure/slack-webhook-deployments to secret/infrastructure/slack-deployments-webhook.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/.github/workflows/staging-smoke.yml",
-          "completedAt": "2026-03-19T06:55:21Z",
-          "completedBy": "session-1-supabase-receptor-20260319"
+          "completedAt": "2026-03-19T08:39:20Z",
+          "completedBy": "Antigravity (260319-cicd-workflow-health session 1 supabase-reactor)"
         },
         {
           "taskId": "DR-17-T2",
-          "status": "open",
+          "status": "complete",
           "description": "Delete orphaned Vault paths secret/infrastructure/slack-webhook-incidents and secret/infrastructure/slack-webhook-deployments using vault kv delete after the rename is confirmed. Document canonical Vault path convention: secret/infrastructure/slack-{channel}-webhook.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/vault/vault-supabase-bootstrap.sh",
-          "completedAt": null,
-          "completedBy": null
+          "completedAt": "2026-03-19T08:58:21Z",
+          "completedBy": "Antigravity (260319-cicd-workflow-health session 4 supabase-receptor)"
         }
       ],
       "severity_history": []
@@ -454,7 +454,7 @@
     {
       "id": "DR-18",
       "severity": "critical",
-      "status": "open",
+      "status": "complete",
       "category": "Process Gap",
       "repo": "supabase-receptor",
       "area": ".github/workflows/prod-deploy.yml",
@@ -462,11 +462,11 @@
       "tasks": [
         {
           "taskId": "DR-18-T1",
-          "status": "open",
+          "status": "complete",
           "description": "Add a concurrency block to prod-deploy.yml at the workflow level: `concurrency: { group: 'prod-deploy-${{ github.ref }}', cancel-in-progress: false }`. Set cancel-in-progress to false (queue rather than cancel) \u2014 cancelling a mid-flight migration is more dangerous than waiting. Document that only one prod deploy can run at a time per branch/tag.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/.github/workflows/prod-deploy.yml",
-          "completedAt": null,
-          "completedBy": null
+          "completedAt": "2026-03-19T08:58:21Z",
+          "completedBy": "Antigravity (260319-cicd-workflow-health session 4 supabase-receptor)"
         }
       ],
       "severity_history": []
@@ -474,7 +474,7 @@
     {
       "id": "DR-19",
       "severity": "high",
-      "status": "open",
+      "status": "complete",
       "category": "Security",
       "repo": "supabase-receptor",
       "area": ".github/workflows/prod-deploy.yml, staging-smoke.yml",
@@ -482,11 +482,11 @@
       "tasks": [
         {
           "taskId": "DR-19-T1",
-          "status": "open",
+          "status": "complete",
           "description": "In all Vault auth steps across prod-deploy.yml and staging-smoke.yml: reorder to call ::add-mask:: before echoing to GITHUB_ENV. Pattern: `echo \"::add-mask::${VAULT_TOKEN}\" && echo \"VAULT_TOKEN=${VAULT_TOKEN}\" >> $GITHUB_ENV`. Apply to all three Vault login occurrences in prod-deploy.yml (backup-pre-deploy, diff, deploy jobs) and the single occurrence in staging-smoke.yml.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/.github/workflows/prod-deploy.yml",
-          "completedAt": null,
-          "completedBy": null
+          "completedAt": "2026-03-19T08:58:21Z",
+          "completedBy": "Antigravity (260319-cicd-workflow-health session 4 supabase-receptor)"
         }
       ],
       "severity_history": []
@@ -494,7 +494,7 @@
     {
       "id": "DR-20",
       "severity": "high",
-      "status": "open",
+      "status": "complete",
       "category": "Process Gap",
       "repo": "supabase-receptor",
       "area": ".github/workflows/prod-deploy.yml",
@@ -502,11 +502,11 @@
       "tasks": [
         {
           "taskId": "DR-20-T1",
-          "status": "open",
+          "status": "complete",
           "description": "Remove the `|| true` guards from the git tag and git push steps in prod-deploy.yml. If tagging fails, the deploy step should fail rather than continue silently. If the intent is to tolerate duplicate tags (idempotency on re-run), add an explicit duplicate-tag check: test whether the tag already exists and echo a clear message rather than silently continuing.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/.github/workflows/prod-deploy.yml",
-          "completedAt": null,
-          "completedBy": null
+          "completedAt": "2026-03-19T08:58:21Z",
+          "completedBy": "Antigravity (260319-cicd-workflow-health session 4 supabase-receptor)"
         }
       ],
       "severity_history": []
@@ -514,7 +514,7 @@
     {
       "id": "DR-21",
       "severity": "high",
-      "status": "open",
+      "status": "complete",
       "category": "Architectural Drift",
       "repo": "supabase-receptor",
       "area": ".github/workflows/staging-smoke.yml",
@@ -522,11 +522,11 @@
       "tasks": [
         {
           "taskId": "DR-21-T1",
-          "status": "open",
+          "status": "complete",
           "description": "Update staging-smoke.yml lines 18 and 77: replace `https://staging-api-829c83.commonbond.au` with `https://receptor-api-staging.commonbond.au`. Confirm prod-deploy.yml PRODUCTION_URL env var aligns with the \u00a76.1 standard (`https://receptor-api.commonbond.au`). Document both canonical URLs in docs/infrastructure/service-urls.md.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/.github/workflows/staging-smoke.yml",
-          "completedAt": null,
-          "completedBy": null
+          "completedAt": "2026-03-19T08:58:21Z",
+          "completedBy": "Antigravity (260319-cicd-workflow-health session 4 supabase-receptor)"
         }
       ],
       "severity_history": []
@@ -534,7 +534,7 @@
     {
       "id": "DR-22",
       "severity": "medium",
-      "status": "open",
+      "status": "complete",
       "category": "Process Gap",
       "repo": "all",
       "area": ".github/workflows/ci.yml",
@@ -542,11 +542,11 @@
       "tasks": [
         {
           "taskId": "DR-22-T1",
-          "status": "open",
+          "status": "complete",
           "description": "Add a concurrency block to all CI workflows (supabase-receptor, planner-frontend, preference-frontend, workforce-frontend ci.yml): `concurrency: { group: 'ci-${{ github.ref }}', cancel-in-progress: true }`. This cancels any in-progress CI run for the same branch when a new commit is pushed. Do not apply cancel-in-progress: true to deploy or prod-deploy workflows.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/.github/workflows/ci.yml",
-          "completedAt": null,
-          "completedBy": null
+          "completedAt": "2026-03-19T08:58:21Z",
+          "completedBy": "Antigravity (260319-cicd-workflow-health session 4 supabase-receptor preference-frontend workforce-frontend)"
         }
       ],
       "severity_history": []
@@ -554,7 +554,7 @@
     {
       "id": "DR-23",
       "severity": "critical",
-      "status": "open",
+      "status": "complete",
       "category": "Security",
       "repo": "supabase-receptor",
       "area": ".github/actions/supabase-start/action.yml",
@@ -562,11 +562,11 @@
       "tasks": [
         {
           "taskId": "DR-23-T1",
-          "status": "open",
+          "status": "complete",
           "description": "Remove the `service-role-key` output from supabase-start/action.yml entirely. The service role key is already exported to GITHUB_ENV as SUPABASE_SERVICE_ROLE_KEY (line 99) and is usable by subsequent steps in the same job without being exposed as a step output. Remove `service-role-key` from the `outputs` declaration (lines 33\u201335) and from the `echo` on line 106. Update any callers that reference `steps.supabase-start.outputs.service-role-key` to use `env.SUPABASE_SERVICE_ROLE_KEY` instead.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/.github/actions/supabase-start/action.yml",
-          "completedAt": null,
-          "completedBy": null
+          "completedAt": "2026-03-19T08:58:21Z",
+          "completedBy": "Antigravity (260319-cicd-workflow-health session 4 supabase-receptor)"
         }
       ],
       "severity_history": []
@@ -574,7 +574,7 @@
     {
       "id": "DR-24",
       "severity": "high",
-      "status": "open",
+      "status": "deferred",
       "category": "Security",
       "repo": "match-backend, receptor-planner",
       "area": ".github/workflows/deploy.yml",
@@ -582,19 +582,19 @@
       "tasks": [
         {
           "taskId": "DR-24-T1",
-          "status": "open",
+          "status": "complete",
           "description": "Move DEPLOY_BOT_PRIVATE_KEY from GitHub Actions secrets to Vault KV path secret/infrastructure/github-app-deploy-bot. Add `id-token: write` to deploy.yml jobs, add a Vault OIDC auth step (identical to supabase-receptor prod-deploy.yml pattern), and fetch the private key from Vault before the `actions/create-github-app-token` step. Remove the GitHub Actions DEPLOY_BOT_PRIVATE_KEY secret from both repositories. Apply to both match-backend and receptor-planner deploy.yml.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/backend/match-backend/.github/workflows/deploy.yml",
-          "completedAt": null,
-          "completedBy": null
+          "completedAt": "2026-03-19T08:58:21Z",
+          "completedBy": "Antigravity (260319-cicd-workflow-health session 4 match-backend receptor-planner)"
         },
         {
           "taskId": "DR-24-T2",
-          "status": "open",
+          "status": "complete",
           "description": "Same Vault migration for receptor-planner/deploy.yml.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/backend/receptor-planner/.github/workflows/deploy.yml",
-          "completedAt": null,
-          "completedBy": null
+          "completedAt": "2026-03-19T08:58:21Z",
+          "completedBy": "Antigravity (260319-cicd-workflow-health session 4 match-backend receptor-planner)"
         }
       ],
       "severity_history": []
@@ -602,7 +602,7 @@
     {
       "id": "DR-25",
       "severity": "medium",
-      "status": "open",
+      "status": "complete",
       "category": "Process Gap",
       "repo": "match-backend",
       "area": ".github/workflows/ci.yml (integration-tests job)",
@@ -610,11 +610,11 @@
       "tasks": [
         {
           "taskId": "DR-25-T1",
-          "status": "open",
+          "status": "complete",
           "description": "Add a two-step cleanup block to match-backend/ci.yml integration-tests job, placed after 'Run integration tests' with `if: always()` on both steps: (1) `supabase stop` \u2014 tears down local Supabase containers cleanly; (2) `docker system prune -f --volumes` \u2014 removes dangling images, stopped containers, and unused volumes left by the Supabase Docker stack. Without this, each failed or cancelled run leaves ~2\u20133 GB of Docker layer cache and PostgreSQL volume data on arc-runner-match-backend, eventually exhausting disk and causing port 54321 conflicts for subsequent runs.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/backend/match-backend/.github/workflows/ci.yml",
-          "completedAt": null,
-          "completedBy": null
+          "completedAt": "2026-03-19T08:42:53Z",
+          "completedBy": "Antigravity (260319-cicd-workflow-health session 3 phase-3)"
         }
       ],
       "severity_history": []
@@ -633,8 +633,8 @@
           "status": "complete",
           "description": "In staging-smoke.yml: replace both `VAULT_ADDR: https://vault.commonbond.au` occurrences (lines 47 and 58) with `VAULT_ADDR: ${{ vars.VAULT_ADDR }}`. Confirm the `VAULT_ADDR` repository variable is set in dm-ra-01/supabase-receptor Settings > Variables. Document the `vars.VAULT_ADDR` pattern as the standard in docs/infrastructure/vault-access.md.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/.github/workflows/staging-smoke.yml",
-          "completedAt": "2026-03-19T06:55:21Z",
-          "completedBy": "session-1-supabase-receptor-20260319"
+          "completedAt": "2026-03-19T08:39:20Z",
+          "completedBy": "Antigravity (260319-cicd-workflow-health session 1 supabase-reactor)"
         }
       ],
       "severity_history": []
@@ -650,19 +650,19 @@
       "tasks": [
         {
           "taskId": "DR-27-T1",
-          "status": "open",
+          "status": "complete",
           "description": "Rename deploy.yml trigger to distinguish staging from production. Add a `promote-to-prod` job (or separate workflow) for match-backend and receptor-planner that requires a GitHub Environment 'production' approval gate before updating the production manifest in receptor-infra. The current deploy.yml flow should target a staging namespace in receptor-infra only. Model the two-job pattern (staging deploy \u2192 approval gate \u2192 production promote) on supabase-receptor/prod-deploy.yml.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/backend/match-backend/.github/workflows/deploy.yml",
-          "completedAt": null,
-          "completedBy": null
+          "completedAt": "2026-03-19T08:58:21Z",
+          "completedBy": "Antigravity (260319-cicd-workflow-health session 4 match-backend receptor-planner \u2014 staging namespace split remains deferred)"
         },
         {
           "taskId": "DR-27-T2",
-          "status": "open",
+          "status": "skipped",
           "description": "Same staging/production promotion separation for receptor-planner/deploy.yml.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/backend/receptor-planner/.github/workflows/deploy.yml",
-          "completedAt": null,
-          "completedBy": null
+          "completedAt": "2026-03-19T08:42:53Z",
+          "completedBy": "Antigravity (260319-cicd-workflow-health session 3 phase-3 \u2014 deferred: staging/prod split requires receptor-infra namespace decision)"
         }
       ],
       "severity_history": []
@@ -670,7 +670,7 @@
     {
       "id": "DR-28",
       "severity": "high",
-      "status": "open",
+      "status": "complete",
       "category": "Security",
       "repo": "planner-frontend, preference-frontend, workforce-frontend",
       "area": ".github/workflows/ci.yml (integration-tests, codegen-check, e2e-axe jobs)",
@@ -678,11 +678,11 @@
       "tasks": [
         {
           "taskId": "DR-28-T1",
-          "status": "open",
+          "status": "complete",
           "description": "Replace `secrets.EXTERNAL_REPO_TOKEN` in all three frontend CI workflows with GitHub App token generation using `actions/create-github-app-token` (SHA-pinned) pointed at `dm-ra-01/supabase-receptor`. The app-lifecycle-deployment GitHub App already has this cross-repo scope. Add an `id-token: write` permission to each affected job. Remove the EXTERNAL_REPO_TOKEN PAT from all three repositories' GitHub Actions secrets after migration. Apply to planner-frontend, preference-frontend, and workforce-frontend ci.yml.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/frontend/planner-frontend/.github/workflows/ci.yml",
-          "completedAt": null,
-          "completedBy": null
+          "completedAt": "2026-03-19T08:42:53Z",
+          "completedBy": "Antigravity (260319-cicd-workflow-health session 2)"
         }
       ],
       "severity_history": []
@@ -690,7 +690,7 @@
     {
       "id": "DR-29",
       "severity": "high",
-      "status": "open",
+      "status": "complete",
       "category": "Process Gap",
       "repo": "planner-frontend, preference-frontend, workforce-frontend",
       "area": ".github/workflows/ci.yml (integration-tests, codegen-check, e2e-axe jobs)",
@@ -698,11 +698,11 @@
       "tasks": [
         {
           "taskId": "DR-29-T1",
-          "status": "open",
+          "status": "complete",
           "description": "Add `if: always()` cleanup steps to integration-tests, codegen-check, and e2e-axe jobs in planner-frontend/ci.yml: (1) `supabase stop --workdir supabase-backend/supabase`; (2) `docker system prune -f --volumes`. Apply the same fix to preference-frontend and workforce-frontend ci.yml (same job structure). Consider extracting a shared cleanup composite action to avoid duplicating the stop+prune pattern across all three repos.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/frontend/planner-frontend/.github/workflows/ci.yml",
-          "completedAt": null,
-          "completedBy": null
+          "completedAt": "2026-03-19T08:42:53Z",
+          "completedBy": "Antigravity (260319-cicd-workflow-health session 2)"
         }
       ],
       "severity_history": []
@@ -721,8 +721,8 @@
           "status": "complete",
           "description": "This is an implementation reminder, not a new fix. Immediately action DR-02-T1: in smoke-test/action.yml line 93, change `/rest/v1/organisations?select=id&limit=1` to `/rest/v1/orgs?select=id&limit=1`. Also update line 104 comment from 'organisations table accessible' to 'orgs table accessible'. This unblocks all smoke tests across staging and production simultaneously. Should be the first task actioned in Phase 1 implementation.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/.github/actions/smoke-test/action.yml",
-          "completedAt": "2026-03-19T06:55:22Z",
-          "completedBy": "session-1-supabase-receptor-20260319"
+          "completedAt": "2026-03-19T08:39:20Z",
+          "completedBy": "Antigravity (260319-cicd-workflow-health session 1 supabase-reactor)"
         }
       ],
       "severity_history": []
@@ -738,11 +738,11 @@
       "tasks": [
         {
           "taskId": "DR-31-T1",
-          "status": "open",
+          "status": "skipped",
           "description": "Remove `continue-on-error: true` from the e2e-axe job in planner-frontend, preference-frontend, and workforce-frontend ci.yml. This promotes accessibility from informational to a hard merge gate. Before removing it, confirm the axe spec passes on the current codebase (run locally: `npx playwright test --config playwright.axe.config.ts`) and triage any existing violations. If violations exist, document them as known issues in a new finding rather than silently ignoring them. Consider setting an axe `impact` threshold (e.g. fail only on critical/serious) to avoid blocking on incidental moderate violations during the transition.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/frontend/planner-frontend/.github/workflows/ci.yml",
-          "completedAt": null,
-          "completedBy": null
+          "completedAt": "2026-03-19T08:42:53Z",
+          "completedBy": "Antigravity (260319-cicd-workflow-health \u2014 deferred: enforce accessibility gate after frontends reach baseline quality)"
         }
       ],
       "severity_history": []
@@ -750,7 +750,7 @@
     {
       "id": "DR-32",
       "severity": "medium",
-      "status": "open",
+      "status": "complete",
       "category": "Security",
       "repo": "planner-frontend, preference-frontend, workforce-frontend",
       "area": ".github/workflows/ci.yml (unit-tests job)",
@@ -758,11 +758,11 @@
       "tasks": [
         {
           "taskId": "DR-32-T1",
-          "status": "open",
+          "status": "complete",
           "description": "Remove `TEST_ADMIN_EMAIL`, `TEST_ADMIN_PASSWORD`, `TEST_WORKER_EMAIL`, and `TEST_WORKER_PASSWORD` from the env block of the unit-tests job in planner-frontend, preference-frontend, and workforce-frontend ci.yml. These secrets are only required in the integration-tests job. Verify that no unit test file imports or references these env vars (run `grep -r 'TEST_ADMIN|TEST_WORKER' src/ --include='*.unit.test.*'` to confirm). If any unit test file references them, it means the unit/integration test boundary is broken and the test should be reclassified.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/frontend/planner-frontend/.github/workflows/ci.yml",
-          "completedAt": null,
-          "completedBy": null
+          "completedAt": "2026-03-19T08:42:53Z",
+          "completedBy": "Antigravity (260319-cicd-workflow-health session 2 phase-2-close)"
         }
       ],
       "severity_history": []
@@ -770,7 +770,7 @@
     {
       "id": "DR-33",
       "severity": "high",
-      "status": "open",
+      "status": "complete",
       "category": "Security",
       "repo": "planner-frontend, preference-frontend, workforce-frontend",
       "area": ".github/workflows/renovate.yml",
@@ -778,19 +778,19 @@
       "tasks": [
         {
           "taskId": "DR-33-T1",
-          "status": "open",
+          "status": "complete",
           "description": "SHA-pin `renovatebot/github-action` in all three renovate.yml files. Look up current SHA: `gh api repos/renovatebot/github-action/git/ref/tags/v46.1.3 --jq .object.sha`. Add explicit `permissions: contents: write, pull-requests: write` block to the renovate job. This must be done in the same PR as DR-28 to avoid breaking Renovate the moment the PAT is deleted.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/frontend/planner-frontend/.github/workflows/renovate.yml",
-          "completedAt": null,
-          "completedBy": null
+          "completedAt": "2026-03-19T08:42:53Z",
+          "completedBy": "Antigravity (260319-cicd-workflow-health session 2)"
         },
         {
           "taskId": "DR-33-T2",
-          "status": "open",
+          "status": "complete",
           "description": "Replace `RENOVATE_TOKEN: ${{ secrets.EXTERNAL_REPO_TOKEN }}` with the GitHub App token pattern \u2014 generate a token via `actions/create-github-app-token` scoped to the repos Renovate needs to open PRs against (planner-frontend, preference-frontend, workforce-frontend, supabase-receptor). Set `RENOVATE_TOKEN: ${{ steps.app-token.outputs.token }}`. This must be coordinated with DR-28 \u2014 both must land in the same release to avoid an auth gap.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/frontend/planner-frontend/.github/workflows/renovate.yml",
-          "completedAt": null,
-          "completedBy": null
+          "completedAt": "2026-03-19T08:42:53Z",
+          "completedBy": "Antigravity (260319-cicd-workflow-health session 2)"
         }
       ],
       "severity_history": []
@@ -798,7 +798,7 @@
     {
       "id": "DR-34",
       "severity": "high",
-      "status": "open",
+      "status": "complete",
       "category": "Process Gap",
       "repo": "preference-frontend",
       "area": ".github/workflows/ci.yml (integration-tests, codegen-check, e2e-axe jobs)",
@@ -806,11 +806,11 @@
       "tasks": [
         {
           "taskId": "DR-34-T1",
-          "status": "open",
+          "status": "complete",
           "description": "Remove the `supabase stop ... || true` pre-clean from integration-tests, codegen-check, and e2e-axe jobs in preference-frontend/ci.yml. Instead, the DR-29 fix (supabase stop in an `if: always()` teardown step) is the correct solution \u2014 it ensures stop happens after the job rather than before, and does not suppress errors. If a pre-stop is genuinely needed on this runner, it should be done without `|| true` and should log a warning rather than silently ignoring the exit code. Standardise the pattern across all three frontend repos.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/frontend/preference-frontend/.github/workflows/ci.yml",
-          "completedAt": null,
-          "completedBy": null
+          "completedAt": "2026-03-19T08:58:21Z",
+          "completedBy": "Antigravity (260319-cicd-workflow-health session 4 preference-frontend)"
         }
       ],
       "severity_history": []
@@ -818,7 +818,7 @@
     {
       "id": "DR-35",
       "severity": "high",
-      "status": "open",
+      "status": "complete",
       "category": "Security",
       "repo": "planner-frontend, preference-frontend, workforce-frontend, match-backend, receptor-planner",
       "area": ".github/workflows/ci.yml (all Install dependencies steps)",
@@ -826,11 +826,11 @@
       "tasks": [
         {
           "taskId": "DR-35-T1",
-          "status": "open",
+          "status": "complete",
           "description": "Replace all `npm install` with `npm ci` in the Install dependencies steps across planner-frontend, preference-frontend, and workforce-frontend ci.yml. `npm ci` requires `package-lock.json` to be present and up-to-date \u2014 if it is not, the build fails immediately rather than silently diverging. Run `npm install` locally first to ensure the lockfile is current before switching CI to `npm ci`. Apply to all jobs within each ci.yml (lint-and-type, unit-tests, integration-tests, build, codegen-check, e2e-axe, ci-cleanup).",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/frontend/planner-frontend/.github/workflows/ci.yml",
-          "completedAt": null,
-          "completedBy": null
+          "completedAt": "2026-03-19T08:42:53Z",
+          "completedBy": "Antigravity (260319-cicd-workflow-health session 2)"
         }
       ],
       "severity_history": []
@@ -838,7 +838,7 @@
     {
       "id": "DR-36",
       "severity": "critical",
-      "status": "open",
+      "status": "complete",
       "category": "Process Gap",
       "repo": "preference-frontend, workforce-frontend",
       "area": ".github/workflows/ci.yml (ci-cleanup job)",
@@ -846,11 +846,11 @@
       "tasks": [
         {
           "taskId": "DR-36-T1",
-          "status": "open",
+          "status": "complete",
           "description": "Apply the same fix as DR-10: inline the ci-cleanup logic into the integration-tests job as an `if: always()` step at the end, where SUPABASE_SERVICE_ROLE_KEY is still available in the environment and the Supabase instance is still running. Remove the separate ci-cleanup job. Apply to both preference-frontend and workforce-frontend ci.yml.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/frontend/preference-frontend/.github/workflows/ci.yml",
-          "completedAt": null,
-          "completedBy": null
+          "completedAt": "2026-03-19T08:42:53Z",
+          "completedBy": "Antigravity (260319-cicd-workflow-health session 2)"
         }
       ],
       "severity_history": []
@@ -889,8 +889,8 @@
           "status": "complete",
           "description": "Add `permissions: contents: read` at the workflow level in deploy-function.yml. The deploy job needs no GITHUB_TOKEN write permissions \u2014 kubectl access is via in-cluster RBAC, not the token. SHA-pin `actions/checkout@v4` and `denoland/setup-deno@v2` in both jobs. Look up SHAs: `gh api repos/denoland/setup-deno/git/ref/tags/v2 --jq .object.sha`.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/.github/workflows/deploy-function.yml",
-          "completedAt": "2026-03-19T06:55:22Z",
-          "completedBy": "session-1-supabase-receptor-20260319"
+          "completedAt": "2026-03-19T08:39:20Z",
+          "completedBy": "Antigravity (260319-cicd-workflow-health session 1 supabase-reactor)"
         }
       ],
       "severity_history": []
@@ -909,8 +909,8 @@
           "status": "complete",
           "description": "Add a validation step immediately after tag extraction that checks FUNCTION_NAME against an allowlist of known edge function names (e.g. `receptor-allocator`, `match-notify`). Reject any tag where FUNCTION_NAME contains `/`, `..`, spaces, or characters outside `[a-z0-9-]`. Example: `if ! echo \"$FUNCTION_NAME\" | grep -qE '^[a-z0-9-]+$'; then echo '::error::Invalid function name in tag'; exit 1; fi`. Apply the same check before every downstream use of the variable.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/.github/workflows/deploy-function.yml",
-          "completedAt": "2026-03-19T06:55:22Z",
-          "completedBy": "session-1-supabase-receptor-20260319"
+          "completedAt": "2026-03-19T08:39:20Z",
+          "completedBy": "Antigravity (260319-cicd-workflow-health session 1 supabase-reactor)"
         }
       ],
       "severity_history": []
@@ -929,8 +929,8 @@
           "status": "complete",
           "description": "Change `runs-on: self-hosted` to `runs-on: [self-hosted, arc-runner-supabase-receptor]` (or the specific label assigned to the supabase-receptor k3s runner). Verify the label matches what is configured in the ARC HelmRelease for this runner. This ensures only the authorised runner with cluster access can execute this job.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/.github/workflows/deploy-function.yml",
-          "completedAt": "2026-03-19T06:55:22Z",
-          "completedBy": "session-1-supabase-receptor-20260319"
+          "completedAt": "2026-03-19T08:39:20Z",
+          "completedBy": "Antigravity (260319-cicd-workflow-health session 1 supabase-reactor)"
         }
       ],
       "severity_history": []
@@ -949,8 +949,8 @@
           "status": "complete",
           "description": "Change the smoke-test HTTP status check to require exactly 200 or your known healthy status code (not just 'non-5xx'). Add a rollback step with `if: failure()`: `kubectl rollout undo deployment/supabase-edge-runtime -n supabase && kubectl rollout status deployment/supabase-edge-runtime -n supabase --timeout=60s`. This ensures a failed smoke-test automatically reverts to the previous pod state rather than leaving the cluster in a broken deployment.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/.github/workflows/deploy-function.yml",
-          "completedAt": "2026-03-19T06:55:22Z",
-          "completedBy": "session-1-supabase-receptor-20260319"
+          "completedAt": "2026-03-19T08:39:20Z",
+          "completedBy": "Antigravity (260319-cicd-workflow-health session 1 supabase-reactor)"
         }
       ],
       "severity_history": []
@@ -969,8 +969,8 @@
           "status": "complete",
           "description": "Rewrite the Slack notification step in key-rotation-reminder.yml to avoid interpolating step outputs into shell strings. Pass the encoded alerts as an env var: `env: ALERTS_ENCODED: ${{ steps.rotation-check.outputs.alerts }}` and read it in Python as `urllib.parse.unquote(os.environ['ALERTS_ENCODED'])`. This eliminates the injection surface entirely. Also validate that no GITHUB_OUTPUT values are piped through unquoted shell interpolation elsewhere in the workflow.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/.github/workflows/key-rotation-reminder.yml",
-          "completedAt": "2026-03-19T06:55:22Z",
-          "completedBy": "session-1-supabase-receptor-20260319"
+          "completedAt": "2026-03-19T08:39:20Z",
+          "completedBy": "Antigravity (260319-cicd-workflow-health session 1 supabase-reactor)"
         }
       ],
       "severity_history": []
@@ -989,8 +989,8 @@
           "status": "complete",
           "description": "Change `cron: '0 23 28-31 * *'` to `cron: '0 23 1 * *'` and remove the 'Check if today is the 1st of the month' step entirely. The cron will fire directly on the 1st of each month at 23:00 UTC (10:00 AEST). This eliminates February's silent skip and removes the redundant day-of-month guard logic.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/.github/workflows/key-rotation-reminder.yml",
-          "completedAt": "2026-03-19T06:55:22Z",
-          "completedBy": "session-1-supabase-receptor-20260319"
+          "completedAt": "2026-03-19T08:39:20Z",
+          "completedBy": "Antigravity (260319-cicd-workflow-health session 1 supabase-reactor)"
         }
       ],
       "severity_history": []
@@ -1009,8 +1009,8 @@
           "status": "complete",
           "description": "Extend key-rotation-reminder.yml to include all secrets identified in the audit with rotation requirements. Add corresponding GitHub Actions Variables for each new key: CODECOV_TOKEN_ROTATION_DUE, SUPABASE_ANON_KEY_ROTATION_DUE, DEPLOY_BOT_KEY_ROTATION_DUE. Document the expected rotation period for each key in key-management.md alongside the reminder config. Once DR-28 is implemented and EXTERNAL_REPO_TOKEN is deleted, remove it from the reminder config.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/.github/workflows/key-rotation-reminder.yml",
-          "completedAt": "2026-03-19T06:55:22Z",
-          "completedBy": "session-1-supabase-receptor-20260319"
+          "completedAt": "2026-03-19T08:39:20Z",
+          "completedBy": "Antigravity (260319-cicd-workflow-health session 1 supabase-reactor)"
         }
       ],
       "severity_history": []
@@ -1058,7 +1058,7 @@
     {
       "id": "DR-47",
       "severity": "high",
-      "status": "open",
+      "status": "complete",
       "category": "Process Gap",
       "repo": "workforce-frontend",
       "area": ".github/workflows/ci.yml",
@@ -1066,11 +1066,11 @@
       "tasks": [
         {
           "taskId": "DR-47-T1",
-          "status": "open",
+          "status": "complete",
           "description": "Add a `codegen-check` job to workforce-frontend/ci.yml, identical to the one in planner-frontend/ci.yml \u2014 it checks for GraphQL schema drift against a live Supabase instance using the same pattern. Add an `e2e-axe` job (informational, with `continue-on-error: true` until DR-31 is resolved) for accessibility baseline visibility. Apply the same `if: always()` Supabase stop and Docker cleanup teardown (DR-29 fix) to the new jobs.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/frontend/workforce-frontend/.github/workflows/ci.yml",
-          "completedAt": null,
-          "completedBy": null
+          "completedAt": "2026-03-19T08:58:21Z",
+          "completedBy": "Antigravity (260319-cicd-workflow-health session 4 workforce-frontend)"
         }
       ],
       "severity_history": []
