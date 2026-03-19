@@ -539,3 +539,17 @@ Affects: `supabase-receptor` — .github/workflows/key-rotation-reminder.yml
 | DR-06 | .github/workflows/deploy-function.yml | `deploy-function.yml` | Security | 🟢 Low |
 | DR-08 | .github/workflows/key-rotation-reminder.yml | `key-rotation-reminder.yml` | Process Gap | 🟢 Low |
 
+
+---
+
+## Session Close — 2026-03-19
+
+**Completed:** DR-01, DR-02, DR-03, DR-04, DR-06, DR-07, DR-08, DR-16, DR-17, DR-26, DR-30, DR-38, DR-39, DR-40, DR-41, DR-42, DR-43, DR-44 (all supabase-receptor findings)
+
+**Remaining:** DR-05 (supabase-receptor — GitHub Environments gate), DR-09/DR-10/DR-36 (planner-frontend, preference-frontend, workforce-frontend — ci.yml env var + cleanup job), DR-11/DR-12 (match-backend, receptor-planner — SHA pins + timeout), DR-13/DR-15 (website-frontend CI + all frontend deploy.yml), DR-14 (all repos — rollback.yml), DR-24/DR-25/DR-27 (match-backend, receptor-planner — Vault, cleanup, staging separation), DR-28/DR-29/DR-31/DR-32/DR-33/DR-34/DR-35/DR-37/DR-47 (frontend — token, teardown, renovate, npm ci), DR-45/DR-46 (cross-cutting — secret scan, Supabase CLI version pin)
+
+**Blocked:** None
+
+**PR order note:** supabase-receptor PR can be raised independently. Frontend PRs (planner-frontend, preference-frontend, workforce-frontend) can be raised in parallel. Backend PRs (match-backend, receptor-planner) can be raised in parallel. No cross-repo dependencies for Session 2.
+
+**Brief for next agent:** All supabase-receptor workflow files now corrected and pushed to `audit/260319-cicd-workflow-health`. Next session should tackle the three Next.js frontend repos (planner-frontend, preference-frontend, workforce-frontend) as a group — DR-09, DR-10, and DR-36 are Critical and should go first. DR-28 (replace EXTERNAL_REPO_TOKEN with GitHub App token) is a prerequisite for DR-33 (renovate.yml token). Note: DR-31 (e2e-axe continue-on-error) is formally deferred per clarification. The `deferred` array in recommendations.json was updated to use `item` key (consistent with schema). All slug references added to code comments throughout.
