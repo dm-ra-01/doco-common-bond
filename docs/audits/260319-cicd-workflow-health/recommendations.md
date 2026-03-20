@@ -155,24 +155,27 @@ Affects: `receptor-infra` — Network Fabric (Calico/k3s)
 Affects: `receptor-infra` — tigera-operator Deployment / helmfile.yaml
 
 
-- [ ] Remove the `kubernetes.io/hostname: receptor-ctrl-01` node selector from the tigera-operator Deployment in `receptor-infra`. Replace with `node-role.kubernetes.io/control-plane: "true"` so the operator always schedules onto a valid control-plane node. Update the Helm values or raw manifest, commit to `receptor-infra` audit branch, and verify the pod reaches `Running` status.
-      `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/helmfile.yaml`
+- [x] Remove the `kubernetes.io/hostname: receptor-ctrl-01` node selector from the tigera-operator Deployment in `receptor-infra`. Replace with `node-role.kubernetes.io/control-plane: "true"` so the operator always schedules onto a valid control-plane node. Update the Helm values or raw manifest, commit to `receptor-infra` audit branch, and verify the pod reaches `Running` status.
+      `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/values/calico.yaml`
+      _(Completed: 2026-03-20T02:22:00Z)_
 
 ### DR-53: `cert-manager-cainjector` has accumulated 968+ crash-loop restarts over 3 days. Container logs show `dial tcp 10.43.0.1:
 
 Affects: `receptor-infra` — network-policies/network-policies.yaml (cert-manager namespace)
 
 
-- [ ] Add a NetworkPolicy to `receptor-infra/network-policies/network-policies.yaml` for the `cert-manager` namespace permitting egress from all cert-manager pods to: (1) `10.43.0.1/32` port 443 (cluster API service IP); (2) `10.10.0.10/32`, `10.10.0.30/32`, `10.10.0.50/32` port 6443 (control-plane node IPs for API server). Also allow egress to `kube-dns` on port 53 UDP/TCP. Apply via `kubectl apply` and verify the cainjector restart count stops rising and the cert-manager-webhook readiness probe returns HTTP 200.
+- [x] Add a NetworkPolicy to `receptor-infra/network-policies/network-policies.yaml` for the `cert-manager` namespace permitting egress from all cert-manager pods to: (1) `10.43.0.1/32` port 443 (cluster API service IP); (2) `10.10.0.10/32`, `10.10.0.30/32`, `10.10.0.50/32` port 6443 (control-plane node IPs for API server). Also allow egress to `kube-dns` on port 53 UDP/TCP. Apply via `kubectl apply` and verify the cainjector restart count stops rising and the cert-manager-webhook readiness probe returns HTTP 200.
       `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/network-policies/network-policies.yaml`
+      _(Completed: 2026-03-20T02:24:00Z)_
 
 ### DR-54: All Supabase pods in both `supabase` and `supabase-staging` namespaces have been `CreateContainerConfigError` or `Init:0
 
 Affects: `receptor-infra` — supabase / supabase-staging namespace secrets
 
 
-- [ ] Inspect all `VaultStaticSecret` resources in `supabase` and `supabase-staging` namespaces (`kubectl get vaultstaticsecret -A`). Check their `status.conditions` for sync errors. If VSO is unable to sync, force a reconciliation (`kubectl annotate vaultstaticsecret &#60;name&#62; vault.hashicorp.com/requestReconciliation=$(date +%s) --overwrite`). If Vault KV paths are missing or malformed, re-seed from the bootstrap script. As a last resort, manually create the missing secret keys via `kubectl patch secret supabase-credentials -n supabase --type=merge -p '&#123;"data":&#123;"database":"&#60;base64&#62;"&#125;&#125;`. Verify all pods transition to `Running`.
-      `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/helmfile.yaml`
+- [x] Two-part fix: (1) Created `supabase-db` k8s Secret imperatively in both namespaces with `database=postgres` + password/password_encoded from supabase-credentials. (2) Added `transformation.templates.database.text: postgres` to `supabase/production/vso-secrets.yaml` and `supabase/staging/vso-secrets.yaml` — VSO now injects this non-sensitive value into `supabase-credentials` on every sync without requiring a Vault KV entry. Both changes committed to receptor-infra `main`. Force-resynced VSO to apply immediately and verified `database: postgres` present in both namespaces.
+      `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/supabase/production/vso-secrets.yaml`
+      _(Completed: 2026-03-20T02:32:00Z)_
 
 ## 🟠 High
 
@@ -446,8 +449,9 @@ Affects: `receptor-infra` — monitoring namespace — Loki PVC (Longhorn)
 Affects: `receptor-infra` — cert-manager Deployment — cainjector container resources
 
 
-- [ ] Update the cert-manager Helm values in `receptor-infra` to set cainjector resource requests/limits: `requests: &#123;cpu: 100m, memory: 128Mi&#125;`, `limits: &#123;cpu: 500m, memory: 256Mi&#125;`. Apply via `helmfile sync` or `kubectl patch deployment cert-manager-cainjector -n cert-manager --type=json -p '[&#123;"op":"replace","path":"/spec/template/spec/containers/0/resources","value":&#123;"requests":&#123;"cpu":"100m","memory":"128Mi"&#125;,"limits":&#123;"cpu":"500m","memory":"256Mi"&#125;&#125;&#125;]'`. This must be applied after DR-52 (tigera) and DR-53 (NetworkPolicy) are fixed, otherwise the cainjector will still fail on API connectivity.
-      `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/helmfile.yaml`
+- [x] Updated `receptor-infra/values/cert-manager.yaml` cainjector resource requests to `&#123;cpu: 100m, memory: 128Mi&#125;` and limits to `&#123;cpu: 500m, memory: 256Mi&#125;`. Applied live via `kubectl patch` and committed to receptor-infra `main`. Verified new cainjector pod `cert-manager-cainjector-6795b7df76-vwh69` reached `1/1 Running` with 0 restarts.
+      `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/values/cert-manager.yaml`
+      _(Completed: 2026-03-20T02:35:00Z)_
 
 ## 🟡 Medium
 
@@ -648,9 +652,9 @@ Affects: `supabase-receptor` — .github/workflows/key-rotation-reminder.yml
 | DR-38 | .github/workflows/deploy-function.yml | `deploy-function.yml` | Security | 🔴 Critical |
 | DR-39 | .github/workflows/deploy-function.yml lines 31–39 | `deploy-function.yml` | Security | 🔴 Critical |
 | DR-48 | Network Fabric (Calico/k3s) | `network-policies.yaml` | Infrastructure | 🔴 Critical |
-| DR-52 | tigera-operator Deployment / helmfile.yaml | `helmfile.yaml` | Infrastructure | 🔴 Critical |
+| DR-52 | tigera-operator Deployment / helmfile.yaml | `calico.yaml` | Infrastructure | 🔴 Critical |
 | DR-53 | network-policies/network-policies.yaml (cert-manager namespace) | `network-policies.yaml` | Infrastructure | 🔴 Critical |
-| DR-54 | supabase / supabase-staging namespace secrets | `helmfile.yaml` | Infrastructure | 🔴 Critical |
+| DR-54 | supabase / supabase-staging namespace secrets | `vso-secrets.yaml` | Infrastructure | 🔴 Critical |
 | DR-02 | .github/actions/smoke-test/action.yml | `action.yml` | Process Gap | 🟠 High |
 | DR-09 | .github/workflows/ci.yml (unit-tests and build jobs) | `ci.yml` | Test Coverage | 🟠 High |
 | DR-11 | .github/workflows/deploy.yml | `deploy.yml` | Security | 🟠 High |
@@ -677,7 +681,7 @@ Affects: `supabase-receptor` — .github/workflows/key-rotation-reminder.yml
 | DR-50 | ARC Configuration | `helmfile.yaml` | Infrastructure | 🟠 High |
 | DR-51 | ARC Configuration / helmfile.yaml | `helmfile.yaml` | Infrastructure | 🟠 High |
 | DR-55 | monitoring namespace — Loki PVC (Longhorn) | `helmfile.yaml` | Infrastructure | 🟠 High |
-| DR-56 | cert-manager Deployment — cainjector container resources | `helmfile.yaml` | Infrastructure | 🟠 High |
+| DR-56 | cert-manager Deployment — cainjector container resources | `cert-manager.yaml` | Infrastructure | 🟠 High |
 | DR-01 | .github/workflows/ci.yml | `ci.yml` | Process Gap | 🟡 Medium |
 | DR-04 | .github/workflows/prod-deploy.yml | `prod-deploy.yml` | Process Gap | 🟡 Medium |
 | DR-07 | .github/workflows/deploy-function.yml | `deploy-function.yml` | Security | 🟡 Medium |

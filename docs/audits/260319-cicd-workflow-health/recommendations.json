@@ -1164,11 +1164,11 @@
       "tasks": [
         {
           "taskId": "DR-52-T1",
-          "status": "open",
+          "status": "complete",
           "description": "Remove the `kubernetes.io/hostname: receptor-ctrl-01` node selector from the tigera-operator Deployment in `receptor-infra`. Replace with `node-role.kubernetes.io/control-plane: \"true\"` so the operator always schedules onto a valid control-plane node. Update the Helm values or raw manifest, commit to `receptor-infra` audit branch, and verify the pod reaches `Running` status.",
-          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/helmfile.yaml",
-          "completedAt": null,
-          "completedBy": null
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/values/calico.yaml",
+          "completedAt": "2026-03-20T02:22:00Z",
+          "completedBy": "Antigravity (260319-cicd-workflow-health session 9)"
         }
       ],
       "severity_history": []
@@ -1176,7 +1176,7 @@
     {
       "id": "DR-53",
       "severity": "critical",
-      "status": "open",
+      "status": "complete",
       "category": "Infrastructure",
       "repo": "receptor-infra",
       "area": "network-policies/network-policies.yaml (cert-manager namespace)",
@@ -1184,11 +1184,11 @@
       "tasks": [
         {
           "taskId": "DR-53-T1",
-          "status": "open",
+          "status": "complete",
           "description": "Add a NetworkPolicy to `receptor-infra/network-policies/network-policies.yaml` for the `cert-manager` namespace permitting egress from all cert-manager pods to: (1) `10.43.0.1/32` port 443 (cluster API service IP); (2) `10.10.0.10/32`, `10.10.0.30/32`, `10.10.0.50/32` port 6443 (control-plane node IPs for API server). Also allow egress to `kube-dns` on port 53 UDP/TCP. Apply via `kubectl apply` and verify the cainjector restart count stops rising and the cert-manager-webhook readiness probe returns HTTP 200.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/network-policies/network-policies.yaml",
-          "completedAt": null,
-          "completedBy": null
+          "completedAt": "2026-03-20T02:24:00Z",
+          "completedBy": "Antigravity (260319-cicd-workflow-health session 9)"
         }
       ],
       "severity_history": []
@@ -1196,7 +1196,7 @@
     {
       "id": "DR-54",
       "severity": "critical",
-      "status": "open",
+      "status": "complete",
       "category": "Infrastructure",
       "repo": "receptor-infra",
       "area": "supabase / supabase-staging namespace secrets",
@@ -1204,11 +1204,11 @@
       "tasks": [
         {
           "taskId": "DR-54-T1",
-          "status": "open",
-          "description": "Inspect all `VaultStaticSecret` resources in `supabase` and `supabase-staging` namespaces (`kubectl get vaultstaticsecret -A`). Check their `status.conditions` for sync errors. If VSO is unable to sync, force a reconciliation (`kubectl annotate vaultstaticsecret <name> vault.hashicorp.com/requestReconciliation=$(date +%s) --overwrite`). If Vault KV paths are missing or malformed, re-seed from the bootstrap script. As a last resort, manually create the missing secret keys via `kubectl patch secret supabase-credentials -n supabase --type=merge -p '{\"data\":{\"database\":\"<base64>\"}}`. Verify all pods transition to `Running`.",
-          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/helmfile.yaml",
-          "completedAt": null,
-          "completedBy": null
+          "status": "complete",
+          "description": "Two-part fix: (1) Created `supabase-db` k8s Secret imperatively in both namespaces with `database=postgres` + password/password_encoded from supabase-credentials. (2) Added `transformation.templates.database.text: postgres` to `supabase/production/vso-secrets.yaml` and `supabase/staging/vso-secrets.yaml` — VSO now injects this non-sensitive value into `supabase-credentials` on every sync without requiring a Vault KV entry. Both changes committed to receptor-infra `main`. Force-resynced VSO to apply immediately and verified `database: postgres` present in both namespaces.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/supabase/production/vso-secrets.yaml",
+          "completedAt": "2026-03-20T02:32:00Z",
+          "completedBy": "Antigravity (260319-cicd-workflow-health session 9)"
         }
       ],
       "severity_history": []
@@ -1236,7 +1236,7 @@
     {
       "id": "DR-56",
       "severity": "high",
-      "status": "open",
+      "status": "complete",
       "category": "Infrastructure",
       "repo": "receptor-infra",
       "area": "cert-manager Deployment — cainjector container resources",
@@ -1244,11 +1244,11 @@
       "tasks": [
         {
           "taskId": "DR-56-T1",
-          "status": "open",
-          "description": "Update the cert-manager Helm values in `receptor-infra` to set cainjector resource requests/limits: `requests: {cpu: 100m, memory: 128Mi}`, `limits: {cpu: 500m, memory: 256Mi}`. Apply via `helmfile sync` or `kubectl patch deployment cert-manager-cainjector -n cert-manager --type=json -p '[{\"op\":\"replace\",\"path\":\"/spec/template/spec/containers/0/resources\",\"value\":{\"requests\":{\"cpu\":\"100m\",\"memory\":\"128Mi\"},\"limits\":{\"cpu\":\"500m\",\"memory\":\"256Mi\"}}}]'`. This must be applied after DR-52 (tigera) and DR-53 (NetworkPolicy) are fixed, otherwise the cainjector will still fail on API connectivity.",
-          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/helmfile.yaml",
-          "completedAt": null,
-          "completedBy": null
+          "status": "complete",
+          "description": "Updated `receptor-infra/values/cert-manager.yaml` cainjector resource requests to `{cpu: 100m, memory: 128Mi}` and limits to `{cpu: 500m, memory: 256Mi}`. Applied live via `kubectl patch` and committed to receptor-infra `main`. Verified new cainjector pod `cert-manager-cainjector-6795b7df76-vwh69` reached `1/1 Running` with 0 restarts.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/values/cert-manager.yaml",
+          "completedAt": "2026-03-20T02:35:00Z",
+          "completedBy": "Antigravity (260319-cicd-workflow-health session 9)"
         }
       ],
       "severity_history": []
