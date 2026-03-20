@@ -1077,6 +1077,64 @@
         }
       ],
       "severity_history": []
+    },
+    {
+      "id": "DR-48",
+      "severity": "critical",
+      "status": "in-progress",
+      "category": "Infrastructure",
+      "repo": "receptor-infra",
+      "area": "Network Fabric (Calico/k3s)",
+      "description": "ARC runners in the `arc-runners` namespace exhibit a reduced MTU (observed 1370) without MSS clamping or Path MTU Discovery (PMTUD) support at the pod level. This causes silent packet drops and timeouts for large egress payloads, such as the Tigera/Calico Helm chart index (34KB) and large Slack webhook payloads. This defect blocks GitOps synchronisation for core network infrastructure and causes intermittent CI failures across the ecosystem. The actual network path (likely Cloudflare Tunnel or local VLAN 10) likely has a lower MTU than the default 1500, which Calico further reduces, but the lack of MSS clamping prevents TCP from adapting.",
+      "tasks": [
+        {
+          "taskId": "DR-48-T1",
+          "status": "in-progress",
+          "description": "Adjust Calico MTU configuration to match the observed bottleneck (1370) or implement MSS clamping via iptables/NFTables on the k3s nodes for the `arc-runners` pod CIDR. Ensure `allow-arc-runners-egress` NetworkPolicy is applied to restore DNS and internet access.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/network-policies/network-policies.yaml"
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "DR-49",
+      "severity": "high",
+      "status": "complete",
+      "category": "Process Gap",
+      "repo": "receptor-infra",
+      "area": "helmfile.yaml",
+      "description": "An orphaned `needs` block in the root `helmfile.yaml` (line 127) caused a YAML unmarshal error during `helmfile diff` and `helmfile sync`. This error prevented the `cluster-sync` workflow from executing any deployment or auditing actions, effectively breaking the GitOps pipeline for the entire infrastructure repository.",
+      "tasks": [
+        {
+          "taskId": "DR-49-T1",
+          "status": "complete",
+          "description": "Remove the orphaned `needs` block from `helmfile.yaml` and verify syntax via `helmfile lint` or a dry-run sync.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/helmfile.yaml",
+          "completedAt": "2026-03-20T10:15:00Z",
+          "completedBy": "Antigravity (260319-cicd-workflow-health recovery session)"
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "DR-50",
+      "severity": "high",
+      "status": "complete",
+      "category": "Infrastructure",
+      "repo": "receptor-infra",
+      "area": "ARC Configuration",
+      "description": "The `AutoscalingRunnerSet` for `receptor-infra` was found to be deleted or missing from the cluster, despite being defined in `helmfile.yaml`. This caused the `cluster-sync` workflow to fail immediately due to 'no runner in group'. The root cause appeared to be the ARC controller deleting the resource during a failed reconciliation or after a manual k8s-api conflict.",
+      "tasks": [
+        {
+          "taskId": "DR-50-T1",
+          "status": "complete",
+          "description": "Manually restore the `AutoscalingRunnerSet` via `helm upgrade` and re-enable `containerMode: dind` to support image builds. Confirm the listener pod is reconstructed and healthy.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/helmfile.yaml",
+          "completedAt": "2026-03-20T10:45:00Z",
+          "completedBy": "Antigravity (260319-cicd-workflow-health recovery session)"
+        }
+      ],
+      "severity_history": []
     }
   ],
   "clarifications": [
@@ -1106,7 +1164,9 @@
         "DR-02",
         "DR-16",
         "DR-18",
-        "DR-36"
+        "DR-36",
+        "DR-48",
+        "DR-49"
       ]
     },
     {
@@ -1163,7 +1223,8 @@
         "DR-29",
         "DR-34",
         "DR-37",
-        "DR-47"
+        "DR-47",
+        "DR-50"
       ]
     },
     {

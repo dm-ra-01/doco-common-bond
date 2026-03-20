@@ -9,7 +9,7 @@
 
 ## Executive Summary
 
-This audit evaluates the current CI/CD setup across all Receptor ecosystem repositories for its ability to execute workflows successfully, promote code through test → staging → production, enable rollback, and securely manage keys. **17 findings** were identified: **5 Critical**, **6 High**, **4 Medium**, **2 Low**. The audit found that all backend/infrastructure deploy workflows (`match-backend`, `receptor-planner`, `supabase-receptor` prod-deploy) have structural defects that will cause failures in production. `staging-smoke.yml` reads from wrong Vault paths for Slack webhooks. The frontend CI workflows are substantially correct but carry a stale env-var reference and a broken cleanup job pattern. `website-frontend` has no CI workflow at all. None of the three Next.js frontend applications have a deploy pipeline.
+This audit evaluates the current CI/CD setup across all Receptor ecosystem repositories for its ability to execute workflows successfully, promote code through test → staging → production, enable rollback, and securely manage keys. **20 findings** were identified: **6 Critical**, **8 High**, **4 Medium**, **2 Low**. The audit found that all backend/infrastructure deploy workflows (`match-backend`, `receptor-planner`, `supabase-receptor` prod-deploy) have structural defects that will cause failures in production. `staging-smoke.yml` reads from wrong Vault paths for Slack webhooks. The infrastructure repository recently experienced a total GitOps blackout due to a YAML syntax error and runner-set instability. A critical MTU mismatch in the ARC runner namespace causes silent packet drops for large payloads, blocking core infrastructure sync. The frontend CI workflows are substantially correct but carry a stale env-var reference and a broken cleanup job pattern. `website-frontend` has no CI workflow at all. None of the three Next.js frontend applications have a deploy pipeline.
 
 | Repository / Area | Coverage | Issues Found | Overall |
 | --- | --- | --- | --- |
@@ -142,7 +142,24 @@ This audit evaluates the current CI/CD setup across all Receptor ecosystem repos
 
 ---
 
-## 4. website-frontend
+## 4. receptor-infra
+
+### 4.1 Root Manifest and GitOps State
+
+**Gaps:**
+
+- `DR-18` — `helmfile.yaml`: A syntax error (orphaned `needs` block at line 127) caused a total unmarshal failure. All GitOps sync operations were blocked until manual intervention.
+- `DR-20` — `AutoscalingRunnerSet`: The `arc-runner-receptor-infra` resource was deleted by the ARC controller, likely due to a reconciliation loop failure or API conflict. This caused all infrastructure workflows to hang with 'no runner in group' errors.
+
+### 4.2 Network Fabric (Calico / ARC Runners)
+
+**Gaps:**
+
+- `DR-19` — **Critical MTU Mismatch:** Pods in the `arc-runners` namespace exhibit a reduced MTU (1370) compared to the standard 1500. Without MSS clamping, large egress packets (e.g. Tigera chart index, large Slack payloads) are silently dropped. This causes `helmfile sync` to timeout when fetching core networking charts, creating a circular failure where the network fix cannot be applied via GitOps.
+
+---
+
+## 5. website-frontend
 
 ### 4.1 No CI/CD Workflow
 
@@ -198,15 +215,19 @@ The following URL scheme is approved as the canonical deployment target for all 
 | DR-10 | `planner-frontend`, `preference-frontend`, `workforce-frontend` | `ci.yml` (ci-cleanup job) | Process Gap | 🔴 Critical |
 | DR-13 | `website-frontend` | — | Process Gap | 🔴 Critical |
 | DR-17 | `supabase-receptor` | `staging-smoke.yml` | Process Gap | 🔴 Critical |
+| DR-19 | `receptor-infra` | Network Fabric | Infrastructure | 🔴 Critical |
 | DR-02 | `supabase-receptor` | `smoke-test/action.yml` | Process Gap | 🟠 High |
 | DR-09 | `planner-frontend`, `preference-frontend`, `workforce-frontend` | `ci.yml` (unit-tests job) | Test Coverage | 🟠 High |
 | DR-11 | `match-backend`, `receptor-planner` | `deploy.yml` | Security | 🟠 High |
 | DR-14 | All repos | — | Process Gap | 🟠 High |
 | DR-15 | `planner-frontend`, `preference-frontend`, `workforce-frontend` | — | Process Gap | 🟠 High |
 | DR-16 | `supabase-receptor` | `smoke-test/action.yml` | Process Gap | 🟠 High |
+| DR-18 | `receptor-infra` | `helmfile.yaml` | Process Gap | 🟠 High |
+| DR-20 | `receptor-infra` | ARC Config | Infrastructure | 🟠 High |
 | DR-01 | `supabase-receptor` | `ci.yml` | Process Gap | 🟡 Medium |
 | DR-04 | `supabase-receptor` | `prod-deploy.yml` | Process Gap | 🟡 Medium |
 | DR-07 | `supabase-receptor` | `deploy-function.yml` | Security | 🟡 Medium |
 | DR-12 | `match-backend`, `receptor-planner` | `deploy.yml` | Process Gap | 🟡 Medium |
 | DR-06 | `supabase-receptor` | `deploy-function.yml` | Security | 🟢 Low |
 | DR-08 | `supabase-receptor` | `key-rotation-reminder.yml` | Process Gap | 🟢 Low |
+
