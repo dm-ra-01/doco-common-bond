@@ -150,6 +150,30 @@ Affects: `receptor-infra` — Network Fabric (Calico/k3s)
       `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/network-policies/network-policies.yaml`
       _(Completed: 2026-03-20T11:45:00Z)_
 
+### DR-52: The `tigera-operator` Deployment in namespace `tigera-operator` has a hardcoded `nodeSelector: kubernetes.io/hostname: r
+
+Affects: `receptor-infra` — tigera-operator Deployment / helmfile.yaml
+
+
+- [ ] Remove the `kubernetes.io/hostname: receptor-ctrl-01` node selector from the tigera-operator Deployment in `receptor-infra`. Replace with `node-role.kubernetes.io/control-plane: "true"` so the operator always schedules onto a valid control-plane node. Update the Helm values or raw manifest, commit to `receptor-infra` audit branch, and verify the pod reaches `Running` status.
+      `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/helmfile.yaml`
+
+### DR-53: `cert-manager-cainjector` has accumulated 968+ crash-loop restarts over 3 days. Container logs show `dial tcp 10.43.0.1:
+
+Affects: `receptor-infra` — network-policies/network-policies.yaml (cert-manager namespace)
+
+
+- [ ] Add a NetworkPolicy to `receptor-infra/network-policies/network-policies.yaml` for the `cert-manager` namespace permitting egress from all cert-manager pods to: (1) `10.43.0.1/32` port 443 (cluster API service IP); (2) `10.10.0.10/32`, `10.10.0.30/32`, `10.10.0.50/32` port 6443 (control-plane node IPs for API server). Also allow egress to `kube-dns` on port 53 UDP/TCP. Apply via `kubectl apply` and verify the cainjector restart count stops rising and the cert-manager-webhook readiness probe returns HTTP 200.
+      `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/network-policies/network-policies.yaml`
+
+### DR-54: All Supabase pods in both `supabase` and `supabase-staging` namespaces have been `CreateContainerConfigError` or `Init:0
+
+Affects: `receptor-infra` — supabase / supabase-staging namespace secrets
+
+
+- [ ] Inspect all `VaultStaticSecret` resources in `supabase` and `supabase-staging` namespaces (`kubectl get vaultstaticsecret -A`). Check their `status.conditions` for sync errors. If VSO is unable to sync, force a reconciliation (`kubectl annotate vaultstaticsecret &#60;name&#62; vault.hashicorp.com/requestReconciliation=$(date +%s) --overwrite`). If Vault KV paths are missing or malformed, re-seed from the bootstrap script. As a last resort, manually create the missing secret keys via `kubectl patch secret supabase-credentials -n supabase --type=merge -p '&#123;"data":&#123;"database":"&#60;base64&#62;"&#125;&#125;`. Verify all pods transition to `Running`.
+      `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/helmfile.yaml`
+
 ## 🟠 High
 
 ### DR-02: smoke-test composite action DB canary (Check 4/5) queries /rest/v1/organisations but the canonical schema table name is 
@@ -409,6 +433,22 @@ Affects: `receptor-infra` — ARC Configuration / helmfile.yaml
 - [ ] Investigate why the ARC controller is ignoring the containerMode setting. Verify chart version compatibility and consider manual sidecar injection in the template if the automated mode remains non-functional.
       `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/helmfile.yaml`
 
+### DR-55: The Loki StatefulSet (`loki-stack-0`) in `monitoring` namespace cannot start due to `FailedAttachVolume: volume pvc-a35f
+
+Affects: `receptor-infra` — monitoring namespace — Loki PVC (Longhorn)
+
+
+- [ ] Force-detach the stuck Longhorn volumes via the Longhorn UI (`http://longhorn.&#60;cluster-domain&#62;`) or Longhorn API: navigate to Volume &#62; `pvc-a35f1e36` &#62; Detach. Then delete the stuck `loki-stack-0` pod (`kubectl delete pod loki-stack-0 -n monitoring`) to trigger rescheduling. If volume detachment fails, use the Longhorn API `POST /v1/volumes/&#60;id&#62;?action=detach` with `hostId` set to the node name. Verify `loki-stack-0` reaches `Running` and Promtail agents report `Readiness probe` passing.
+      `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/helmfile.yaml`
+
+### DR-56: `cert-manager-cainjector` has resource limits of `cpu: 20m` and `memory: 32Mi`. The cainjector performs CRD enumeration 
+
+Affects: `receptor-infra` — cert-manager Deployment — cainjector container resources
+
+
+- [ ] Update the cert-manager Helm values in `receptor-infra` to set cainjector resource requests/limits: `requests: &#123;cpu: 100m, memory: 128Mi&#125;`, `limits: &#123;cpu: 500m, memory: 256Mi&#125;`. Apply via `helmfile sync` or `kubectl patch deployment cert-manager-cainjector -n cert-manager --type=json -p '[&#123;"op":"replace","path":"/spec/template/spec/containers/0/resources","value":&#123;"requests":&#123;"cpu":"100m","memory":"128Mi"&#125;,"limits":&#123;"cpu":"500m","memory":"256Mi"&#125;&#125;&#125;]'`. This must be applied after DR-52 (tigera) and DR-53 (NetworkPolicy) are fixed, otherwise the cainjector will still fail on API connectivity.
+      `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/helmfile.yaml`
+
 ## 🟡 Medium
 
 ### DR-01: deno check supabase/functions/**/*.ts uses a glob that may not expand correctly on all self-hosted runner shells, potent
@@ -519,6 +559,30 @@ Affects: `planner-frontend, preference-frontend, workforce-frontend, match-backe
       `/Users/ryan/development/common_bond/antigravity-environment/frontend/planner-frontend/.github/workflows/ci.yml`
       _(Completed: 2026-03-19T09:55:00Z)_
 
+### DR-57: Control-plane node `receptor-ctrl-10` is consuming 70% of its 7.8 GiB RAM while running etcd, kube-apiserver, and applic
+
+Affects: `receptor-infra` — k3s cluster node taints
+
+
+- [ ] Apply `NoSchedule` taints to all three control-plane nodes: `kubectl taint node receptor-ctrl-10 receptor-ctrl-11 receptor-ctrl-50 node-role.kubernetes.io/control-plane=:NoSchedule --overwrite`. Then ensure system-level DaemonSets (Calico, Longhorn engine, Promtail) have the required `tolerations` entry. Verify that no application-tier pods (Supabase, Prometheus, Grafana) are rescheduled to control-plane nodes. Note: Longhorn `instance-manager` pods run on all nodes including control-plane by design — add a toleration to Longhorn's Helm values so it is not evicted.
+      `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/helmfile.yaml`
+
+### DR-58: Over 40 pods across `longhorn-system` (CSI sidecars, instance managers, engine images) and `arc-systems` (ARC listener p
+
+Affects: `receptor-infra` — longhorn-system, arc-systems — container resource limits
+
+
+- [ ] Add resource limits to Longhorn Helm values for CSI sidecar containers (csi-attacher, csi-provisioner, csi-resizer, csi-snapshotter): `limits: &#123;cpu: 200m, memory: 256Mi&#125;`. For ARC controller and listener pods, add `limits: &#123;cpu: 500m, memory: 512Mi&#125;` via the `gha-runner-scale-set-controller` Helm chart values. For Longhorn instance managers (which are not directly Helm-managed per-instance), set the `Resources` field in the Longhorn `Settings` CRD (`InstanceManagerCPURequest`, `InstanceManagerCPUReservedPercentage`). Apply via `helmfile sync --selector app=longhorn` and verify no evictions occur.
+      `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/helmfile.yaml`
+
+### DR-59: Prometheus (`prometheus-kube-prometheus-stack-prometheus-0`) is consuming 1,066 MiB RAM with a 20 GiB Longhorn PVC and n
+
+Affects: `receptor-infra` — monitoring namespace — Prometheus retention
+
+
+- [ ] Set `--storage.tsdb.retention.time=15d` and `--storage.tsdb.retention.size=15GB` in the Prometheus Helm values (`kube-prometheus-stack.prometheus.prometheusSpec.retention` and `retentionSize`). Apply via `helmfile sync --selector app=kube-prometheus-stack`. Verify Prometheus emits `prometheus_tsdb_retention_limit_bytes` metric. Also add `VPA` resources for at least Prometheus and Grafana to provide autoscaling signals — or document that VPA is intentionally absent as a separate finding.
+      `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/helmfile.yaml`
+
 ## 🟢 Low
 
 ### DR-06: deploy-function.yml uses actions/checkout@v4 and denoland/setup-deno@v2 (mutable tags) in both jobs. All other ecosystem
@@ -563,6 +627,7 @@ Affects: `supabase-receptor` — .github/workflows/key-rotation-reminder.yml
 | 6 | DR-22 | Add cancel-in-progress concurrency groups to all CI workflows to prevent ARC runner queue starvation from rapid fixup commits. |
 | 7 | DR-38, DR-39, DR-40, DR-41 | Harden deploy-function.yml against supply-chain and infrastructure attacks: add permissions block, SHA-pin all action references (DR-38), add function-name allowlist validation against path traversal (DR-39), restrict the deploy job to a labelled runner (DR-40), tighten smoke-test success criteria and add automatic rollback on failure (DR-41). |
 | 8 | DR-42, DR-43, DR-44, DR-45 | Fix the shell injection in key-rotation-reminder (DR-42), fix the broken February cron (DR-43), expand rotation monitoring to cover all identified secrets (DR-44), add secret scanning to all CI pipelines (DR-45). |
+| 9 | DR-52, DR-53, DR-54, DR-55, DR-56, DR-57, DR-58, DR-59 | Address cluster-down conditions identified during 2026-03-20 live performance audit: tigera-operator stuck Pending for 3+ days (DR-52, root cause of Calico instability), cert-manager crash-looping due to NetworkPolicy blocking API server egress (DR-53), both Supabase environments offline due to missing VSO-synced secrets (DR-54). P1 follow-on: Loki volume stuck (DR-55), cert-manager resource limits too low (DR-56). P2 structural: node tainting (DR-57), resource limits for Longhorn/ARC (DR-58), Prometheus retention (DR-59). |
 
 
 ---
@@ -583,6 +648,9 @@ Affects: `supabase-receptor` — .github/workflows/key-rotation-reminder.yml
 | DR-38 | .github/workflows/deploy-function.yml | `deploy-function.yml` | Security | 🔴 Critical |
 | DR-39 | .github/workflows/deploy-function.yml lines 31–39 | `deploy-function.yml` | Security | 🔴 Critical |
 | DR-48 | Network Fabric (Calico/k3s) | `network-policies.yaml` | Infrastructure | 🔴 Critical |
+| DR-52 | tigera-operator Deployment / helmfile.yaml | `helmfile.yaml` | Infrastructure | 🔴 Critical |
+| DR-53 | network-policies/network-policies.yaml (cert-manager namespace) | `network-policies.yaml` | Infrastructure | 🔴 Critical |
+| DR-54 | supabase / supabase-staging namespace secrets | `helmfile.yaml` | Infrastructure | 🔴 Critical |
 | DR-02 | .github/actions/smoke-test/action.yml | `action.yml` | Process Gap | 🟠 High |
 | DR-09 | .github/workflows/ci.yml (unit-tests and build jobs) | `ci.yml` | Test Coverage | 🟠 High |
 | DR-11 | .github/workflows/deploy.yml | `deploy.yml` | Security | 🟠 High |
@@ -608,6 +676,8 @@ Affects: `supabase-receptor` — .github/workflows/key-rotation-reminder.yml
 | DR-49 | helmfile.yaml | `helmfile.yaml` | Process Gap | 🟠 High |
 | DR-50 | ARC Configuration | `helmfile.yaml` | Infrastructure | 🟠 High |
 | DR-51 | ARC Configuration / helmfile.yaml | `helmfile.yaml` | Infrastructure | 🟠 High |
+| DR-55 | monitoring namespace — Loki PVC (Longhorn) | `helmfile.yaml` | Infrastructure | 🟠 High |
+| DR-56 | cert-manager Deployment — cainjector container resources | `helmfile.yaml` | Infrastructure | 🟠 High |
 | DR-01 | .github/workflows/ci.yml | `ci.yml` | Process Gap | 🟡 Medium |
 | DR-04 | .github/workflows/prod-deploy.yml | `prod-deploy.yml` | Process Gap | 🟡 Medium |
 | DR-07 | .github/workflows/deploy-function.yml | `deploy-function.yml` | Security | 🟡 Medium |
@@ -620,6 +690,9 @@ Affects: `supabase-receptor` — .github/workflows/key-rotation-reminder.yml
 | DR-43 | .github/workflows/key-rotation-reminder.yml line 12 | `key-rotation-reminder.yml` | Process Gap | 🟡 Medium |
 | DR-44 | .github/workflows/key-rotation-reminder.yml lines 40–65 | `key-rotation-reminder.yml` | Process Gap | 🟡 Medium |
 | DR-46 | .github/workflows/ci.yml (Supabase CLI version pins) | `ci.yml` | Process Gap | 🟡 Medium |
+| DR-57 | k3s cluster node taints | `helmfile.yaml` | Infrastructure | 🟡 Medium |
+| DR-58 | longhorn-system, arc-systems — container resource limits | `helmfile.yaml` | Infrastructure | 🟡 Medium |
+| DR-59 | monitoring namespace — Prometheus retention | `helmfile.yaml` | Infrastructure | 🟡 Medium |
 | DR-06 | .github/workflows/deploy-function.yml | `deploy-function.yml` | Security | 🟢 Low |
 | DR-08 | .github/workflows/key-rotation-reminder.yml | `key-rotation-reminder.yml` | Process Gap | 🟢 Low |
 

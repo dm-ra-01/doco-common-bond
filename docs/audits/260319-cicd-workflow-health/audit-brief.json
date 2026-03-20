@@ -2,9 +2,16 @@
   "auditSlug": "260319-cicd-workflow-health",
   "status": "implementing",
   "nextAction": "implement",
-  "openTaskCount": 2,
-  "latestHandover": "Session 7 complete (2026-03-20). Resolved cluster-sync blockers: MTU mismatch (DR-48) set to 1370, API egress (DR-48) allowed to 10.10.0.0/24. Fixed helmfile.yaml syntax (DR-49). Restored arc-runner-receptor-infra set (DR-50). NEW BLOCKER: ARC Controller (0.10.1) ignoring containerMode: dind (DR-51), preventing image builds. Next agent must investigate DinD injection failure.",
+  "openTaskCount": 10,
+  "latestHandover": "Session 8 complete (2026-03-20). Live Kubernetes cluster performance audit added 8 new findings (DR-52–DR-59, Phase 9). P0 cluster-down conditions: tigera-operator stuck Pending due to non-existent node selector receptor-ctrl-01 (DR-52), cert-manager-cainjector crash-looping 968+ times blocking TLS issuance due to NetworkPolicy + resource limits (DR-53, DR-56), both Supabase environments offline 2d22h due to missing VSO-synced secret keys (DR-54). P1: Loki volume stuck (DR-55). P2: node taints (DR-57), resource limits (DR-58), Prometheus retention (DR-59). Remaining open tasks: DR-51-T1 (DinD injection), DR-52-T1 through DR-59-T1 (K8s fixes). Next agent: implement DR-52 first (tigera-operator node selector patch in receptor-infra), then DR-53 (NetworkPolicy egress for cert-manager), then DR-54 (VSO re-sync for Supabase secrets).",
   "sessionHistory": [
+    {
+      "session": 8,
+      "date": "2026-03-20",
+      "summary": "Live k8s cluster performance audit. Added DR-52–DR-59 (8 new Infrastructure findings, Phase 9). No code changes this session — audit document update only.",
+      "tasksCompleted": [],
+      "openTasksAtClose": 10
+    },
     {
       "session": 7,
       "date": "2026-03-20",

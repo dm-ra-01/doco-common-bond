@@ -1,7 +1,7 @@
 # CI/CD Workflow Health Audit
 
-**Date:** 2026-03-19\
-**Scope:** All Receptor ecosystem repositories with GitHub Actions workflows — `supabase-receptor`, `planner-frontend`, `preference-frontend`, `workforce-frontend`, `match-backend`, `receptor-planner`, `website-frontend`\
+**Date:** 2026-03-19 (extended 2026-03-20 — Kubernetes cluster health findings added)\
+**Scope:** All Receptor ecosystem repositories with GitHub Actions workflows — `supabase-receptor`, `planner-frontend`, `preference-frontend`, `workforce-frontend`, `match-backend`, `receptor-planner`, `website-frontend`; Kubernetes cluster (`receptor-infra`, live cluster inspection)\
 **Auditor:** Ryan Ammendolea\
 **Standard:** ISO 27001 A.8.25 (Secure development life cycle), A.8.31 (Separation of development, test and production environments), A.8.32 (Change management)
 
@@ -9,7 +9,7 @@
 
 ## Executive Summary
 
-This audit evaluates the current CI/CD setup across all Receptor ecosystem repositories for its ability to execute workflows successfully, promote code through test → staging → production, enable rollback, and securely manage keys. **20 findings** were identified: **6 Critical**, **8 High**, **4 Medium**, **2 Low**. The audit found that all backend/infrastructure deploy workflows (`match-backend`, `receptor-planner`, `supabase-receptor` prod-deploy) have structural defects that will cause failures in production. `staging-smoke.yml` reads from wrong Vault paths for Slack webhooks. The infrastructure repository recently experienced a total GitOps blackout due to a YAML syntax error and runner-set instability. A critical MTU mismatch in the ARC runner namespace causes silent packet drops for large payloads, blocking core infrastructure sync. The frontend CI workflows are substantially correct but carry a stale env-var reference and a broken cleanup job pattern. `website-frontend` has no CI workflow at all. None of the three Next.js frontend applications have a deploy pipeline.
+This audit evaluates the current CI/CD setup across all Receptor ecosystem repositories for its ability to execute workflows successfully, promote code through test → staging → production, enable rollback, and securely manage keys. On 2026-03-20, a live Kubernetes cluster performance scan extended the audit scope to include cluster health. **28 findings** were identified: **9 Critical**, **12 High**, **7 Medium**, **2 Low**. The original CI/CD findings document that all backend/infrastructure deploy workflows have structural defects. A 2026-03-20 cluster inspection found three P0 cluster-down conditions: `tigera-operator` stuck Pending for 3+ days due to a non-existent node selector (root cause of Calico instability), `cert-manager-cainjector` in crash-loop (968+ restarts) blocking all TLS certificate issuance, and both Supabase environments (`supabase` and `supabase-staging`) completely offline for 2d 22h due to missing VSO-synced secret keys.
 
 | Repository / Area | Coverage | Issues Found | Overall |
 | --- | --- | --- | --- |
@@ -206,6 +206,43 @@ The following URL scheme is approved as the canonical deployment target for all 
 
 ---
 
+## 7. Kubernetes Cluster Health (2026-03-20 Live Inspection)
+
+### 7.1 tigera-operator — Stuck Pending (3+ days)
+
+**Gaps:**
+
+- `DR-52` — `tigera-operator` Deployment in namespace `tigera-operator` has `nodeSelector: kubernetes.io/hostname: receptor-ctrl-01`. This node does not exist in the cluster. The operator has been `Pending` for 3+ days, degrading all Calico NetworkPolicy enforcement and causing the cert-manager API timeout cascade.
+
+### 7.2 cert-manager — TLS Issuance Broken
+
+**Gaps:**
+
+- `DR-53` — `cert-manager-cainjector` has 968+ crash-loop restarts. Logs show `dial tcp 10.43.0.1:443: i/o timeout`. No NetworkPolicy egress rule exists in the `cert-manager` namespace permitting outbound traffic to the cluster API service IP. All TLS certificate issuance is non-functional.
+- `DR-56` — `cert-manager-cainjector` resource limits (`cpu: 20m / memory: 32Mi`) are far below minimum viable for CRD enumeration and leader election, exacerbating the crash frequency.
+
+### 7.3 Supabase — Both Environments Offline
+
+**Gaps:**
+
+- `DR-54` — All Supabase pods in `supabase` and `supabase-staging` namespaces show `CreateContainerConfigError`: `couldn't find key database in Secret supabase/supabase-credentials` and `secret "supabase-db" not found`. VSO controller-manager has 27 restarts indicating VSO sync failure. Both environments have been offline for 2d 22h.
+
+### 7.4 Monitoring — Loki Log Collection Offline
+
+**Gaps:**
+
+- `DR-55` — `loki-stack-0` in `monitoring` cannot start: `FailedAttachVolume: volume pvc-a35f1e36 is not ready for workloads`. Longhorn PVC is stuck attached to `receptor-ctrl-10`. Cluster log collection is offline.
+
+### 7.5 Structural / Resource Governance
+
+**Gaps:**
+
+- `DR-57` — No `NoSchedule` taint on control-plane nodes. `receptor-ctrl-10` is at 70% memory hosting application workloads alongside etcd and kube-apiserver, risking etcd I/O latency.
+- `DR-58` — Over 40 pods in `longhorn-system` and `arc-systems` have no `resources.limits`, preventing accurate scheduler bin-packing and exposing nodes to OOM conditions.
+- `DR-59` — Prometheus (`prometheus-kube-prometheus-stack-prometheus-0`) consumes 1,066 MiB RAM with no TSDB retention policy configured; memory and disk will grow unbounded.
+
+---
+
 ## Severity Summary
 
 | Finding ID | Repository / Area | File | Category | Severity |
@@ -230,4 +267,12 @@ The following URL scheme is approved as the canonical deployment target for all 
 | DR-12 | `match-backend`, `receptor-planner` | `deploy.yml` | Process Gap | 🟡 Medium |
 | DR-06 | `supabase-receptor` | `deploy-function.yml` | Security | 🟢 Low |
 | DR-08 | `supabase-receptor` | `key-rotation-reminder.yml` | Process Gap | 🟢 Low |
+| DR-52 | `receptor-infra` | tigera-operator Deployment | Infrastructure | 🔴 Critical |
+| DR-53 | `receptor-infra` | `network-policies/network-policies.yaml` | Infrastructure | 🔴 Critical |
+| DR-54 | `receptor-infra` | supabase + supabase-staging secrets | Infrastructure | 🔴 Critical |
+| DR-55 | `receptor-infra` | monitoring / Loki PVC | Infrastructure | 🟠 High |
+| DR-56 | `receptor-infra` | cert-manager cainjector resources | Infrastructure | 🟠 High |
+| DR-57 | `receptor-infra` | k3s node taints | Infrastructure | 🟡 Medium |
+| DR-58 | `receptor-infra` | longhorn-system / arc-systems limits | Infrastructure | 🟡 Medium |
+| DR-59 | `receptor-infra` | monitoring / Prometheus retention | Infrastructure | 🟡 Medium |
 

@@ -1152,6 +1152,166 @@
         }
       ],
       "severity_history": []
+    },
+    {
+      "id": "DR-52",
+      "severity": "critical",
+      "status": "open",
+      "category": "Infrastructure",
+      "repo": "receptor-infra",
+      "area": "tigera-operator Deployment / helmfile.yaml",
+      "description": "The `tigera-operator` Deployment in namespace `tigera-operator` has a hardcoded `nodeSelector: kubernetes.io/hostname: receptor-ctrl-01`. This node does not exist in the cluster (control-plane nodes are `receptor-ctrl-10`, `receptor-ctrl-11`, `receptor-ctrl-50`). The pod has been stuck `Pending` for 3 days with `FailedScheduling: 0/6 nodes matched Pod's node affinity/selector`. Because Tigera operator drives all Calico resource reconciliation, Calico NetworkPolicy enforcement has been degraded for 3+ days — which is the root cause of the cert-manager API timeout (DR-53) and broader cluster instability.",
+      "tasks": [
+        {
+          "taskId": "DR-52-T1",
+          "status": "open",
+          "description": "Remove the `kubernetes.io/hostname: receptor-ctrl-01` node selector from the tigera-operator Deployment in `receptor-infra`. Replace with `node-role.kubernetes.io/control-plane: \"true\"` so the operator always schedules onto a valid control-plane node. Update the Helm values or raw manifest, commit to `receptor-infra` audit branch, and verify the pod reaches `Running` status.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/helmfile.yaml",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "DR-53",
+      "severity": "critical",
+      "status": "open",
+      "category": "Infrastructure",
+      "repo": "receptor-infra",
+      "area": "network-policies/network-policies.yaml (cert-manager namespace)",
+      "description": "`cert-manager-cainjector` has accumulated 968+ crash-loop restarts over 3 days. Container logs show `dial tcp 10.43.0.1:443: i/o timeout` — the cainjector cannot reach the Kubernetes API server service IP on port 443. The cert-manager webhook is also failing readiness probes with HTTP 500. No NetworkPolicy egress rule exists in `cert-manager` namespace allowing outbound traffic to the cluster API (`10.43.0.1:443`) or the control-plane node IPs on port 6443. With cert-manager broken, TLS certificate issuance for all Ingress routes across the cluster is non-functional.",
+      "tasks": [
+        {
+          "taskId": "DR-53-T1",
+          "status": "open",
+          "description": "Add a NetworkPolicy to `receptor-infra/network-policies/network-policies.yaml` for the `cert-manager` namespace permitting egress from all cert-manager pods to: (1) `10.43.0.1/32` port 443 (cluster API service IP); (2) `10.10.0.10/32`, `10.10.0.30/32`, `10.10.0.50/32` port 6443 (control-plane node IPs for API server). Also allow egress to `kube-dns` on port 53 UDP/TCP. Apply via `kubectl apply` and verify the cainjector restart count stops rising and the cert-manager-webhook readiness probe returns HTTP 200.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/network-policies/network-policies.yaml",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "DR-54",
+      "severity": "critical",
+      "status": "open",
+      "category": "Infrastructure",
+      "repo": "receptor-infra",
+      "area": "supabase / supabase-staging namespace secrets",
+      "description": "All Supabase pods in both `supabase` and `supabase-staging` namespaces have been `CreateContainerConfigError` or `Init:0/1` for 2 days and 22 hours. Pod events show `couldn't find key database in Secret supabase/supabase-credentials` and `secret \"supabase-db\" not found`. The `VaultSecretsOperator` controller-manager has 27 restarts, indicating VSO failed to sync these secrets from Vault. All Supabase services (auth, DB, REST, realtime, storage, studio, functions, kong) are non-functional in both environments.",
+      "tasks": [
+        {
+          "taskId": "DR-54-T1",
+          "status": "open",
+          "description": "Inspect all `VaultStaticSecret` resources in `supabase` and `supabase-staging` namespaces (`kubectl get vaultstaticsecret -A`). Check their `status.conditions` for sync errors. If VSO is unable to sync, force a reconciliation (`kubectl annotate vaultstaticsecret <name> vault.hashicorp.com/requestReconciliation=$(date +%s) --overwrite`). If Vault KV paths are missing or malformed, re-seed from the bootstrap script. As a last resort, manually create the missing secret keys via `kubectl patch secret supabase-credentials -n supabase --type=merge -p '{\"data\":{\"database\":\"<base64>\"}}`. Verify all pods transition to `Running`.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/helmfile.yaml",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "DR-55",
+      "severity": "high",
+      "status": "open",
+      "category": "Infrastructure",
+      "repo": "receptor-infra",
+      "area": "monitoring namespace — Loki PVC (Longhorn)",
+      "description": "The Loki StatefulSet (`loki-stack-0`) in `monitoring` namespace cannot start due to `FailedAttachVolume: volume pvc-a35f1e36 is not ready for workloads`. The corresponding Longhorn PVC is reporting `VolumeFailedDelete: still attached to node receptor-ctrl-10`. A separate Longhorn volume (`pvc-2a9cea69`) is also stuck attached to `receptor-ctrl-50`. Loki is not collecting logs, leaving the cluster effectively blind for log-based alerting and debugging.",
+      "tasks": [
+        {
+          "taskId": "DR-55-T1",
+          "status": "open",
+          "description": "Force-detach the stuck Longhorn volumes via the Longhorn UI (`http://longhorn.<cluster-domain>`) or Longhorn API: navigate to Volume > `pvc-a35f1e36` > Detach. Then delete the stuck `loki-stack-0` pod (`kubectl delete pod loki-stack-0 -n monitoring`) to trigger rescheduling. If volume detachment fails, use the Longhorn API `POST /v1/volumes/<id>?action=detach` with `hostId` set to the node name. Verify `loki-stack-0` reaches `Running` and Promtail agents report `Readiness probe` passing.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/helmfile.yaml",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "DR-56",
+      "severity": "high",
+      "status": "open",
+      "category": "Infrastructure",
+      "repo": "receptor-infra",
+      "area": "cert-manager Deployment — cainjector container resources",
+      "description": "`cert-manager-cainjector` has resource limits of `cpu: 20m` and `memory: 32Mi`. The cainjector performs CRD enumeration and leader election against the API server — activities that require substantially more than 20m CPU. At 968+ crash-loop restarts, the container repeatedly hits its CPU limit during startup, causing immediate OOMKill or throttled failure before the API connection timeout completes. These limits are far below the Kubernetes community recommendation for cert-manager cainjector (`cpu: 100m / memory: 128Mi` minimum). The crash storm also creates significant kubelet overhead from repeated container create/destroy cycles.",
+      "tasks": [
+        {
+          "taskId": "DR-56-T1",
+          "status": "open",
+          "description": "Update the cert-manager Helm values in `receptor-infra` to set cainjector resource requests/limits: `requests: {cpu: 100m, memory: 128Mi}`, `limits: {cpu: 500m, memory: 256Mi}`. Apply via `helmfile sync` or `kubectl patch deployment cert-manager-cainjector -n cert-manager --type=json -p '[{\"op\":\"replace\",\"path\":\"/spec/template/spec/containers/0/resources\",\"value\":{\"requests\":{\"cpu\":\"100m\",\"memory\":\"128Mi\"},\"limits\":{\"cpu\":\"500m\",\"memory\":\"256Mi\"}}}]'`. This must be applied after DR-52 (tigera) and DR-53 (NetworkPolicy) are fixed, otherwise the cainjector will still fail on API connectivity.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/helmfile.yaml",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "DR-57",
+      "severity": "medium",
+      "status": "open",
+      "category": "Infrastructure",
+      "repo": "receptor-infra",
+      "area": "k3s cluster node taints",
+      "description": "Control-plane node `receptor-ctrl-10` is consuming 70% of its 7.8 GiB RAM while running etcd, kube-apiserver, and application workloads (Supabase analytics, Longhorn instance managers). No `NoSchedule` taint is applied to any control-plane node, allowing the default scheduler to place any workload on control-plane nodes. Memory pressure on control-plane nodes directly risks etcd I/O latency, which manifests as API server slowness, failed leader elections, and cascading cluster instability.",
+      "tasks": [
+        {
+          "taskId": "DR-57-T1",
+          "status": "open",
+          "description": "Apply `NoSchedule` taints to all three control-plane nodes: `kubectl taint node receptor-ctrl-10 receptor-ctrl-11 receptor-ctrl-50 node-role.kubernetes.io/control-plane=:NoSchedule --overwrite`. Then ensure system-level DaemonSets (Calico, Longhorn engine, Promtail) have the required `tolerations` entry. Verify that no application-tier pods (Supabase, Prometheus, Grafana) are rescheduled to control-plane nodes. Note: Longhorn `instance-manager` pods run on all nodes including control-plane by design — add a toleration to Longhorn's Helm values so it is not evicted.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/helmfile.yaml",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "DR-58",
+      "severity": "medium",
+      "status": "open",
+      "category": "Infrastructure",
+      "repo": "receptor-infra",
+      "area": "longhorn-system, arc-systems — container resource limits",
+      "description": "Over 40 pods across `longhorn-system` (CSI sidecars, instance managers, engine images) and `arc-systems` (ARC listener pods, GHA controller) have no `resources.limits` defined. The Longhorn instance managers alone consume a combined ~2.8 GiB RAM with no ceiling. Without limits, the Kubernetes scheduler cannot make accurate bin-packing decisions, nodes are exposed to noisy-neighbour OOM conditions, and burst I/O from Longhorn volume operations can starve application pods on the same node.",
+      "tasks": [
+        {
+          "taskId": "DR-58-T1",
+          "status": "open",
+          "description": "Add resource limits to Longhorn Helm values for CSI sidecar containers (csi-attacher, csi-provisioner, csi-resizer, csi-snapshotter): `limits: {cpu: 200m, memory: 256Mi}`. For ARC controller and listener pods, add `limits: {cpu: 500m, memory: 512Mi}` via the `gha-runner-scale-set-controller` Helm chart values. For Longhorn instance managers (which are not directly Helm-managed per-instance), set the `Resources` field in the Longhorn `Settings` CRD (`InstanceManagerCPURequest`, `InstanceManagerCPUReservedPercentage`). Apply via `helmfile sync --selector app=longhorn` and verify no evictions occur.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/helmfile.yaml",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "DR-59",
+      "severity": "medium",
+      "status": "open",
+      "category": "Infrastructure",
+      "repo": "receptor-infra",
+      "area": "monitoring namespace — Prometheus retention",
+      "description": "Prometheus (`prometheus-kube-prometheus-stack-prometheus-0`) is consuming 1,066 MiB RAM with a 20 GiB Longhorn PVC and no `--storage.tsdb.retention.time` flag configured. Scraping a cluster with Calico, Longhorn (6 instance managers), Vault, ARC, and two Supabase environments generates significant time-series cardinality. Without a retention window, TSDB will grow continuously until the PVC fills or node memory is exhausted. Additionally, no HPA or VPA is configured for any workload — the scheduler has no autoscaling signal to work with.",
+      "tasks": [
+        {
+          "taskId": "DR-59-T1",
+          "status": "open",
+          "description": "Set `--storage.tsdb.retention.time=15d` and `--storage.tsdb.retention.size=15GB` in the Prometheus Helm values (`kube-prometheus-stack.prometheus.prometheusSpec.retention` and `retentionSize`). Apply via `helmfile sync --selector app=kube-prometheus-stack`. Verify Prometheus emits `prometheus_tsdb_retention_limit_bytes` metric. Also add `VPA` resources for at least Prometheus and Grafana to provide autoscaling signals — or document that VPA is intentionally absent as a separate finding.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/helmfile.yaml",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
     }
   ],
   "clarifications": [
@@ -1272,6 +1432,21 @@
         "DR-43",
         "DR-44",
         "DR-45"
+      ]
+    },
+    {
+      "phase": 9,
+      "name": "Kubernetes Cluster Health — P0 Infrastructure Recovery",
+      "rationale": "Address cluster-down conditions identified during 2026-03-20 live performance audit: tigera-operator stuck Pending for 3+ days (DR-52, root cause of Calico instability), cert-manager crash-looping due to NetworkPolicy blocking API server egress (DR-53), both Supabase environments offline due to missing VSO-synced secrets (DR-54). P1 follow-on: Loki volume stuck (DR-55), cert-manager resource limits too low (DR-56). P2 structural: node tainting (DR-57), resource limits for Longhorn/ARC (DR-58), Prometheus retention (DR-59).",
+      "findingIds": [
+        "DR-52",
+        "DR-53",
+        "DR-54",
+        "DR-55",
+        "DR-56",
+        "DR-57",
+        "DR-58",
+        "DR-59"
       ]
     }
   ],
