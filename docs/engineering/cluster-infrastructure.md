@@ -25,11 +25,13 @@ The original cluster host. Runs the majority of production workloads.
 | VM Name | State | vCPU | RAM | VLAN 10 IP | Role |
 |---|---|---|---|---|---|
 | `receptor-ctrl-01` | Running | 2 | 8 GB | 10.10.0.11 | k3s control-plane + etcd |
-| `receptor-work-01` | Running | 4 | 4 GB | 10.10.0.21 | k3s worker |
-| `receptor-work-02` | Running | 2 | 4 GB | 10.10.0.22 | k3s worker |
+| `receptor-work-01` | Running | 8 *(target; was 4)* | 4 GB | 10.10.0.21 | k3s worker |
+| `receptor-work-02` | Running | 8 *(target; was 2)* | 4 GB | 10.10.0.22 | k3s worker |
 | `common-bond` | Off | — | — | — | Reserved |
 | `Florence` | Off | — | — | — | Reserved |
-| `VOYAGER` | Off | — | — | Reserved (Gen 1) |
+| `VOYAGER` | Off | — | — | — | Reserved (Gen 1) |
+
+> **CI-SPEED-01:** Expand worker vCPUs one node at a time (cordon → drain → Stop-VM → Set-VM ProcessorCount 8 → Start-VM → uncordon). See `receptor-infra/ci-runner/DEPLOY.md` Phase 0.
 
 ---
 
@@ -101,11 +103,11 @@ All VMs have two network interfaces:
 |---|---|---|---|---|---|
 | receptor-ctrl-01 | control-plane, etcd | 10.10.0.11 | 2 | ~7.8 GB | 6.17.0-1008-azure |
 | receptor-ctrl-10 | control-plane, etcd | 10.10.0.10 | 6 | ~7.8 GB | 6.17.0-1008-azure |
-| receptor-work-01 | worker | 10.10.0.21 | 4 | ~3.9 GB | 6.17.0-1008-azure |
-| receptor-work-02 | worker | 10.10.0.22 | 2 | ~3.9 GB | 6.17.0-1008-azure |
+| receptor-work-01 | worker | 10.10.0.21 | 8 *(target)* | ~3.9 GB | 6.17.0-1008-azure |
+| receptor-work-02 | worker | 10.10.0.22 | 8 *(target)* | ~3.9 GB | 6.17.0-1008-azure |
 | receptor-work-10 | worker | 10.10.0.20 | 6 | ~7.8 GB | 6.17.0-1008-azure |
 
-**Total cluster capacity:** 20 vCPU, ~31.2 GB RAM (workers only: 16 vCPU, ~15.6 GB)
+**Total cluster capacity (post CI-SPEED-01 vCPU expansion):** 30 vCPU, ~31.2 GB RAM (workers only: 22 vCPU, ~15.6 GB)
 
 > [!NOTE]
 > All nodes run `linux-azure` (the Hyper-V optimised kernel). This provides
