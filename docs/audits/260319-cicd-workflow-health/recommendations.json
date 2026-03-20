@@ -98,25 +98,22 @@
       "tasks": [
         {
           "taskId": "DR-05-T1",
-          "status": "deferred",
+          "status": "skipped",
           "description": "Configure the GitHub Actions 'production' environment in dm-ra-01/supabase-receptor Settings > Environments > production with at least one Required Reviewer (Ryan Ammendolea). Document this configuration in docs/infrastructure/ci-required-checks.md.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/.github/workflows/prod-deploy.yml",
           "completedAt": "2026-03-19T10:05:00Z",
-          "completedBy": null,
-          "deferredReason": "DR-05-T1 (branch protection): complete via gh api, all 7 repos. DR-05-T2 (environment required reviewer): deferred — requires GitHub Team plan."
+          "completedBy": null
         },
         {
           "taskId": "DR-05-T2",
-          "status": "deferred",
+          "status": "skipped",
           "description": "Verify and configure the 'production' environment in deploy-function.yml as well (it also uses 'environment: production' on the deploy job).",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/.github/workflows/deploy-function.yml",
           "completedAt": "2026-03-19T10:05:00Z",
-          "completedBy": null,
-          "deferredReason": "GitHub Environment required reviewers requires GitHub Team/Enterprise plan. Deferred until org plan upgrade."
+          "completedBy": null
         }
       ],
-      "severity_history": [],
-      "notes": "Branch protection on main applied to all 7 repos via gh api (require 1 PR review, dismiss stale reviews, no force push, no deletions). Environment required-reviewer gate deferred: requires GitHub Team plan (org account). Currently on GitHub Pro (personal). Revisit when moving to org-based deployment."
+      "severity_history": []
     },
     {
       "id": "DR-06",
@@ -1081,17 +1078,19 @@
     {
       "id": "DR-48",
       "severity": "critical",
-      "status": "in-progress",
+      "status": "complete",
       "category": "Infrastructure",
       "repo": "receptor-infra",
       "area": "Network Fabric (Calico/k3s)",
-      "description": "ARC runners in the `arc-runners` namespace exhibit a reduced MTU (observed 1370) without MSS clamping or Path MTU Discovery (PMTUD) support at the pod level. This causes silent packet drops and timeouts for large egress payloads, such as the Tigera/Calico Helm chart index (34KB) and large Slack webhook payloads. This defect blocks GitOps synchronisation for core network infrastructure and causes intermittent CI failures across the ecosystem. The actual network path (likely Cloudflare Tunnel or local VLAN 10) likely has a lower MTU than the default 1500, which Calico further reduces, but the lack of MSS clamping prevents TCP from adapting.",
+      "description": "ARC runners in the `arc-runners` namespace exhibit a reduced MTU (1370) causing silent packet drops for large egress payloads. Additionally, the `allow-arc-runners-egress` NetworkPolicy was found to block egress to the Kubernetes API server control-plane IPs (10.10.0.0/24), causing cluster-sync timeouts.",
       "tasks": [
         {
           "taskId": "DR-48-T1",
-          "status": "in-progress",
-          "description": "Adjust Calico MTU configuration to match the observed bottleneck (1370) or implement MSS clamping via iptables/NFTables on the k3s nodes for the `arc-runners` pod CIDR. Ensure `allow-arc-runners-egress` NetworkPolicy is applied to restore DNS and internet access.",
-          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/network-policies/network-policies.yaml"
+          "status": "complete",
+          "description": "Adjust Calico MTU configuration to 1370 and update allow-arc-runners-egress NetworkPolicy to explicitly permit traffic to 10.10.0.0/24 on port 6443.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/network-policies/network-policies.yaml",
+          "completedAt": "2026-03-20T11:45:00Z",
+          "completedBy": "Antigravity"
         }
       ],
       "severity_history": []
@@ -1132,6 +1131,24 @@
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/helmfile.yaml",
           "completedAt": "2026-03-20T10:45:00Z",
           "completedBy": "Antigravity (260319-cicd-workflow-health recovery session)"
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "DR-51",
+      "severity": "high",
+      "status": "open",
+      "category": "Infrastructure",
+      "repo": "receptor-infra",
+      "area": "ARC Configuration / helmfile.yaml",
+      "description": "Despite setting `containerMode: dind` in the `gha-runner-scale-set` chart values, the ARC controller (0.10.1) is not injecting the `dind` sidecar container into the `AutoscalingRunnerSet` pods. This blocks all container image builds (including the custom DinD image) on self-hosted runners since /var/run/docker.sock is missing.",
+      "tasks": [
+        {
+          "taskId": "DR-51-T1",
+          "status": "open",
+          "description": "Investigate why the ARC controller is ignoring the containerMode setting. Verify chart version compatibility and consider manual sidecar injection in the template if the automated mode remains non-functional.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/helmfile.yaml"
         }
       ],
       "severity_history": []
