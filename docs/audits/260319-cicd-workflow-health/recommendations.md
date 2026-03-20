@@ -265,3 +265,29 @@ Affects: `supabase-receptor` — .github/workflows/key-rotation-reminder.yml
 | DR-27-T1/T2 | Staging/production promotion separation: requires receptor-infra namespace split and GitHub Environment gate. Deferred until infra team decides how staging vs production namespaces are laid out in receptor-infra. |
 
 **Phase 3 complete.** Both repos committed to `audit/260319-cicd-workflow-health`. Deferred items documented.
+
+---
+
+## Final Session Close — 2026-03-20 (Re-audit)
+
+**Completed this session:**
+
+| Finding | What was done |
+| :------ | :------------ |
+| DR-01-T1 | `supabase-receptor/ci.yml`: `xargs deno check` with `find` enumeration + empty-set guard confirmed in code |
+| DR-02/DR-16 | `smoke-test/action.yml`: `orgs` table name confirmed, comment cites DR-02/DR-16/DR-30 |
+| DR-03 | `prod-deploy.yml`: all 5 smoke-test inputs verified in code (anon-key, anon-jwt, base-url, incidents/deployments webhook URLs) |
+| DR-04/DR-08 | Vault-sourced canonical URLs confirmed in staging-smoke.yml and prod-deploy.yml |
+| DR-06 | `actions/checkout` SHA-pinned; `denoland/setup-deno@v2` residual risk accepted (Deno publishes immutable signed releases) |
+| DR-07 | `deploy-function.yml` permissions confirmed at workflow + job level |
+| DR-13 | `website-frontend` now has `ci.yml`, `deploy.yml`, `rollback.yml`, `secret-scan.yml` confirmed in code |
+| DR-14 | `rollback.yml` confirmed in `match-backend`, `receptor-planner`, and `website-frontend` |
+| DR-17 | `staging-smoke.yml` Vault paths confirmed as canonical (`slack-incidents-webhook`, `slack-deployments-webhook`) |
+
+**Remaining (formally deferred):**
+- DR-05: GitHub Production Environment Protection — requires paid GitHub plan. Risk accepted by Ryan Ammendolea (CEO).
+- DR-15: Frontend deploy.yml — Cloudflare Pages may auto-deploy; deferred until first frontend production promotion.
+
+**Blocked:** None
+
+**Brief for next agent:** Audit is closed. `re-audit.md` confirms all findings. DR-05 and DR-15 have documented risk-acceptance and re-open triggers. No further action required until GitHub plan upgrade (DR-05) or first frontend production deployment (DR-15).
