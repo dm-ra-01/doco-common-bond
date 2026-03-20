@@ -3,8 +3,17 @@
   "status": "implementing",
   "nextAction": "finalise",
   "openTaskCount": 0,
-  "latestHandover": "Session 9 complete (2026-03-20). All 59 findings are now closed or formally deferred. Phase 9 infrastructure findings implemented: DR-57 (NoSchedule taints applied to all 3 control-plane nodes receptor-ctrl-10/11/50 via kubectl taint; longhorn.yaml + helmfile.yaml updated with tolerations for Longhorn DaemonSets and ARC controller), DR-58 (CSI sidecar resource limits cpu:200m/mem:256Mi; ARC controller cpu:500m/mem:512Mi), DR-59 (Prometheus retention 30d→15d; retentionSize 15GB already set). DR-51 (DinD injection) and DR-55 (Loki volume) were already resolved in the live cluster — no code change needed, tasks marked complete. DR-52 finding status reconciled from open to complete (task had completedAt but finding status was not updated). 0 open tasks. Audit is ready for /finalise-global-audit: receptor-infra audit/260319-cicd-workflow-health branch contains helmfile.yaml + values/longhorn.yaml + values/prometheus-stack.yaml changes. All other repos already had their branches raised in earlier sessions.",
+  "latestHandover": "Session 9 addendum (2026-03-20). 62 total findings — 0 open. Original session 9 closed all infrastructure findings (DR-57/58/59). Addendum added DR-60 (Longhorn ingress — longhorn-receptor.commonbond.au live), DR-61 (stale containerd image cache on all nodes — 14 GB reclaimed; node-maintenance DaemonSet deployed for daily prune + journal vacuum), DR-62 (cluster-sync.yml did not apply raw manifests — manifest-sync step added). All 3 addendum findings implemented and committed to receptor-infra audit/260319-cicd-workflow-health. Ready for /finalise-global-audit.",
   "sessionHistory": [
+    {
+      "session": "9-addendum",
+      "date": "2026-03-20",
+      "summary": "Post-close addendum: documented 3 additional findings implemented during same session. DR-60: Longhorn UI ingress (longhorn-receptor.commonbond.au) via Traefik web entrypoint. DR-61: Stale containerd image cache (19 GB on work-01, ~14 GB total reclaimed via crictl rmi --prune); node-maintenance DaemonSet deployed to kube-system for daily image prune (24h loop) and journald vacuum to 150M; work-01 disk 73%→37%. DR-62: cluster-sync.yml manifest-sync gap — raw manifest dirs (calico, rbac, network-policies, cert-manager, ingress, monitoring, vault, maintenance) now applied as part of cluster-sync pipeline.",
+      "tasksCompleted": [
+        "DR-60-T1", "DR-61-T1", "DR-61-T2", "DR-62-T1"
+      ],
+      "openTasksAtClose": 0
+    },
     {
       "session": 9,
       "date": "2026-03-20",

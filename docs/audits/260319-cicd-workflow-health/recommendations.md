@@ -455,6 +455,27 @@ Affects: `receptor-infra` — cert-manager Deployment — cainjector container r
       `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/values/cert-manager.yaml`
       _(Completed: 2026-03-20T02:35:00Z)_
 
+### DR-61: The k3s containerd overlayfs snapshotter at `/var/lib/rancher/k3s/agent/containerd/io.containerd.snapshotter.v1.overlayf
+
+Affects: `receptor-infra` — k3s nodes — containerd overlayfs image cache / systemd journal
+
+
+- [x] Run `crictl rmi --prune` on work-01, ctrl-11, and ctrl-50 via SSH through jump host `receptor-ctrl-50-ii9s9dm.myjmoapp.com`. Reclaimed ~14 GB total: work-01 73%→51% (33 G→23 G), ctrl-11 37%→32%, ctrl-50 37%→36%.
+      `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/maintenance/node-maintenance.yaml`
+      _(Completed: 2026-03-20T03:16:00Z)_
+- [x] Deploy `node-maintenance` DaemonSet to `kube-system` with `privileged: true` and `hostPID: true`. `initContainer` runs `crictl rmi --prune` + `journalctl --vacuum-size=150M` immediately on start. Main container loops every 24 h. Tolerates all taints (runs on all 6 nodes including control-plane). Committed to `maintenance/node-maintenance.yaml`.
+      `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/maintenance/node-maintenance.yaml`
+      _(Completed: 2026-03-20T03:16:00Z)_
+
+### DR-62: `cluster-sync.yml` runs `helmfile sync` only — it does not apply any of the raw Kubernetes manifests committed to the re
+
+Affects: `receptor-infra` — .github/workflows/cluster-sync.yml
+
+
+- [x] Add 'Apply declarative manifests' step to `cluster-sync.yml` after `helmfile sync`, running `kubectl apply -f` on all raw manifest directories in dependency order: `calico/`, `rbac/`, `network-policies/`, `cert-manager/`, `ingress/`, `monitoring/`, `vault/`, `maintenance/`.
+      `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/.github/workflows/cluster-sync.yml`
+      _(Completed: 2026-03-20T03:16:00Z)_
+
 ## 🟡 Medium
 
 ### DR-01: deno check supabase/functions/**/*.ts uses a glob that may not expand correctly on all self-hosted runner shells, potent
@@ -592,6 +613,15 @@ Affects: `receptor-infra` — monitoring namespace — Prometheus retention
       `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/helmfile.yaml`
       _(Completed: 2026-03-20T02:48:40Z)_
 
+### DR-60: The Longhorn UI Service (`longhorn-frontend`) is ClusterIP-only with no Traefik Ingress resource. Operators cannot acces
+
+Affects: `receptor-infra` — longhorn-system — Longhorn UI service
+
+
+- [x] Add Traefik ingress for `longhorn-receptor.commonbond.au` using the `web` (HTTP) entrypoint — TLS terminated at Cloudflare edge. Persist in `values/longhorn.yaml` `ingress:` stanza and apply imperatively via `kubectl apply` for immediate access.
+      `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/values/longhorn.yaml`
+      _(Completed: 2026-03-20T03:16:00Z)_
+
 ## 🟢 Low
 
 ### DR-06: deploy-function.yml uses actions/checkout@v4 and denoland/setup-deno@v2 (mutable tags) in both jobs. All other ecosystem
@@ -687,6 +717,8 @@ Affects: `supabase-receptor` — .github/workflows/key-rotation-reminder.yml
 | DR-51 | ARC Configuration / helmfile.yaml | `helmfile.yaml` | Infrastructure | 🟠 High |
 | DR-55 | monitoring namespace — Loki PVC (Longhorn) | `helmfile.yaml` | Infrastructure | 🟠 High |
 | DR-56 | cert-manager Deployment — cainjector container resources | `cert-manager.yaml` | Infrastructure | 🟠 High |
+| DR-61 | k3s nodes — containerd overlayfs image cache / systemd journal | `node-maintenance.yaml` | Infrastructure | 🟠 High |
+| DR-62 | .github/workflows/cluster-sync.yml | `cluster-sync.yml` | Process Gap | 🟠 High |
 | DR-01 | .github/workflows/ci.yml | `ci.yml` | Process Gap | 🟡 Medium |
 | DR-04 | .github/workflows/prod-deploy.yml | `prod-deploy.yml` | Process Gap | 🟡 Medium |
 | DR-07 | .github/workflows/deploy-function.yml | `deploy-function.yml` | Security | 🟡 Medium |
@@ -702,20 +734,7 @@ Affects: `supabase-receptor` — .github/workflows/key-rotation-reminder.yml
 | DR-57 | k3s cluster node taints | `helmfile.yaml` | Infrastructure | 🟡 Medium |
 | DR-58 | longhorn-system, arc-systems — container resource limits | `helmfile.yaml` | Infrastructure | 🟡 Medium |
 | DR-59 | monitoring namespace — Prometheus retention | `helmfile.yaml` | Infrastructure | 🟡 Medium |
+| DR-60 | longhorn-system — Longhorn UI service | `longhorn.yaml` | Infrastructure | 🟡 Medium |
 | DR-06 | .github/workflows/deploy-function.yml | `deploy-function.yml` | Security | 🟢 Low |
 | DR-08 | .github/workflows/key-rotation-reminder.yml | `key-rotation-reminder.yml` | Process Gap | 🟢 Low |
 
-
----
-
-## Session Close — 2026-03-20
-
-**Completed:** DR-57, DR-58, DR-59, DR-51 (reconciled), DR-55 (reconciled), DR-52 (status reconciled), DR-27 (status reconciled)
-
-**Remaining:** None — 0 open tasks. Audit is implementation-complete.
-
-**Blocked:** None
-
-**PR order note:** `receptor-infra` audit branch (`audit/260319-cicd-workflow-health`) should be merged first — it contains Longhorn toleration changes (DR-57) that prevent pods from being evicted after the node taints are applied. Once merged, helmfile sync will apply Longhorn CSI resource limits (DR-58) and Prometheus retention (DR-59) to the live cluster. All other repo branches (supabase-receptor, planner-frontend, preference-frontend, workforce-frontend, match-backend, receptor-planner, website-frontend) were raised in earlier sessions and can be merged in parallel.
-
-**Brief for next agent:** This audit is implementation-complete. All 59 findings are complete, deferred, or skipped. Run `/finalise-global-audit` to: (1) perform the re-audit, (2) raise PRs in the correct order (receptor-infra first, then others in parallel), (3) verify coverage on all PRs, (4) archive audit files, and (5) mark the registry `✅ Closed`. Node taints were applied live to `receptor-ctrl-10/11/50` — this is already in effect before the receptor-infra PR is merged. The helmfile changes (tolerations, resource limits, Prometheus retention) are pending helmfile sync after merge. DR-51 (DinD) was confirmed working via kubectl describe AutoscalingRunnerSet — the full dind sidecar spec was already present. DR-55 (Loki) was already Running at session start (48m uptime, PVC Bound).

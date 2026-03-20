@@ -1314,6 +1314,74 @@
         }
       ],
       "severity_history": []
+    },
+    {
+      "id": "DR-60",
+      "severity": "medium",
+      "status": "complete",
+      "category": "Infrastructure",
+      "repo": "receptor-infra",
+      "area": "longhorn-system \u2014 Longhorn UI service",
+      "description": "The Longhorn UI Service (`longhorn-frontend`) is ClusterIP-only with no Traefik Ingress resource. Operators cannot access volume, replica, and node health information without port-forwarding manually. Grafana and other admin UIs follow the established Cloudflare Tunnel \u2192 Traefik pattern which should be replicated for Longhorn.",
+      "tasks": [
+        {
+          "taskId": "DR-60-T1",
+          "status": "complete",
+          "description": "Add Traefik ingress for `longhorn-receptor.commonbond.au` using the `web` (HTTP) entrypoint \u2014 TLS terminated at Cloudflare edge. Persist in `values/longhorn.yaml` `ingress:` stanza and apply imperatively via `kubectl apply` for immediate access.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/values/longhorn.yaml",
+          "completedAt": "2026-03-20T03:16:00Z",
+          "completedBy": "Antigravity (260319-cicd-workflow-health session 9)"
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "DR-61",
+      "severity": "high",
+      "status": "complete",
+      "category": "Infrastructure",
+      "repo": "receptor-infra",
+      "area": "k3s nodes \u2014 containerd overlayfs image cache / systemd journal",
+      "description": "The k3s containerd overlayfs snapshotter at `/var/lib/rancher/k3s/agent/containerd/io.containerd.snapshotter.v1.overlayfs` accumulated 19 GB of stale image layers on `receptor-work-01` (disk at 73% / 33 G of 48 G). Culprits included: old `myoung34/github-runner` \u00d73 (pre-ARC runner, replaced), deactivated Falco images \u00d74 (commented out in helmfile), superseded `prometheus`/`grafana`/`loki` version tags, and `busybox`/`docker:dind` debug images. Additionally the systemd journal on work-01 had no size cap and had grown to 295 MB. No automated image GC was configured on any node.",
+      "tasks": [
+        {
+          "taskId": "DR-61-T1",
+          "status": "complete",
+          "description": "Run `crictl rmi --prune` on work-01, ctrl-11, and ctrl-50 via SSH through jump host `receptor-ctrl-50-ii9s9dm.myjmoapp.com`. Reclaimed ~14 GB total: work-01 73%\u219251% (33 G\u219223 G), ctrl-11 37%\u219232%, ctrl-50 37%\u219236%.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/maintenance/node-maintenance.yaml",
+          "completedAt": "2026-03-20T03:16:00Z",
+          "completedBy": "Antigravity (260319-cicd-workflow-health session 9)"
+        },
+        {
+          "taskId": "DR-61-T2",
+          "status": "complete",
+          "description": "Deploy `node-maintenance` DaemonSet to `kube-system` with `privileged: true` and `hostPID: true`. `initContainer` runs `crictl rmi --prune` + `journalctl --vacuum-size=150M` immediately on start. Main container loops every 24 h. Tolerates all taints (runs on all 6 nodes including control-plane). Committed to `maintenance/node-maintenance.yaml`.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/maintenance/node-maintenance.yaml",
+          "completedAt": "2026-03-20T03:16:00Z",
+          "completedBy": "Antigravity (260319-cicd-workflow-health session 9)"
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "DR-62",
+      "severity": "high",
+      "status": "complete",
+      "category": "Process Gap",
+      "repo": "receptor-infra",
+      "area": ".github/workflows/cluster-sync.yml",
+      "description": "`cluster-sync.yml` runs `helmfile sync` only \u2014 it does not apply any of the raw Kubernetes manifests committed to the repository (`network-policies/`, `rbac/`, `calico/`, `ingress/`, `monitoring/`, `vault/`, `cert-manager/`, `maintenance/`). A fresh cluster install would be missing NetworkPolicies, RBAC bindings, IngressRoutes, Vault VSO configs, and the node-maintenance DaemonSet. The cluster state silently diverges from what the repository commits describe, making the GitOps pipeline incomplete.",
+      "tasks": [
+        {
+          "taskId": "DR-62-T1",
+          "status": "complete",
+          "description": "Add 'Apply declarative manifests' step to `cluster-sync.yml` after `helmfile sync`, running `kubectl apply -f` on all raw manifest directories in dependency order: `calico/`, `rbac/`, `network-policies/`, `cert-manager/`, `ingress/`, `monitoring/`, `vault/`, `maintenance/`.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/.github/workflows/cluster-sync.yml",
+          "completedAt": "2026-03-20T03:16:00Z",
+          "completedBy": "Antigravity (260319-cicd-workflow-health session 9)"
+        }
+      ],
+      "severity_history": []
     }
   ],
   "clarifications": [
