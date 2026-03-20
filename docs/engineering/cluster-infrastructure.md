@@ -25,13 +25,13 @@ The original cluster host. Runs the majority of production workloads.
 | VM Name | State | vCPU | RAM | VLAN 10 IP | Role |
 |---|---|---|---|---|---|
 | `receptor-ctrl-01` | Running | 2 | 8 GB | 10.10.0.11 | k3s control-plane + etcd |
-| `receptor-work-01` | Running | 8 *(target; was 4)* | 4 GB | 10.10.0.21 | k3s worker |
-| `receptor-work-02` | Running | 8 *(target; was 2)* | 4 GB | 10.10.0.22 | k3s worker |
+| `receptor-work-01` | Running | 16 | 12 GB | 10.10.0.21 | k3s worker (consolidated) |
+| `receptor-ctrl-50` | Running | 10 | 1 GB | 10.10.0.50 | k3s control-plane + etcd |
 | `common-bond` | Off | — | — | — | Reserved |
 | `Florence` | Off | — | — | — | Reserved |
 | `VOYAGER` | Off | — | — | — | Reserved (Gen 1) |
 
-> **CI-SPEED-01:** Expand worker vCPUs one node at a time (cordon → drain → Stop-VM → Set-VM ProcessorCount 8 → Start-VM → uncordon). See `receptor-infra/ci-runner/DEPLOY.md` Phase 0.
+> **CI-SPEED-01 (2026-03-20):** `receptor-work-02` decommissioned. `receptor-work-01` consolidated to 16 vCPU / 12 GB RAM. SPACESHIP ENTERPRISE worker nodes: work-01 (16 vCPU) + work-10 (6 vCPU).
 
 ---
 
@@ -103,11 +103,13 @@ All VMs have two network interfaces:
 |---|---|---|---|---|---|
 | receptor-ctrl-01 | control-plane, etcd | 10.10.0.11 | 2 | ~7.8 GB | 6.17.0-1008-azure |
 | receptor-ctrl-10 | control-plane, etcd | 10.10.0.10 | 6 | ~7.8 GB | 6.17.0-1008-azure |
-| receptor-work-01 | worker | 10.10.0.21 | 8 *(target)* | ~3.9 GB | 6.17.0-1008-azure |
-| receptor-work-02 | worker | 10.10.0.22 | 8 *(target)* | ~3.9 GB | 6.17.0-1008-azure |
+| receptor-ctrl-11 | control-plane, etcd | 10.10.0.30 | 6 | ~7.8 GB | 6.17.0-1008-azure |
+| receptor-ctrl-50 | control-plane, etcd | 10.10.0.50 | 10 | ~1.0 GB | 6.17.0-1008-azure |
+| receptor-work-01 | worker | 10.10.0.21 | 16 | ~11.4 GB | 6.17.0-1008-azure |
 | receptor-work-10 | worker | 10.10.0.20 | 6 | ~7.8 GB | 6.17.0-1008-azure |
 
-**Total cluster capacity (post CI-SPEED-01 vCPU expansion):** 30 vCPU, ~31.2 GB RAM (workers only: 22 vCPU, ~15.6 GB)
+**Total cluster capacity (post CI-SPEED-01):** 46 vCPU, ~44 GB RAM  
+Workers: `work-01` (SPACESHIP, 16 vCPU, 11.4 GB) + `work-10` (ENTERPRISE, 6 vCPU, 7.8 GB) = 22 vCPU, ~19.2 GB scheduling capacity
 
 > [!NOTE]
 > All nodes run `linux-azure` (the Hyper-V optimised kernel). This provides
