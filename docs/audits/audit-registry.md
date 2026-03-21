@@ -33,7 +33,7 @@ sidebar_position: 1
 
 | Slug | Title | Scope | Auditor | Status | NC Raised | Report |
 | :--- | :---- | :---- | :------ | :----- | :-------- | :----- |
-| `260321-frontend-auth-security` | Frontend Authentication Security Audit | `planner-frontend`, `preference-frontend`, `workforce-frontend` — auth callback, middleware, AuthProvider | Ryan Ammendolea | 🔧 Implementing | — | [audit.md](../audits/260321-frontend-auth-security/audit.md) · [recommendations.md](../audits/260321-frontend-auth-security/recommendations.md) |
+| `260321-frontend-auth-security` | Frontend Authentication Security Audit | `planner-frontend`, `preference-frontend`, `workforce-frontend` — auth callback, middleware, AuthProvider | Ryan Ammendolea | ✅ Closed | — | [audit.md](../audits/260321-frontend-auth-security/audit.md) · [recommendations.md](../audits/260321-frontend-auth-security/recommendations.md) · [re-audit.md](../audits/260321-frontend-auth-security/re-audit.md) |
 | `260319-cicd-workflow-health` | CI/CD Workflow Health Audit | Cross-ecosystem — `supabase-receptor`, `planner-frontend`, `preference-frontend`, `workforce-frontend`, `match-backend`, `receptor-planner`, `website-frontend` | Ryan Ammendolea | ✅ Closed | — | [audit.md](../audits/archive/260319-cicd-workflow-health/audit.md) · [recommendations.md](../audits/archive/260319-cicd-workflow-health/recommendations.md) · [re-audit.md](../audits/archive/260319-cicd-workflow-health/re-audit.md) |
 
 ### 🗓️ 2026-03-16
