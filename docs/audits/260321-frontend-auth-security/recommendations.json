@@ -1,0 +1,250 @@
+{
+  "$schema": "../../../dev-environment/.agents/schemas/recommendations.schema.json",
+  "auditSlug": "260321-frontend-auth-security",
+  "title": "Frontend Authentication Security Audit",
+  "date": "2026-03-21",
+  "scope": "planner-frontend, preference-frontend, workforce-frontend — auth callback, middleware, AuthProvider, layout, dashboard-header",
+  "auditor": "Ryan Ammendolea",
+  "branch": "audit/260321-frontend-auth-security",
+  "findings": [
+    {
+      "id": "ADV-01",
+      "severity": "critical",
+      "status": "complete",
+      "category": "Security",
+      "repo": "cross-ecosystem",
+      "area": "app/auth/callback/route.ts",
+      "description": "Open redirect vulnerability: the `next` query parameter is used unvalidated in NextResponse.redirect(), allowing an attacker to craft a link with ?next=https://evil.com to redirect victims post-authentication.",
+      "tasks": [
+        {
+          "taskId": "ADV-01-T1",
+          "status": "complete",
+          "description": "Validate `next` parameter in planner-frontend callback: reject absolute URLs and protocol-relative paths; fall back to '/'.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/frontend/planner-frontend/src/app/auth/callback/route.ts",
+          "completedAt": "2026-03-21T05:05:00Z",
+          "completedBy": "0e378e24-33e7-4919-969e-88478c6b34c0"
+        },
+        {
+          "taskId": "ADV-01-T2",
+          "status": "complete",
+          "description": "Validate `next` parameter in preference-frontend callback.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/frontend/preference-frontend/src/app/auth/callback/route.ts",
+          "completedAt": "2026-03-21T05:05:00Z",
+          "completedBy": "0e378e24-33e7-4919-969e-88478c6b34c0"
+        },
+        {
+          "taskId": "ADV-01-T3",
+          "status": "complete",
+          "description": "Validate `next` parameter in workforce-frontend callback.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/frontend/workforce-frontend/src/app/auth/callback/route.ts",
+          "completedAt": "2026-03-21T05:05:00Z",
+          "completedBy": "0e378e24-33e7-4919-969e-88478c6b34c0"
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "ADV-02",
+      "severity": "critical",
+      "status": "complete",
+      "category": "Security",
+      "repo": "cross-ecosystem",
+      "area": "lib/supabase/config.ts",
+      "description": "Silent production failure: SUPABASE_ANON_KEY falls back to an empty string when VSO injection fails, causing every Supabase request to return 401 with no startup error. The pod appears healthy but is fully broken.",
+      "tasks": [
+        {
+          "taskId": "ADV-02-T1",
+          "status": "complete",
+          "description": "Add production guard in planner-frontend config.ts: throw an error at module load time if SUPABASE_ANON_KEY is empty and NODE_ENV is production.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/frontend/planner-frontend/src/lib/supabase/config.ts",
+          "completedAt": "2026-03-21T05:03:00Z",
+          "completedBy": "0e378e24-33e7-4919-969e-88478c6b34c0"
+        },
+        {
+          "taskId": "ADV-02-T2",
+          "status": "complete",
+          "description": "Add production guard in preference-frontend config.ts.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/frontend/preference-frontend/src/lib/supabase/config.ts",
+          "completedAt": "2026-03-21T05:03:00Z",
+          "completedBy": "0e378e24-33e7-4919-969e-88478c6b34c0"
+        },
+        {
+          "taskId": "ADV-02-T3",
+          "status": "complete",
+          "description": "Add production guard in workforce-frontend config.ts.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/frontend/workforce-frontend/src/lib/supabase/config.ts",
+          "completedAt": "2026-03-21T05:03:00Z",
+          "completedBy": "0e378e24-33e7-4919-969e-88478c6b34c0"
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "ADV-03",
+      "severity": "critical",
+      "status": "complete",
+      "category": "Security",
+      "repo": "cross-ecosystem",
+      "area": "app/auth/callback/route.ts",
+      "description": "Token issuer not verified: the session returned by the Edge Function fetch is passed to setSession() without checking the JWT `iss` claim. A misconfigured or compromised Edge Function could supply a token from a different Supabase project.",
+      "tasks": [
+        {
+          "taskId": "ADV-03-T1",
+          "status": "complete",
+          "description": "In planner-frontend callback, decode the JWT payload and verify iss starts with SUPABASE_URL before calling setSession. Redirect to auth-code-error on mismatch.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/frontend/planner-frontend/src/app/auth/callback/route.ts",
+          "completedAt": "2026-03-21T05:07:00Z",
+          "completedBy": "0e378e24-33e7-4919-969e-88478c6b34c0"
+        },
+        {
+          "taskId": "ADV-03-T2",
+          "status": "complete",
+          "description": "Same iss claim check in preference-frontend callback.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/frontend/preference-frontend/src/app/auth/callback/route.ts",
+          "completedAt": "2026-03-21T05:07:00Z",
+          "completedBy": "0e378e24-33e7-4919-969e-88478c6b34c0"
+        },
+        {
+          "taskId": "ADV-03-T3",
+          "status": "complete",
+          "description": "Same iss claim check in workforce-frontend callback.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/frontend/workforce-frontend/src/app/auth/callback/route.ts",
+          "completedAt": "2026-03-21T05:07:00Z",
+          "completedBy": "0e378e24-33e7-4919-969e-88478c6b34c0"
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "ADV-04",
+      "severity": "medium",
+      "status": "complete",
+      "category": "Architectural Drift",
+      "repo": "preference-frontend",
+      "area": "providers/AuthProvider.tsx",
+      "description": "preference-frontend AuthProvider uses supabaseRef.current inside signOut and refreshClaims closures. planner-frontend uses useMemo for a stable client — the same pattern should be applied to preference to eliminate stale-ref risk and ensure consistency.",
+      "tasks": [
+        {
+          "taskId": "ADV-04-T1",
+          "status": "complete",
+          "description": "Replace supabaseRef pattern in preference AuthProvider with useMemo client. Update signOut and refreshClaims to use the memoized reference.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/frontend/preference-frontend/src/providers/AuthProvider.tsx",
+          "completedAt": "2026-03-21T05:15:00Z",
+          "completedBy": "0e378e24-33e7-4919-969e-88478c6b34c0"
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "ADV-05",
+      "severity": "high",
+      "status": "complete",
+      "category": "Security",
+      "repo": "cross-ecosystem",
+      "area": "utils/supabase/middleware.ts",
+      "description": "Middleware login redirect constructs the callback URL without a `next` parameter. After authentication, users always land at `/` rather than their intended destination, breaking deep links and degrading UX.",
+      "tasks": [
+        {
+          "taskId": "ADV-05-T1",
+          "status": "complete",
+          "description": "In planner-frontend middleware, append next=encodeURIComponent(pathname+search) to the callbackUrl before forwarding to the Edge Function.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/frontend/planner-frontend/src/utils/supabase/middleware.ts",
+          "completedAt": "2026-03-21T05:13:00Z",
+          "completedBy": "0e378e24-33e7-4919-969e-88478c6b34c0"
+        },
+        {
+          "taskId": "ADV-05-T2",
+          "status": "complete",
+          "description": "Same fix in preference-frontend middleware.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/frontend/preference-frontend/src/utils/supabase/middleware.ts",
+          "completedAt": "2026-03-21T05:13:00Z",
+          "completedBy": "0e378e24-33e7-4919-969e-88478c6b34c0"
+        },
+        {
+          "taskId": "ADV-05-T3",
+          "status": "complete",
+          "description": "Same fix in workforce-frontend middleware.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/frontend/workforce-frontend/src/utils/supabase/middleware.ts",
+          "completedAt": "2026-03-21T05:13:00Z",
+          "completedBy": "0e378e24-33e7-4919-969e-88478c6b34c0"
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "ADV-06",
+      "severity": "medium",
+      "status": "complete",
+      "category": "Tech Debt",
+      "repo": "planner-frontend",
+      "area": "app/layout.tsx",
+      "description": "layout.tsx calls getSession() server-side but discards the result. AuthProvider receives only initialUser (no initialSession), causing a client-side waterfall re-fetch and a flash of unauthenticated content before hydration.",
+      "tasks": [
+        {
+          "taskId": "ADV-06-T1",
+          "status": "complete",
+          "description": "Capture the getSession() result in planner layout.tsx and pass it as initialSession to AuthProvider.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/frontend/planner-frontend/src/app/layout.tsx",
+          "completedAt": "2026-03-21T05:16:00Z",
+          "completedBy": "0e378e24-33e7-4919-969e-88478c6b34c0"
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "ADV-07",
+      "severity": "medium",
+      "status": "complete",
+      "category": "Architectural Drift",
+      "repo": "preference-frontend",
+      "area": "components/dashboard-header.tsx",
+      "description": "createClient() is called inside a useEffect body that depends on the user object, causing a new Supabase SDK instance to be constructed on every auth state event (including token refreshes).",
+      "tasks": [
+        {
+          "taskId": "ADV-07-T1",
+          "status": "complete",
+          "description": "Memoize the Supabase client in dashboard-header.tsx with useMemo([], []). Change effect dep from user to user?.id to avoid re-fetching on token refresh.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/frontend/preference-frontend/src/components/dashboard-header.tsx",
+          "completedAt": "2026-03-21T05:15:00Z",
+          "completedBy": "0e378e24-33e7-4919-969e-88478c6b34c0"
+        }
+      ],
+      "severity_history": []
+    }
+  ],
+  "clarifications": [
+    {
+      "item": "ADV-03 token verification scope",
+      "decision": "The iss claim check is a misconfiguration guard, not a cryptographic signature verification. Signature validation is handled by Supabase server-side. This is the appropriate trust boundary given the Edge Function is first-party infrastructure."
+    },
+    {
+      "item": "ADV-05 Edge Function passthrough",
+      "decision": "The Edge Function is confirmed to pass the redirect_to parameter intact, so encoding next into the callbackUrl before forwarding will survive the round-trip."
+    },
+    {
+      "item": "Retrospective registration",
+      "decision": "This audit is registered retrospectively. All findings were identified and implemented in conversation 0e378e24-33e7-4919-969e-88478c6b34c0 before the audit files were created. The feature branch (audit/260321-frontend-auth-security) was created on the same day as implementation. Implementation branches in the three target repos are named audit/260319-cicd-workflow-health (the concurrent CI/CD audit branch; work was committed there before this audit's branch was formally created)."
+    }
+  ],
+  "implementationPhases": [
+    {
+      "phase": 1,
+      "name": "Critical Security Fixes",
+      "findingIds": ["ADV-01", "ADV-02", "ADV-03"],
+      "rationale": "Must Fix: open redirect, silent credential failure, and unverified session token are production security risks requiring immediate remediation."
+    },
+    {
+      "phase": 2,
+      "name": "High Severity and UX",
+      "findingIds": ["ADV-05"],
+      "rationale": "Deep-link preservation is high severity (broken UX + potential for auth bypass edge cases) and shares the same callback/middleware surface as phase 1."
+    },
+    {
+      "phase": 3,
+      "name": "Consistency and Performance",
+      "findingIds": ["ADV-04", "ADV-06", "ADV-07"],
+      "rationale": "Should Fix: architectural drift and client-side waterfall are quality improvements that reduce future risk but have no immediate security impact."
+    }
+  ],
+  "deferred": []
+}

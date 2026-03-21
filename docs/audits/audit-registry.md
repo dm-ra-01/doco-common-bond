@@ -10,7 +10,7 @@ sidebar_position: 1
 > platform. Each entry links to the source `audit.md` and `recommendations.md`
 > where they live inside the relevant repository's `docs/audits/` folder.
 
-**Last Updated:** 2026-03-19 | **Maintained by:** Engineering Leadership
+**Last Updated:** 2026-03-21 | **Maintained by:** Engineering Leadership
 
 ---
 
@@ -29,10 +29,11 @@ sidebar_position: 1
 
 ## Active Registry
 
-### 🗓️ 2026-03-19
+### 🗓️ 2026-03-21
 
 | Slug | Title | Scope | Auditor | Status | NC Raised | Report |
 | :--- | :---- | :---- | :------ | :----- | :-------- | :----- |
+| `260321-frontend-auth-security` | Frontend Authentication Security Audit | `planner-frontend`, `preference-frontend`, `workforce-frontend` — auth callback, middleware, AuthProvider | Ryan Ammendolea | ✅ Closed | — | [audit.md](../audits/260321-frontend-auth-security/audit.md) · [recommendations.md](../audits/260321-frontend-auth-security/recommendations.md) · [re-audit.md](../audits/260321-frontend-auth-security/re-audit.md) |
 | `260319-cicd-workflow-health` | CI/CD Workflow Health Audit | Cross-ecosystem — `supabase-receptor`, `planner-frontend`, `preference-frontend`, `workforce-frontend`, `match-backend`, `receptor-planner`, `website-frontend` | Ryan Ammendolea | ✅ Closed | — | [audit.md](../audits/archive/260319-cicd-workflow-health/audit.md) · [recommendations.md](../audits/archive/260319-cicd-workflow-health/recommendations.md) · [re-audit.md](../audits/archive/260319-cicd-workflow-health/re-audit.md) |
 
 ### 🗓️ 2026-03-16
@@ -106,14 +107,14 @@ Repository                   Audits   Last Audit
 supabase-receptor              5       2026-03-19
 backend/match-backend          3       2026-03-19
 backend/receptor-planner       2       2026-03-19
-planner-frontend               6       2026-03-19
-workforce-frontend             5       2026-03-19
-preference-frontend            5       2026-03-19
+planner-frontend               7       2026-03-21
+workforce-frontend             6       2026-03-21
+preference-frontend            6       2026-03-21
 website-frontend               1       2026-03-19
 common-bond (ISMS docs + eng)  5       2026-03-09
 receptor-infra                 1       2026-03-16
 ──────────────────────────────────── ─────────
-Total                          21+     2026-03-19
+Total                          22+     2026-03-21
 ```
 
 > **Coverage gaps addressed:** `workforce-frontend`, `preference-frontend`, and
