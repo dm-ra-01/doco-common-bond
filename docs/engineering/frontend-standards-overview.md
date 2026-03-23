@@ -29,7 +29,7 @@ sidebar_position: 1
 | **Type Gen**       | `@graphql-codegen` (client preset)                   | From live schema + `.graphql` operations                             |
 | **Unit Tests**     | Vitest (Workspaces)                                  | See [§5 Testing](#5-testing)                                         |
 | **E2E Tests**      | Playwright                                           | See [§5 Testing](#5-testing)                                         |
-| **Quality Gates**  | Husky pre-commit (`npm run lint` + `vitest related`) | ESLint + `next lint`; `lint-staged` scoped to `src/**/*.{ts,tsx}`    |
+| **Quality Gates**  | Husky pre-commit (`gitleaks protect` + `npm run lint`) | ESLint + `next lint`; `lint-staged` scoped to `src/**/*.{ts,tsx}`    |
 
 ### In-Scope Applications
 
@@ -658,6 +658,7 @@ merge requirement. Both must be present.
 | **Type check**        | `npx tsc --noEmit`           | Block merge    |
 | **Unit tests**        | `npm test -- --project=unit` | Block merge    |
 | **Axe accessibility** | Included in Playwright suite | Block merge    |
+| **Secret Scan**       | `gitleaks detect`             | Block merge    |
 | **Build**             | `npm run build`              | Block merge    |
 
 ### 14.2 Pre-commit (Developer Local)
