@@ -8,7 +8,8 @@ on-premises infrastructure.
 ## Physical Hosts
 
 The Receptor cluster runs across two physical Windows 11 machines acting as
-Hyper-V hypervisors on a shared VLAN 10 network (`10.10.0.0/24`).
+Hyper-V hypervisors, plus one bare-metal MacBook Pro worker, all on a shared
+VLAN 10 network (`10.10.0.0/24`).
 
 ### HYPERV-1 — SPACESHIP
 
@@ -18,7 +19,7 @@ The original cluster host. Runs the majority of production workloads.
 |---|---|
 | **Motherboard** | *(not recorded — see HWiNFO on host)* |
 | **OS** | Windows 11 Pro, Hyper-V enabled |
-| **Role** | Primary hypervisor — ctrl-01, work-01, work-02 |
+| **Role** | Primary hypervisor — ctrl-01, ctrl-50, work-01 |
 
 **Virtual Machines**
 
@@ -31,7 +32,8 @@ The original cluster host. Runs the majority of production workloads.
 | `Florence` | Off | — | — | — | Reserved |
 | `VOYAGER` | Off | — | — | — | Reserved (Gen 1) |
 
-> **CI-SPEED-01 (2026-03-20):** `receptor-work-02` decommissioned. `receptor-work-01` consolidated to 16 vCPU / 12 GB RAM. SPACESHIP ENTERPRISE worker nodes: work-01 (16 vCPU) + work-10 (6 vCPU).
+> **CI-SPEED-01 (2026-03-20):** Hyper-V `receptor-work-02` VM decommissioned. `receptor-work-01` consolidated to 16 vCPU / 12 GB RAM.
+> **2026-03-23:** `receptor-work-02` re-provisioned as a bare-metal MacBook Pro 2016 worker at `10.10.0.22`.
 
 ---
 
@@ -63,6 +65,30 @@ high-capacity worker, offloading CPU-intensive workloads from HYPERV-1.
 
 ---
 
+### BARE-METAL-1 — receptor-work-02 (added 2026-03-23)
+
+MacBook Pro 2016 repurposed as a bare-metal k3s worker. Runs Ubuntu 24.04 LTS
+directly on hardware (no hypervisor). VLAN 10 is carried as an 802.1q tagged
+interface on the USB-C Ethernet adapter.
+
+| Component | Detail |
+|---|---|
+| **Model** | MacBook Pro 13" (Late 2016) |
+| **CPU** | Intel Core i5-6267U @ 2.90 GHz (2 cores / 4 threads, Skylake) |
+| **RAM** | 16 GB LPDDR3 (on-die) |
+| **Storage** | Apple SSD AP0256J (256 GB NVMe PCIe) — 98 GB LVM root, ~134 GB available |
+| **NIC** | USB-C Ethernet adapter (`enxf8e43b53b9d2`, 1 GbE) |
+| **OS** | Ubuntu 24.04.4 LTS |
+| **Kernel** | `6.8.0-106-generic` (stock Ubuntu LTS — HWE intentionally excluded) |
+| **k3s** | v1.34.5+k3s1 (agent only) |
+
+| Interface | Config | Purpose |
+|---|---|---|
+| `enxf8e43b53b9d2` | DHCP (`192.168.1.x`) | Management SSH / internet egress |
+| `vlan10@enxf8e43b53b9d2` | Static `10.10.0.22/24` | k3s cluster-internal traffic |
+
+---
+
 ## Network Topology
 
 All VMs have two network interfaces:
@@ -86,7 +112,7 @@ All VMs have two network interfaces:
 | 10.10.0.13 | receptor-ctrl-03 | *(reserved)* | — |
 | 10.10.0.20 | receptor-work-10 | worker | HYPERV-2 |
 | 10.10.0.21 | receptor-work-01 | worker | HYPERV-1 |
-| 10.10.0.22 | receptor-work-02 | worker | HYPERV-1 |
+| 10.10.0.22 | receptor-work-02 | worker | BARE-METAL-1 (MacBook Pro 2016) |
 | 10.10.0.23 | receptor-work-03 | *(reserved)* | — |
 
 ---
@@ -106,15 +132,16 @@ All VMs have two network interfaces:
 | receptor-ctrl-11 | control-plane, etcd | 10.10.0.30 | 6 | ~7.8 GB | 6.17.0-1008-azure |
 | receptor-ctrl-50 | control-plane, etcd | 10.10.0.50 | 10 | ~1.0 GB | 6.17.0-1008-azure |
 | receptor-work-01 | worker | 10.10.0.21 | 16 | ~11.4 GB | 6.17.0-1008-azure |
+| receptor-work-02 | worker | 10.10.0.22 | 4 (2c/4t) | ~14.5 GB | 6.8.0-106-generic |
 | receptor-work-10 | worker | 10.10.0.20 | 6 | ~7.8 GB | 6.17.0-1008-azure |
 
-**Total cluster capacity (post CI-SPEED-01):** 46 vCPU, ~44 GB RAM  
-Workers: `work-01` (SPACESHIP, 16 vCPU, 11.4 GB) + `work-10` (ENTERPRISE, 6 vCPU, 7.8 GB) = 22 vCPU, ~19.2 GB scheduling capacity
+**Total cluster capacity (post 2026-03-23):** 50 vCPU, ~58 GB RAM  
+Workers: `work-01` (SPACESHIP, 16 vCPU, 11.4 GB) + `work-02` (MacBook, 4 vCPU, 14.5 GB) + `work-10` (ENTERPRISE, 6 vCPU, 7.8 GB) = 26 vCPU, ~33.7 GB scheduling capacity
 
 > [!NOTE]
-> All nodes run `linux-azure` (the Hyper-V optimised kernel). This provides
-> synthetic NIC drivers, dynamic memory ballooning, and improved I/O throughput
-> compared to the generic Ubuntu kernel.
+> Hyper-V VMs run `linux-azure` (synthetic NIC drivers, dynamic memory ballooning,
+> improved I/O throughput). `receptor-work-02` runs `linux-generic` — the HWE
+> kernel is intentionally excluded to avoid MacBook thermal/driver regressions.
 
 ### Control Plane HA
 

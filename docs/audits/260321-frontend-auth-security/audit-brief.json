@@ -1,0 +1,15 @@
+{
+  "$schema": "../../../dev-environment/.agents/schemas/audit-brief.schema.json",
+  "auditSlug": "260321-frontend-auth-security",
+  "status": "implementing",
+  "nextAction": "finalise",
+  "openTaskCount": 0,
+  "latestHandover": "Retrospective registration of adversarial auth security review. All 7 findings (ADV-01 through ADV-07) were identified and fully implemented in a single session. 3 critical security fixes (open redirect, silent empty key, iss claim check) applied to all 3 repos. 1 high (middleware next param) applied to all 3 repos. 3 medium quality fixes applied to preference-frontend and planner-frontend where applicable. TSC and Husky passed in all repos. Proceed directly to /finalise-global-audit.",
+  "sessionHistory": [
+    {
+      "date": "2026-03-21",
+      "completedFindingIds": ["ADV-01", "ADV-02", "ADV-03", "ADV-04", "ADV-05", "ADV-06", "ADV-07"],
+      "summary": "Full adversarial review of server-first Supabase auth refactor. All 7 findings identified and implemented in a single session. Commits landed on audit/260319-cicd-workflow-health in all three target repos before this audit was formally registered."
+    }
+  ]
+}
