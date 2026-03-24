@@ -10,7 +10,7 @@ sidebar_position: 1
 > platform. Each entry links to the source `audit.md` and `recommendations.md`
 > where they live inside the relevant repository's `docs/audits/` folder.
 
-**Last Updated:** 2026-03-19 | **Maintained by:** Engineering Leadership
+**Last Updated:** 2026-03-25 | **Maintained by:** Engineering Leadership
 
 ---
 
@@ -28,6 +28,12 @@ sidebar_position: 1
 ---
 
 ## Active Registry
+
+### 🗓️ 2026-03-25
+
+| Slug | Title | Scope | Auditor | Status | NC Raised | Report |
+| :--- | :---- | :---- | :------ | :----- | :-------- | :----- |
+| `260325-cicd-vault-drift` | CI/CD Vault Configuration Drift Ecosystem Audit | Cross-ecosystem — `receptor-infra`, `preferencer-frontend`, `planner-frontend`, `website-frontend`, `workforce-frontend`, `match-backend` | Ryan Ammendolea | 🔄 Drafting | — | [audit.md](../audits/260325-cicd-vault-drift/audit.md) · [recommendations.md](../audits/260325-cicd-vault-drift/recommendations.md) |
 
 ### 🗓️ 2026-03-19
 
@@ -104,16 +110,16 @@ sidebar_position: 1
 Repository                   Audits   Last Audit
 ─────────────────────────────────────────────────
 supabase-receptor              5       2026-03-19
-backend/match-backend          3       2026-03-19
+backend/match-backend          3       2026-03-25
 backend/receptor-planner       2       2026-03-19
-planner-frontend               6       2026-03-19
-workforce-frontend             5       2026-03-19
-preference-frontend            5       2026-03-19
-website-frontend               1       2026-03-19
+planner-frontend               6       2026-03-25
+workforce-frontend             5       2026-03-25
+preference-frontend            5       2026-03-25
+website-frontend               1       2026-03-25
 common-bond (ISMS docs + eng)  5       2026-03-09
-receptor-infra                 1       2026-03-16
+receptor-infra                 2       2026-03-25
 ──────────────────────────────────── ─────────
-Total                          21+     2026-03-19
+Total                          22+     2026-03-25
 ```
 
 > **Coverage gaps addressed:** `workforce-frontend`, `preference-frontend`, and

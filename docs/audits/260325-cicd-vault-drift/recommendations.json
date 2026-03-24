@@ -1,0 +1,318 @@
+{
+  "$schema": "../../../dev-environment/.agents/schemas/recommendations.schema.json",
+  "auditSlug": "260325-cicd-vault-drift",
+  "title": "CI/CD Vault Configuration Drift Ecosystem Audit",
+  "date": "2026-03-25",
+  "scope": "All Receptor repositories with deploy workflows, receptor-infra",
+  "auditor": "Ryan Ammendolea",
+  "branch": "audit/260325-cicd-vault-drift",
+  "findings": [
+    {
+      "id": "VD-01",
+      "severity": "critical",
+      "status": "open",
+      "category": "Security",
+      "repo": "receptor-infra",
+      "area": "Vault JWT roles",
+      "description": "Five JWT roles referenced in production deploy workflows (ci-preference-frontend, ci-planner-frontend, ci-website-frontend, ci-workforce-frontend, ci-match-backend) have no documented creation procedure, no bootstrap script, and no policy definition in receptor-infra. ci-website-frontend confirmed missing from live Vault.",
+      "tasks": [
+        {
+          "taskId": "VD-01-T1",
+          "status": "open",
+          "description": "Create vault/roles/ directory in receptor-infra with one YAML file per JWT role documenting role_name, bound_audiences, bound_claims, policies, and TTL.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/vault/roles/",
+          "completedAt": null,
+          "completedBy": null
+        },
+        {
+          "taskId": "VD-01-T2",
+          "status": "open",
+          "description": "SSH to cluster and create all 5 missing JWT roles in live Vault using the role definitions from VD-01-T1.",
+          "targetFile": "MANUAL \u2014 SSH to cluster, requires root token",
+          "completedAt": null,
+          "completedBy": null
+        },
+        {
+          "taskId": "VD-01-T3",
+          "status": "open",
+          "description": "Update docs/security/vault-configuration.md to document the 5 new roles alongside existing github-actions-role and receptor-infra-tf-ci.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/docs/security/vault-configuration.md",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "VD-02",
+      "severity": "critical",
+      "status": "open",
+      "category": "Security",
+      "repo": "receptor-infra",
+      "area": "Vault KV secrets",
+      "description": "The secret path secret/infrastructure/github-app-deploy-bot (used by all 5 deploy workflows) does not appear in any bootstrap script, documentation, or manifest in receptor-infra. It exists only on the live cluster (if at all). The documented GitHub App path is secret/ci/github-app.",
+      "tasks": [
+        {
+          "taskId": "VD-02-T1",
+          "status": "open",
+          "description": "SSH to cluster and verify whether secret/infrastructure/github-app-deploy-bot exists in Vault KV. Document the result.",
+          "targetFile": "MANUAL \u2014 SSH to cluster, requires root token",
+          "completedAt": null,
+          "completedBy": null
+        },
+        {
+          "taskId": "VD-02-T2",
+          "status": "open",
+          "description": "Create vault/secrets/README.md documenting every KV path, its fields, which roles can read it, and the bootstrap command. No actual secret values.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/vault/secrets/README.md",
+          "completedAt": null,
+          "completedBy": null
+        },
+        {
+          "taskId": "VD-02-T3",
+          "status": "open",
+          "description": "Create or update a Vault policy (ci-deploy-bot) that explicitly grants read access to the github-app-deploy-bot path. Write to vault/policies/ci-deploy-bot.hcl.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/vault/policies/ci-deploy-bot.hcl",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "VD-03",
+      "severity": "high",
+      "status": "open",
+      "category": "Process Gap",
+      "repo": "receptor-infra",
+      "area": "Vault role management",
+      "description": "No declarative Vault role management exists. Vault roles/policies are created via ad-hoc SSH commands not captured in version control. No vault/roles/ directory, no HCL policy files, no idempotent bootstrap script for JWT roles.",
+      "tasks": [
+        {
+          "taskId": "VD-03-T1",
+          "status": "open",
+          "description": "Create vault/bootstrap-jwt-roles.sh \u2014 an idempotent script that reads vault/roles/*.yaml and vault/policies/*.hcl and applies them to Vault. Must accept a VAULT_TOKEN parameter.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/vault/bootstrap-jwt-roles.sh",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "VD-04",
+      "severity": "high",
+      "status": "open",
+      "category": "Architectural Drift",
+      "repo": "all-deploy-repos",
+      "area": "vault-action configuration",
+      "description": "vault-action secrets path is inconsistent: preferencer-frontend uses logical path with kv-version: 2, all others use explicit /data/ path without kv-version. Commit history shows 6 rounds of path changes alternating between formats.",
+      "tasks": [
+        {
+          "taskId": "VD-04-T1",
+          "status": "open",
+          "description": "Standardise all 5 deploy workflows to use the logical path format (secret/infrastructure/...) with explicit kv-version: 2. This is the correct pattern per hashicorp/vault-action@v3 documentation.",
+          "targetFile": "ALL \u2014 deploy.yml in preferencer-frontend, planner-frontend, website-frontend, workforce-frontend, match-backend",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "VD-05",
+      "severity": "medium",
+      "status": "open",
+      "category": "Architectural Drift",
+      "repo": "all-deploy-repos",
+      "area": "App ID source",
+      "description": "preferencer-frontend fetches both private_key and app_id from Vault. The other 4 repos read DEPLOY_BOT_APP_ID from GitHub Secrets, creating potential split-brain if Vault is updated independently.",
+      "tasks": [
+        {
+          "taskId": "VD-05-T1",
+          "status": "open",
+          "description": "Update all 4 remaining deploy workflows to fetch app_id from Vault instead of GitHub Secrets, matching the preferencer-frontend pattern.",
+          "targetFile": "ALL \u2014 deploy.yml in planner-frontend, website-frontend, workforce-frontend, match-backend",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "VD-06",
+      "severity": "high",
+      "status": "open",
+      "category": "Process Gap",
+      "repo": "all-deploy-repos",
+      "area": "Workflow duplication",
+      "description": "The deploy workflow YAML is copy-pasted across 5 repositories with no shared reusable workflow. Each copy drifts independently, as proven by VD-04.",
+      "tasks": [
+        {
+          "taskId": "VD-06-T1",
+          "status": "open",
+          "description": "Create a reusable workflow in receptor-infra (.github/workflows/deploy-gitops.yml) parameterised by app-name, image-repo, and manifest-path. All 5 repos call this via workflow_call.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/.github/workflows/deploy-gitops.yml",
+          "completedAt": null,
+          "completedBy": null
+        },
+        {
+          "taskId": "VD-06-T2",
+          "status": "open",
+          "description": "Refactor all 5 deploy.yml files to call the reusable workflow instead of inlining the Vault + token + manifest update steps.",
+          "targetFile": "ALL \u2014 deploy.yml in all 5 repos (refactor to call reusable workflow)",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "VD-07",
+      "severity": "medium",
+      "status": "open",
+      "category": "Process Gap",
+      "repo": "planner-frontend",
+      "area": "Supabase readiness",
+      "description": "supabase status -o env output parsed with grep '^ANON_KEY=' fails when output contains ANSI codes, leading whitespace, or stderr interleaving. planner-frontend CI run 23477490024 shows 120s timeout despite Supabase being fully started.",
+      "tasks": [
+        {
+          "taskId": "VD-07-T1",
+          "status": "open",
+          "description": "Create a shared supabase-start composite action (or reusable script) that handles DinD readiness, supabase start, status polling with robust key extraction (strip ANSI, handle stderr), and GITHUB_ENV export. Use in all frontend CI workflows.",
+          "targetFile": "ALL \u2014 ci-resilience.yml in planner-frontend, preference-frontend, workforce-frontend",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "VD-08",
+      "severity": "critical",
+      "status": "open",
+      "category": "Architectural Drift",
+      "repo": "all-repos",
+      "area": "Agentic operability",
+      "description": "The ecosystem has no agent-readable infrastructure contracts. Vault roles, policies, and secret paths exist only on the live cluster (SSH + root token required). Agents cannot validate workflow configurations against a source of truth. Result: ~40 vault-related fix commits in 6 days, most incorrect.",
+      "tasks": [
+        {
+          "taskId": "VD-08-T1",
+          "status": "open",
+          "description": "Implement the 'Crawl' tier of agentic platform engineering: codify all Vault roles, policies, and secret contracts as declarative files in receptor-infra. Tasks VD-01-T1, VD-02-T2, VD-03-T1 are prerequisites.",
+          "targetFile": "DEPENDS \u2014 on VD-01-T1, VD-02-T2, VD-03-T1 completion",
+          "completedAt": null,
+          "completedBy": null
+        },
+        {
+          "taskId": "VD-08-T2",
+          "status": "open",
+          "description": "Create .agents/infrastructure-contracts.md in receptor-infra \u2014 a single document that agents can read to understand the mapping between workflows (role, path, audience) and Vault configuration.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/.agents/infrastructure-contracts.md",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "VD-09",
+      "severity": "low",
+      "status": "open",
+      "category": "Process Gap",
+      "repo": "all-deploy-repos",
+      "area": "CI contract validation",
+      "description": "No pre-flight check validates a workflow's vault-action role, secrets path, and audience against documented Vault configuration before runtime. Errors only discovered after commit to main.",
+      "tasks": [
+        {
+          "taskId": "VD-09-T1",
+          "status": "open",
+          "description": "Add a CI job in receptor-infra that scans org-wide deploy.yml files and validates vault-action parameters against vault/roles/ and vault/policies/ definitions. Depends on VD-01-T1 and VD-02-T2.",
+          "targetFile": "DEPENDS \u2014 on VD-01-T1 and VD-02-T2 completion",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "VD-10",
+      "severity": "high",
+      "status": "open",
+      "category": "Process Gap",
+      "repo": "common-bond",
+      "area": "Audit regression",
+      "description": "The 260319-cicd-workflow-health audit (Closed) produced findings DR-24/DR-15/DR-28 requiring Vault OIDC for deploy. Implementation created current failures because prerequisite Vault infrastructure was never provisioned. The audit DoD lacked a Vault bootstrap verification gate.",
+      "tasks": [
+        {
+          "taskId": "VD-10-T1",
+          "status": "open",
+          "description": "Add a 'prerequisite infrastructure' section to the audit-document-standards skill: any finding that requires infrastructure provisioning (Vault roles, k8s CRDs, DNS records) must include a verification command in the task definition.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/dev-environment/.agents/skills/audit-document-standards/SKILL.md",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    }
+  ],
+  "clarifications": [
+    {
+      "item": "Vault access for live verification",
+      "decision": "kubectl exec into vault-0 pod is the only way to run vault commands. Listing JWT roles requires a root or privileged token (403 without auth). Live verification requires generating a root token via 3-of-5 recovery key shares."
+    },
+    {
+      "item": "vault-action path format",
+      "decision": "The correct pattern for hashicorp/vault-action@v3 with KV-v2 is logical path (secret/infrastructure/...) with kv-version: 2. The action internally appends /data/. Using secret/data/... without kv-version may produce double /data/data/ depending on auto-detection."
+    },
+    {
+      "item": "Agentic PE reference",
+      "decision": "The Microsoft GBB 'Agentic Platform Engineering' framework (cluster-doctor pattern, crawl-walk-run) is the reference architecture for the proposed overhaul. See https://github.com/microsoftgbb/agentic-platform-engineering"
+    }
+  ],
+  "implementationPhases": [
+    {
+      "phase": 1,
+      "name": "Unblock Deployments \u2014 Vault Provisioning",
+      "findingIds": [
+        "VD-01",
+        "VD-02"
+      ],
+      "rationale": "VD-01 and VD-02 are the root cause of all current deploy failures. Without the Vault roles and secret path, no deploy workflow can run.",
+      "description": "Create and apply the missing Vault JWT roles and verify the github-app-deploy-bot secret path. This unblocks all 5 deploy workflows immediately."
+    },
+    {
+      "phase": 2,
+      "name": "Standardise Workflow Configuration",
+      "findingIds": [
+        "VD-04",
+        "VD-05",
+        "VD-07"
+      ],
+      "rationale": "Once deployments work, standardise the configuration that caused the drift to prevent recurrence.",
+      "description": "Unify vault-action path format, app_id source, and supabase readiness detection across all repos."
+    },
+    {
+      "phase": 3,
+      "name": "Infrastructure as Code for Vault",
+      "findingIds": [
+        "VD-03",
+        "VD-08"
+      ],
+      "rationale": "Prevents future drift by making Vault configuration version-controlled and agent-readable.",
+      "description": "Create declarative Vault role/policy definitions in receptor-infra with an idempotent bootstrap script and agent-readable contracts."
+    },
+    {
+      "phase": 4,
+      "name": "Eliminate Drift \u2014 Shared Workflows",
+      "findingIds": [
+        "VD-06",
+        "VD-09",
+        "VD-10"
+      ],
+      "rationale": "Structural prevention: shared workflows eliminate copy-paste drift, CI contract validation catches errors before runtime, and hardened DoD prevents future audit regressions.",
+      "description": "Create reusable deploy workflow, add CI contract validation, and harden audit DoD with infrastructure verification gates."
+    }
+  ],
+  "deferred": []
+}

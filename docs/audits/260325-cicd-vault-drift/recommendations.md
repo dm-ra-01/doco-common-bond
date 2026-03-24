@@ -1,0 +1,160 @@
+<!-- audit-slug: 260325-cicd-vault-drift -->
+
+# Recommendations — CI/CD Vault Configuration Drift Ecosystem Audit
+
+**Branch:** `audit/260325-cicd-vault-drift`\
+**Auditor:** Ryan Ammendolea\
+**Date:** 2026-03-25
+
+:::note
+This file is **auto-generated** from `recommendations.json`.
+Do not edit it directly — edit the JSON source and re-run
+`python .agents/scripts/render-recommendations.py recommendations.json`.
+:::
+
+---
+
+## Agent Clarifications (Human-Approved)
+
+| Item | Decision |
+| :--- | :------- |
+| Vault access for live verification | kubectl exec into vault-0 pod is the only way to run vault commands. Listing JWT roles requires a root or privileged token (403 without auth). Live verification requires generating a root token via 3-of-5 recovery key shares. |
+| vault-action path format | The correct pattern for hashicorp/vault-action@v3 with KV-v2 is logical path (secret/infrastructure/...) with kv-version: 2. The action internally appends /data/. Using secret/data/... without kv-version may produce double /data/data/ depending on auto-detection. |
+| Agentic PE reference | The Microsoft GBB 'Agentic Platform Engineering' framework (cluster-doctor pattern, crawl-walk-run) is the reference architecture for the proposed overhaul. See https://github.com/microsoftgbb/agentic-platform-engineering |
+
+
+---
+
+## 🔴 Critical
+
+### VD-01: Five JWT roles referenced in production deploy workflows (ci-preference-frontend, ci-planner-frontend, ci-website-fronte
+
+Affects: `receptor-infra` — Vault JWT roles
+
+
+- [ ] Create vault/roles/ directory in receptor-infra with one YAML file per JWT role documenting role_name, bound_audiences, bound_claims, policies, and TTL.
+      `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/vault/roles/`
+- [ ] SSH to cluster and create all 5 missing JWT roles in live Vault using the role definitions from VD-01-T1.
+      `MANUAL — SSH to cluster, requires root token`
+- [ ] Update docs/security/vault-configuration.md to document the 5 new roles alongside existing github-actions-role and receptor-infra-tf-ci.
+      `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/docs/security/vault-configuration.md`
+
+### VD-02: The secret path secret/infrastructure/github-app-deploy-bot (used by all 5 deploy workflows) does not appear in any boot
+
+Affects: `receptor-infra` — Vault KV secrets
+
+
+- [ ] SSH to cluster and verify whether secret/infrastructure/github-app-deploy-bot exists in Vault KV. Document the result.
+      `MANUAL — SSH to cluster, requires root token`
+- [ ] Create vault/secrets/README.md documenting every KV path, its fields, which roles can read it, and the bootstrap command. No actual secret values.
+      `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/vault/secrets/README.md`
+- [ ] Create or update a Vault policy (ci-deploy-bot) that explicitly grants read access to the github-app-deploy-bot path. Write to vault/policies/ci-deploy-bot.hcl.
+      `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/vault/policies/ci-deploy-bot.hcl`
+
+### VD-08: The ecosystem has no agent-readable infrastructure contracts. Vault roles, policies, and secret paths exist only on the 
+
+Affects: `all-repos` — Agentic operability
+
+
+- [ ] Implement the 'Crawl' tier of agentic platform engineering: codify all Vault roles, policies, and secret contracts as declarative files in receptor-infra. Tasks VD-01-T1, VD-02-T2, VD-03-T1 are prerequisites.
+      `DEPENDS — on VD-01-T1, VD-02-T2, VD-03-T1 completion`
+- [ ] Create .agents/infrastructure-contracts.md in receptor-infra — a single document that agents can read to understand the mapping between workflows (role, path, audience) and Vault configuration.
+      `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/.agents/infrastructure-contracts.md`
+
+## 🟠 High
+
+### VD-03: No declarative Vault role management exists. Vault roles/policies are created via ad-hoc SSH commands not captured in ve
+
+Affects: `receptor-infra` — Vault role management
+
+
+- [ ] Create vault/bootstrap-jwt-roles.sh — an idempotent script that reads vault/roles/*.yaml and vault/policies/*.hcl and applies them to Vault. Must accept a VAULT_TOKEN parameter.
+      `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/vault/bootstrap-jwt-roles.sh`
+
+### VD-04: vault-action secrets path is inconsistent: preferencer-frontend uses logical path with kv-version: 2, all others use exp
+
+Affects: `all-deploy-repos` — vault-action configuration
+
+
+- [ ] Standardise all 5 deploy workflows to use the logical path format (secret/infrastructure/...) with explicit kv-version: 2. This is the correct pattern per hashicorp/vault-action@v3 documentation.
+      `ALL — deploy.yml in preferencer-frontend, planner-frontend, website-frontend, workforce-frontend, match-backend`
+
+### VD-06: The deploy workflow YAML is copy-pasted across 5 repositories with no shared reusable workflow. Each copy drifts indepen
+
+Affects: `all-deploy-repos` — Workflow duplication
+
+
+- [ ] Create a reusable workflow in receptor-infra (.github/workflows/deploy-gitops.yml) parameterised by app-name, image-repo, and manifest-path. All 5 repos call this via workflow_call.
+      `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/.github/workflows/deploy-gitops.yml`
+- [ ] Refactor all 5 deploy.yml files to call the reusable workflow instead of inlining the Vault + token + manifest update steps.
+      `ALL — deploy.yml in all 5 repos (refactor to call reusable workflow)`
+
+### VD-10: The 260319-cicd-workflow-health audit (Closed) produced findings DR-24/DR-15/DR-28 requiring Vault OIDC for deploy. Impl
+
+Affects: `common-bond` — Audit regression
+
+
+- [ ] Add a 'prerequisite infrastructure' section to the audit-document-standards skill: any finding that requires infrastructure provisioning (Vault roles, k8s CRDs, DNS records) must include a verification command in the task definition.
+      `/Users/ryan/development/common_bond/antigravity-environment/dev-environment/.agents/skills/audit-document-standards/SKILL.md`
+
+## 🟡 Medium
+
+### VD-05: preferencer-frontend fetches both private_key and app_id from Vault. The other 4 repos read DEPLOY_BOT_APP_ID from GitHu
+
+Affects: `all-deploy-repos` — App ID source
+
+
+- [ ] Update all 4 remaining deploy workflows to fetch app_id from Vault instead of GitHub Secrets, matching the preferencer-frontend pattern.
+      `ALL — deploy.yml in planner-frontend, website-frontend, workforce-frontend, match-backend`
+
+### VD-07: supabase status -o env output parsed with grep '^ANON_KEY=' fails when output contains ANSI codes, leading whitespace, o
+
+Affects: `planner-frontend` — Supabase readiness
+
+
+- [ ] Create a shared supabase-start composite action (or reusable script) that handles DinD readiness, supabase start, status polling with robust key extraction (strip ANSI, handle stderr), and GITHUB_ENV export. Use in all frontend CI workflows.
+      `ALL — ci-resilience.yml in planner-frontend, preference-frontend, workforce-frontend`
+
+## 🟢 Low
+
+### VD-09: No pre-flight check validates a workflow's vault-action role, secrets path, and audience against documented Vault config
+
+Affects: `all-deploy-repos` — CI contract validation
+
+
+- [ ] Add a CI job in receptor-infra that scans org-wide deploy.yml files and validates vault-action parameters against vault/roles/ and vault/policies/ definitions. Depends on VD-01-T1 and VD-02-T2.
+      `DEPENDS — on VD-01-T1 and VD-02-T2 completion`
+
+
+---
+
+
+---
+
+## Implementation Order
+
+| Phase | Finding IDs | Rationale |
+| :---- | :---------- | :-------- |
+| 1 | VD-01, VD-02 | VD-01 and VD-02 are the root cause of all current deploy failures. Without the Vault roles and secret path, no deploy workflow can run. |
+| 2 | VD-04, VD-05, VD-07 | Once deployments work, standardise the configuration that caused the drift to prevent recurrence. |
+| 3 | VD-03, VD-08 | Prevents future drift by making Vault configuration version-controlled and agent-readable. |
+| 4 | VD-06, VD-09, VD-10 | Structural prevention: shared workflows eliminate copy-paste drift, CI contract validation catches errors before runtime, and hardened DoD prevents future audit regressions. |
+
+
+---
+
+## Severity Summary
+
+| Finding ID | Area | File | Category | Severity |
+| :--------- | :--- | :--- | :------- | :------- |
+| VD-01 | Vault JWT roles | `roles` | Security | 🔴 Critical |
+| VD-02 | Vault KV secrets | `MANUAL — SSH to cluster, requires root token` | Security | 🔴 Critical |
+| VD-08 | Agentic operability | `DEPENDS — on VD-01-T1, VD-02-T2, VD-03-T1 completion` | Architectural Drift | 🔴 Critical |
+| VD-03 | Vault role management | `bootstrap-jwt-roles.sh` | Process Gap | 🟠 High |
+| VD-04 | vault-action configuration | `ALL — deploy.yml in preferencer-frontend, planner-frontend, website-frontend, workforce-frontend, match-backend` | Architectural Drift | 🟠 High |
+| VD-06 | Workflow duplication | `deploy-gitops.yml` | Process Gap | 🟠 High |
+| VD-10 | Audit regression | `SKILL.md` | Process Gap | 🟠 High |
+| VD-05 | App ID source | `ALL — deploy.yml in planner-frontend, website-frontend, workforce-frontend, match-backend` | Architectural Drift | 🟡 Medium |
+| VD-07 | Supabase readiness | `ALL — ci-resilience.yml in planner-frontend, preference-frontend, workforce-frontend` | Process Gap | 🟡 Medium |
+| VD-09 | CI contract validation | `DEPENDS — on VD-01-T1 and VD-02-T2 completion` | Process Gap | 🟢 Low |
+

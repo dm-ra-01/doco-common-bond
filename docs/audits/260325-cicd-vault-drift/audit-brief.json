@@ -1,0 +1,9 @@
+{
+  "$schema": "../../../dev-environment/.agents/schemas/audit-brief.schema.json",
+  "auditSlug": "260325-cicd-vault-drift",
+  "status": "drafting",
+  "nextAction": "implement",
+  "openTaskCount": 15,
+  "latestHandover": "Initial audit complete. 10 findings across receptor-infra and all deploy repos. Phase 1 priorities: VD-01, VD-02 (create missing Vault JWT roles and verify secret path).",
+  "sessionHistory": []
+}
