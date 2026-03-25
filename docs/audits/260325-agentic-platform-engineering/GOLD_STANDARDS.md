@@ -4,17 +4,34 @@ This document defines the "Gold Standards" used as benchmarks for the **260325-a
 
 ## 1. Industry Benchmarks (External)
 
-### 1.1 The "Golden Path" for APE (Microsoft)
-- **Concept**: A production-ready blueprint where AI agents observe, reason, and act with built-in guardrails.
-- **Reference**: [Microsoft Agentic Platform Engineering Guide](https://learn.microsoft.com/en-us/azure/architecture/guide/agentic-platform/agentic-platform-engineering)
+### 1.1 CNCF Platform Engineering Maturity Model (v1.0)
+- **Role**: Defines "AI Agentic Readiness" as a core track for platform maturity.
+- **Alignment**: Validates our investment in **Structured Context (AGENTS.md)** and **Discoverable Registries** to move from "Provisional" to "Scalable" maturity for AI consumers.
 
-### 1.2 Model Context Protocol (MCP)
-- **Role**: The "universal connector" for AI agents to access tools and context across disparate platforms (GitHub, Azure, Local).
-- **Standard**: Adoption of MCP for all specialized agent tools to ensure interoperability.
+### 1.2 OpenTelemetry GenAI Semantic Conventions
+- **Role**: Standardized vocabulary for LLM and Agent tracing (tokens, tool calls, model info).
+- **Alignment**: Supports **OBS-01** (Traceability) and **INFRA-02** (Decision Logs). Our `X-Agent-ID` maps to `gen_ai.system` attributes.
 
-### 1.3 Agent Identity & Governance (Entra Agent ID)
-- **Role**: Every autonomous process must have a unique, traceable identity.
-- **Standard**: Mapping agent personas to GitHub Bot accounts or specialized Vault roles with narrowly scoped OIDC permissions.
+### 1.3 NIST AI Risk Management Framework (AI RMF) / AISI
+- **Role**: Global benchmark for trustworthy AI, emphasizing Accountability and Transparency.
+- **Alignment**: Supports **GOV-03** (Dual-Control) and **SEC-01** (Safety). NIST's **AISI** initiative specifically targets agent decision-making robustness.
+
+### 1.4 GitHub Agentic Workflows (2025 Architecture)
+- **Role**: Reference architecture for "Continuous AI" using Intent-Driven Automation.
+- **Alignment**: Validates our **.agents/workflows** hub and the use of natural-language intent files to drive CI/CD actions.
+
+### 1.5 Model Context Protocol (MCP)
+- **Role**: The "universal connector" for AI context and tool discovery.
+- **Alignment**: Supports **DOC-05** and **ARCH-02**. Cited by Microsoft as the standard for cross-platform agentic interop.
+
+---
+
+## ⚖️ Refutations & Refinements
+
+Based on these external standards, our implementation should be refined in two areas:
+
+1. **Deterministic vs. Probabilistic (Refines VAL-01)**: Industry standards (GitHub/Optimum) suggest moving beyond binary unit tests to "LLM-as-a-Judge" evaluations for agentic outputs.
+2. **Privacy-Preserving Logs (Refines OBS-01)**: OpenTelemetry GenAI conventions warn against logging raw prompts/completions by default. Our logging standard must include PII/Secret masking for agentic telemetry.
 
 ---
 

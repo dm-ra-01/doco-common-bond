@@ -92,7 +92,7 @@ Affects: `all` — Agent Contracts
 Affects: `ecosystem` — Agent Validation
 
 
-- [ ] Establish a 'Gold Standard' regression suite for the Planner and Allocator domains.
+- [ ] Establish a 'Gold Standard' regression suite using 'LLM-as-a-Judge' models for probabilistic verification of the Planner and Allocator domains.
       `/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/compliance/agent-quality.md`
 
 ### SEC-02: Manual rotation of high-privilege agent credentials. (Round 2 Addition)
@@ -198,7 +198,7 @@ Affects: `all` — Agent Context
 Affects: `all` — Agent Traceability
 
 
-- [ ] Define a standard X-Agent-ID header and logging convention for all autonomous tools.
+- [ ] Define a standard X-Agent-ID header and logging convention for all autonomous tools, including mandatory PII/Secret masking for prompt/completion telemetry.
       `/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/engineering/logging-standards.md`
 
 ### DISC-01: Absence of a centralized machine-readable registry of agentic capabilities. (Round 2 Addition)

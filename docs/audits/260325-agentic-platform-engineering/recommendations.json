@@ -267,7 +267,7 @@
         {
           "taskId": "OBS-01-T1",
           "status": "open",
-          "description": "Define a standard X-Agent-ID header and logging convention for all autonomous tools.",
+          "description": "Define a standard X-Agent-ID header and logging convention for all autonomous tools, including mandatory PII/Secret masking for prompt/completion telemetry.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/engineering/logging-standards.md",
           "completedAt": null,
           "completedBy": null
@@ -307,7 +307,7 @@
         {
           "taskId": "VAL-01-T1",
           "status": "open",
-          "description": "Establish a 'Gold Standard' regression suite for the Planner and Allocator domains.",
+          "description": "Establish a 'Gold Standard' regression suite using 'LLM-as-a-Judge' models for probabilistic verification of the Planner and Allocator domains.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/compliance/agent-quality.md",
           "completedAt": null,
           "completedBy": null
