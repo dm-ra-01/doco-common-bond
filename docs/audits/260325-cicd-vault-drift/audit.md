@@ -9,12 +9,12 @@
 
 ## Executive Summary
 
-This audit investigates the root causes of persistent CI/CD deployment failures across the ecosystem following implementation of the `260319-cicd-workflow-health` audit findings (DR-24, DR-15, DR-28). **10 findings** identified: **3 Critical**, **4 High**, **2 Medium**, **1 Low**. The core issue is that Vault JWT roles and secret paths referenced in production deploy workflows were never codified in `receptor-infra`, leading to repeated agent-driven fix-revert cycles (~40 commits across 6 repos for the same two problems). The ecosystem lacks a declarative source of truth for Vault configuration, making agentic operations fundamentally unreliable.
+This audit investigates the root causes of persistent CI/CD deployment failures following implementation of the `260319-cicd-workflow-health` audit findings (DR-24, DR-15, DR-28). **11 findings** identified: **1 Critical**, **5 High**, **3 Medium**, **1 Low**, **1 newly discovered**. Live Vault interrogation (2026-03-25) confirmed that 6 of 7 expected JWT roles exist and the `github-app-deploy-bot` secret is present with correct keys. The remaining blockers are: 1 missing JWT role (`ci-website-frontend`), inconsistent `vault-action` path format across repos, a broken policy mount path for `ci-supabase-receptor`, and no declarative Vault configuration in version control.
 
 | Repository / Area | Coverage | Issues Found | Overall |
 | --- | --- | --- | --- |
-| `receptor-infra` — Vault configuration | ✅ | 4 | ❌ |
-| All deploy workflows — vault-action config | ✅ | 3 | ❌ |
+| `receptor-infra` — Vault configuration | ✅ | 5 | ❌ |
+| All deploy workflows — vault-action config | ✅ | 3 | ⚠️ |
 | Frontend CI — supabase readiness | ✅ | 1 | ⚠️ |
 | Cross-cutting — agentic operability | ✅ | 2 | ❌ |
 
@@ -24,26 +24,37 @@ This audit investigates the root causes of persistent CI/CD deployment failures 
 
 ### 1.1 Vault JWT Roles
 
-**Strengths:**
+**Strengths (verified live):**
 
-- `github-actions-role` and `receptor-infra-tf-ci` are documented with bound claims, policies, and bootstrap commands in `docs/security/vault-configuration.md`.
-- ADR-008 correctly designs the OIDC JWT auth flow.
+- 6 of 7 expected JWT roles exist: `ci-match-backend`, `ci-planner-frontend`, `ci-preference-frontend`, `ci-workforce-frontend`, `ci-receptor-planner`, `ci-supabase-receptor`.
+- All use correct `bound_audiences: https://vault.commonbond.au`, `bound_claims_type: glob`, and matching `token_policies`.
+- JWT auth is correctly configured with `oidc_discovery_url: https://token.actions.githubusercontent.com`.
 
 **Gaps:**
 
-- `VD-01` — `docs/security/vault-configuration.md` lines 289–302: Five JWT roles referenced in production deploy workflows have no documented creation procedure, no bootstrap script, and no policy definition anywhere in `receptor-infra`: `ci-preference-frontend`, `ci-planner-frontend`, `ci-website-frontend`, `ci-workforce-frontend`, `ci-match-backend`. The `ci-website-frontend` role is confirmed missing from live Vault (GitHub Actions error: `role "ci-website-frontend" could not be found`).
+- `VD-01` — 1 JWT role is missing: `ci-website-frontend`. All other roles exist with correct configuration. None of the 7 roles are documented in `receptor-infra` (no bootstrap script, no policy files in version control).
 
 ### 1.2 Vault Secret Path: github-app-deploy-bot
 
+**Strengths (verified live):**
+
+- `secret/infrastructure/github-app-deploy-bot` exists with keys `app_id` and `private_key`.
+
 **Gaps:**
 
-- `VD-02` — The secret path `secret/infrastructure/github-app-deploy-bot` (referenced by all 5 deploy workflows) does not appear in `vault-supabase-bootstrap.sh`, `vault-configuration.md`, any ADR, any bootstrap script, or any YAML manifest. The documented GitHub App path is `secret/ci/github-app` (used by VSO for runner auth). `github-app-deploy-bot` was likely created ad-hoc via SSH and never recorded.
+- `VD-02` — Although the secret exists, it is not documented anywhere in `receptor-infra`. The path does not appear in any bootstrap script, ADR, or YAML manifest. Agents cannot discover it without cluster access.
 
 ### 1.3 No Declarative Vault Role Management
 
 **Gaps:**
 
-- `VD-03` — There is no `vault/roles/` directory, no HCL policy files, and no idempotent bootstrap script for JWT roles. Vault roles are created via one-off SSH commands that are not captured in version control. This prevents agents from validating workflow configurations against the source of truth (because no source of truth exists in the file system).
+- `VD-03` — No `vault/roles/` directory, no HCL policy files, no idempotent bootstrap script. Vault configuration exists only on the live cluster.
+
+### 1.4 Policy Mount Path Error
+
+**Gaps:**
+
+- `VD-11` — `ci-supabase-receptor` policy references paths under `infrastructure/` mount (e.g. `infrastructure/data/supabase`) which does not exist. The correct mount is `secret/` (e.g. `secret/data/supabase/staging`). This breaks Vault access for supabase-receptor CI to staging/production secrets.
 
 ---
 
@@ -53,47 +64,38 @@ This audit investigates the root causes of persistent CI/CD deployment failures 
 
 **Strengths:**
 
-- All 5 deploy workflows correctly use `hashicorp/vault-action@v3` with JWT auth method and the correct `jwtGithubAudience`.
+- All deploy workflows correctly use `hashicorp/vault-action@v3` with JWT auth and `jwtGithubAudience: https://vault.commonbond.au`.
+- Live Vault policies are written against REST API paths (`secret/data/infrastructure/...`).
 
 **Gaps:**
 
-- `VD-04` — The `vault-action` `secrets` path is inconsistent across repos. `preferencer-frontend` uses the logical path `secret/infrastructure/...` with `kv-version: 2`. All other repos use `secret/data/infrastructure/...` without `kv-version`. The commit history shows 6 rounds of path changes across the ecosystem, alternating between these two formats. Expected behaviour: `vault-action@v3` with `kv-version: 2` uses the logical path and appends `/data/` internally. Without `kv-version`, the action auto-detects but may produce `secret/data/data/...` if handed an explicit `/data/` path.
+- `VD-04` — Path format is inconsistent: `preferencer-frontend` uses logical path with `kv-version: 2` (action internally adds `/data/`); all others use explicit `/data/` path without `kv-version` (passed as-is). Both approaches work independently but the ecosystem must standardise on one to prevent future confusion. 6 rounds of path changes in commit history.
 
-- `VD-05` — `preferencer-frontend` fetches both `private_key` and `app_id` from Vault. The other 4 repos still read `DEPLOY_BOT_APP_ID` from `secrets.*` (GitHub Repository Secrets). This creates a split-brain: the app ID and private key can become mismatched if the Vault secret is updated without also updating the GitHub secret.
+- `VD-05` — `preferencer-frontend` fetches both `private_key` and `app_id` from Vault. The other 4 repos read `DEPLOY_BOT_APP_ID` from GitHub Secrets, creating split-brain potential.
 
 ### 2.2 Shared Workflow Absent
 
 **Gaps:**
 
-- `VD-06` — The deploy workflow YAML is duplicated across 5 repositories with no shared reusable workflow. Each copy drifts independently, as evidenced by the inconsistent path format in VD-04. A single reusable workflow (e.g. in `receptor-infra/.github/workflows/deploy-gitops.yml`) would eliminate this class of drift entirely.
+- `VD-06` — Deploy YAML is copy-pasted across 5 repos with no shared reusable workflow.
 
 ---
 
 ## 3. Frontend CI — Supabase Readiness
 
-### 3.1 Status Polling
-
 **Gaps:**
 
-- `VD-07` — `ci-resilience.yml` (all frontends): the `supabase status -o env` output is piped through `grep '^ANON_KEY='` which fails when the output contains ANSI escape codes, leading whitespace, or stderr interleaving. The `planner-frontend` CI run (23477490024) shows 120 consecutive failures despite Supabase being fully started. The readiness gate and key extraction must be a single robust script, not inline shell with fragile grep patterns — and it should be shared, not copied to 3+ repos.
+- `VD-07` — `ci-resilience.yml` supabase status parsing fails with ANSI codes/stderr interleaving.
 
 ---
 
 ## 4. Cross-Cutting Observations
 
-### 4.1 Agentic Operability
-
 **Gaps:**
 
-- `VD-08` — The ecosystem lacks agent-readable infrastructure contracts. When an AI agent encounters a Vault-related CI failure, it cannot determine the correct configuration because Vault roles, policies, and secret paths exist only on the live cluster (accessible via SSH + root token). The result is a guess-commit-fail loop: commit history across 6 repos shows ~40 vault-related fix commits in 6 days, most of which were incorrect.
-
-- `VD-09` — No `vault-action` contract validation exists in CI. There is no pre-flight check that validates a workflow's `role`, `secrets` path, and `jwtGithubAudience` against documented Vault configuration before the workflow runs. Errors are only discovered at runtime after a commit to `main`.
-
-### 4.2 Prior Audit Regression
-
-**Gaps:**
-
-- `VD-10` — The `260319-cicd-workflow-health` audit (✅ Closed) produced findings DR-24/DR-15/DR-28 that required Vault OIDC integration for deploy workflows. The implementation of these findings created the current failures because the prerequisite Vault infrastructure (roles, policies, secret path) was never provisioned. The audit's Definition of Done did not include a Vault bootstrap verification gate.
+- `VD-08` — No agent-readable infrastructure contracts. ~40 incorrect vault fix commits in 6 days.
+- `VD-09` — No pre-flight CI validation of vault-action parameters against documented configuration.
+- `VD-10` — Prior audit `260319-cicd-workflow-health` (Closed) caused this drift because implementation lacked Vault bootstrap verification gate.
 
 ---
 
@@ -101,13 +103,14 @@ This audit investigates the root causes of persistent CI/CD deployment failures 
 
 | Finding ID | Repository / Area | File | Category | Severity |
 | --- | --- | --- | --- | --- |
-| VD-01 | `receptor-infra` | `docs/security/vault-configuration.md` | Security | 🔴 Critical |
-| VD-02 | `receptor-infra` | — (missing file) | Security | 🔴 Critical |
 | VD-08 | All repos | — | Architectural Drift | 🔴 Critical |
+| VD-01 | `receptor-infra` | Vault JWT roles | Security | 🟠 High |
 | VD-03 | `receptor-infra` | — (missing directory) | Process Gap | 🟠 High |
 | VD-04 | All deploy repos | `.github/workflows/deploy.yml` | Architectural Drift | 🟠 High |
 | VD-06 | All deploy repos | `.github/workflows/deploy.yml` | Process Gap | 🟠 High |
 | VD-10 | `common-bond` audits | `260319-cicd-workflow-health/` | Process Gap | 🟠 High |
+| VD-11 | `receptor-infra` | Vault policy `ci-supabase-receptor` | Security | 🟠 High |
+| VD-02 | `receptor-infra` | — (undocumented) | Process Gap | 🟡 Medium |
 | VD-05 | 4 of 5 deploy repos | `.github/workflows/deploy.yml` | Architectural Drift | 🟡 Medium |
-| VD-07 | `planner-frontend`, `preference-frontend`, `workforce-frontend` | `.github/workflows/ci-resilience.yml` | Process Gap | 🟡 Medium |
+| VD-07 | Frontend repos | `.github/workflows/ci-resilience.yml` | Process Gap | 🟡 Medium |
 | VD-09 | All deploy repos | — (missing CI gate) | Process Gap | 🟢 Low |

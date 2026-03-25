@@ -9,75 +9,73 @@
   "findings": [
     {
       "id": "VD-01",
-      "severity": "critical",
+      "severity": "high",
       "status": "open",
       "category": "Security",
       "repo": "receptor-infra",
       "area": "Vault JWT roles",
-      "description": "Five JWT roles referenced in production deploy workflows (ci-preference-frontend, ci-planner-frontend, ci-website-frontend, ci-workforce-frontend, ci-match-backend) have no documented creation procedure, no bootstrap script, and no policy definition in receptor-infra. ci-website-frontend confirmed missing from live Vault.",
+      "description": "1 of 7 expected JWT roles is missing: ci-website-frontend. The other 6 (ci-match-backend, ci-planner-frontend, ci-preference-frontend, ci-workforce-frontend, ci-receptor-planner, ci-supabase-receptor) exist with correct bound_claims and policies. Verified via live Vault interrogation.",
       "tasks": [
         {
           "taskId": "VD-01-T1",
           "status": "open",
-          "description": "Create vault/roles/ directory in receptor-infra with one YAML file per JWT role documenting role_name, bound_audiences, bound_claims, policies, and TTL.",
-          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/vault/roles/",
+          "description": "Create ci-website-frontend JWT role in Vault: bound_claims sub=repo:Common-Bond/website-frontend:*, token_policies=ci-website-frontend, token_ttl=900.",
+          "targetFile": "MANUAL \u2014 vault write auth/jwt/role/ci-website-frontend on cluster",
           "completedAt": null,
           "completedBy": null
         },
         {
           "taskId": "VD-01-T2",
           "status": "open",
-          "description": "SSH to cluster and create all 5 missing JWT roles in live Vault using the role definitions from VD-01-T1.",
-          "targetFile": "MANUAL \u2014 SSH to cluster, requires root token",
+          "description": "Create ci-website-frontend policy: read access to secret/data/infrastructure/github-app-deploy-bot and its metadata.",
+          "targetFile": "MANUAL \u2014 vault policy write ci-website-frontend on cluster",
           "completedAt": null,
           "completedBy": null
         },
         {
           "taskId": "VD-01-T3",
           "status": "open",
-          "description": "Update docs/security/vault-configuration.md to document the 5 new roles alongside existing github-actions-role and receptor-infra-tf-ci.",
-          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/docs/security/vault-configuration.md",
+          "description": "Codify all 7 roles and policies as declarative files in receptor-infra/vault/roles/ and vault/policies/.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/vault/roles/",
           "completedAt": null,
           "completedBy": null
         }
       ],
-      "severity_history": []
+      "severity_history": [
+        {
+          "from": "critical",
+          "to": "high",
+          "changedAt": "2026-03-25",
+          "reason": "Live Vault verification showed 6 of 7 roles exist. Only ci-website-frontend is missing."
+        }
+      ]
     },
     {
       "id": "VD-02",
-      "severity": "critical",
+      "severity": "medium",
       "status": "open",
       "category": "Security",
       "repo": "receptor-infra",
       "area": "Vault KV secrets",
-      "description": "The secret path secret/infrastructure/github-app-deploy-bot (used by all 5 deploy workflows) does not appear in any bootstrap script, documentation, or manifest in receptor-infra. It exists only on the live cluster (if at all). The documented GitHub App path is secret/ci/github-app.",
+      "description": "Secret path secret/infrastructure/github-app-deploy-bot EXISTS in Vault KV with keys app_id and private_key. The issue is path FORMAT in workflows, not secret existence. Verified via live Vault interrogation.",
       "tasks": [
         {
           "taskId": "VD-02-T1",
           "status": "open",
-          "description": "SSH to cluster and verify whether secret/infrastructure/github-app-deploy-bot exists in Vault KV. Document the result.",
-          "targetFile": "MANUAL \u2014 SSH to cluster, requires root token",
-          "completedAt": null,
-          "completedBy": null
-        },
-        {
-          "taskId": "VD-02-T2",
-          "status": "open",
-          "description": "Create vault/secrets/README.md documenting every KV path, its fields, which roles can read it, and the bootstrap command. No actual secret values.",
+          "description": "Create vault/secrets/README.md in receptor-infra documenting the complete KV path tree (ci/, infrastructure/, supabase/) with field names and access policies.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/vault/secrets/README.md",
-          "completedAt": null,
-          "completedBy": null
-        },
-        {
-          "taskId": "VD-02-T3",
-          "status": "open",
-          "description": "Create or update a Vault policy (ci-deploy-bot) that explicitly grants read access to the github-app-deploy-bot path. Write to vault/policies/ci-deploy-bot.hcl.",
-          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/vault/policies/ci-deploy-bot.hcl",
           "completedAt": null,
           "completedBy": null
         }
       ],
-      "severity_history": []
+      "severity_history": [
+        {
+          "from": "critical",
+          "to": "medium",
+          "changedAt": "2026-03-25",
+          "reason": "Live Vault verification confirmed the secret exists with correct keys. Problem is path format consistency, not missing secret."
+        }
+      ]
     },
     {
       "id": "VD-03",
@@ -254,6 +252,26 @@
         }
       ],
       "severity_history": []
+    },
+    {
+      "id": "VD-11",
+      "severity": "high",
+      "status": "open",
+      "category": "Security",
+      "repo": "receptor-infra",
+      "area": "Vault policies",
+      "description": "ci-supabase-receptor policy references paths under 'infrastructure/' mount (e.g. infrastructure/data/supabase) which does not exist. The correct mount is 'secret/' (e.g. secret/data/supabase/staging). This breaks supabase-receptor CI access to staging/production secrets.",
+      "tasks": [
+        {
+          "taskId": "VD-11-T1",
+          "status": "open",
+          "description": "Fix ci-supabase-receptor policy: change 'infrastructure/data/supabase*' paths to 'secret/data/supabase/*' paths to match the actual KV mount.",
+          "targetFile": "MANUAL \u2014 vault policy write ci-supabase-receptor on cluster",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
     }
   ],
   "clarifications": [
@@ -268,6 +286,14 @@
     {
       "item": "Agentic PE reference",
       "decision": "The Microsoft GBB 'Agentic Platform Engineering' framework (cluster-doctor pattern, crawl-walk-run) is the reference architecture for the proposed overhaul. See https://github.com/microsoftgbb/agentic-platform-engineering"
+    },
+    {
+      "item": "vault-action path format \u2014 verified",
+      "decision": "Both formats work: (1) secret/data/infrastructure/... WITHOUT kv-version passes path as-is to API \u2014 correct. (2) secret/infrastructure/... WITH kv-version: 2 \u2014 action internally appends /data/ \u2014 also correct. Error was using /data/ path WITH kv-version: 2 producing double /data/data/. Policies are written against REST API paths (secret/data/...)."
+    },
+    {
+      "item": "Live Vault state verified",
+      "decision": "Live Vault interrogated 2026-03-25 using scoped write token. All roles, policies, secrets, and mounts catalogued. Replaces all prior speculation about Vault state."
     }
   ],
   "implementationPhases": [
@@ -276,20 +302,21 @@
       "name": "Unblock Deployments \u2014 Vault Provisioning",
       "findingIds": [
         "VD-01",
-        "VD-02"
+        "VD-04",
+        "VD-11"
       ],
-      "rationale": "VD-01 and VD-02 are the root cause of all current deploy failures. Without the Vault roles and secret path, no deploy workflow can run.",
-      "description": "Create and apply the missing Vault JWT roles and verify the github-app-deploy-bot secret path. This unblocks all 5 deploy workflows immediately."
+      "rationale": "VD-01 creates the one missing JWT role, VD-04 standardises the path format, VD-11 fixes the broken supabase-receptor policy. All are direct blockers of CI.",
+      "description": "Create ci-website-frontend role, standardise vault-action path format, fix ci-supabase-receptor policy mount path."
     },
     {
       "phase": 2,
       "name": "Standardise Workflow Configuration",
       "findingIds": [
-        "VD-04",
+        "VD-02",
         "VD-05",
         "VD-07"
       ],
-      "rationale": "Once deployments work, standardise the configuration that caused the drift to prevent recurrence.",
+      "rationale": "Once deployments work, document the secret inventory, unify app_id source, and fix supabase readiness detection.",
       "description": "Unify vault-action path format, app_id source, and supabase readiness detection across all repos."
     },
     {
