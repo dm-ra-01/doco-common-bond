@@ -10,7 +10,7 @@
     {
       "id": "VD-01",
       "severity": "high",
-      "status": "open",
+      "status": "complete",
       "category": "Security",
       "repo": "receptor-infra",
       "area": "Vault JWT roles",
@@ -18,27 +18,27 @@
       "tasks": [
         {
           "taskId": "VD-01-T1",
-          "status": "open",
+          "status": "complete",
           "description": "Create ci-website-frontend JWT role in Vault: bound_claims sub=repo:Common-Bond/website-frontend:*, token_policies=ci-website-frontend, token_ttl=900.",
           "targetFile": "MANUAL \u2014 vault write auth/jwt/role/ci-website-frontend on cluster",
-          "completedAt": null,
-          "completedBy": null
+          "completedAt": "2026-03-25T00:40:12Z",
+          "completedBy": "61c5cfa4"
         },
         {
           "taskId": "VD-01-T2",
-          "status": "open",
+          "status": "complete",
           "description": "Create ci-website-frontend policy: read access to secret/data/infrastructure/github-app-deploy-bot and its metadata.",
           "targetFile": "MANUAL \u2014 vault policy write ci-website-frontend on cluster",
-          "completedAt": null,
-          "completedBy": null
+          "completedAt": "2026-03-25T00:40:12Z",
+          "completedBy": "61c5cfa4"
         },
         {
           "taskId": "VD-01-T3",
-          "status": "open",
+          "status": "complete",
           "description": "Codify all 7 roles and policies as declarative files in receptor-infra/vault/roles/ and vault/policies/.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/vault/roles/",
-          "completedAt": null,
-          "completedBy": null
+          "completedAt": "2026-03-25T00:40:12Z",
+          "completedBy": "61c5cfa4"
         }
       ],
       "severity_history": [
@@ -53,7 +53,7 @@
     {
       "id": "VD-02",
       "severity": "medium",
-      "status": "open",
+      "status": "complete",
       "category": "Security",
       "repo": "receptor-infra",
       "area": "Vault KV secrets",
@@ -61,11 +61,11 @@
       "tasks": [
         {
           "taskId": "VD-02-T1",
-          "status": "open",
+          "status": "complete",
           "description": "Create vault/secrets/README.md in receptor-infra documenting the complete KV path tree (ci/, infrastructure/, supabase/) with field names and access policies.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/vault/secrets/README.md",
-          "completedAt": null,
-          "completedBy": null
+          "completedAt": "2026-03-25T00:40:12Z",
+          "completedBy": "61c5cfa4"
         }
       ],
       "severity_history": [
@@ -80,7 +80,7 @@
     {
       "id": "VD-03",
       "severity": "high",
-      "status": "open",
+      "status": "complete",
       "category": "Process Gap",
       "repo": "receptor-infra",
       "area": "Vault role management",
@@ -88,11 +88,11 @@
       "tasks": [
         {
           "taskId": "VD-03-T1",
-          "status": "open",
+          "status": "complete",
           "description": "Create vault/bootstrap-jwt-roles.sh \u2014 an idempotent script that reads vault/roles/*.yaml and vault/policies/*.hcl and applies them to Vault. Must accept a VAULT_TOKEN parameter.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/vault/bootstrap-jwt-roles.sh",
-          "completedAt": null,
-          "completedBy": null
+          "completedAt": "2026-03-25T00:40:12Z",
+          "completedBy": "61c5cfa4"
         }
       ],
       "severity_history": []
@@ -100,7 +100,7 @@
     {
       "id": "VD-04",
       "severity": "high",
-      "status": "open",
+      "status": "complete",
       "category": "Architectural Drift",
       "repo": "all-deploy-repos",
       "area": "vault-action configuration",
@@ -108,11 +108,11 @@
       "tasks": [
         {
           "taskId": "VD-04-T1",
-          "status": "open",
+          "status": "complete",
           "description": "Standardise all 5 deploy workflows to use the logical path format (secret/infrastructure/...) with explicit kv-version: 2. This is the correct pattern per hashicorp/vault-action@v3 documentation.",
           "targetFile": "ALL \u2014 deploy.yml in preferencer-frontend, planner-frontend, website-frontend, workforce-frontend, match-backend",
-          "completedAt": null,
-          "completedBy": null
+          "completedAt": "2026-03-25T00:40:12Z",
+          "completedBy": "61c5cfa4"
         }
       ],
       "severity_history": []
@@ -120,7 +120,7 @@
     {
       "id": "VD-05",
       "severity": "medium",
-      "status": "open",
+      "status": "complete",
       "category": "Architectural Drift",
       "repo": "all-deploy-repos",
       "area": "App ID source",
@@ -128,11 +128,11 @@
       "tasks": [
         {
           "taskId": "VD-05-T1",
-          "status": "open",
+          "status": "complete",
           "description": "Update all 4 remaining deploy workflows to fetch app_id from Vault instead of GitHub Secrets, matching the preferencer-frontend pattern.",
           "targetFile": "ALL \u2014 deploy.yml in planner-frontend, website-frontend, workforce-frontend, match-backend",
-          "completedAt": null,
-          "completedBy": null
+          "completedAt": "2026-03-25T00:40:13Z",
+          "completedBy": "61c5cfa4"
         }
       ],
       "severity_history": []
@@ -196,11 +196,11 @@
       "tasks": [
         {
           "taskId": "VD-08-T1",
-          "status": "open",
+          "status": "complete",
           "description": "Implement the 'Crawl' tier of agentic platform engineering: codify all Vault roles, policies, and secret contracts as declarative files in receptor-infra. Tasks VD-01-T1, VD-02-T2, VD-03-T1 are prerequisites.",
           "targetFile": "DEPENDS \u2014 on VD-01-T1, VD-02-T2, VD-03-T1 completion",
-          "completedAt": null,
-          "completedBy": null
+          "completedAt": "2026-03-25T00:40:13Z",
+          "completedBy": "61c5cfa4"
         },
         {
           "taskId": "VD-08-T2",
@@ -256,7 +256,7 @@
     {
       "id": "VD-11",
       "severity": "high",
-      "status": "open",
+      "status": "complete",
       "category": "Security",
       "repo": "receptor-infra",
       "area": "Vault policies",
@@ -264,11 +264,11 @@
       "tasks": [
         {
           "taskId": "VD-11-T1",
-          "status": "open",
+          "status": "complete",
           "description": "Fix ci-supabase-receptor policy: change 'infrastructure/data/supabase*' paths to 'secret/data/supabase/*' paths to match the actual KV mount.",
           "targetFile": "MANUAL \u2014 vault policy write ci-supabase-receptor on cluster",
-          "completedAt": null,
-          "completedBy": null
+          "completedAt": "2026-03-25T00:40:13Z",
+          "completedBy": "61c5cfa4"
         }
       ],
       "severity_history": []

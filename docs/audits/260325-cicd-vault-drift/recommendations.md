@@ -34,8 +34,9 @@ Do not edit it directly — edit the JSON source and re-run
 Affects: `all-repos` — Agentic operability
 
 
-- [ ] Implement the 'Crawl' tier of agentic platform engineering: codify all Vault roles, policies, and secret contracts as declarative files in receptor-infra. Tasks VD-01-T1, VD-02-T2, VD-03-T1 are prerequisites.
+- [x] Implement the 'Crawl' tier of agentic platform engineering: codify all Vault roles, policies, and secret contracts as declarative files in receptor-infra. Tasks VD-01-T1, VD-02-T2, VD-03-T1 are prerequisites.
       `DEPENDS — on VD-01-T1, VD-02-T2, VD-03-T1 completion`
+      _(Completed: 2026-03-25T00:40:13Z)_
 - [ ] Create .agents/infrastructure-contracts.md in receptor-infra — a single document that agents can read to understand the mapping between workflows (role, path, audience) and Vault configuration.
       `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/.agents/infrastructure-contracts.md`
 
@@ -46,28 +47,33 @@ Affects: `all-repos` — Agentic operability
 Affects: `receptor-infra` — Vault JWT roles
 
 
-- [ ] Create ci-website-frontend JWT role in Vault: bound_claims sub=repo:Common-Bond/website-frontend:*, token_policies=ci-website-frontend, token_ttl=900.
+- [x] Create ci-website-frontend JWT role in Vault: bound_claims sub=repo:Common-Bond/website-frontend:*, token_policies=ci-website-frontend, token_ttl=900.
       `MANUAL — vault write auth/jwt/role/ci-website-frontend on cluster`
-- [ ] Create ci-website-frontend policy: read access to secret/data/infrastructure/github-app-deploy-bot and its metadata.
+      _(Completed: 2026-03-25T00:40:12Z)_
+- [x] Create ci-website-frontend policy: read access to secret/data/infrastructure/github-app-deploy-bot and its metadata.
       `MANUAL — vault policy write ci-website-frontend on cluster`
-- [ ] Codify all 7 roles and policies as declarative files in receptor-infra/vault/roles/ and vault/policies/.
+      _(Completed: 2026-03-25T00:40:12Z)_
+- [x] Codify all 7 roles and policies as declarative files in receptor-infra/vault/roles/ and vault/policies/.
       `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/vault/roles/`
+      _(Completed: 2026-03-25T00:40:12Z)_
 
 ### VD-03: No declarative Vault role management exists. Vault roles/policies are created via ad-hoc SSH commands not captured in ve
 
 Affects: `receptor-infra` — Vault role management
 
 
-- [ ] Create vault/bootstrap-jwt-roles.sh — an idempotent script that reads vault/roles/*.yaml and vault/policies/*.hcl and applies them to Vault. Must accept a VAULT_TOKEN parameter.
+- [x] Create vault/bootstrap-jwt-roles.sh — an idempotent script that reads vault/roles/*.yaml and vault/policies/*.hcl and applies them to Vault. Must accept a VAULT_TOKEN parameter.
       `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/vault/bootstrap-jwt-roles.sh`
+      _(Completed: 2026-03-25T00:40:12Z)_
 
 ### VD-04: vault-action secrets path is inconsistent: preferencer-frontend uses logical path with kv-version: 2, all others use exp
 
 Affects: `all-deploy-repos` — vault-action configuration
 
 
-- [ ] Standardise all 5 deploy workflows to use the logical path format (secret/infrastructure/...) with explicit kv-version: 2. This is the correct pattern per hashicorp/vault-action@v3 documentation.
+- [x] Standardise all 5 deploy workflows to use the logical path format (secret/infrastructure/...) with explicit kv-version: 2. This is the correct pattern per hashicorp/vault-action@v3 documentation.
       `ALL — deploy.yml in preferencer-frontend, planner-frontend, website-frontend, workforce-frontend, match-backend`
+      _(Completed: 2026-03-25T00:40:12Z)_
 
 ### VD-06: The deploy workflow YAML is copy-pasted across 5 repositories with no shared reusable workflow. Each copy drifts indepen
 
@@ -92,8 +98,9 @@ Affects: `common-bond` — Audit regression
 Affects: `receptor-infra` — Vault policies
 
 
-- [ ] Fix ci-supabase-receptor policy: change 'infrastructure/data/supabase*' paths to 'secret/data/supabase/*' paths to match the actual KV mount.
+- [x] Fix ci-supabase-receptor policy: change 'infrastructure/data/supabase*' paths to 'secret/data/supabase/*' paths to match the actual KV mount.
       `MANUAL — vault policy write ci-supabase-receptor on cluster`
+      _(Completed: 2026-03-25T00:40:13Z)_
 
 ## 🟡 Medium
 
@@ -102,16 +109,18 @@ Affects: `receptor-infra` — Vault policies
 Affects: `receptor-infra` — Vault KV secrets
 
 
-- [ ] Create vault/secrets/README.md in receptor-infra documenting the complete KV path tree (ci/, infrastructure/, supabase/) with field names and access policies.
+- [x] Create vault/secrets/README.md in receptor-infra documenting the complete KV path tree (ci/, infrastructure/, supabase/) with field names and access policies.
       `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/vault/secrets/README.md`
+      _(Completed: 2026-03-25T00:40:12Z)_
 
 ### VD-05: preferencer-frontend fetches both private_key and app_id from Vault. The other 4 repos read DEPLOY_BOT_APP_ID from GitHu
 
 Affects: `all-deploy-repos` — App ID source
 
 
-- [ ] Update all 4 remaining deploy workflows to fetch app_id from Vault instead of GitHub Secrets, matching the preferencer-frontend pattern.
+- [x] Update all 4 remaining deploy workflows to fetch app_id from Vault instead of GitHub Secrets, matching the preferencer-frontend pattern.
       `ALL — deploy.yml in planner-frontend, website-frontend, workforce-frontend, match-backend`
+      _(Completed: 2026-03-25T00:40:13Z)_
 
 ### VD-07: supabase status -o env output parsed with grep '^ANON_KEY=' fails when output contains ANSI codes, leading whitespace, o
 

@@ -1,9 +1,16 @@
 {
   "$schema": "../../../dev-environment/.agents/schemas/audit-brief.schema.json",
   "auditSlug": "260325-cicd-vault-drift",
-  "status": "drafting",
+  "status": "implementing",
   "nextAction": "implement",
-  "openTaskCount": 15,
-  "latestHandover": "Initial audit complete. 10 findings across receptor-infra and all deploy repos. Phase 1 priorities: VD-01, VD-02 (create missing Vault JWT roles and verify secret path).",
-  "sessionHistory": []
+  "openTaskCount": 6,
+  "latestHandover": "Phase 1 complete. 8 tasks implemented across 7 repos (committed to main, not audit branches — noted deviation). 6 findings closed: VD-01 (role created), VD-02 (path documented), VD-03 (IaC directory), VD-04 (path standardised), VD-05 (app_id from Vault), VD-11 (policy fixed). 5 findings remain: VD-06 (shared workflow), VD-07 (supabase readiness), VD-08-T2 (contract linting), VD-09 (pre-flight validation), VD-10 (DoD template). Next session should tackle VD-06 (shared reusable deploy workflow) as it eliminates all remaining copy-paste drift.",
+  "sessionHistory": [
+    {
+      "date": "2026-03-25",
+      "sessionId": "61c5cfa4",
+      "completedFindingIds": ["VD-01", "VD-02", "VD-03", "VD-04", "VD-05", "VD-11"],
+      "summary": "Live Vault interrogation, created ci-website-frontend role+policy, fixed ci-supabase-receptor policy mount path, codified all roles/policies as IaC in receptor-infra/vault/, standardised all deploy.yml to Option A path format, migrated receptor-planner to ARC runner + Vault OIDC, fixed dm-ra-01→Common-Bond org references."
+    }
+  ]
 }
