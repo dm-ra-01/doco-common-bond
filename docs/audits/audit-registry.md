@@ -33,7 +33,7 @@ sidebar_position: 1
 
 | Slug | Title | Scope | Auditor | Status | NC Raised | Report |
 | :--- | :---- | :---- | :------ | :----- | :-------- | :----- |
-| `260325-cicd-vault-drift` | CI/CD Vault Configuration Drift Ecosystem Audit | Cross-ecosystem — `receptor-infra`, `preferencer-frontend`, `planner-frontend`, `website-frontend`, `workforce-frontend`, `match-backend` | Ryan Ammendolea | 🔧 Implementing | — | [audit.md](../audits/260325-cicd-vault-drift/audit.md) · [recommendations.md](../audits/260325-cicd-vault-drift/recommendations.md) |
+| `260325-cicd-vault-drift` | CI/CD Vault Configuration Drift Ecosystem Audit | Cross-ecosystem — `receptor-infra`, `preferencer-frontend`, `planner-frontend`, `website-frontend`, `workforce-frontend`, `match-backend` | Ryan Ammendolea | ✅ Closed | — | [audit.md](../audits/260325-cicd-vault-drift/audit.md) · [recommendations.md](../audits/260325-cicd-vault-drift/recommendations.md) · [re-audit.md](../audits/260325-cicd-vault-drift/re-audit.md) |
 
 ### 🗓️ 2026-03-19
 
