@@ -9,7 +9,7 @@
 
 ## Executive Summary
 
-The Receptor ecosystem possesses a mature **internal** agent infrastructure (`.agents/` symlink system), but is almost entirely lacking in **external** agentic readiness. There is a complete absence of industry-standard context files (`AGENTS.md`, `CLAUDE.md`, `copilot-instructions.md`) and agent personas. This restricts the ability of developers to use common tools like GitHub Copilot and Cursor effectively across the platform.
+The Receptor ecosystem possesses a mature **internal** agent infrastructure but is "Provisional" in terms of **External Benchmark Parity** (CNCF Level 1). The lack of industry-standard context files (`AGENTS.md`) and interoperable protocol support (MCP) restricts external AI tools from navigating the platform with the same efficiency as internal agents.
 
 **Total Findings:** 32 (2 Critical, 17 High, 11 Medium, 2 Low)
 
@@ -51,31 +51,30 @@ For detailed internal baselines and benchmark mapping, see **[GOLD_STANDARDS.md]
 - **PROC-02** (All Repos): No `.github/copilot-instructions.md` to enforce repository-wide guardrails for Copilot.
 - **PROC-03** (All Repos): Absence of `.github/agents/` for specialized personas (e.g. Cluster Doctor, SQL Auditor).
 
-### 1.2 Knowledge Graph Consumability
+### 1.2 Knowledge Graph & Interoperability
 
 **Strengths:**
-- `.agents/` symlinks provide Antigravity with excellent context.
+- `.agents/` symlinks provide Antigravity with excellent local context.
+- **Standards Alignment**: Use of OpenAPI 3.0 provides a machine-readable foundation for tool discovery.
 
 **Gaps:**
-- **DOC-01** (All Repos): Technical documentation is written for human stakeholders; it is not structured for RAG or LLM context Injection (lacks semantic metadata).
-- **DOC-02** (2/9 Repos): `.llm-context.md` exists but is rudimentary and lacks the depth required for complex platform engineering tasks.
+- **DOC-01** (All Repos): Documentation lacks the semantic metadata required for Level 3 (Scalable) RAG injection.
+- **ARCH-02** (Shared Services): Absence of **MCP (Model Context Protocol)** resource servers. Shared compute/data services lack the "universal connector" required for cross-platform agentic interop.
 
 ---
 
 ## 2. Infrastructure Gaps
 
-### 2.1 Agentic Workflows
+### 2.1 Intent-Driven Operations
 
 **Strengths:**
-- CI/CD pipelines are robust and well-documented.
-- **Reference Implementation**: `receptor-planner/openapi.json` is a machine-readable schema that provides high-quality metadata for agent callers.
-- **Reference Implementation**: `receptor-infra/.github/workflows/helm-upgrade-check.yml` demonstrates a proactive observation loop that surfaces issues for human/agent review.
+- Robust CI/CD pipelines with high-quality metadata.
+- **Standards Alignment**: `receptor-infra` proactive observation loops mirror the "Continuous AI" pattern.
 
 **Gaps:**
-- **ARCH-01** (Ecosystem): No standard for agent-initiated GitOps PRs. While "Cluster Doctor" logic is documented by Microsoft, we have no equivalent automated diagnostic → PR loop.
-- **ARCH-05** (Ecosystem): Risk of runaway agentic processes and resource exhaustion.
-- **ARCH-02** (Shared Services): Lack of standardized "Agentic Contracts" (like `infrastructure-contracts.md`) for Supabase and Allocator services to guide cross-repo consumption.
-- **PROC-04** (All): No standard for 'Agentic CI/CD Gates' like AI-driven test healing.
+- **ARCH-01** (Ecosystem): Lack of **Intent-Driven GitOps** (GitHub 2025). No standard for autonomous diagnostic → PR loops.
+- **ARCH-05** (Ecosystem): Risk of non-deterministic resource exhaustion without "Budgeting Gates".
+- **PROC-04** (All): No 'Agentic CI/CD Gates' like **Probabilistic Test Healing**.
 
 ---
 

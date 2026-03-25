@@ -60,7 +60,7 @@ Affects: `ecosystem` — GitOps Workflows
 Affects: `all` — Agent Safety
 
 
-- [ ] Establish a Permission and Safety standard for agentic platform tools, defining read-only vs. write-scoped credentials and mandatory 'Human-Explainability' requirements (intent justification).
+- [ ] Establish a Permission and Safety standard for agentic platform tools, defining read-only vs. write-scoped credentials and mandatory 'Human-Explainability' requirements (NIST AI RMF intent justification).
       `/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/about-us/our-technology.md`
 
 ### PROC-04: No standard for 'Agentic CI/CD Gates' like AI-driven test healing. (Iterative Improvement Proposal)
@@ -84,7 +84,7 @@ Affects: `all` — Diagnostic Standardization
 Affects: `all` — Agent Interoperability
 
 
-- [ ] Implement MCP Resource Servers for all shared compute and data services to expose schemas and docs to external agents.
+- [ ] Implement MCP Resource Servers for all shared compute and data services to expose schemas, tools, and docs to external agents via the universal connector standard.
       `/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/engineering/agent-infrastructure.md`
 
 ### VAL-01: No automated benchmark to verify agent performance against domain-specific problems. (Round 2 Addition)
@@ -100,7 +100,7 @@ Affects: `ecosystem` — Agent Validation
 Affects: `ecosystem` — Agent Safety
 
 
-- [ ] Implement automated secret rotation for autonomous tools using Vault and GitHub Actions.
+- [ ] Define a standard X-Agent-ID header and logging convention for all autonomous tools, normalizing to OpenTelemetry GenAI Semantic Conventions (gen_ai.system, gen_ai.usage).
       `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/.github/workflows/agent-secret-rotation.yml`
 
 ### GOV-01: Lack of machine-readable Change Impact Assessments in PRs. (Round 3 Addition)
