@@ -29,6 +29,14 @@ Affects: `all` — Agent Context
 - [ ] Propagate AGENTS.md to all 9 repositories as root context files.
       `/Users/ryan/development/common_bond/antigravity-environment/README.md`
 
+### GOV-03: Lack of 'Dual-Control' requirement for destructive autonomous operations. (Round 5 Addition)
+
+Affects: `all` — Agent Safety
+
+
+- [ ] Formalize a DUAL_CONTROL.md standard for mandatory human-in-the-loop gates.
+      `/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/engineering/agent-governance.md`
+
 ## 🟠 High
 
 ### PROC-02: Absence of repository-wide copilot-instructions.md files.
@@ -135,6 +143,22 @@ Affects: `ecosystem` — Agent Safety
 - [ ] Integrate an 'Adversarial Tester' agent persona to red-team system prompts in CI/CD.
       `/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/compliance/agent-security.md`
 
+### ARCH-05: Risk of runaway agentic processes and resource exhaustion. (Round 5 Addition)
+
+Affects: `ecosystem` — Agent Safety
+
+
+- [ ] Implement global 'Circuit Breaker' and quota standards for autonomous workflows.
+      `/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/engineering/agent-infrastructure.md`
+
+### TECH-04: Absence of a mandatory 'Safe Rollback' protocol for autonomous actions. (Round 5 Addition)
+
+Affects: `all` — Agent Robustness
+
+
+- [ ] Mandate the implementation of rollback() methods for all mutating agentic workflows.
+      `/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/engineering/agent-infrastructure.md`
+
 ## 🟡 Medium
 
 ### PROC-03: No standard .github/agents/ directory for specialized task instruction files.
@@ -217,6 +241,22 @@ Affects: `receptor-infra` — Agent Traceability
 - [ ] Standardize an AgentDecision CRD to record autonomous infrastructure reasoning.
       `/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/engineering/agent-infrastructure.md`
 
+### VAL-04: Lack of a standardized sandbox Test Harness for agentic tools. (Round 5 Addition)
+
+Affects: `ecosystem` — Agent Testability
+
+
+- [ ] Implement a 'lib/agent-test-harness' for autonomous tool verification and state-mocking.
+      `/Users/ryan/development/common_bond/antigravity-environment/dev-environment/.agents/skills/agent-test-harness/SKILL.md`
+
+### OBS-03: Absence of 'Semantic Heartbeats' to monitor agentic instruction drift. (Round 5 Addition)
+
+Affects: `ecosystem` — Agent Alignment
+
+
+- [ ] Implement a HealthCheck API for agentic personas to monitor logical alignment.
+      `/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/engineering/logging-standards.md`
+
 ## 🟢 Low
 
 ### DOC-05: Lack of a dedicated Semantic Search API for agents into Docusaurus. (Round 3 Addition)
@@ -237,8 +277,11 @@ Affects: `ecosystem` — Agent Discovery
 
 | Phase | Finding IDs | Rationale |
 | :---- | :---------- | :-------- |
-| 1 | PROC-01, PROC-02 | Foundational context files are required before specialized agents can operate reliably. |
-| 2 | PROC-03, ARCH-01 | High-level orchestration and specialized personas enable autonomous remediation. |
+| 1 | PROC-01, PROC-02, PROC-03, DOC-01, DOC-02 | Establishing AGENTS.md and semantic context is the prerequisite for all autonomous operations. |
+| 2 | SEC-01, SEC-02, SEC-03, GOV-01, GOV-02, GOV-03 | Securing agent identities and defining human-in-the-loop gates ensures safe platform operations. |
+| 3 | OBS-01, OBS-03, TECH-02, CROSS-01, INFRA-02 | Standardized logs and decision tracking enable root cause analysis of agentic failures. |
+| 4 | ARCH-01, ARCH-02, ARCH-04, ARCH-05, DISC-01, DOC-05 | Contracts and centralized capability registries align specialized agents across repositories. |
+| 5 | VAL-01, VAL-02, VAL-03, VAL-04, TECH-01, TECH-03, TECH-04, PROC-04, DOC-04 | Benchmarks, test harnesses, and rollback protocols provide the final layer of autonomous robustness. |
 
 
 ---
@@ -248,6 +291,7 @@ Affects: `ecosystem` — Agent Discovery
 | Finding ID | Area | File | Category | Severity |
 | :--------- | :--- | :--- | :------- | :------- |
 | PROC-01 | Agent Context | `AGENTS.md` | Process Gap | 🔴 Critical |
+| GOV-03 | Agent Safety | `agent-governance.md` | Governance | 🔴 Critical |
 | PROC-02 | Agent Context | `copilot-instructions.md` | Process Gap | 🟠 High |
 | ARCH-01 | GitOps Workflows | `agent-remediation.md` | Architecture | 🟠 High |
 | SEC-01 | Agent Safety | `our-technology.md` | Security | 🟠 High |
@@ -261,6 +305,8 @@ Affects: `ecosystem` — Agent Discovery
 | SEC-03 | Agent Identity | `agent-infrastructure.md` | Security | 🟠 High |
 | TECH-03 | Agent Safety | `agent-infrastructure.md` | Reliability | 🟠 High |
 | VAL-03 | Agent Safety | `agent-security.md` | Security Validation | 🟠 High |
+| ARCH-05 | Agent Safety | `agent-infrastructure.md` | Architecture | 🟠 High |
+| TECH-04 | Agent Robustness | `agent-infrastructure.md` | Reliability | 🟠 High |
 | PROC-03 | Agent Personas | `README.md` | Process Gap | 🟡 Medium |
 | DOC-03 | Agent Context | `reference-implementations.md` | Documentation Gap | 🟡 Medium |
 | TECH-01 | Agent Context | `README.md` | Tech Debt | 🟡 Medium |
@@ -271,5 +317,7 @@ Affects: `ecosystem` — Agent Discovery
 | ARCH-04 | Agent Personas | `agent-infrastructure.md` | Architecture | 🟡 Medium |
 | GOV-02 | Agent Compliance | `agent-governance.md` | Governance | 🟡 Medium |
 | INFRA-02 | Agent Traceability | `agent-infrastructure.md` | Observability | 🟡 Medium |
+| VAL-04 | Agent Testability | `SKILL.md` | Validation | 🟡 Medium |
+| OBS-03 | Agent Alignment | `logging-standards.md` | Observability | 🟡 Medium |
 | DOC-05 | Agent Discovery | `README.md` | Architecture | 🟢 Low |
 

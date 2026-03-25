@@ -514,21 +514,175 @@
         }
       ],
       "severity_history": []
+    },
+    {
+      "id": "VAL-04",
+      "severity": "medium",
+      "status": "open",
+      "category": "Validation",
+      "repo": "ecosystem",
+      "area": "Agent Testability",
+      "description": "Lack of a standardized sandbox Test Harness for agentic tools. (Round 5 Addition)",
+      "tasks": [
+        {
+          "taskId": "VAL-04-T1",
+          "status": "open",
+          "description": "Implement a 'lib/agent-test-harness' for autonomous tool verification and state-mocking.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/dev-environment/.agents/skills/agent-test-harness/SKILL.md",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "ARCH-05",
+      "severity": "high",
+      "status": "open",
+      "category": "Architecture",
+      "repo": "ecosystem",
+      "area": "Agent Safety",
+      "description": "Risk of runaway agentic processes and resource exhaustion. (Round 5 Addition)",
+      "tasks": [
+        {
+          "taskId": "ARCH-05-T1",
+          "status": "open",
+          "description": "Implement global 'Circuit Breaker' and quota standards for autonomous workflows.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/engineering/agent-infrastructure.md",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "GOV-03",
+      "severity": "critical",
+      "status": "open",
+      "category": "Governance",
+      "repo": "all",
+      "area": "Agent Safety",
+      "description": "Lack of 'Dual-Control' requirement for destructive autonomous operations. (Round 5 Addition)",
+      "tasks": [
+        {
+          "taskId": "GOV-03-T1",
+          "status": "open",
+          "description": "Formalize a DUAL_CONTROL.md standard for mandatory human-in-the-loop gates.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/engineering/agent-governance.md",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "OBS-03",
+      "severity": "medium",
+      "status": "open",
+      "category": "Observability",
+      "repo": "ecosystem",
+      "area": "Agent Alignment",
+      "description": "Absence of 'Semantic Heartbeats' to monitor agentic instruction drift. (Round 5 Addition)",
+      "tasks": [
+        {
+          "taskId": "OBS-03-T1",
+          "status": "open",
+          "description": "Implement a HealthCheck API for agentic personas to monitor logical alignment.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/engineering/logging-standards.md",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "TECH-04",
+      "severity": "high",
+      "status": "open",
+      "category": "Reliability",
+      "repo": "all",
+      "area": "Agent Robustness",
+      "description": "Absence of a mandatory 'Safe Rollback' protocol for autonomous actions. (Round 5 Addition)",
+      "tasks": [
+        {
+          "taskId": "TECH-04-T1",
+          "status": "open",
+          "description": "Mandate the implementation of rollback() methods for all mutating agentic workflows.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/engineering/agent-infrastructure.md",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
     }
   ],
   "clarifications": [],
   "implementationPhases": [
     {
       "phase": 1,
-      "description": "Implement AGENTS.md and copilot-instructions.md across all repositories.",
-      "rationale": "Foundational context files are required before specialized agents can operate reliably.",
-      "findingIds": ["PROC-01", "PROC-02"]
+      "description": "Foundation: Context & Metadata",
+      "rationale": "Establishing AGENTS.md and semantic context is the prerequisite for all autonomous operations.",
+      "findingIds": [
+        "PROC-01",
+        "PROC-02",
+        "PROC-03",
+        "DOC-01",
+        "DOC-02"
+      ]
     },
     {
       "phase": 2,
-      "description": "Define specialized agent personas and diagnostic workflows.",
-      "rationale": "High-level orchestration and specialized personas enable autonomous remediation.",
-      "findingIds": ["PROC-03", "ARCH-01"]
+      "description": "Governance & Identity",
+      "rationale": "Securing agent identities and defining human-in-the-loop gates ensures safe platform operations.",
+      "findingIds": [
+        "SEC-01",
+        "SEC-02",
+        "SEC-03",
+        "GOV-01",
+        "GOV-02",
+        "GOV-03"
+      ]
+    },
+    {
+      "phase": 3,
+      "description": "Observability & Instrumentation",
+      "rationale": "Standardized logs and decision tracking enable root cause analysis of agentic failures.",
+      "findingIds": [
+        "OBS-01",
+        "OBS-03",
+        "TECH-02",
+        "CROSS-01",
+        "INFRA-02"
+      ]
+    },
+    {
+      "phase": 4,
+      "description": "Architecture & Coordination",
+      "rationale": "Contracts and centralized capability registries align specialized agents across repositories.",
+      "findingIds": [
+        "ARCH-01",
+        "ARCH-02",
+        "ARCH-04",
+        "ARCH-05",
+        "DISC-01",
+        "DOC-05"
+      ]
+    },
+    {
+      "phase": 5,
+      "description": "Reliability & Validation",
+      "rationale": "Benchmarks, test harnesses, and rollback protocols provide the final layer of autonomous robustness.",
+      "findingIds": [
+        "VAL-01",
+        "VAL-02",
+        "VAL-03",
+        "VAL-04",
+        "TECH-01",
+        "TECH-03",
+        "TECH-04",
+        "PROC-04",
+        "DOC-04"
+      ]
     }
   ],
   "deferred": []
