@@ -40,6 +40,21 @@ Affects: `all-repos` — Agentic operability
 - [ ] Create .agents/infrastructure-contracts.md in receptor-infra — a single document that agents can read to understand the mapping between workflows (role, path, audience) and Vault configuration.
       `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/.agents/infrastructure-contracts.md`
 
+### VD-12: secret/infrastructure/github-app-deploy-bot stored the WRONG GitHub App credentials. Both app_id (3095294 = k3s-vault) a
+
+Affects: `receptor-infra` — Vault secret identity
+
+
+- [x] Patch app_id from 3095294 (k3s-vault) to 3127975 (app-lifecycle-deployment) in Vault secret/infrastructure/github-app-deploy-bot.
+      `MANUAL — vault kv patch on cluster`
+      _(Completed: 2026-03-25T01:55:36Z)_
+- [x] Replace private_key with deploy-bot's actual PEM (SHA256:FX8AJMF...) — verified fingerprint against GitHub App settings before writing.
+      `MANUAL — vault kv patch on cluster`
+      _(Completed: 2026-03-25T02:07:31Z)_
+- [x] Verify fix by triggering planner-frontend deploy — all 3 jobs (Build, Update Infrastructure Manifest, Notify Slack) succeeded.
+      `VERIFIED — run 23521492463`
+      _(Completed: 2026-03-25T03:05:00Z)_
+
 ## 🟠 High
 
 ### VD-01: 1 of 7 expected JWT roles is missing: ci-website-frontend. The other 6 (ci-match-backend, ci-planner-frontend, ci-prefer
@@ -163,6 +178,7 @@ Affects: `all-deploy-repos` — CI contract validation
 | Finding ID | Area | File | Category | Severity |
 | :--------- | :--- | :--- | :------- | :------- |
 | VD-08 | Agentic operability | `DEPENDS — on VD-01-T1, VD-02-T2, VD-03-T1 completion` | Architectural Drift | 🔴 Critical |
+| VD-12 | Vault secret identity | `MANUAL — vault kv patch on cluster` | Security | 🔴 Critical |
 | VD-01 | Vault JWT roles | `ci-website-frontend on cluster` | Security | 🟠 High |
 | VD-03 | Vault role management | `bootstrap-jwt-roles.sh` | Process Gap | 🟠 High |
 | VD-04 | vault-action configuration | `ALL — deploy.yml in preferencer-frontend, planner-frontend, website-frontend, workforce-frontend, match-backend` | Architectural Drift | 🟠 High |

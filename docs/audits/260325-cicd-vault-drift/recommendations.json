@@ -272,6 +272,42 @@
         }
       ],
       "severity_history": []
+    },
+    {
+      "id": "VD-12",
+      "severity": "critical",
+      "status": "complete",
+      "category": "Security",
+      "repo": "receptor-infra",
+      "area": "Vault secret identity",
+      "description": "secret/infrastructure/github-app-deploy-bot stored the WRONG GitHub App credentials. Both app_id (3095294 = k3s-vault) and private_key (SHA256:Wfu0EOJ... = k3s-vault key) belonged to the k3s-vault App, not app-lifecycle-deployment (3127975). All deploy workflows authenticated as the wrong App, producing valid tokens that lacked receptor-infra access. No deploy workflow has ever succeeded since the App was installed.",
+      "tasks": [
+        {
+          "taskId": "VD-12-T1",
+          "status": "complete",
+          "description": "Patch app_id from 3095294 (k3s-vault) to 3127975 (app-lifecycle-deployment) in Vault secret/infrastructure/github-app-deploy-bot.",
+          "targetFile": "MANUAL — vault kv patch on cluster",
+          "completedAt": "2026-03-25T01:55:36Z",
+          "completedBy": "61c5cfa4"
+        },
+        {
+          "taskId": "VD-12-T2",
+          "status": "complete",
+          "description": "Replace private_key with deploy-bot's actual PEM (SHA256:FX8AJMF...) — verified fingerprint against GitHub App settings before writing.",
+          "targetFile": "MANUAL — vault kv patch on cluster",
+          "completedAt": "2026-03-25T02:07:31Z",
+          "completedBy": "61c5cfa4"
+        },
+        {
+          "taskId": "VD-12-T3",
+          "status": "complete",
+          "description": "Verify fix by triggering planner-frontend deploy — all 3 jobs (Build, Update Infrastructure Manifest, Notify Slack) succeeded.",
+          "targetFile": "VERIFIED — run 23521492463",
+          "completedAt": "2026-03-25T03:05:00Z",
+          "completedBy": "61c5cfa4"
+        }
+      ],
+      "severity_history": []
     }
   ],
   "clarifications": [

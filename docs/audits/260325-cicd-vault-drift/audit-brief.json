@@ -4,13 +4,19 @@
   "status": "implementing",
   "nextAction": "implement",
   "openTaskCount": 6,
-  "latestHandover": "Phase 1 complete. 8 tasks implemented across 7 repos (committed to main, not audit branches — noted deviation). 6 findings closed: VD-01 (role created), VD-02 (path documented), VD-03 (IaC directory), VD-04 (path standardised), VD-05 (app_id from Vault), VD-11 (policy fixed). 5 findings remain: VD-06 (shared workflow), VD-07 (supabase readiness), VD-08-T2 (contract linting), VD-09 (pre-flight validation), VD-10 (DoD template). Next session should tackle VD-06 (shared reusable deploy workflow) as it eliminates all remaining copy-paste drift.",
+  "latestHandover": "Phase 1 complete + VD-12 critical fix. 11 tasks implemented across 7 repos. 7 findings closed: VD-01 (role), VD-02 (path), VD-03 (IaC), VD-04 (standardise), VD-05 (app_id), VD-11 (policy), VD-12 (deploy-bot identity — root cause of all deploy failures). 5 findings remain: VD-06 (shared workflow), VD-07 (supabase readiness), VD-08-T2 (contract doc), VD-09 (validation), VD-10 (DoD). First successful deploy: planner-frontend run 23521492463.",
   "sessionHistory": [
     {
       "date": "2026-03-25",
-      "sessionId": "61c5cfa4",
+      "sessionId": "61c5cfa4-s1",
       "completedFindingIds": ["VD-01", "VD-02", "VD-03", "VD-04", "VD-05", "VD-11"],
-      "summary": "Live Vault interrogation, created ci-website-frontend role+policy, fixed ci-supabase-receptor policy mount path, codified all roles/policies as IaC in receptor-infra/vault/, standardised all deploy.yml to Option A path format, migrated receptor-planner to ARC runner + Vault OIDC, fixed dm-ra-01→Common-Bond org references."
+      "summary": "Live Vault interrogation, created ci-website-frontend role+policy, fixed ci-supabase-receptor policy mount path, codified all roles/policies as IaC in receptor-infra/vault/, standardised all deploy.yml to Option A path format, migrated receptor-planner to ARC runner + Vault OIDC."
+    },
+    {
+      "date": "2026-03-25",
+      "sessionId": "61c5cfa4-s2",
+      "completedFindingIds": ["VD-12"],
+      "summary": "Discovered deploy-bot Vault secret stored wrong App identity (k3s-vault app_id 3095294 + wrong private key). Patched app_id to 3127975, replaced private_key with deploy-bot PEM. Verified fix with successful planner-frontend deploy (run 23521492463). Fixed dm-ra-01→Common-Bond org references. Pushed all 6 repos."
     }
   ]
 }
