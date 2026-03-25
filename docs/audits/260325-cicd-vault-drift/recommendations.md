@@ -145,6 +145,16 @@ Affects: `planner-frontend` — Supabase readiness
 - [ ] Create a shared supabase-start composite action (or reusable script) that handles DinD readiness, supabase start, status polling with robust key extraction (strip ANSI, handle stderr), and GITHUB_ENV export. Use in all frontend CI workflows.
       `ALL — ci-resilience.yml in planner-frontend, preference-frontend, workforce-frontend`
 
+### VD-13: Codecov coverage reporting is broken ecosystem-wide due to misconfigured vitest flags and missing upload steps.
+Affects: `all-repos` — Coverage Reporting
+
+- [ ] Fix Frontend CI: Restore --coverage to integration vitest commands; add codecov-action upload to unit-test jobs.
+      `ALL — ci-resilience.yml in planner-frontend, preference-frontend, workforce-frontend`
+- [ ] Fix Backend CI: Install pytest-cov; add --cov=allocator (match-backend) and --cov=planner (receptor-planner); add codecov-action steps.
+      `ALL — ci.yml in match-backend, receptor-planner`
+- [ ] Migrate from deprecated 'codecov/test-results-action' to 'codecov/codecov-action@v5' with 'report_type: test_results'. Consolidate coverage and test result uploads across all repos.
+      `ALL — Frontend and Backend CI workflows`
+
 ## 🟢 Low
 
 ### VD-09: No pre-flight check validates a workflow's vault-action role, secrets path, and audience against documented Vault config
@@ -170,6 +180,27 @@ Affects: `all-deploy-repos` — CI contract validation
 | 3 | VD-03, VD-08 | Prevents future drift by making Vault configuration version-controlled and agent-readable. |
 | 4 | VD-06, VD-09, VD-10 | Structural prevention: shared workflows eliminate copy-paste drift, CI contract validation catches errors before runtime, and hardened DoD prevents future audit regressions. |
 
+## [VD-14] Restore Supabase Image Caching (k3s/ARC)
+
+### Finding
+Supabase images (and other non-docker.io images) are cold-pulled every time on ARC runners, resulting in multi-GB redundant data transfers and slow CI loops.
+
+### Technical Recommendations
+
+#### 1. Expand Registry Mirror (Zot)
+Update `receptor-infra/registry/zot-values.yaml` to include `public.ecr.aws` and re-enable `ghcr.io` sync using the existing PAT in Vault at `secret/infrastructure/ghcr-pull-pat` (key: `token`). Use Zot's AWS auth helper for ECR Public to avoid token expiration issues.
+
+#### 2. Update K3s Registries config
+Update `receptor-infra/registry/registries.yaml` to route `public.ecr.aws` through the local Zot ClusterIP (`10.43.7.26`).
+
+#### 3. Standardise DinD Arguments
+Update `receptor-infra/ci-runner/values/common.yaml` to ensure the dind sidecar is correctly pointing at the expanded mirror and rely on LAN-speed mirrors instead of trying to share stateful volumes between ephemeral pods (which causes corruption).
+
+### Tasks
+- [ ] VD-14-T1: Update `zot-values.yaml` with ECR/GHCR sync
+- [ ] VD-14-T2: Update `registries.yaml` with ECR routing
+- [ ] VD-14-T3: Redeploy Zot and push `registries.yaml` to all nodes
+
 
 ---
 
@@ -185,8 +216,10 @@ Affects: `all-deploy-repos` — CI contract validation
 | VD-06 | Workflow duplication | `deploy-gitops.yml` | Process Gap | 🟠 High |
 | VD-10 | Audit regression | `SKILL.md` | Process Gap | 🟠 High |
 | VD-11 | Vault policies | `MANUAL — vault policy write ci-supabase-receptor on cluster` | Security | 🟠 High |
+| VD-14 | CI image caching | `ALL — receptor-infra/registry/` | Process Gap | 🟠 High |
 | VD-02 | Vault KV secrets | `README.md` | Security | 🟡 Medium |
 | VD-05 | App ID source | `ALL — deploy.yml in planner-frontend, website-frontend, workforce-frontend, match-backend` | Architectural Drift | 🟡 Medium |
 | VD-07 | Supabase readiness | `ALL — ci-resilience.yml in planner-frontend, preference-frontend, workforce-frontend` | Process Gap | 🟡 Medium |
+| VD-13 | Coverage reporting | `ALL — ci.yml in all test repos` | Process Gap | 🟡 Medium |
 | VD-09 | CI contract validation | `DEPENDS — on VD-01-T1 and VD-02-T2 completion` | Process Gap | 🟢 Low |
 

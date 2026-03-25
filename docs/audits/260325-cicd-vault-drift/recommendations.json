@@ -316,6 +316,80 @@
         }
       ],
       "severity_history": []
+    },
+    {
+      "id": "VD-13",
+      "severity": "medium",
+      "status": "open",
+      "category": "CICD",
+      "title": "Broken Codecov Integration (Ecosystem-wide)",
+      "description": "Coverage reports are not being successfully uploaded to Codecov due to configuration gaps: (1) Frontends generate unit test coverage but lack an upload step in the unit job; (2) Frontend integration jobs have an upload step but are missing the --coverage flag; (3) Backends are missing coverage generation entirely or have it explicitly disabled (--no-cov).",
+      "audit_logic": "Reviewing .github/workflows/*.yml for --coverage/--cov flags matched with codecov-action usage. Comparison of step names ('with coverage') against actual execution commands.",
+      "remediation": "Standardise coverage generation across all jobs. Install pytest-cov for backends. Add --coverage to all frontend vitest steps. Add codecov-action upload steps to all test jobs.",
+      "tasks": [
+        {
+          "taskId": "VD-13-T1",
+          "status": "open",
+          "description": "Fix Frontend CI: add --coverage to integration vitest commands; add codecov-action upload to unit-test jobs.",
+          "targetFile": "ALL — ci-resilience.yml in planner-frontend, preference-frontend, workforce-frontend",
+          "completedAt": null,
+          "completedBy": null
+        },
+        {
+          "taskId": "VD-13-T2",
+          "status": "open",
+          "description": "Fix Backend CI: Install pytest-cov; add --cov=allocator (match-backend) and --cov=tests (receptor-planner); add codecov-action steps.",
+          "targetFile": "ALL \u2014 ci.yml in match-backend, receptor-planner",
+          "completedAt": null,
+          "completedBy": null
+        },
+        {
+          "taskId": "VD-13-T3",
+          "status": "open",
+          "description": "Migrate from deprecated 'codecov/test-results-action' to 'codecov/codecov-action@v5' with 'report_type: test_results'. Consolidate coverage and test result uploads across all repos.",
+          "targetFile": "ALL \u2014 Frontend and Backend CI workflows",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "VD-14",
+      "severity": "high",
+      "status": "open",
+      "category": "INFRA",
+      "title": "CI Image Caching Failure (Supabase Cold Pulls)",
+      "description": "Supabase images (ECR) are pulled from scratch on every run due to mirror gaps. GHCR images also bypass the mirror following a historical regression (commit d610b0cc) due to unauthenticated 401 errors in Zot.",
+      "audit_logic": "Analysis of receptor-infra/ci-runner/values/common.yaml and receptor-infra/registry/zot-values.yaml; cross-referenced with Git history (commit d610b0cc).",
+      "remediation": "Expand Zot sync to cover public.ecr.aws (using AWS auth helper); re-enable ghcr.io sync using existing PAT at secret/infrastructure/ghcr-pull-pat; update registries.yaml to route ECR through Zot.",
+      "tasks": [
+        {
+          "taskId": "VD-14-T1",
+          "status": "open",
+          "description": "Update Zot sync for GHCR and ECR in zot-values.yaml.",
+          "targetFile": "receptor-infra/registry/zot-values.yaml",
+          "completedAt": null,
+          "completedBy": null
+        },
+        {
+          "taskId": "VD-14-T2",
+          "status": "open",
+          "description": "Update k3s registries for ECR routing in registries.yaml.",
+          "targetFile": "receptor-infra/registry/registries.yaml",
+          "completedAt": null,
+          "completedBy": null
+        },
+        {
+          "taskId": "VD-14-T3",
+          "status": "open",
+          "description": "Redeploy Registry Infrastructure: helm upgrade Zot and push registries.yaml to nodes.",
+          "targetFile": "receptor-infra/registry/",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
     }
   ],
   "clarifications": [
@@ -354,14 +428,15 @@
     },
     {
       "phase": 2,
-      "name": "Standardise Workflow Configuration",
+      "name": "Standardise Workflow Configuration & Caching",
       "findingIds": [
         "VD-02",
         "VD-05",
-        "VD-07"
+        "VD-07",
+        "VD-14"
       ],
-      "rationale": "Once deployments work, document the secret inventory, unify app_id source, and fix supabase readiness detection.",
-      "description": "Unify vault-action path format, app_id source, and supabase readiness detection across all repos."
+      "rationale": "Once deployments work, document the secret inventory, unify app_id source, fix supabase readiness detection, and restore image caching to speed up CI loops.",
+      "description": "Unify vault-action path format, app_id source, supabase readiness detection, and restore image caching."
     },
     {
       "phase": 3,

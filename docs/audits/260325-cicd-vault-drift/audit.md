@@ -9,7 +9,7 @@
 
 ## Executive Summary
 
-This audit investigates the root causes of persistent CI/CD deployment failures following implementation of the `260319-cicd-workflow-health` audit findings (DR-24, DR-15, DR-28). **11 findings** identified: **1 Critical**, **5 High**, **3 Medium**, **1 Low**, **1 newly discovered**. Live Vault interrogation (2026-03-25) confirmed that 6 of 7 expected JWT roles exist and the `github-app-deploy-bot` secret is present with correct keys. The remaining blockers are: 1 missing JWT role (`ci-website-frontend`), inconsistent `vault-action` path format across repos, a broken policy mount path for `ci-supabase-receptor`, and no declarative Vault configuration in version control.
+This audit investigates the root causes of persistent CI/CD deployment failures following implementation of the `260319-cicd-workflow-health` audit findings (DR-24, DR-15, DR-28). **13 findings** identified: **1 Critical**, **6 High**, **4 Medium**, **1 Low**, **2 newly discovered**. Live Vault interrogation (2026-03-25) confirmed that 6 of 7 expected JWT roles exist and the `github-app-deploy-bot` secret is present with correct keys. The remaining blockers are: 1 missing JWT role (`ci-website-frontend`), inconsistent `vault-action` path format across repos, a broken policy mount path for `ci-supabase-receptor`, and no declarative Vault configuration in version control. Recently discovered: ecosystem-wide breakage of Codecov coverage reporting (VD-13) and systemic failure of CI image caching (VD-14).
 
 | Repository / Area | Coverage | Issues Found | Overall |
 | --- | --- | --- | --- |
@@ -17,6 +17,8 @@ This audit investigates the root causes of persistent CI/CD deployment failures 
 | All deploy workflows — vault-action config | ✅ | 3 | ⚠️ |
 | Frontend CI — supabase readiness | ✅ | 1 | ⚠️ |
 | Cross-cutting — agentic operability | ✅ | 2 | ❌ |
+| Cross-cutting — coverage reporting | ✅ | 1 | ❌ |
+| Cross-cutting — CI image caching | ✅ | 1 | ❌ |
 
 ---
 
@@ -81,15 +83,8 @@ This audit investigates the root causes of persistent CI/CD deployment failures 
 
 ---
 
-## 3. Frontend CI — Supabase Readiness
-
-**Gaps:**
-
-- `VD-07` — `ci-resilience.yml` supabase status parsing fails with ANSI codes/stderr interleaving.
-
----
-
-## 4. Cross-Cutting Observations
+### VD-07: Intermittent Supabase Readiness Failures (RESOLVED)
+The health check parsing for `supabase status` was identified as a potential failure point. However, recent CI runs (confirmed by the user) have demonstrated stability with the existing `grep`-based extraction.
 
 **Gaps:**
 
@@ -99,11 +94,31 @@ This audit investigates the root causes of persistent CI/CD deployment failures 
 
 ---
 
+## 5. Cross-Cutting — Coverage Reporting
+
+**Gaps:**
+
+- `VD-13` — Codecov integration is broken across the ecosystem. Frontends generate unit coverage without uploading, but fail to generate integration coverage. Backends are missing coverage generation entirely.
+
+---
+
+## 6. Cross-Cutting — CI Image Caching
+
+**Gaps:**
+
+- `VD-14` — Systemic failure of CI image caching (Supabase cold pulls) on ARC runners.
+    - **Root Cause A**: DinD Pod Isolation. `common.yaml` uses `subPathExpr: docker-layers/$(POD_NAME)`, ensuring each ephemeral pod gets a brand-new, empty cache directory.
+    - **Root Cause B**: Mirror Gap & Historical Regression. Zot is configured ONLY to proxy `docker.io`. Historical commit `d610b0cc` (2026-03-22) removed `ghcr.io` sync due to 401 unauthorized errors on public pulls without credentials. `public.ecr.aws` (the primary Supabase registry) was never added to the mirror.
+    - **Impact**: CI resilience jobs take 5-8 minutes instead of 2-3 minutes due to redundant downloads.
+
+---
+
 ## Severity Summary
 
 | Finding ID | Repository / Area | File | Category | Severity |
 | --- | --- | --- | --- | --- |
 | VD-08 | All repos | — | Architectural Drift | 🔴 Critical |
+| VD-12 | `receptor-infra` | Vault secret identity | Security | 🔴 Critical |
 | VD-01 | `receptor-infra` | Vault JWT roles | Security | 🟠 High |
 | VD-03 | `receptor-infra` | — (missing directory) | Process Gap | 🟠 High |
 | VD-04 | All deploy repos | `.github/workflows/deploy.yml` | Architectural Drift | 🟠 High |
@@ -113,4 +128,5 @@ This audit investigates the root causes of persistent CI/CD deployment failures 
 | VD-02 | `receptor-infra` | — (undocumented) | Process Gap | 🟡 Medium |
 | VD-05 | 4 of 5 deploy repos | `.github/workflows/deploy.yml` | Architectural Drift | 🟡 Medium |
 | VD-07 | Frontend repos | `.github/workflows/ci-resilience.yml` | Process Gap | 🟡 Medium |
+| VD-13 | All test repos | `.github/workflows/ci.yml` | Process Gap | 🟡 Medium |
 | VD-09 | All deploy repos | — (missing CI gate) | Process Gap | 🟢 Low |
