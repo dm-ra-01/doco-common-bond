@@ -16,8 +16,24 @@ The Receptor ecosystem possesses a mature **internal** agent infrastructure (`.a
 | Repository / Area | Coverage | Issues Found | Overall |
 | ----------------- | -------- | ------------ | ------- |
 | All Repositories  | ❌       | 32           | 🔴 Poor  |
-| .agents/ Shared   | ✅       | 0            | 🟢 Good  |
 | Documentation     | ⚠️       | 4            | 🟡 Fair  |
+
+---
+
+## 🌟 Gold Standards
+
+This audit evaluates the ecosystem against the **2025 APE Golden Path**. The following specialized benchmarks are used to define "excellence":
+
+### Industry Benchmarks (External)
+- **[Golden Path Architecture](https://learn.microsoft.com/en-us/azure/architecture/guide/agentic-platform/agentic-platform-engineering)**: Microsoft's Production-ready blueprint for agentic AI.
+- **MCP (Model Context Protocol)**: Universal interoperability for AI tools and context discovery.
+- **Agent Identity (Entra ID Pattern)**: Unique, traceable identities for every autonomous persona.
+
+### Internal Reference Implementations
+For detailed internal baselines, see **[GOLD_STANDARDS.md](file:///Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/audits/260325-agentic-platform-engineering/GOLD_STANDARDS.md)**.
+- **Contracts**: `receptor-infra/.agents/infrastructure-contracts.md`
+- **Observation Loops**: `receptor-infra/.github/workflows/helm-upgrade-check.yml`
+- **Machine Discovery**: `receptor-planner/openapi.json`
 
 ---
 

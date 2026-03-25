@@ -293,7 +293,7 @@ Affects: `ecosystem` — Agent Discovery
 
 | Phase | Finding IDs | Rationale |
 | :---- | :---------- | :-------- |
-| 1 | PROC-01, PROC-02, PROC-03, DOC-01, DOC-02 | Establishing AGENTS.md and semantic context is the prerequisite for all autonomous operations. |
+| 1 | PROC-01, PROC-02, PROC-03, DOC-01, DOC-02 | Establishing AGENTS.md and formalizing the 'Golden Path' benchmarks is the prerequisite for all autonomous operations. |
 | 2 | SEC-01, SEC-02, SEC-03, GOV-01, GOV-02, GOV-03 | Securing agent identities and defining human-in-the-loop gates ensures safe platform operations. |
 | 3 | OBS-01, OBS-03, TECH-02, CROSS-01, INFRA-02 | Standardized logs and decision tracking enable root cause analysis of agentic failures. |
 | 4 | ARCH-01, ARCH-02, ARCH-04, ARCH-05, DISC-01, DOC-05 | Contracts and centralized capability registries align specialized agents across repositories. |

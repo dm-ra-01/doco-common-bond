@@ -660,8 +660,8 @@
   "implementationPhases": [
     {
       "phase": 1,
-      "description": "Foundation: Context & Metadata",
-      "rationale": "Establishing AGENTS.md and semantic context is the prerequisite for all autonomous operations.",
+      "description": "Foundation: Context & Gold Standards",
+      "rationale": "Establishing AGENTS.md and formalizing the 'Golden Path' benchmarks is the prerequisite for all autonomous operations.",
       "findingIds": [
         "PROC-01",
         "PROC-02",
