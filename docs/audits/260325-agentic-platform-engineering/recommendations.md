@@ -60,7 +60,7 @@ Affects: `ecosystem` — GitOps Workflows
 Affects: `all` — Agent Safety
 
 
-- [ ] Establish a Permission and Safety standard for agentic platform tools, defining read-only vs. write-scoped credentials and required human gates.
+- [ ] Establish a Permission and Safety standard for agentic platform tools, defining read-only vs. write-scoped credentials and mandatory 'Human-Explainability' requirements (intent justification).
       `/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/about-us/our-technology.md`
 
 ### PROC-04: No standard for 'Agentic CI/CD Gates' like AI-driven test healing. (Iterative Improvement Proposal)
@@ -79,12 +79,12 @@ Affects: `all` — Diagnostic Standardization
 - [ ] Enforce a standardized structured logging (JSON) format across all Python services to improve agentic root cause analysis.
       `/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/engineering/logging-standards.md`
 
-### ARCH-02: Lack of standardized 'Agentic Contracts' for shared services (Supabase, Match, Planner).
+### ARCH-02: Lack of standardized 'MCP (Model Context Protocol)' resource servers for shared services (Supabase, Match, Planner).
 
-Affects: `all` — Agent Contracts
+Affects: `all` — Agent Interoperability
 
 
-- [ ] Standardize the .agents/contracts.md format across all shared compute and data services.
+- [ ] Implement MCP Resource Servers for all shared compute and data services to expose schemas and docs to external agents.
       `/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/engineering/agent-infrastructure.md`
 
 ### VAL-01: No automated benchmark to verify agent performance against domain-specific problems. (Round 2 Addition)
@@ -198,10 +198,10 @@ Affects: `all` — Agent Context
 Affects: `all` — Agent Traceability
 
 
-- [ ] Define a standard X-Agent-ID header and logging convention for all autonomous tools, including mandatory PII/Secret masking for prompt/completion telemetry.
+- [ ] Define a standard template for agent skills and prompt engineering (aligned with .github/agents/ and MCP Tool Schemas).
       `/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/engineering/logging-standards.md`
 
-### DISC-01: Absence of a centralized machine-readable registry of agentic capabilities. (Round 2 Addition)
+### DISC-01: Lack of a centralized 'Agent Registry' or 'Skill Catalog' (Product Mindset alignment).
 
 Affects: `ecosystem` — Agent Discovery
 
@@ -313,7 +313,7 @@ Affects: `ecosystem` — Agent Discovery
 | SEC-01 | Agent Safety | `our-technology.md` | Security | 🟠 High |
 | PROC-04 | Agentic Workflows | `ai-healer.yml` | Process Gap | 🟠 High |
 | CROSS-01 | Diagnostic Standardization | `logging-standards.md` | Consensus | 🟠 High |
-| ARCH-02 | Agent Contracts | `agent-infrastructure.md` | Architecture | 🟠 High |
+| ARCH-02 | Agent Interoperability | `agent-infrastructure.md` | Architecture | 🟠 High |
 | VAL-01 | Agent Validation | `agent-quality.md` | Compliance | 🟠 High |
 | SEC-02 | Agent Safety | `agent-secret-rotation.yml` | Security | 🟠 High |
 | GOV-01 | Agent Context | `agent-governance.md` | Governance | 🟠 High |

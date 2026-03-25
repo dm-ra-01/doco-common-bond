@@ -147,7 +147,7 @@
         {
           "taskId": "SEC-01-T1",
           "status": "open",
-          "description": "Establish a Permission and Safety standard for agentic platform tools, defining read-only vs. write-scoped credentials and required human gates.",
+          "description": "Establish a Permission and Safety standard for agentic platform tools, defining read-only vs. write-scoped credentials and mandatory 'Human-Explainability' requirements (intent justification).",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/about-us/our-technology.md",
           "completedAt": null,
           "completedBy": null
@@ -241,13 +241,13 @@
       "status": "open",
       "category": "Architecture",
       "repo": "all",
-      "area": "Agent Contracts",
-      "description": "Lack of standardized 'Agentic Contracts' for shared services (Supabase, Match, Planner).",
+      "area": "Agent Interoperability",
+      "description": "Lack of standardized 'MCP (Model Context Protocol)' resource servers for shared services (Supabase, Match, Planner).",
       "tasks": [
         {
           "taskId": "ARCH-02-T1",
           "status": "open",
-          "description": "Standardize the .agents/contracts.md format across all shared compute and data services.",
+          "description": "Implement MCP Resource Servers for all shared compute and data services to expose schemas and docs to external agents.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/engineering/agent-infrastructure.md",
           "completedAt": null,
           "completedBy": null
@@ -267,7 +267,7 @@
         {
           "taskId": "OBS-01-T1",
           "status": "open",
-          "description": "Define a standard X-Agent-ID header and logging convention for all autonomous tools, including mandatory PII/Secret masking for prompt/completion telemetry.",
+          "description": "Define a standard template for agent skills and prompt engineering (aligned with .github/agents/ and MCP Tool Schemas).",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/engineering/logging-standards.md",
           "completedAt": null,
           "completedBy": null
@@ -282,7 +282,7 @@
       "category": "Architecture",
       "repo": "ecosystem",
       "area": "Agent Discovery",
-      "description": "Absence of a centralized machine-readable registry of agentic capabilities. (Round 2 Addition)",
+      "description": "Lack of a centralized 'Agent Registry' or 'Skill Catalog' (Product Mindset alignment).",
       "tasks": [
         {
           "taskId": "DISC-01-T1",

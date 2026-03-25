@@ -30,7 +30,7 @@ This audit evaluates the ecosystem against the **2025 APE Golden Path**. The fol
 - **Agent Identity (Entra ID Pattern)**: Unique, traceable identities for every autonomous persona.
 
 ### Internal Reference Implementations
-For detailed internal baselines, see **[GOLD_STANDARDS.md](file:///Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/audits/260325-agentic-platform-engineering/GOLD_STANDARDS.md)**.
+For detailed internal baselines and benchmark mapping, see **[GOLD_STANDARDS.md](./GOLD_STANDARDS.md)** and **[BENCHMARK_MAPPING.md](./BENCHMARK_MAPPING.md)**.
 - **Contracts**: `receptor-infra/.agents/infrastructure-contracts.md`
 - **Observation Loops**: `receptor-infra/.github/workflows/helm-upgrade-check.yml`
 - **Machine Discovery**: `receptor-planner/openapi.json`
