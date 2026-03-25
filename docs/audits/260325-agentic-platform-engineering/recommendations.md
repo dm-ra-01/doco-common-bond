@@ -161,6 +161,14 @@ Affects: `all` — Agent Robustness
 
 ## 🟡 Medium
 
+### DOC-01: Technical documentation is not structured for semantic RAG or LLM context injection.
+
+Affects: `all` — Agent Context
+
+
+- [ ] Standardize semantic metadata headers for all engineering documentation.
+      `/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/README.md`
+
 ### PROC-03: No standard .github/agents/ directory for specialized task instruction files.
 
 Affects: `all` — Agent Personas
@@ -259,6 +267,14 @@ Affects: `ecosystem` — Agent Alignment
 
 ## 🟢 Low
 
+### DOC-02: Rudimentary .llm-context.md files lack the depth required for complex platform tasks.
+
+Affects: `all` — Agent Context
+
+
+- [ ] Expand .llm-context.md in critical service repos (Planner, Allocator).
+      `/Users/ryan/development/common_bond/antigravity-environment/backend/receptor-planner/.llm-context.md`
+
 ### DOC-05: Lack of a dedicated Semantic Search API for agents into Docusaurus. (Round 3 Addition)
 
 Affects: `ecosystem` — Agent Discovery
@@ -307,6 +323,7 @@ Affects: `ecosystem` — Agent Discovery
 | VAL-03 | Agent Safety | `agent-security.md` | Security Validation | 🟠 High |
 | ARCH-05 | Agent Safety | `agent-infrastructure.md` | Architecture | 🟠 High |
 | TECH-04 | Agent Robustness | `agent-infrastructure.md` | Reliability | 🟠 High |
+| DOC-01 | Agent Context | `README.md` | Documentation Gap | 🟡 Medium |
 | PROC-03 | Agent Personas | `README.md` | Process Gap | 🟡 Medium |
 | DOC-03 | Agent Context | `reference-implementations.md` | Documentation Gap | 🟡 Medium |
 | TECH-01 | Agent Context | `README.md` | Tech Debt | 🟡 Medium |
@@ -319,5 +336,6 @@ Affects: `ecosystem` — Agent Discovery
 | INFRA-02 | Agent Traceability | `agent-infrastructure.md` | Observability | 🟡 Medium |
 | VAL-04 | Agent Testability | `SKILL.md` | Validation | 🟡 Medium |
 | OBS-03 | Agent Alignment | `logging-standards.md` | Observability | 🟡 Medium |
+| DOC-02 | Agent Context | `.llm-context.md` | Documentation Gap | 🟢 Low |
 | DOC-05 | Agent Discovery | `README.md` | Architecture | 🟢 Low |
 

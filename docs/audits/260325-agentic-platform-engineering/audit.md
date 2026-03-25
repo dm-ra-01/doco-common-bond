@@ -11,11 +11,11 @@
 
 The Receptor ecosystem possesses a mature **internal** agent infrastructure (`.agents/` symlink system), but is almost entirely lacking in **external** agentic readiness. There is a complete absence of industry-standard context files (`AGENTS.md`, `CLAUDE.md`, `copilot-instructions.md`) and agent personas. This restricts the ability of developers to use common tools like GitHub Copilot and Cursor effectively across the platform.
 
-**Total Findings:** 31 (2 Critical, 17 High, 10 Medium, 2 Low)
+**Total Findings:** 32 (2 Critical, 17 High, 11 Medium, 2 Low)
 
 | Repository / Area | Coverage | Issues Found | Overall |
 | ----------------- | -------- | ------------ | ------- |
-| All Repositories  | ❌       | 31           | 🔴 Poor  |
+| All Repositories  | ❌       | 32           | 🔴 Poor  |
 | .agents/ Shared   | ✅       | 0            | 🟢 Good  |
 | Documentation     | ⚠️       | 4            | 🟡 Fair  |
 

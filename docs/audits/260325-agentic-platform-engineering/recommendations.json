@@ -56,6 +56,46 @@
       "severity_history": []
     },
     {
+      "id": "DOC-01",
+      "severity": "medium",
+      "status": "open",
+      "category": "Documentation Gap",
+      "repo": "all",
+      "area": "Agent Context",
+      "description": "Technical documentation is not structured for semantic RAG or LLM context injection.",
+      "tasks": [
+        {
+          "taskId": "DOC-01-T1",
+          "status": "open",
+          "description": "Standardize semantic metadata headers for all engineering documentation.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/README.md",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "DOC-02",
+      "severity": "low",
+      "status": "open",
+      "category": "Documentation Gap",
+      "repo": "all",
+      "area": "Agent Context",
+      "description": "Rudimentary .llm-context.md files lack the depth required for complex platform tasks.",
+      "tasks": [
+        {
+          "taskId": "DOC-02-T1",
+          "status": "open",
+          "description": "Expand .llm-context.md in critical service repos (Planner, Allocator).",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/backend/receptor-planner/.llm-context.md",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
       "id": "PROC-03",
       "severity": "medium",
       "status": "open",
