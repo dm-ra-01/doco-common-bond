@@ -95,6 +95,22 @@ Affects: `ecosystem` — Agent Safety
 - [ ] Implement automated secret rotation for autonomous tools using Vault and GitHub Actions.
       `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/.github/workflows/agent-secret-rotation.yml`
 
+### GOV-01: Lack of machine-readable Change Impact Assessments in PRs. (Round 3 Addition)
+
+Affects: `all` — Agent Context
+
+
+- [ ] Implement a 'PR Auditor' workflow to generate automated impact assessments.
+      `/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/engineering/agent-governance.md`
+
+### VAL-02: Manual verification of complex RLS policies. (Round 3 Addition)
+
+Affects: `supabase-receptor` — Security Validation
+
+
+- [ ] Implement an 'RLS Auditor' agent persona to provide formal verification of data isolation.
+      `/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/compliance/agent-security.md`
+
 ## 🟡 Medium
 
 ### PROC-03: No standard .github/agents/ directory for specialized task instruction files.
@@ -145,6 +161,32 @@ Affects: `all` — Agent Safety
 - [ ] Standardize a CONSTRAINTS.md file for every repository specifically for non-obvious AI pitfalls.
       `/Users/ryan/development/common_bond/antigravity-environment/dev-environment/CONSTRAINTS.md`
 
+### TECH-02: Absence of structured 'Intent' metadata in deployments. (Round 3 Addition)
+
+Affects: `all` — Agentic RCA
+
+
+- [ ] Standardize a deploy.intent.json metadata file for all production environments.
+      `/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/engineering/deployment-standards.md`
+
+### ARCH-04: Absence of isolated 'Debug Sidecar' agent personas. (Round 3 Addition)
+
+Affects: `receptor-infra` — Agent Personas
+
+
+- [ ] Design a Read-Only Debug Sidecar pattern for Kubernetes diagnostic isolation.
+      `/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/engineering/agent-infrastructure.md`
+
+## 🟢 Low
+
+### DOC-05: Lack of a dedicated Semantic Search API for agents into Docusaurus. (Round 3 Addition)
+
+Affects: `ecosystem` — Agent Discovery
+
+
+- [ ] Expose the Docusaurus internal index via a dedicated Agent Search endpoint.
+      `/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/README.md`
+
 
 ---
 
@@ -174,10 +216,15 @@ Affects: `all` — Agent Safety
 | ARCH-02 | Agent Contracts | `agent-infrastructure.md` | Architecture | 🟠 High |
 | VAL-01 | Agent Validation | `agent-quality.md` | Compliance | 🟠 High |
 | SEC-02 | Agent Safety | `agent-secret-rotation.yml` | Security | 🟠 High |
+| GOV-01 | Agent Context | `agent-governance.md` | Governance | 🟠 High |
+| VAL-02 | Security Validation | `agent-security.md` | Compliance | 🟠 High |
 | PROC-03 | Agent Personas | `README.md` | Process Gap | 🟡 Medium |
 | DOC-03 | Agent Context | `reference-implementations.md` | Documentation Gap | 🟡 Medium |
 | TECH-01 | Agent Context | `README.md` | Tech Debt | 🟡 Medium |
 | OBS-01 | Agent Traceability | `logging-standards.md` | Observability | 🟡 Medium |
 | DISC-01 | Agent Discovery | `README.md` | Architecture | 🟡 Medium |
 | DOC-04 | Agent Safety | `CONSTRAINTS.md` | Documentation Gap | 🟡 Medium |
+| TECH-02 | Agentic RCA | `deployment-standards.md` | Instrumentation | 🟡 Medium |
+| ARCH-04 | Agent Personas | `agent-infrastructure.md` | Architecture | 🟡 Medium |
+| DOC-05 | Agent Discovery | `README.md` | Architecture | 🟢 Low |
 

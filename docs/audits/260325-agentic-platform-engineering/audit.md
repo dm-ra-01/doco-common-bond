@@ -86,14 +86,19 @@ The Receptor ecosystem possesses a mature **internal** agent infrastructure (`.a
 | ARCH-02    | Shared Services   | —    | Architecture  | 🟠 High     |
 | SEC-01     | All               | —    | Security      | 🟠 High     |
 | SEC-02     | Ecosystem         | —    | Security      | 🟠 High     |
+| GOV-01     | All               | —    | Governance    | 🟠 High     |
 | VAL-01     | Ecosystem         | —    | Compliance    | 🟠 High     |
+| VAL-02     | Supabase          | —    | Compliance    | 🟠 High     |
 | PROC-04    | All               | —    | Process       | 🟠 High     |
 | CROSS-01   | All               | —    | Consensus     | 🟠 High     |
 | PROC-03    | All               | —    | Process       | 🟡 Medium   |
 | DOC-01     | All               | —    | Documentation | 🟡 Medium   |
 | DOC-03     | All               | —    | Documentation | 🟡 Medium   |
 | TECH-01    | All               | —    | Tech Debt     | 🟡 Medium   |
+| TECH-02    | All               | —    | Instrumentation | 🟡 Medium   |
 | OBS-01     | All               | —    | Observability | 🟡 Medium   |
 | DISC-01    | Ecosystem         | —    | Architecture  | 🟡 Medium   |
+| ARCH-04    | Infrastructure    | —    | Architecture  | 🟡 Medium   |
 | DOC-04     | All               | —    | Documentation | 🟡 Medium   |
 | DOC-02     | All               | —    | Documentation | 🟢 Low      |
+| DOC-05     | Ecosystem         | —    | Architecture  | 🟢 Low      |

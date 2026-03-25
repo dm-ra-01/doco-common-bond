@@ -3,7 +3,7 @@
   "auditSlug": "260325-agentic-platform-engineering",
   "status": "drafting",
   "nextAction": "implement",
-  "openTaskCount": 16,
+  "openTaskCount": 21,
   "latestHandover": "Initial audit complete with deeper ecosystem scan. 11 findings across 9 repositories. Reference implementations identified in receptor-infra and receptor-planner. Ready for Phase 1 implementation (AGENTS.md propagation).",
   "sessionHistory": [
     {

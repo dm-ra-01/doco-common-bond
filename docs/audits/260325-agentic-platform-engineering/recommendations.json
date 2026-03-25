@@ -314,6 +314,106 @@
         }
       ],
       "severity_history": []
+    },
+    {
+      "id": "GOV-01",
+      "severity": "high",
+      "status": "open",
+      "category": "Governance",
+      "repo": "all",
+      "area": "Agent Context",
+      "description": "Lack of machine-readable Change Impact Assessments in PRs. (Round 3 Addition)",
+      "tasks": [
+        {
+          "taskId": "GOV-01-T1",
+          "status": "open",
+          "description": "Implement a 'PR Auditor' workflow to generate automated impact assessments.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/engineering/agent-governance.md",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "TECH-02",
+      "severity": "medium",
+      "status": "open",
+      "category": "Instrumentation",
+      "repo": "all",
+      "area": "Agentic RCA",
+      "description": "Absence of structured 'Intent' metadata in deployments. (Round 3 Addition)",
+      "tasks": [
+        {
+          "taskId": "TECH-02-T1",
+          "status": "open",
+          "description": "Standardize a deploy.intent.json metadata file for all production environments.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/engineering/deployment-standards.md",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "VAL-02",
+      "severity": "high",
+      "status": "open",
+      "category": "Compliance",
+      "repo": "supabase-receptor",
+      "area": "Security Validation",
+      "description": "Manual verification of complex RLS policies. (Round 3 Addition)",
+      "tasks": [
+        {
+          "taskId": "VAL-02-T1",
+          "status": "open",
+          "description": "Implement an 'RLS Auditor' agent persona to provide formal verification of data isolation.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/compliance/agent-security.md",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "DOC-05",
+      "severity": "low",
+      "status": "open",
+      "category": "Architecture",
+      "repo": "ecosystem",
+      "area": "Agent Discovery",
+      "description": "Lack of a dedicated Semantic Search API for agents into Docusaurus. (Round 3 Addition)",
+      "tasks": [
+        {
+          "taskId": "DOC-05-T1",
+          "status": "open",
+          "description": "Expose the Docusaurus internal index via a dedicated Agent Search endpoint.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/README.md",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "ARCH-04",
+      "severity": "medium",
+      "status": "open",
+      "category": "Architecture",
+      "repo": "receptor-infra",
+      "area": "Agent Personas",
+      "description": "Absence of isolated 'Debug Sidecar' agent personas. (Round 3 Addition)",
+      "tasks": [
+        {
+          "taskId": "ARCH-04-T1",
+          "status": "open",
+          "description": "Design a Read-Only Debug Sidecar pattern for Kubernetes diagnostic isolation.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/engineering/agent-infrastructure.md",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
     }
   ],
   "clarifications": [],
