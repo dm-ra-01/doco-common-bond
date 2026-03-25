@@ -1,0 +1,215 @@
+{
+  "$schema": "../../../../../dev-environment/.agents/schemas/recommendations.schema.json",
+  "auditSlug": "260325-agentic-platform-engineering",
+  "title": "Agentic Platform Engineering Readiness Audit",
+  "date": "2026-03-25",
+  "scope": "Ecosystem-wide (9 repositories)",
+  "auditor": "Ryan Ammendolea",
+  "branch": "audit/260325-agentic-platform-engineering",
+  "findings": [
+    {
+      "id": "PROC-01",
+      "severity": "critical",
+      "status": "open",
+      "category": "Process Gap",
+      "repo": "all",
+      "area": "Agent Context",
+      "description": "Complete absence of standard AGENTS.md files at repository roots.",
+      "tasks": [
+        {
+          "taskId": "PROC-01-T1",
+          "status": "open",
+          "description": "Create AGENTS.md in dev-environment following the open-standard (build/test/style).",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/dev-environment/AGENTS.md",
+          "completedAt": null,
+          "completedBy": null
+        },
+        {
+          "taskId": "PROC-01-T2",
+          "status": "open",
+          "description": "Propagate AGENTS.md to all 9 repositories as root context files.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/README.md",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "PROC-02",
+      "severity": "high",
+      "status": "open",
+      "category": "Process Gap",
+      "repo": "all",
+      "area": "Agent Context",
+      "description": "Absence of repository-wide copilot-instructions.md files.",
+      "tasks": [
+        {
+          "taskId": "PROC-02-T1",
+          "status": "open",
+          "description": "Create .github/copilot-instructions.md in common-bond to define global architectural guardrails.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/.github/copilot-instructions.md",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "PROC-03",
+      "severity": "medium",
+      "status": "open",
+      "category": "Process Gap",
+      "repo": "all",
+      "area": "Agent Personas",
+      "description": "No standard .github/agents/ directory for specialized task instruction files.",
+      "tasks": [
+        {
+          "taskId": "PROC-03-T1",
+          "status": "open",
+          "description": "Implement .github/agents/ in common-bond and dev-environment using the Microsoft Cluster Doctor pattern.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/.github/agents/README.md",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "ARCH-01",
+      "severity": "high",
+      "status": "open",
+      "category": "Architecture",
+      "repo": "ecosystem",
+      "area": "GitOps Workflows",
+      "description": "No existing standard for agent-authored GitOps PRs for automated remediation.",
+      "tasks": [
+        {
+          "taskId": "ARCH-01-T1",
+          "status": "open",
+          "description": "Propose a design for a 'Cluster Auditor' agent that can generate remediation PRs in documentation/common-bond.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/engineering/agent-remediation.md",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "SEC-01",
+      "severity": "high",
+      "status": "open",
+      "category": "Security",
+      "repo": "all",
+      "area": "Agent Safety",
+      "description": "Lack of 'Permissions & Safety' governance for autonomous agents. (Iterative Improvement Proposal)",
+      "tasks": [
+        {
+          "taskId": "SEC-01-T1",
+          "status": "open",
+          "description": "Establish a Permission and Safety standard for agentic platform tools, defining read-only vs. write-scoped credentials and required human gates.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/about-us/our-technology.md",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "DOC-03",
+      "severity": "medium",
+      "status": "open",
+      "category": "Documentation Gap",
+      "repo": "all",
+      "area": "Agent Context",
+      "description": "Absence of 'Reference Implementation' pointers in documentation for agentic imitation. (Iterative Improvement Proposal)",
+      "tasks": [
+        {
+          "taskId": "DOC-03-T1",
+          "status": "open",
+          "description": "Identify one 'canonical' service for each technology stack (Python, Next.js, Supabase) and tag as reference implementation for AI tool context.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/engineering/reference-implementations.md",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "PROC-04",
+      "severity": "high",
+      "status": "open",
+      "category": "Process Gap",
+      "repo": "all",
+      "area": "Agentic Workflows",
+      "description": "No standard for 'Agentic CI/CD Gates' like AI-driven test healing. (Iterative Improvement Proposal)",
+      "tasks": [
+        {
+          "taskId": "PROC-04-T1",
+          "status": "open",
+          "description": "Prototype a 'Test Healer' workflow integration using Playwright's agentic capabilities in planner-frontend.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/frontend/planner-frontend/.github/workflows/ai-healer.yml",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "TECH-01",
+      "severity": "medium",
+      "status": "open",
+      "category": "Tech Debt",
+      "repo": "all",
+      "area": "Agent Context",
+      "description": "Outdated/Missing openapi.json or schema.sql exports in non-local shared locations. (Iterative Improvement Proposal)",
+      "tasks": [
+        {
+          "taskId": "TECH-01-T1",
+          "status": "open",
+          "description": "Standardize the generation and publishing of OpenAPI specs and SQL schemas for every compute service.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/README.md",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "CROSS-01",
+      "severity": "high",
+      "status": "open",
+      "category": "Consensus",
+      "repo": "all",
+      "area": "Diagnostic Standardization",
+      "description": "Inconsistent error message formatting across repos. (Iterative Improvement Proposal)",
+      "tasks": [
+        {
+          "taskId": "CROSS-01-T1",
+          "status": "open",
+          "description": "Enforce a standardized structured logging (JSON) format across all Python services to improve agentic root cause analysis.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/engineering/logging-standards.md",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    }
+  ],
+  "clarifications": [],
+  "implementationPhases": [
+    {
+      "phase": 1,
+      "description": "Implement AGENTS.md and copilot-instructions.md across all repositories.",
+      "rationale": "Foundational context files are required before specialized agents can operate reliably.",
+      "findingIds": ["PROC-01", "PROC-02"]
+    },
+    {
+      "phase": 2,
+      "description": "Define specialized agent personas and diagnostic workflows.",
+      "rationale": "High-level orchestration and specialized personas enable autonomous remediation.",
+      "findingIds": ["PROC-03", "ARCH-01"]
+    }
+  ],
+  "deferred": []
+}

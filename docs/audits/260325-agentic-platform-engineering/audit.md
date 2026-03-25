@@ -1,0 +1,89 @@
+# Agentic Platform Engineering Readiness Audit
+
+**Date:** 2026-03-25\
+**Scope:** Ecosystem-wide (9 repositories)\
+**Auditor:** Ryan Ammendolea\
+**Standard:** Agentic Platform Engineering (APE) Reference Architectures (Microsoft/GitHub 2025)
+
+---
+
+## Executive Summary
+
+The Receptor ecosystem possesses a mature **internal** agent infrastructure (`.agents/` symlink system), but is almost entirely lacking in **external** agentic readiness. There is a complete absence of industry-standard context files (`AGENTS.md`, `CLAUDE.md`, `copilot-instructions.md`) and agent personas. This restricts the ability of developers to use common tools like GitHub Copilot and Cursor effectively across the platform.
+
+| Repository / Area | Coverage | Issues Found | Overall |
+| ----------------- | -------- | ------------ | ------- |
+| All Repositories  | ❌       | 4            | 🔴 Poor  |
+| .agents/ Shared   | ✅       | 0            | 🟢 Good  |
+| Documentation     | ⚠️       | 2            | 🟡 Fair  |
+
+---
+
+## 1. Context and Metadata Gaps
+
+### 1.1 Standard "Agent Files"
+
+**Strengths:**
+- High-quality internal documentation exists in `documentation/common-bond`.
+- Consistent folder structure across 9 repos.
+
+**Gaps:**
+- **PROC-01** (All Repos): No `AGENTS.md` files present to guide AI tools on build, test, and style conventions.
+- **PROC-02** (All Repos): No `.github/copilot-instructions.md` to enforce repository-wide guardrails for Copilot.
+- **PROC-03** (All Repos): Absence of `.github/agents/` for specialized personas (e.g. Cluster Doctor, SQL Auditor).
+
+### 1.2 Knowledge Graph Consumability
+
+**Strengths:**
+- `.agents/` symlinks provide Antigravity with excellent context.
+
+**Gaps:**
+- **DOC-01** (All Repos): Technical documentation is written for human stakeholders; it is not structured for RAG or LLM context Injection (lacks semantic metadata).
+- **DOC-02** (2/9 Repos): `.llm-context.md` exists but is rudimentary and lacks the depth required for complex platform engineering tasks.
+
+---
+
+## 2. Infrastructure Gaps
+
+### 2.1 Agentic Workflows
+
+**Strengths:**
+- CI/CD pipelines are robust and well-documented.
+
+**Gaps:**
+- **ARCH-01** (Ecosystem): No standard for agent-initiated GitOps PRs. While "Cluster Doctor" logic is documented by Microsoft, we have no equivalent automated diagnostic → PR loop.
+- **PROC-04** (All): No standard for 'Agentic CI/CD Gates' like AI-driven test healing.
+
+---
+
+## 3. Governance and Safety Gaps
+
+### 3.1 Agent Safety
+
+**Gaps:**
+- **SEC-01** (All): Lack of 'Permissions & Safety' governance for autonomous agents. No clear policy on write-scoped credentials for AI tools.
+
+### 3.2 Standardization
+
+**Gaps:**
+- **DOC-03** (All): Absence of 'Reference Implementation' pointers in documentation for agentic imitation.
+- **TECH-01** (All): Outdated/Missing openapi.json or schema.sql exports in non-local shared locations.
+- **CROSS-01** (All): Inconsistent error message formatting across repos, hindering agentic RCA.
+
+---
+
+## Severity Summary
+
+| Finding ID | Repository / Area | File | Category | Severity    |
+| ---------- | ----------------- | ---- | -------- | ----------- |
+| PROC-01    | All               | —    | Process  | 🔴 Critical |
+| PROC-02    | All               | —    | Process  | 🟠 High     |
+| ARCH-01    | Ecosystem         | —    | Architecture  | 🟠 High     |
+| SEC-01     | All               | —    | Security      | 🟠 High     |
+| PROC-04    | All               | —    | Process       | 🟠 High     |
+| CROSS-01   | All               | —    | Consensus     | 🟠 High     |
+| PROC-03    | All               | —    | Process       | 🟡 Medium   |
+| DOC-01     | All               | —    | Documentation | 🟡 Medium   |
+| DOC-02     | All               | —    | Documentation | 🟢 Low      |
+| DOC-03     | All               | —    | Documentation | 🟡 Medium   |
+| TECH-01    | All               | —    | Tech Debt     | 🟡 Medium   |

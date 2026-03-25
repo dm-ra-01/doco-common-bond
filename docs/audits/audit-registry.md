@@ -33,6 +33,7 @@ sidebar_position: 1
 
 | Slug | Title | Scope | Auditor | Status | NC Raised | Report |
 | :--- | :---- | :---- | :------ | :----- | :-------- | :----- |
+| `260325-agentic-platform-engineering` | Agentic Platform Engineering Readiness Audit | Ecosystem-wide (9 repositories) | Ryan Ammendolea | 🔄 Drafting | — | [audit.md](../audits/260325-agentic-platform-engineering/audit.md) · [recommendations.json](../audits/260325-agentic-platform-engineering/recommendations.json) |
 | `260325-cicd-vault-drift` | CI/CD Vault Configuration Drift Ecosystem Audit | Cross-ecosystem — `receptor-infra`, `preferencer-frontend`, `planner-frontend`, `website-frontend`, `workforce-frontend`, `match-backend` | Ryan Ammendolea | ✅ Closed | — | [audit.md](../audits/archive/260325-cicd-vault-drift/audit.md) · [recommendations.md](../audits/archive/260325-cicd-vault-drift/recommendations.md) · [re-audit.md](../audits/archive/260325-cicd-vault-drift/re-audit.md) |
 
 ### 🗓️ 2026-03-19
@@ -109,17 +110,17 @@ sidebar_position: 1
 ```
 Repository                   Audits   Last Audit
 ─────────────────────────────────────────────────
-supabase-receptor              5       2026-03-19
-backend/match-backend          3       2026-03-25
-backend/receptor-planner       2       2026-03-19
-planner-frontend               6       2026-03-25
-workforce-frontend             5       2026-03-25
-preference-frontend            5       2026-03-25
-website-frontend               1       2026-03-25
-common-bond (ISMS docs + eng)  5       2026-03-09
-receptor-infra                 2       2026-03-25
+supabase-receptor              6       2026-03-25
+backend/match-backend          4       2026-03-25
+backend/receptor-planner       3       2026-03-25
+planner-frontend               7       2026-03-25
+workforce-frontend             6       2026-03-25
+preference-frontend            6       2026-03-25
+website-frontend               2       2026-03-25
+common-bond (ISMS docs + eng)  6       2026-03-25
+receptor-infra                 3       2026-03-25
 ──────────────────────────────────── ─────────
-Total                          22+     2026-03-25
+Total                          23+     2026-03-25
 ```
 
 > **Coverage gaps addressed:** `workforce-frontend`, `preference-frontend`, and

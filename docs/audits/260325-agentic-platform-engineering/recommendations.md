@@ -1,0 +1,129 @@
+<!-- audit-slug: 260325-agentic-platform-engineering -->
+
+# Recommendations — Agentic Platform Engineering Readiness Audit
+
+**Branch:** `audit/260325-agentic-platform-engineering`\
+**Auditor:** Ryan Ammendolea\
+**Date:** 2026-03-25
+
+:::note
+This file is **auto-generated** from `recommendations.json`.
+Do not edit it directly — edit the JSON source and re-run
+`python .agents/scripts/render-recommendations.py recommendations.json`.
+:::
+
+---
+
+
+---
+
+## 🔴 Critical
+
+### PROC-01: Complete absence of standard AGENTS.md files at repository roots.
+
+Affects: `all` — Agent Context
+
+
+- [ ] Create AGENTS.md in dev-environment following the open-standard (build/test/style).
+      `/Users/ryan/development/common_bond/antigravity-environment/dev-environment/AGENTS.md`
+- [ ] Propagate AGENTS.md to all 9 repositories as root context files.
+      `/Users/ryan/development/common_bond/antigravity-environment/README.md`
+
+## 🟠 High
+
+### PROC-02: Absence of repository-wide copilot-instructions.md files.
+
+Affects: `all` — Agent Context
+
+
+- [ ] Create .github/copilot-instructions.md in common-bond to define global architectural guardrails.
+      `/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/.github/copilot-instructions.md`
+
+### ARCH-01: No existing standard for agent-authored GitOps PRs for automated remediation.
+
+Affects: `ecosystem` — GitOps Workflows
+
+
+- [ ] Propose a design for a 'Cluster Auditor' agent that can generate remediation PRs in documentation/common-bond.
+      `/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/engineering/agent-remediation.md`
+
+### SEC-01: Lack of 'Permissions & Safety' governance for autonomous agents. (Iterative Improvement Proposal)
+
+Affects: `all` — Agent Safety
+
+
+- [ ] Establish a Permission and Safety standard for agentic platform tools, defining read-only vs. write-scoped credentials and required human gates.
+      `/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/about-us/our-technology.md`
+
+### PROC-04: No standard for 'Agentic CI/CD Gates' like AI-driven test healing. (Iterative Improvement Proposal)
+
+Affects: `all` — Agentic Workflows
+
+
+- [ ] Prototype a 'Test Healer' workflow integration using Playwright's agentic capabilities in planner-frontend.
+      `/Users/ryan/development/common_bond/antigravity-environment/frontend/planner-frontend/.github/workflows/ai-healer.yml`
+
+### CROSS-01: Inconsistent error message formatting across repos. (Iterative Improvement Proposal)
+
+Affects: `all` — Diagnostic Standardization
+
+
+- [ ] Enforce a standardized structured logging (JSON) format across all Python services to improve agentic root cause analysis.
+      `/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/engineering/logging-standards.md`
+
+## 🟡 Medium
+
+### PROC-03: No standard .github/agents/ directory for specialized task instruction files.
+
+Affects: `all` — Agent Personas
+
+
+- [ ] Implement .github/agents/ in common-bond and dev-environment using the Microsoft Cluster Doctor pattern.
+      `/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/.github/agents/README.md`
+
+### DOC-03: Absence of 'Reference Implementation' pointers in documentation for agentic imitation. (Iterative Improvement Proposal)
+
+Affects: `all` — Agent Context
+
+
+- [ ] Identify one 'canonical' service for each technology stack (Python, Next.js, Supabase) and tag as reference implementation for AI tool context.
+      `/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/engineering/reference-implementations.md`
+
+### TECH-01: Outdated/Missing openapi.json or schema.sql exports in non-local shared locations. (Iterative Improvement Proposal)
+
+Affects: `all` — Agent Context
+
+
+- [ ] Standardize the generation and publishing of OpenAPI specs and SQL schemas for every compute service.
+      `/Users/ryan/development/common_bond/antigravity-environment/README.md`
+
+
+---
+
+
+---
+
+## Implementation Order
+
+| Phase | Finding IDs | Rationale |
+| :---- | :---------- | :-------- |
+| 1 | PROC-01, PROC-02 | Foundational context files are required before specialized agents can operate reliably. |
+| 2 | PROC-03, ARCH-01 | High-level orchestration and specialized personas enable autonomous remediation. |
+
+
+---
+
+## Severity Summary
+
+| Finding ID | Area | File | Category | Severity |
+| :--------- | :--- | :--- | :------- | :------- |
+| PROC-01 | Agent Context | `AGENTS.md` | Process Gap | 🔴 Critical |
+| PROC-02 | Agent Context | `copilot-instructions.md` | Process Gap | 🟠 High |
+| ARCH-01 | GitOps Workflows | `agent-remediation.md` | Architecture | 🟠 High |
+| SEC-01 | Agent Safety | `our-technology.md` | Security | 🟠 High |
+| PROC-04 | Agentic Workflows | `ai-healer.yml` | Process Gap | 🟠 High |
+| CROSS-01 | Diagnostic Standardization | `logging-standards.md` | Consensus | 🟠 High |
+| PROC-03 | Agent Personas | `README.md` | Process Gap | 🟡 Medium |
+| DOC-03 | Agent Context | `reference-implementations.md` | Documentation Gap | 🟡 Medium |
+| TECH-01 | Agent Context | `README.md` | Tech Debt | 🟡 Medium |
+
