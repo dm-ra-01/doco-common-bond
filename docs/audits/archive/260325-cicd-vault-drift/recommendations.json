@@ -1,0 +1,460 @@
+{
+  "$schema": "../../../dev-environment/.agents/schemas/recommendations.schema.json",
+  "auditSlug": "260325-cicd-vault-drift",
+  "title": "CI/CD Vault Configuration Drift Ecosystem Audit",
+  "date": "2026-03-25",
+  "scope": "All Receptor repositories with deploy workflows, receptor-infra",
+  "auditor": "Ryan Ammendolea",
+  "branch": "audit/260325-cicd-vault-drift",
+  "findings": [
+    {
+      "id": "VD-01",
+      "severity": "high",
+      "status": "complete",
+      "category": "Security",
+      "repo": "receptor-infra",
+      "area": "Vault JWT roles",
+      "description": "1 of 7 expected JWT roles is missing: ci-website-frontend. The other 6 (ci-match-backend, ci-planner-frontend, ci-preference-frontend, ci-workforce-frontend, ci-receptor-planner, ci-supabase-receptor) exist with correct bound_claims and policies. Verified via live Vault interrogation.",
+      "tasks": [
+        {
+          "taskId": "VD-01-T1",
+          "status": "complete",
+          "description": "Create ci-website-frontend JWT role in Vault: bound_claims sub=repo:Common-Bond/website-frontend:*, token_policies=ci-website-frontend, token_ttl=900.",
+          "targetFile": "MANUAL — vault write auth/jwt/role/ci-website-frontend on cluster",
+          "completedAt": "2026-03-25T00:40:12Z",
+          "completedBy": "61c5cfa4"
+        },
+        {
+          "taskId": "VD-01-T2",
+          "status": "complete",
+          "description": "Create ci-website-frontend policy: read access to secret/data/infrastructure/github-app-deploy-bot and its metadata.",
+          "targetFile": "MANUAL — vault policy write ci-website-frontend on cluster",
+          "completedAt": "2026-03-25T00:40:12Z",
+          "completedBy": "61c5cfa4"
+        },
+        {
+          "taskId": "VD-01-T3",
+          "status": "complete",
+          "description": "Codify all 7 roles and policies as declarative files in receptor-infra/vault/roles/ and vault/policies/.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/vault/roles/",
+          "completedAt": "2026-03-25T00:40:12Z",
+          "completedBy": "61c5cfa4"
+        }
+      ],
+      "severity_history": [
+        {
+          "from": "critical",
+          "to": "high",
+          "changedAt": "2026-03-25",
+          "reason": "Live Vault verification showed 6 of 7 roles exist. Only ci-website-frontend is missing."
+        }
+      ]
+    },
+    {
+      "id": "VD-02",
+      "severity": "medium",
+      "status": "complete",
+      "category": "Security",
+      "repo": "receptor-infra",
+      "area": "Vault KV secrets",
+      "description": "Secret path secret/infrastructure/github-app-deploy-bot EXISTS in Vault KV with keys app_id and private_key. The issue is path FORMAT in workflows, not secret existence. Verified via live Vault interrogation.",
+      "tasks": [
+        {
+          "taskId": "VD-02-T1",
+          "status": "complete",
+          "description": "Create vault/secrets/README.md in receptor-infra documenting the complete KV path tree (ci/, infrastructure/, supabase/) with field names and access policies.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/vault/secrets/README.md",
+          "completedAt": "2026-03-25T00:40:12Z",
+          "completedBy": "61c5cfa4"
+        }
+      ],
+      "severity_history": [
+        {
+          "from": "critical",
+          "to": "medium",
+          "changedAt": "2026-03-25",
+          "reason": "Live Vault verification confirmed the secret exists with correct keys. Problem is path format consistency, not missing secret."
+        }
+      ]
+    },
+    {
+      "id": "VD-03",
+      "severity": "high",
+      "status": "complete",
+      "category": "Process Gap",
+      "repo": "receptor-infra",
+      "area": "Vault role management",
+      "description": "No declarative Vault role management exists. Vault roles/policies are created via ad-hoc SSH commands not captured in version control. No vault/roles/ directory, no HCL policy files, no idempotent bootstrap script for JWT roles.",
+      "tasks": [
+        {
+          "taskId": "VD-03-T1",
+          "status": "complete",
+          "description": "Create vault/bootstrap-jwt-roles.sh — an idempotent script that reads vault/roles/*.yaml and vault/policies/*.hcl and applies them to Vault. Must accept a VAULT_TOKEN parameter.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/vault/bootstrap-jwt-roles.sh",
+          "completedAt": "2026-03-25T00:40:12Z",
+          "completedBy": "61c5cfa4"
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "VD-04",
+      "severity": "high",
+      "status": "complete",
+      "category": "Architectural Drift",
+      "repo": "all-deploy-repos",
+      "area": "vault-action configuration",
+      "description": "vault-action secrets path is inconsistent: preferencer-frontend uses logical path with kv-version: 2, all others use explicit /data/ path without kv-version. Commit history shows 6 rounds of path changes alternating between formats.",
+      "tasks": [
+        {
+          "taskId": "VD-04-T1",
+          "status": "complete",
+          "description": "Standardise all 5 deploy workflows to use the logical path format (secret/infrastructure/...) with explicit kv-version: 2. This is the correct pattern per hashicorp/vault-action@v3 documentation.",
+          "targetFile": "ALL — deploy.yml in preferencer-frontend, planner-frontend, website-frontend, workforce-frontend, match-backend",
+          "completedAt": "2026-03-25T00:40:12Z",
+          "completedBy": "61c5cfa4"
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "VD-05",
+      "severity": "medium",
+      "status": "complete",
+      "category": "Architectural Drift",
+      "repo": "all-deploy-repos",
+      "area": "App ID source",
+      "description": "preferencer-frontend fetches both private_key and app_id from Vault. The other 4 repos read DEPLOY_BOT_APP_ID from GitHub Secrets, creating potential split-brain if Vault is updated independently.",
+      "tasks": [
+        {
+          "taskId": "VD-05-T1",
+          "status": "complete",
+          "description": "Update all 4 remaining deploy workflows to fetch app_id from Vault instead of GitHub Secrets, matching the preferencer-frontend pattern.",
+          "targetFile": "ALL — deploy.yml in planner-frontend, website-frontend, workforce-frontend, match-backend",
+          "completedAt": "2026-03-25T00:40:13Z",
+          "completedBy": "61c5cfa4"
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "VD-06",
+      "severity": "high",
+      "status": "complete",
+      "category": "Process Gap",
+      "repo": "all-deploy-repos",
+      "area": "Workflow duplication",
+      "description": "The deploy workflow YAML is copy-pasted across 5 repositories with no shared reusable workflow. Each copy drifts independently, as proven by VD-04.",
+      "tasks": [
+        {
+          "taskId": "VD-06-T1",
+          "status": "complete",
+          "description": "Create a reusable workflow in receptor-infra (.github/workflows/deploy-gitops.yml) parameterised by app-name, image-repo, and manifest-path. All 5 repos call this via workflow_call.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/.github/workflows/deploy-gitops.yml",
+          "completedAt": "2026-03-25T05:02:09Z",
+          "completedBy": "61c5cfa4-s3"
+        },
+        {
+          "taskId": "VD-06-T2",
+          "status": "complete",
+          "description": "Refactor all 5 deploy.yml files to call the reusable workflow instead of inlining the Vault + token + manifest update steps.",
+          "targetFile": "ALL — deploy.yml in all 5 repos (refactor to call reusable workflow)",
+          "completedAt": "2026-03-25T05:15:00Z",
+          "completedBy": "fe6ed9aa"
+        },
+        {
+          "taskId": "VD-06-T3",
+          "status": "complete",
+          "description": "Optimize redundant 'build' jobs on 'main' branch by adding 'if: github.event_name == \"pull_request\"' to ci-resilience.yml. This prevents 5-10 minutes of duplicate Node.js build time per merge, as the same build occurs within the deploy workflow's Docker step.",
+          "targetFile": "ALL — ci-resilience.yml in planner-frontend, preference-frontend, workforce-frontend",
+          "completedAt": "2026-03-25T03:45:00Z",
+          "completedBy": "61c5cfa4"
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "VD-07",
+      "severity": "medium",
+      "status": "complete",
+      "category": "Process Gap",
+      "repo": "planner-frontend",
+      "area": "Supabase readiness",
+      "description": "supabase status -o env output parsed with grep '^ANON_KEY=' fails when output contains ANSI codes, leading whitespace, or stderr interleaving. planner-frontend CI run 23477490024 shows 120s timeout despite Supabase being fully started.",
+      "tasks": [
+        {
+          "taskId": "VD-07-T1",
+          "status": "complete",
+          "description": "Create a shared supabase-start composite action (or reusable script) that handles DinD readiness, supabase start, status polling with robust key extraction (strip ANSI, handle stderr), and GITHUB_ENV export. Use in all frontend CI workflows.",
+          "targetFile": "ALL — ci-resilience.yml in planner-frontend, preference-frontend, workforce-frontend",
+          "completedAt": "2026-03-25T05:50:42Z",
+          "completedBy": "agent"
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "VD-08",
+      "severity": "critical",
+      "status": "complete",
+      "category": "Architectural Drift",
+      "repo": "all-repos",
+      "area": "Agentic operability",
+      "description": "The ecosystem has no agent-readable infrastructure contracts. Vault roles, policies, and secret paths exist only on the live cluster (SSH + root token required). Agents cannot validate workflow configurations against a source of truth. Result: ~40 vault-related fix commits in 6 days, most incorrect.",
+      "tasks": [
+        {
+          "taskId": "VD-08-T1",
+          "status": "complete",
+          "description": "Implement the 'Crawl' tier of agentic platform engineering: codify all Vault roles, policies, and secret contracts as declarative files in receptor-infra. Tasks VD-01-T1, VD-02-T2, VD-03-T1 are prerequisites.",
+          "targetFile": "DEPENDS — on VD-01-T1, VD-02-T2, VD-03-T1 completion",
+          "completedAt": "2026-03-25T00:40:13Z",
+          "completedBy": "61c5cfa4"
+        },
+        {
+          "taskId": "VD-08-T2",
+          "status": "complete",
+          "description": "Create .agents/infrastructure-contracts.md in receptor-infra — a single document that agents can read to understand the mapping between workflows (role, path, audience) and Vault configuration.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/.agents/infrastructure-contracts.md",
+          "completedAt": "2026-03-25T05:50:42Z",
+          "completedBy": "agent"
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "VD-09",
+      "severity": "low",
+      "status": "complete",
+      "category": "Process Gap",
+      "repo": "all-deploy-repos",
+      "area": "CI contract validation",
+      "description": "No pre-flight check validates a workflow's vault-action role, secrets path, and audience against documented Vault configuration before runtime. Errors only discovered after commit to main.",
+      "tasks": [
+        {
+          "taskId": "VD-09-T1",
+          "status": "complete",
+          "description": "Add a CI job in receptor-infra that scans org-wide deploy.yml files and validates vault-action parameters against vault/roles/ and vault/policies/ definitions. Depends on VD-01-T1 and VD-02-T2.",
+          "targetFile": "DEPENDS — on VD-01-T1 and VD-02-T2 completion",
+          "completedAt": "2026-03-25T05:50:42Z",
+          "completedBy": "agent"
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "VD-10",
+      "severity": "high",
+      "status": "complete",
+      "category": "Process Gap",
+      "repo": "common-bond",
+      "area": "Audit regression",
+      "description": "The 260319-cicd-workflow-health audit (Closed) produced findings DR-24/DR-15/DR-28 requiring Vault OIDC for deploy. Implementation created current failures because prerequisite Vault infrastructure was never provisioned. The audit DoD lacked a Vault bootstrap verification gate.",
+      "tasks": [
+        {
+          "taskId": "VD-10-T1",
+          "status": "complete",
+          "description": "Add a 'prerequisite infrastructure' section to the audit-document-standards skill: any finding that requires infrastructure provisioning (Vault roles, k8s CRDs, DNS records) must include a verification command in the task definition.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/dev-environment/.agents/skills/audit-document-standards/SKILL.md",
+          "completedAt": "2026-03-25T05:50:42Z",
+          "completedBy": "agent"
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "VD-11",
+      "severity": "high",
+      "status": "complete",
+      "category": "Security",
+      "repo": "receptor-infra",
+      "area": "Vault policies",
+      "description": "ci-supabase-receptor policy references paths under 'infrastructure/' mount (e.g. infrastructure/data/supabase) which does not exist. The correct mount is 'secret/' (e.g. secret/data/supabase/staging). This breaks supabase-receptor CI access to staging/production secrets.",
+      "tasks": [
+        {
+          "taskId": "VD-11-T1",
+          "status": "complete",
+          "description": "Fix ci-supabase-receptor policy: change 'infrastructure/data/supabase*' paths to 'secret/data/supabase/*' paths to match the actual KV mount.",
+          "targetFile": "MANUAL — vault policy write ci-supabase-receptor on cluster",
+          "completedAt": "2026-03-25T00:40:13Z",
+          "completedBy": "61c5cfa4"
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "VD-12",
+      "severity": "critical",
+      "status": "complete",
+      "category": "Security",
+      "repo": "receptor-infra",
+      "area": "Vault secret identity",
+      "description": "secret/infrastructure/github-app-deploy-bot stored the WRONG GitHub App credentials. Both app_id (3095294 = k3s-vault) and private_key (SHA256:Wfu0EOJ... = k3s-vault key) belonged to the k3s-vault App, not app-lifecycle-deployment (3127975). All deploy workflows authenticated as the wrong App, producing valid tokens that lacked receptor-infra access. No deploy workflow has ever succeeded since the App was installed.",
+      "tasks": [
+        {
+          "taskId": "VD-12-T1",
+          "status": "complete",
+          "description": "Patch app_id from 3095294 (k3s-vault) to 3127975 (app-lifecycle-deployment) in Vault secret/infrastructure/github-app-deploy-bot.",
+          "targetFile": "MANUAL — vault kv patch on cluster",
+          "completedAt": "2026-03-25T01:55:36Z",
+          "completedBy": "61c5cfa4"
+        },
+        {
+          "taskId": "VD-12-T2",
+          "status": "complete",
+          "description": "Replace private_key with deploy-bot's actual PEM (SHA256:FX8AJMF...) — verified fingerprint against GitHub App settings before writing.",
+          "targetFile": "MANUAL — vault kv patch on cluster",
+          "completedAt": "2026-03-25T02:07:31Z",
+          "completedBy": "61c5cfa4"
+        },
+        {
+          "taskId": "VD-12-T3",
+          "status": "complete",
+          "description": "Verify fix by triggering planner-frontend deploy — all 3 jobs (Build, Update Infrastructure Manifest, Notify Slack) succeeded.",
+          "targetFile": "VERIFIED — run 23521492463",
+          "completedAt": "2026-03-25T03:05:00Z",
+          "completedBy": "61c5cfa4"
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "VD-13",
+      "severity": "medium",
+      "status": "complete",
+      "category": "CICD",
+      "repo": "cross-ecosystem",
+      "description": "Coverage reports are not being successfully uploaded to Codecov due to configuration gaps: (1) Frontends generate unit test coverage but lack an upload step in the unit job; (2) Frontend integration jobs have an upload step but are missing the --coverage flag; (3) Backends are missing coverage generation entirely or have it explicitly disabled (--no-cov).",
+      "tasks": [
+        {
+          "taskId": "VD-13-T1",
+          "status": "complete",
+          "description": "Fix Frontend CI: add --coverage to integration vitest commands; add codecov-action upload to unit-test jobs.",
+          "targetFile": "ALL — ci-resilience.yml in planner-frontend, preference-frontend, workforce-frontend",
+          "completedAt": "2026-03-25T05:15:00Z",
+          "completedBy": "fe6ed9aa"
+        },
+        {
+          "taskId": "VD-13-T2",
+          "status": "complete",
+          "description": "Fix Backend CI: Install pytest-cov; add --cov=allocator (match-backend) and --cov=tests (receptor-planner); add codecov-action steps.",
+          "targetFile": "ALL — ci.yml in match-backend, receptor-planner",
+          "completedAt": "2026-03-25T05:15:00Z",
+          "completedBy": "fe6ed9aa"
+        },
+        {
+          "taskId": "VD-13-T3",
+          "status": "complete",
+          "description": "Migrate from deprecated 'codecov/test-results-action' to 'codecov/codecov-action@v5' with 'report_type: test_results'. Consolidate coverage and test result uploads across all repos.",
+          "targetFile": "ALL — Frontend and Backend CI workflows",
+          "completedAt": "2026-03-25T05:15:00Z",
+          "completedBy": "fe6ed9aa"
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "VD-14",
+      "severity": "high",
+      "status": "complete",
+      "category": "INFRA",
+      "repo": "receptor-infra",
+      "description": "Supabase images (ECR) are pulled from scratch on every run due to mirror gaps. GHCR images also bypass the mirror following a historical regression (commit d610b0cc) due to unauthenticated 401 errors in Zot.",
+      "tasks": [
+        {
+          "taskId": "VD-14-T1",
+          "status": "complete",
+          "description": "Update Zot sync for GHCR and ECR in zot-values.yaml.",
+          "targetFile": "receptor-infra/registry/zot-values.yaml",
+          "completedAt": "2026-03-25T05:00:07Z",
+          "completedBy": "61c5cfa4-s3"
+        },
+        {
+          "taskId": "VD-14-T2",
+          "status": "complete",
+          "description": "Update k3s registries for ECR routing in registries.yaml.",
+          "targetFile": "receptor-infra/registry/registries.yaml",
+          "completedAt": "2026-03-25T05:01:05Z",
+          "completedBy": "61c5cfa4-s3"
+        },
+        {
+          "taskId": "VD-14-T3",
+          "status": "complete",
+          "description": "Redeploy Registry Infrastructure: helm upgrade Zot and push registries.yaml to nodes.",
+          "targetFile": "receptor-infra/registry/",
+          "completedAt": "2026-03-25T05:01:05Z",
+          "completedBy": "61c5cfa4-s3"
+        }
+      ],
+      "severity_history": []
+    }
+  ],
+  "clarifications": [
+    {
+      "item": "Vault access for live verification",
+      "decision": "kubectl exec into vault-0 pod is the only way to run vault commands. Listing JWT roles requires a root or privileged token (403 without auth). Live verification requires generating a root token via 3-of-5 recovery key shares."
+    },
+    {
+      "item": "vault-action path format",
+      "decision": "The correct pattern for hashicorp/vault-action@v3 with KV-v2 is logical path (secret/infrastructure/...) with kv-version: 2. The action internally appends /data/. Using secret/data/... without kv-version may produce double /data/data/ depending on auto-detection."
+    },
+    {
+      "item": "Agentic PE reference",
+      "decision": "The Microsoft GBB 'Agentic Platform Engineering' framework (cluster-doctor pattern, crawl-walk-run) is the reference architecture for the proposed overhaul. See https://github.com/microsoftgbb/agentic-platform-engineering"
+    },
+    {
+      "item": "vault-action path format — verified",
+      "decision": "Both formats work: (1) secret/data/infrastructure/... WITHOUT kv-version passes path as-is to API — correct. (2) secret/infrastructure/... WITH kv-version: 2 — action internally appends /data/ — also correct. Error was using /data/ path WITH kv-version: 2 producing double /data/data/. Policies are written against REST API paths (secret/data/...)."
+    },
+    {
+      "item": "Session Close — Finalisation",
+      "decision": "All 13 findings resolved. Vault configuration is now declarative and verified via CI. Shared Supabase start script implemented and rolled out to all frontend repositories. Audit closed 2026-03-25."
+    }
+  ],
+  "implementationPhases": [
+    {
+      "phase": 1,
+      "name": "Unblock Deployments — Vault Provisioning",
+      "findingIds": [
+        "VD-01",
+        "VD-04",
+        "VD-11"
+      ],
+      "rationale": "VD-01 creates the one missing JWT role, VD-04 standardises the path format, VD-11 fixes the broken supabase-receptor policy. All are direct blockers of CI.",
+      "description": "Create ci-website-frontend role, standardise vault-action path format, fix ci-supabase-receptor policy mount path."
+    },
+    {
+      "phase": 2,
+      "name": "Standardise Workflow Configuration & Caching",
+      "findingIds": [
+        "VD-02",
+        "VD-05",
+        "VD-07",
+        "VD-14"
+      ],
+      "rationale": "Once deployments work, document the secret inventory, unify app_id source, fix supabase readiness detection, and restore image caching to speed up CI loops.",
+      "description": "Unify vault-action path format, app_id source, supabase readiness detection, and restore image caching."
+    },
+    {
+      "phase": 3,
+      "name": "Infrastructure as Code for Vault",
+      "findingIds": [
+        "VD-03",
+        "VD-08"
+      ],
+      "rationale": "Prevents future drift by making Vault configuration version-controlled and agent-readable.",
+      "description": "Create declarative Vault role/policy definitions in receptor-infra with an idempotent bootstrap script and agent-readable contracts."
+    },
+    {
+      "phase": 4,
+      "name": "Eliminate Drift — Shared Workflows",
+      "findingIds": [
+        "VD-06",
+        "VD-09",
+        "VD-10"
+      ],
+      "rationale": "Structural prevention: shared workflows eliminate copy-paste drift, CI contract validation catches errors before runtime, and hardened DoD prevents future audit regressions.",
+      "description": "Create reusable deploy workflow, add CI contract validation, and harden audit DoD with infrastructure verification gates."
+    }
+  ],
+  "deferred": []
+}
