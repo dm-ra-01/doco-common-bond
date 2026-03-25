@@ -26,6 +26,7 @@ The Receptor ecosystem possesses a mature **internal** agent infrastructure (`.a
 **Strengths:**
 - High-quality internal documentation exists in `documentation/common-bond`.
 - Consistent folder structure across 9 repos.
+- **Reference Implementation**: `receptor-infra/.agents/infrastructure-contracts.md` provides a structured mapping of Vault identities to workflows.
 
 **Gaps:**
 - **PROC-01** (All Repos): No `AGENTS.md` files present to guide AI tools on build, test, and style conventions.
@@ -49,9 +50,12 @@ The Receptor ecosystem possesses a mature **internal** agent infrastructure (`.a
 
 **Strengths:**
 - CI/CD pipelines are robust and well-documented.
+- **Reference Implementation**: `receptor-planner/openapi.json` is a machine-readable schema that provides high-quality metadata for agent callers.
+- **Reference Implementation**: `receptor-infra/.github/workflows/helm-upgrade-check.yml` demonstrates a proactive observation loop that surfaces issues for human/agent review.
 
 **Gaps:**
 - **ARCH-01** (Ecosystem): No standard for agent-initiated GitOps PRs. While "Cluster Doctor" logic is documented by Microsoft, we have no equivalent automated diagnostic → PR loop.
+- **ARCH-02** (Shared Services): Lack of standardized "Agentic Contracts" (like `infrastructure-contracts.md`) for Supabase and Allocator services to guide cross-repo consumption.
 - **PROC-04** (All): No standard for 'Agentic CI/CD Gates' like AI-driven test healing.
 
 ---
@@ -79,6 +83,7 @@ The Receptor ecosystem possesses a mature **internal** agent infrastructure (`.a
 | PROC-01    | All               | —    | Process  | 🔴 Critical |
 | PROC-02    | All               | —    | Process  | 🟠 High     |
 | ARCH-01    | Ecosystem         | —    | Architecture  | 🟠 High     |
+| ARCH-02    | Shared Services   | —    | Architecture  | 🟠 High     |
 | SEC-01     | All               | —    | Security      | 🟠 High     |
 | PROC-04    | All               | —    | Process       | 🟠 High     |
 | CROSS-01   | All               | —    | Consensus     | 🟠 High     |

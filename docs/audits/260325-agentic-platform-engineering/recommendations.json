@@ -194,6 +194,26 @@
         }
       ],
       "severity_history": []
+    },
+    {
+      "id": "ARCH-02",
+      "severity": "high",
+      "status": "open",
+      "category": "Architecture",
+      "repo": "all",
+      "area": "Agent Contracts",
+      "description": "Lack of standardized 'Agentic Contracts' for shared services (Supabase, Match, Planner).",
+      "tasks": [
+        {
+          "taskId": "ARCH-02-T1",
+          "status": "open",
+          "description": "Standardize the .agents/contracts.md format across all shared compute and data services.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/engineering/agent-infrastructure.md",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
     }
   ],
   "clarifications": [],

@@ -71,6 +71,14 @@ Affects: `all` — Diagnostic Standardization
 - [ ] Enforce a standardized structured logging (JSON) format across all Python services to improve agentic root cause analysis.
       `/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/engineering/logging-standards.md`
 
+### ARCH-02: Lack of standardized 'Agentic Contracts' for shared services (Supabase, Match, Planner).
+
+Affects: `all` — Agent Contracts
+
+
+- [ ] Standardize the .agents/contracts.md format across all shared compute and data services.
+      `/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/engineering/agent-infrastructure.md`
+
 ## 🟡 Medium
 
 ### PROC-03: No standard .github/agents/ directory for specialized task instruction files.
@@ -123,6 +131,7 @@ Affects: `all` — Agent Context
 | SEC-01 | Agent Safety | `our-technology.md` | Security | 🟠 High |
 | PROC-04 | Agentic Workflows | `ai-healer.yml` | Process Gap | 🟠 High |
 | CROSS-01 | Diagnostic Standardization | `logging-standards.md` | Consensus | 🟠 High |
+| ARCH-02 | Agent Contracts | `agent-infrastructure.md` | Architecture | 🟠 High |
 | PROC-03 | Agent Personas | `README.md` | Process Gap | 🟡 Medium |
 | DOC-03 | Agent Context | `reference-implementations.md` | Documentation Gap | 🟡 Medium |
 | TECH-01 | Agent Context | `README.md` | Tech Debt | 🟡 Medium |
