@@ -161,6 +161,14 @@
           "targetFile": "ALL \u2014 deploy.yml in all 5 repos (refactor to call reusable workflow)",
           "completedAt": null,
           "completedBy": null
+        },
+        {
+          "taskId": "VD-06-T3",
+          "status": "complete",
+          "description": "Optimize redundant 'build' jobs on 'main' branch by adding 'if: github.event_name == \"pull_request\"' to ci-resilience.yml. This prevents 5-10 minutes of duplicate Node.js build time per merge, as the same build occurs within the deploy workflow's Docker step.",
+          "targetFile": "ALL — ci-resilience.yml in planner-frontend, preference-frontend, workforce-frontend",
+          "completedAt": "2026-03-25T03:45:00Z",
+          "completedBy": "61c5cfa4"
         }
       ],
       "severity_history": []
