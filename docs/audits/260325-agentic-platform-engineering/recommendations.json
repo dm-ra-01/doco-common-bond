@@ -214,6 +214,106 @@
         }
       ],
       "severity_history": []
+    },
+    {
+      "id": "OBS-01",
+      "severity": "medium",
+      "status": "open",
+      "category": "Observability",
+      "repo": "all",
+      "area": "Agent Traceability",
+      "description": "No mechanism to distinguish agent-initiated mutations in logs from human actions. (Round 2 Addition)",
+      "tasks": [
+        {
+          "taskId": "OBS-01-T1",
+          "status": "open",
+          "description": "Define a standard X-Agent-ID header and logging convention for all autonomous tools.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/engineering/logging-standards.md",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "DISC-01",
+      "severity": "medium",
+      "status": "open",
+      "category": "Architecture",
+      "repo": "ecosystem",
+      "area": "Agent Discovery",
+      "description": "Absence of a centralized machine-readable registry of agentic capabilities. (Round 2 Addition)",
+      "tasks": [
+        {
+          "taskId": "DISC-01-T1",
+          "status": "open",
+          "description": "Create a root-level capabilities.json mapping personas to specific skills and workflows.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/README.md",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "VAL-01",
+      "severity": "high",
+      "status": "open",
+      "category": "Compliance",
+      "repo": "ecosystem",
+      "area": "Agent Validation",
+      "description": "No automated benchmark to verify agent performance against domain-specific problems. (Round 2 Addition)",
+      "tasks": [
+        {
+          "taskId": "VAL-01-T1",
+          "status": "open",
+          "description": "Establish a 'Gold Standard' regression suite for the Planner and Allocator domains.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/compliance/agent-quality.md",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "DOC-04",
+      "severity": "medium",
+      "status": "open",
+      "category": "Documentation Gap",
+      "repo": "all",
+      "area": "Agent Safety",
+      "description": "Lack of structured 'PITFALLS' documentation for AI agents. (Round 2 Addition)",
+      "tasks": [
+        {
+          "taskId": "DOC-04-T1",
+          "status": "open",
+          "description": "Standardize a CONSTRAINTS.md file for every repository specifically for non-obvious AI pitfalls.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/dev-environment/CONSTRAINTS.md",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "SEC-02",
+      "severity": "high",
+      "status": "open",
+      "category": "Security",
+      "repo": "ecosystem",
+      "area": "Agent Safety",
+      "description": "Manual rotation of high-privilege agent credentials. (Round 2 Addition)",
+      "tasks": [
+        {
+          "taskId": "SEC-02-T1",
+          "status": "open",
+          "description": "Implement automated secret rotation for autonomous tools using Vault and GitHub Actions.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/.github/workflows/agent-secret-rotation.yml",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
     }
   ],
   "clarifications": [],

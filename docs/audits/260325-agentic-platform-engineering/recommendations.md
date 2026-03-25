@@ -79,6 +79,22 @@ Affects: `all` — Agent Contracts
 - [ ] Standardize the .agents/contracts.md format across all shared compute and data services.
       `/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/engineering/agent-infrastructure.md`
 
+### VAL-01: No automated benchmark to verify agent performance against domain-specific problems. (Round 2 Addition)
+
+Affects: `ecosystem` — Agent Validation
+
+
+- [ ] Establish a 'Gold Standard' regression suite for the Planner and Allocator domains.
+      `/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/compliance/agent-quality.md`
+
+### SEC-02: Manual rotation of high-privilege agent credentials. (Round 2 Addition)
+
+Affects: `ecosystem` — Agent Safety
+
+
+- [ ] Implement automated secret rotation for autonomous tools using Vault and GitHub Actions.
+      `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/.github/workflows/agent-secret-rotation.yml`
+
 ## 🟡 Medium
 
 ### PROC-03: No standard .github/agents/ directory for specialized task instruction files.
@@ -104,6 +120,30 @@ Affects: `all` — Agent Context
 
 - [ ] Standardize the generation and publishing of OpenAPI specs and SQL schemas for every compute service.
       `/Users/ryan/development/common_bond/antigravity-environment/README.md`
+
+### OBS-01: No mechanism to distinguish agent-initiated mutations in logs from human actions. (Round 2 Addition)
+
+Affects: `all` — Agent Traceability
+
+
+- [ ] Define a standard X-Agent-ID header and logging convention for all autonomous tools.
+      `/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/engineering/logging-standards.md`
+
+### DISC-01: Absence of a centralized machine-readable registry of agentic capabilities. (Round 2 Addition)
+
+Affects: `ecosystem` — Agent Discovery
+
+
+- [ ] Create a root-level capabilities.json mapping personas to specific skills and workflows.
+      `/Users/ryan/development/common_bond/antigravity-environment/README.md`
+
+### DOC-04: Lack of structured 'PITFALLS' documentation for AI agents. (Round 2 Addition)
+
+Affects: `all` — Agent Safety
+
+
+- [ ] Standardize a CONSTRAINTS.md file for every repository specifically for non-obvious AI pitfalls.
+      `/Users/ryan/development/common_bond/antigravity-environment/dev-environment/CONSTRAINTS.md`
 
 
 ---
@@ -132,7 +172,12 @@ Affects: `all` — Agent Context
 | PROC-04 | Agentic Workflows | `ai-healer.yml` | Process Gap | 🟠 High |
 | CROSS-01 | Diagnostic Standardization | `logging-standards.md` | Consensus | 🟠 High |
 | ARCH-02 | Agent Contracts | `agent-infrastructure.md` | Architecture | 🟠 High |
+| VAL-01 | Agent Validation | `agent-quality.md` | Compliance | 🟠 High |
+| SEC-02 | Agent Safety | `agent-secret-rotation.yml` | Security | 🟠 High |
 | PROC-03 | Agent Personas | `README.md` | Process Gap | 🟡 Medium |
 | DOC-03 | Agent Context | `reference-implementations.md` | Documentation Gap | 🟡 Medium |
 | TECH-01 | Agent Context | `README.md` | Tech Debt | 🟡 Medium |
+| OBS-01 | Agent Traceability | `logging-standards.md` | Observability | 🟡 Medium |
+| DISC-01 | Agent Discovery | `README.md` | Architecture | 🟡 Medium |
+| DOC-04 | Agent Safety | `CONSTRAINTS.md` | Documentation Gap | 🟡 Medium |
 
