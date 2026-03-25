@@ -111,6 +111,30 @@ Affects: `supabase-receptor` — Security Validation
 - [ ] Implement an 'RLS Auditor' agent persona to provide formal verification of data isolation.
       `/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/compliance/agent-security.md`
 
+### SEC-03: Lack of Zero-Trust 'Agent-to-Agent' authentication standard. (Round 4 Addition)
+
+Affects: `ecosystem` — Agent Identity
+
+
+- [ ] Adopt a JWT-based 'Agent Identity' standard for secure inter-persona tool calls.
+      `/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/engineering/agent-infrastructure.md`
+
+### TECH-03: Absence of a mandatory 'Dry-Run' and 'Impact Preview' standard for agentic tools. (Round 4 Addition)
+
+Affects: `all` — Agent Safety
+
+
+- [ ] Mandate enforced --dry-run and JSON-diff impact previews for all mutating skills.
+      `/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/engineering/agent-infrastructure.md`
+
+### VAL-03: Vulnerability to prompt injection and malicious tool manipulation. (Round 4 Addition)
+
+Affects: `ecosystem` — Agent Safety
+
+
+- [ ] Integrate an 'Adversarial Tester' agent persona to red-team system prompts in CI/CD.
+      `/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/compliance/agent-security.md`
+
 ## 🟡 Medium
 
 ### PROC-03: No standard .github/agents/ directory for specialized task instruction files.
@@ -177,6 +201,22 @@ Affects: `receptor-infra` — Agent Personas
 - [ ] Design a Read-Only Debug Sidecar pattern for Kubernetes diagnostic isolation.
       `/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/engineering/agent-infrastructure.md`
 
+### GOV-02: Lack of continuous Agentic Readiness Scoring. (Round 4 Addition)
+
+Affects: `all` — Agent Compliance
+
+
+- [ ] Implement a CI-driven Readiness Score for every repository.
+      `/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/engineering/agent-governance.md`
+
+### INFRA-02: Absence of high-level 'Agent Decision Logs' in Kubernetes. (Round 4 Addition)
+
+Affects: `receptor-infra` — Agent Traceability
+
+
+- [ ] Standardize an AgentDecision CRD to record autonomous infrastructure reasoning.
+      `/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/engineering/agent-infrastructure.md`
+
 ## 🟢 Low
 
 ### DOC-05: Lack of a dedicated Semantic Search API for agents into Docusaurus. (Round 3 Addition)
@@ -218,6 +258,9 @@ Affects: `ecosystem` — Agent Discovery
 | SEC-02 | Agent Safety | `agent-secret-rotation.yml` | Security | 🟠 High |
 | GOV-01 | Agent Context | `agent-governance.md` | Governance | 🟠 High |
 | VAL-02 | Security Validation | `agent-security.md` | Compliance | 🟠 High |
+| SEC-03 | Agent Identity | `agent-infrastructure.md` | Security | 🟠 High |
+| TECH-03 | Agent Safety | `agent-infrastructure.md` | Reliability | 🟠 High |
+| VAL-03 | Agent Safety | `agent-security.md` | Security Validation | 🟠 High |
 | PROC-03 | Agent Personas | `README.md` | Process Gap | 🟡 Medium |
 | DOC-03 | Agent Context | `reference-implementations.md` | Documentation Gap | 🟡 Medium |
 | TECH-01 | Agent Context | `README.md` | Tech Debt | 🟡 Medium |
@@ -226,5 +269,7 @@ Affects: `ecosystem` — Agent Discovery
 | DOC-04 | Agent Safety | `CONSTRAINTS.md` | Documentation Gap | 🟡 Medium |
 | TECH-02 | Agentic RCA | `deployment-standards.md` | Instrumentation | 🟡 Medium |
 | ARCH-04 | Agent Personas | `agent-infrastructure.md` | Architecture | 🟡 Medium |
+| GOV-02 | Agent Compliance | `agent-governance.md` | Governance | 🟡 Medium |
+| INFRA-02 | Agent Traceability | `agent-infrastructure.md` | Observability | 🟡 Medium |
 | DOC-05 | Agent Discovery | `README.md` | Architecture | 🟢 Low |
 

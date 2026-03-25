@@ -414,6 +414,106 @@
         }
       ],
       "severity_history": []
+    },
+    {
+      "id": "GOV-02",
+      "severity": "medium",
+      "status": "open",
+      "category": "Governance",
+      "repo": "all",
+      "area": "Agent Compliance",
+      "description": "Lack of continuous Agentic Readiness Scoring. (Round 4 Addition)",
+      "tasks": [
+        {
+          "taskId": "GOV-02-T1",
+          "status": "open",
+          "description": "Implement a CI-driven Readiness Score for every repository.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/engineering/agent-governance.md",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "INFRA-02",
+      "severity": "medium",
+      "status": "open",
+      "category": "Observability",
+      "repo": "receptor-infra",
+      "area": "Agent Traceability",
+      "description": "Absence of high-level 'Agent Decision Logs' in Kubernetes. (Round 4 Addition)",
+      "tasks": [
+        {
+          "taskId": "INFRA-02-T1",
+          "status": "open",
+          "description": "Standardize an AgentDecision CRD to record autonomous infrastructure reasoning.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/engineering/agent-infrastructure.md",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "SEC-03",
+      "severity": "high",
+      "status": "open",
+      "category": "Security",
+      "repo": "ecosystem",
+      "area": "Agent Identity",
+      "description": "Lack of Zero-Trust 'Agent-to-Agent' authentication standard. (Round 4 Addition)",
+      "tasks": [
+        {
+          "taskId": "SEC-03-T1",
+          "status": "open",
+          "description": "Adopt a JWT-based 'Agent Identity' standard for secure inter-persona tool calls.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/engineering/agent-infrastructure.md",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "TECH-03",
+      "severity": "high",
+      "status": "open",
+      "category": "Reliability",
+      "repo": "all",
+      "area": "Agent Safety",
+      "description": "Absence of a mandatory 'Dry-Run' and 'Impact Preview' standard for agentic tools. (Round 4 Addition)",
+      "tasks": [
+        {
+          "taskId": "TECH-03-T1",
+          "status": "open",
+          "description": "Mandate enforced --dry-run and JSON-diff impact previews for all mutating skills.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/engineering/agent-infrastructure.md",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "VAL-03",
+      "severity": "high",
+      "status": "open",
+      "category": "Security Validation",
+      "repo": "ecosystem",
+      "area": "Agent Safety",
+      "description": "Vulnerability to prompt injection and malicious tool manipulation. (Round 4 Addition)",
+      "tasks": [
+        {
+          "taskId": "VAL-03-T1",
+          "status": "open",
+          "description": "Integrate an 'Adversarial Tester' agent persona to red-team system prompts in CI/CD.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/compliance/agent-security.md",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
     }
   ],
   "clarifications": [],

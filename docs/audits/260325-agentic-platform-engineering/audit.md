@@ -11,11 +11,13 @@
 
 The Receptor ecosystem possesses a mature **internal** agent infrastructure (`.agents/` symlink system), but is almost entirely lacking in **external** agentic readiness. There is a complete absence of industry-standard context files (`AGENTS.md`, `CLAUDE.md`, `copilot-instructions.md`) and agent personas. This restricts the ability of developers to use common tools like GitHub Copilot and Cursor effectively across the platform.
 
+**Total Findings:** 26 (1 Critical, 13 High, 10 Medium, 2 Low)
+
 | Repository / Area | Coverage | Issues Found | Overall |
 | ----------------- | -------- | ------------ | ------- |
-| All Repositories  | ❌       | 4            | 🔴 Poor  |
+| All Repositories  | ❌       | 26           | 🔴 Poor  |
 | .agents/ Shared   | ✅       | 0            | 🟢 Good  |
-| Documentation     | ⚠️       | 2            | 🟡 Fair  |
+| Documentation     | ⚠️       | 4            | 🟡 Fair  |
 
 ---
 
@@ -86,9 +88,12 @@ The Receptor ecosystem possesses a mature **internal** agent infrastructure (`.a
 | ARCH-02    | Shared Services   | —    | Architecture  | 🟠 High     |
 | SEC-01     | All               | —    | Security      | 🟠 High     |
 | SEC-02     | Ecosystem         | —    | Security      | 🟠 High     |
+| SEC-03     | Ecosystem         | —    | Security      | 🟠 High     |
 | GOV-01     | All               | —    | Governance    | 🟠 High     |
 | VAL-01     | Ecosystem         | —    | Compliance    | 🟠 High     |
 | VAL-02     | Supabase          | —    | Compliance    | 🟠 High     |
+| VAL-03     | Ecosystem         | —    | Compliance    | 🟠 High     |
+| TECH-03    | All               | —    | Reliability   | 🟠 High     |
 | PROC-04    | All               | —    | Process       | 🟠 High     |
 | CROSS-01   | All               | —    | Consensus     | 🟠 High     |
 | PROC-03    | All               | —    | Process       | 🟡 Medium   |
@@ -97,8 +102,10 @@ The Receptor ecosystem possesses a mature **internal** agent infrastructure (`.a
 | TECH-01    | All               | —    | Tech Debt     | 🟡 Medium   |
 | TECH-02    | All               | —    | Instrumentation | 🟡 Medium   |
 | OBS-01     | All               | —    | Observability | 🟡 Medium   |
+| INFRA-02   | Infrastructure    | —    | Observability | 🟡 Medium   |
 | DISC-01    | Ecosystem         | —    | Architecture  | 🟡 Medium   |
 | ARCH-04    | Infrastructure    | —    | Architecture  | 🟡 Medium   |
 | DOC-04     | All               | —    | Documentation | 🟡 Medium   |
+| GOV-02     | All               | —    | Governance    | 🟡 Medium   |
 | DOC-02     | All               | —    | Documentation | 🟢 Low      |
 | DOC-05     | Ecosystem         | —    | Architecture  | 🟢 Low      |
