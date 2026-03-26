@@ -270,11 +270,11 @@
         },
         {
           "taskId": "NET-01-T2",
-          "status": "open",
+          "status": "complete",
           "description": "Either create the Calico GlobalNetworkPolicy that the comment claims exists, or remove the comment. If creating it, add to `network-policies/` and reference it in ADR-005.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/network-policies/network-policies.yaml",
-          "completedAt": null,
-          "completedBy": null
+          "completedAt": "2026-03-26T19:15:00Z",
+          "completedBy": "session-6"
         }
       ],
       "severity_history": []
@@ -510,19 +510,19 @@
       "tasks": [
         {
           "taskId": "KYVERNO-01-T1",
-          "status": "open",
+          "status": "complete",
           "description": "Decide: (a) add Kyverno to helmfile.yaml to activate the existing ClusterPolicy, or (b) replace with a RBAC-based control (ValidatingWebhookConfiguration or namespace-level ResourceQuota), or (c) delete the orphaned policy and accept the gap. Document decision in ADR or helmfile comment.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/policies/namespace-isolation.yaml",
-          "completedAt": null,
-          "completedBy": null
+          "completedAt": "2026-03-26T19:15:00Z",
+          "completedBy": "session-6"
         },
         {
           "taskId": "KYVERNO-01-T2",
-          "status": "open",
+          "status": "complete",
           "description": "If Kyverno is chosen (option a): add the kyverno helm chart to helmfile.yaml with appropriate resource limits and a dedicated kyverno namespace. Verify the ClusterPolicy is active with kubectl get clusterpolicy.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/helmfile.yaml",
-          "completedAt": null,
-          "completedBy": null
+          "completedAt": "2026-03-26T19:15:00Z",
+          "completedBy": "session-6"
         }
       ],
       "severity_history": []
@@ -558,7 +558,7 @@
     {
       "id": "ARC-01",
       "severity": "high",
-      "status": "open",
+      "status": "complete",
       "category": "Security",
       "repo": "receptor-infra",
       "area": "ARC Runner Privilege",
@@ -566,29 +566,31 @@
       "tasks": [
         {
           "taskId": "ARC-01-T1",
-          "status": "open",
+          "status": "complete",
           "description": "Create a second ARC runner set arc-runner-receptor-infra-sync with serviceAccountName: helmfile-deployer (cluster-admin) and maxRunners: 1. This runner handles only the helmfile sync workflow.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/helmfile.yaml",
-          "completedAt": null,
-          "completedBy": null
+          "completedAt": "2026-03-26T19:15:00Z",
+          "completedBy": "session-6"
         },
         {
           "taskId": "ARC-01-T2",
-          "status": "open",
+          "status": "complete",
           "description": "Remove serviceAccountName from the existing arc-runner-receptor-infra runner set (or set it to a read-only SA). Update the cluster-sync GitHub workflow to use runs-on: [self-hosted, receptor-infra-sync] so only the sync runner uses cluster-admin.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/helmfile.yaml",
-          "completedAt": null,
-          "completedBy": null
+          "completedAt": "2026-03-26T19:15:00Z",
+          "completedBy": "session-6"
         },
         {
           "taskId": "ARC-01-T3",
-          "status": "open",
+          "status": "complete",
           "description": "Create a minimal ClusterRole for the non-sync runner SA (read pods/nodes/services only) and bind it. Document the two-runner separation in README.md.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/rbac/namespaces.yaml",
-          "completedAt": null,
-          "completedBy": null
+          "completedAt": "2026-03-26T19:15:00Z",
+          "completedBy": "session-6"
         }
       ],
+      "completedAt": "2026-03-26T19:15:00Z",
+      "completedBy": "session-6",
       "severity_history": []
     },
     {
@@ -642,19 +644,19 @@
       "tasks": [
         {
           "taskId": "KYVERNO-02-T1",
-          "status": "open",
+          "status": "complete",
           "description": "Re-add the Kyverno Helm release to helmfile.yaml using the existing values/kyverno.yaml. The chart was referenced in audit 260316-terraform-iac-gap RBAC-01-T1. Add kyverno Helm repo and release ensuring it deploys before the ClusterPolicy in sync order.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/helmfile.yaml",
-          "completedAt": null,
-          "completedBy": null
+          "completedAt": "2026-03-26T19:15:00Z",
+          "completedBy": "session-6"
         },
         {
           "taskId": "KYVERNO-02-T2",
-          "status": "open",
+          "status": "complete",
           "description": "Verify the ClusterPolicy in policies/namespace-isolation.yaml activates after Kyverno is deployed. Test with: kubectl get clusterpolicy and attempt to create a namespace violating the policy as a non-admin user.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/policies/namespace-isolation.yaml",
-          "completedAt": null,
-          "completedBy": null
+          "completedAt": "2026-03-26T19:15:00Z",
+          "completedBy": "session-6"
         }
       ],
       "severity_history": []
