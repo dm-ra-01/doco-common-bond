@@ -33,7 +33,7 @@ sidebar_position: 1
 
 | Slug | Title | Scope | Auditor | Status | NC Raised | Report |
 | :--- | :---- | :---- | :------ | :----- | :-------- | :----- |
-| `260326-k3s-stability` | k3s Cluster Stability & Gold Standard Audit | `receptor-infra` — k3s control plane, Vault, Falco, storage, monitoring, network policies, provisioning, documentation | Ryan Ammendolea | 📋 Findings Issued | 46 findings · 74 open tasks | [audit.md](../audits/260326-k3s-stability/audit.md) · [recommendations.md](../audits/260326-k3s-stability/recommendations.md) |
+| `260326-k3s-stability` | k3s Cluster Stability & Gold Standard Audit | `receptor-infra` — k3s control plane, Vault, Falco, storage, monitoring, network policies, provisioning, documentation | Ryan Ammendolea | 🔧 Implementing | 46 findings · 66 open tasks | [audit.md](../audits/260326-k3s-stability/audit.md) · [recommendations.md](../audits/260326-k3s-stability/recommendations.md) |
 
 ### 🗓️ 2026-03-25
 
