@@ -3,8 +3,8 @@
   "auditSlug": "260326-k3s-stability",
   "status": "drafting",
   "nextAction": "implement",
-  "openTaskCount": 39,
-  "latestHandover": "Round 1 iterative improvements accepted (5 findings). 26 total findings, 39 open tasks. New findings: KYVERNO-01 (orphaned Kyverno policy), ARC-01 (ARC runner cluster-admin separation), ETCD-01 (etcd DB size monitoring + defrag), MON-04 (Loki storage alert), CERT-01 (cert-manager reactive sizing). Round 2 in progress.",
+  "openTaskCount": 48,
+  "latestHandover": "Round 2 iterative improvements accepted (5 findings). 31 total findings, 48 open tasks. New: KYVERNO-02 (chart regression — values/kyverno.yaml orphaned), OPS-01 (no runbooks, no runbook_url in alerts), LOKI-02 (archive-to-R2 comment drift), HELM-01 (no automated chart updates), LOKI-03 (Loki memory limits == requests). Round 3 IaC/GitOps gap proposals in progress.",
   "sessionHistory": [
     {
       "session": 1,

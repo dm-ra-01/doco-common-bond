@@ -11,7 +11,7 @@
 
 The Receptor k3s cluster implements several mature patterns (Calico NetworkPolicies, Vault with Azure Workload Identity, Longhorn HA storage, Traefik HA, GitOps via helmfile), but exhibits structural fragility against production gold standards. The high fix-commit density (11 of the last 60 commits are `fix:` patches — 18%) confirms the brittleness. Root causes are architectural: Vault as a SPOF, absent k3s control-plane hardening flags (secrets-encryption, API audit log, etcd snapshots), Falco runtime security disabled, and documentation drift.
 
-**26 findings total: 4 🔴 Critical · 8 🟠 High · 8 🟡 Medium · 4 🟢 Low · 2 🟡 Tech Debt**
+**31 findings total: 4 🔴 Critical · 10 🟠 High · 11 🟡 Medium · 4 🟢 Low · 2 🟡 Tech Debt**
 
 | Repository / Area                     | Coverage | Issues Found | Overall     |
 | ------------------------------------- | -------- | ------------ | ----------- |
@@ -212,3 +212,8 @@ The `descheduler.yaml` (`maintenance/descheduler.yaml`, lines 1–13) was design
 | ETCD-01    | etcd Size Monitoring         | `monitoring/prometheus-rules.yaml`         | Process Gap         | 🟡 Medium   |
 | MON-04     | Loki Storage Alerting        | `monitoring/prometheus-rules.yaml`         | Process Gap         | 🟡 Medium   |
 | CERT-01    | cert-manager Resource Sizing | `values/cert-manager.yaml`                 | Tech Debt           | 🟡 Medium   |
+| KYVERNO-02 | Kyverno Chart Regression     | `helmfile.yaml`, `values/kyverno.yaml`     | Architectural Drift | 🟠 High     |
+| OPS-01     | No Operational Runbooks      | `docs/runbooks/`, `monitoring/`            | Process Gap         | 🟠 High     |
+| LOKI-02    | Loki Archive Tier Drift      | `values/loki.yaml`                         | Documentation Gap   | 🟡 Medium   |
+| HELM-01    | No Automated Chart Updates   | `helmfile.yaml`, `renovate.json`           | Process Gap         | 🟡 Medium   |
+| LOKI-03    | Loki Memory Limits           | `values/loki.yaml`                         | Tech Debt           | 🟡 Medium   |

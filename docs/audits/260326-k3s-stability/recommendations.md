@@ -157,6 +157,26 @@ Affects: `receptor-infra` — ARC Runner Privilege
 - [ ] Create a minimal ClusterRole for the non-sync runner SA (read pods/nodes/services only) and bind it. Document the two-runner separation in README.md.
       `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/rbac/namespaces.yaml`
 
+### KYVERNO-02: values/kyverno.yaml exists with full Prometheus metrics config and resource allocation, referenced in prior audit 260316
+
+Affects: `receptor-infra` — Kyverno Chart Regression
+
+
+- [ ] Re-add the Kyverno Helm release to helmfile.yaml using the existing values/kyverno.yaml. The chart was referenced in audit 260316-terraform-iac-gap RBAC-01-T1. Add kyverno Helm repo and release ensuring it deploys before the ClusterPolicy in sync order.
+      `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/helmfile.yaml`
+- [ ] Verify the ClusterPolicy in policies/namespace-isolation.yaml activates after Kyverno is deployed. Test with: kubectl get clusterpolicy and attempt to create a namespace violating the policy as a non-admin user.
+      `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/policies/namespace-isolation.yaml`
+
+### OPS-01: docs/runbooks/ directory does not exist. No Prometheus alert in monitoring/prometheus-rules.yaml includes a runbook_url 
+
+Affects: `receptor-infra` — Operational Runbooks
+
+
+- [ ] Create docs/runbooks/ directory with runbooks for each Critical and High alert: CrashLooping.md, LonghornDegraded.md, VaultUnavailable.md, NodeDiskPressure.md, ARCRunnerFleetDown.md. Each runbook must include: symptoms, triage steps, resolution steps, escalation path.
+      `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/docs/runbooks/`
+- [ ] Add runbook_url annotations to each alert in monitoring/prometheus-rules.yaml pointing to the corresponding runbook file in GitHub: https://github.com/Common-Bond/receptor-infra/blob/main/docs/runbooks/AlertName.md
+      `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/monitoring/prometheus-rules.yaml`
+
 ## 🟡 Medium
 
 ### KCTL-06: The k3s join URL is hardcoded to `receptor-ctrl-10` (10.10.0.10). If ctrl-10 is unavailable, new scheduling and kubectl 
@@ -233,6 +253,34 @@ Affects: `receptor-infra` — cert-manager Resource Limits
 - [ ] Review resource requests/limits for cert-manager controller and webhook pods in values/cert-manager.yaml (or equivalent). Benchmark actual usage via kubectl top pods -n cert-manager and set limits to 150% of observed P99. Add a Prometheus alert for OOMKilled events in the cert-manager namespace.
       `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/values/cert-manager.yaml`
 
+### LOKI-02: values/loki.yaml line 14 comment states: 'archive to R2 monthly by external cron'. No such CronJob or external cron exis
+
+Affects: `receptor-infra` — Loki Archive Tier
+
+
+- [ ] Remove the comment 'archive to R2 monthly by external cron' from values/loki.yaml since no such cron exists and R2 was superseded by Azure Blob (ADR-004). Either create a Kubernetes CronJob to export logs to Azure Blob Storage australiaeast or document that 30-day online Loki retention is the only tier.
+      `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/values/loki.yaml`
+- [ ] If an archive tier is desired: create a CronJob using logcli to export Loki data to Azure Blob Storage and update the retention table in docs/security/audit-logging.md to reflect the actual archive tier and correct storage destination.
+      `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/docs/security/audit-logging.md`
+
+### HELM-01: All Helm chart versions in helmfile.yaml are manually pinned with no automated update process. No Renovate configuration
+
+Affects: `receptor-infra` — Chart Version Automation
+
+
+- [ ] Add a Renovate configuration file (renovate.json) to receptor-infra to track helm chart versions in helmfile.yaml. Configure minor/patch updates to auto-PR and major bumps to require manual approval.
+      `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/renovate.json`
+- [ ] As an alternative: add a weekly GitHub Actions workflow that runs helm repo update and checks for outdated chart versions, then opens a summary issue. Evaluate the GitHub App install requirement before choosing Renovate vs. custom workflow.
+      `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/.github/workflows/helm-update-check.yaml`
+
+### LOKI-03: values/loki.yaml sets Loki memory requests and limits to identical values: 256Mi requests, 256Mi limits. Loki spikes mem
+
+Affects: `receptor-infra` — Loki Memory Limits
+
+
+- [ ] In values/loki.yaml, set Loki memory limit to 512Mi (2x current 256Mi) while keeping requests at 256Mi. This gives headroom for cardinality spikes without increasing baseline resource cost. Monitor actual usage via Prometheus for 2 weeks post-change.
+      `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/values/loki.yaml`
+
 ## 🟢 Low
 
 ### MON-02: `AppPodCrashLooping` fires at &#62;3 restarts in 15 minutes only. This misses persistent low-rate crash loops (1–2 restarts 
@@ -279,9 +327,9 @@ Affects: `receptor-infra` — Vault Values Header
 | :---- | :---------- | :-------- |
 | 1 | KCTL-03, SEC-01, VAULT-01 | Secrets encryption and runtime security (Falco) are the highest-leverage security improvements and address the root cause of cluster brittleness. |
 | 2 | KCTL-05, VAULT-02 | Without etcd snapshots and Vault on replicated storage, a single node disk failure is a cluster-ending event. These must be addressed before any further work. |
-| 3 | KCTL-04, MON-03, NET-01, VAULT-03, KYVERNO-01, ARC-01 | Completes the security hardening layer needed to meet CIS benchmark and ISO 27001 controls. |
-| 4 | STORE-01, KCTL-06, KCTL-01, KCTL-02, PROV-01, ETCD-01 | Improves cluster resilience and eliminates tribal knowledge from the emergency recovery path. |
-| 5 | MON-01, MON-02, STORE-02, DRIFT-01, DOC-01, DOC-02, DOC-03, MON-04, CERT-01 | Cleans up tech debt, documentation drift, and purpose drift findings that do not carry immediate operational risk. |
+| 3 | KCTL-04, MON-03, NET-01, VAULT-03, KYVERNO-01, ARC-01, KYVERNO-02, KYVERNO-02 | Completes the security hardening layer needed to meet CIS benchmark and ISO 27001 controls. |
+| 4 | STORE-01, KCTL-06, KCTL-01, KCTL-02, PROV-01, ETCD-01, OPS-01, HELM-01, OPS-01, HELM-01 | Improves cluster resilience and eliminates tribal knowledge from the emergency recovery path. |
+| 5 | MON-01, MON-02, STORE-02, DRIFT-01, DOC-01, DOC-02, DOC-03, MON-04, CERT-01, LOKI-02, LOKI-03, LOKI-02, LOKI-03 | Cleans up tech debt, documentation drift, and purpose drift findings that do not carry immediate operational risk. |
 
 
 ---
@@ -303,6 +351,8 @@ Affects: `receptor-infra` — Vault Values Header
 | STORE-01 | Zot Registry | `zot-values.yaml` | Architectural Drift | 🟠 High |
 | KYVERNO-01 | Kyverno Policy | `namespace-isolation.yaml` | Architectural Drift | 🟠 High |
 | ARC-01 | ARC Runner Privilege | `helmfile.yaml` | Security | 🟠 High |
+| KYVERNO-02 | Kyverno Chart Regression | `helmfile.yaml` | Architectural Drift | 🟠 High |
+| OPS-01 | Operational Runbooks | `runbooks` | Process Gap | 🟠 High |
 | KCTL-06 | k3s API Server HA | `user-data` | Architectural Drift | 🟡 Medium |
 | VAULT-03 | Vault TLS | `vault.yaml` | Security | 🟡 Medium |
 | MON-01 | Prometheus Operator | `prometheus-stack.yaml` | Tech Debt | 🟡 Medium |
@@ -312,6 +362,9 @@ Affects: `receptor-infra` — Vault Values Header
 | ETCD-01 | etcd Health Monitoring | `prometheus-rules.yaml` | Process Gap | 🟡 Medium |
 | MON-04 | Loki Storage Alerting | `prometheus-rules.yaml` | Process Gap | 🟡 Medium |
 | CERT-01 | cert-manager Resource Limits | `cert-manager.yaml` | Tech Debt | 🟡 Medium |
+| LOKI-02 | Loki Archive Tier | `loki.yaml` | Documentation Gap | 🟡 Medium |
+| HELM-01 | Chart Version Automation | `renovate.json` | Process Gap | 🟡 Medium |
+| LOKI-03 | Loki Memory Limits | `loki.yaml` | Tech Debt | 🟡 Medium |
 | MON-02 | Alert Thresholds | `prometheus-rules.yaml` | Process Gap | 🟢 Low |
 | PROV-01 | Node Bootstrap | `README.md` | Process Gap | 🟢 Low |
 | DOC-02 | Falco ADR | `ADR-012-runtime-security-falco.md` | Documentation Gap | 🟢 Low |
