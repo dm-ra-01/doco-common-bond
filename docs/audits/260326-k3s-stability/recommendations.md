@@ -135,6 +135,18 @@ Affects: `receptor-infra` — Zot Registry
 - [ ] Evaluate: (a) increase to 2 replicas with Longhorn RWX storage, or (b) move to purely on-demand pull-through mode with no local persistence. Document decision in ADR or helmfile comment.
       `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/registry/zot-values.yaml`
 
+### KYVERNO-01: policies/namespace-isolation.yaml declares a ClusterPolicy (kyverno.io/v1) to restrict CI runner namespace scope, but Ky
+
+Affects: `receptor-infra` — Kyverno Policy
+
+
+
+### ARC-01: The arc-runner-receptor-infra runner set uses serviceAccountName: helmfile-deployer, which holds a cluster-admin Cluster
+
+Affects: `receptor-infra` — ARC Runner Privilege
+
+
+
 ## 🟡 Medium
 
 ### KCTL-06: The k3s join URL is hardcoded to `receptor-ctrl-10` (10.10.0.10). If ctrl-10 is unavailable, new scheduling and kubectl 
@@ -184,6 +196,24 @@ Affects: `receptor-infra` — Descheduler
 
 - [ ] Review whether LowNodeUtilization at 5-minute frequency is still desired. If ENTERPRISE stability is confirmed long-term, increase schedule to every 30 minutes or disable the descheduler. Update DeschedulerPolicy comments to reflect current intent.
       `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/maintenance/descheduler.yaml`
+
+### ETCD-01: No Prometheus alert monitors etcd database size. etcd has a default 2GB write quota; when the DB hits the limit, all wri
+
+Affects: `receptor-infra` — etcd Health Monitoring
+
+
+
+### MON-04: monitoring/prometheus-rules.yaml has no alert for Loki storage exhaustion. Loki's monitoring namespace PVC is not monito
+
+Affects: `receptor-infra` — Loki Storage Alerting
+
+
+
+### CERT-01: git history shows DR-56 raised cert-manager cainjector's resource limits from 100m/128Mi to 500m/256Mi after OOM crash l
+
+Affects: `receptor-infra` — cert-manager Resource Limits
+
+
 
 ## 🟢 Low
 
@@ -253,12 +283,17 @@ Affects: `receptor-infra` — Vault Values Header
 | MON-03 | Pod Security Standards | `namespaces.yaml` | Security | 🟠 High |
 | NET-01 | Network Policies | `network-policies.yaml` | Security | 🟠 High |
 | STORE-01 | Zot Registry | `zot-values.yaml` | Architectural Drift | 🟠 High |
+| KYVERNO-01 | Kyverno Policy | `—` | Architectural Drift | 🟠 High |
+| ARC-01 | ARC Runner Privilege | `—` | Security | 🟠 High |
 | KCTL-06 | k3s API Server HA | `user-data` | Architectural Drift | 🟡 Medium |
 | VAULT-03 | Vault TLS | `vault.yaml` | Security | 🟡 Medium |
 | MON-01 | Prometheus Operator | `prometheus-stack.yaml` | Tech Debt | 🟡 Medium |
 | STORE-02 | Longhorn UI | `longhorn.yaml` | Security | 🟡 Medium |
 | DOC-01 | Documentation Drift | `audit-logging.md` | Documentation Gap | 🟡 Medium |
 | DRIFT-01 | Descheduler | `descheduler.yaml` | Tech Debt | 🟡 Medium |
+| ETCD-01 | etcd Health Monitoring | `—` | Process Gap | 🟡 Medium |
+| MON-04 | Loki Storage Alerting | `—` | Process Gap | 🟡 Medium |
+| CERT-01 | cert-manager Resource Limits | `—` | Tech Debt | 🟡 Medium |
 | MON-02 | Alert Thresholds | `prometheus-rules.yaml` | Process Gap | 🟢 Low |
 | PROV-01 | Node Bootstrap | `README.md` | Process Gap | 🟢 Low |
 | DOC-02 | Falco ADR | `ADR-012-runtime-security-falco.md` | Documentation Gap | 🟢 Low |

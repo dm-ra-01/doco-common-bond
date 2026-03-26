@@ -1,0 +1,15 @@
+{
+  "$schema": "../../../dev-environment/.agents/schemas/audit-brief.schema.json",
+  "auditSlug": "260326-k3s-stability",
+  "status": "drafting",
+  "nextAction": "implement",
+  "openTaskCount": 30,
+  "latestHandover": "Initial audit complete. 21 findings across receptor-infra (k3s control plane, Vault, Falco, storage, monitoring, network policies, provisioning, documentation). 4 Critical: no secrets-encryption (KCTL-03), no etcd snapshots (KCTL-05), Vault SPOF on local-path storage (VAULT-01), Falco disabled (SEC-01). Phase 1 priorities: KCTL-03, SEC-01, VAULT-01. Iterative improvement round 1 in progress.",
+  "sessionHistory": [
+    {
+      "session": 1,
+      "date": "2026-03-26",
+      "summary": "Initial audit research and document production. Reviewed helmfile.yaml, Vault/Longhorn/Traefik/Zot values, network-policies.yaml, prometheus-rules.yaml, prometheus-stack.yaml, provisioning/user-data, maintenance/descheduler.yaml, maintenance/node-maintenance.yaml, rbac/namespaces.yaml, policies/namespace-isolation.yaml, docs/adr/ADR-004, docs/security/audit-logging.md. Web research for k3s production gold standards (Rancher/SUSE, CIS Kubernetes Benchmark). Applied DOC-01 fix to receptor-infra."
+    }
+  ]
+}

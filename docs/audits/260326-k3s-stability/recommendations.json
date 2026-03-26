@@ -498,6 +498,61 @@
         }
       ],
       "severity_history": []
+    },
+    {
+      "id": "KYVERNO-01",
+      "severity": "high",
+      "status": "proposed",
+      "category": "Architectural Drift",
+      "repo": "receptor-infra",
+      "area": "Kyverno Policy",
+      "description": "policies/namespace-isolation.yaml declares a ClusterPolicy (kyverno.io/v1) to restrict CI runner namespace scope, but Kyverno is NOT installed — it is absent from helmfile.yaml. The policy is an orphaned resource that silently has no effect. The CI runner namespace restriction it was designed to enforce is not active, meaning sa-github-runner is not constrained to reactor-ci-* namespaces as intended.",
+      "tasks": [],
+      "severity_history": []
+    },
+    {
+      "id": "ETCD-01",
+      "severity": "medium",
+      "status": "proposed",
+      "category": "Process Gap",
+      "repo": "receptor-infra",
+      "area": "etcd Health Monitoring",
+      "description": "No Prometheus alert monitors etcd database size. etcd has a default 2GB write quota; when the DB hits the limit, all writes to the cluster state are silently rejected (MVCC error). monitoring/prometheus-rules.yaml has no alert for etcd_mvcc_db_total_size_in_bytes approaching the quota, nor for etcd cluster health degradation.",
+      "tasks": [],
+      "severity_history": []
+    },
+    {
+      "id": "ARC-01",
+      "severity": "high",
+      "status": "proposed",
+      "category": "Security",
+      "repo": "receptor-infra",
+      "area": "ARC Runner Privilege",
+      "description": "The arc-runner-receptor-infra runner set uses serviceAccountName: helmfile-deployer, which holds a cluster-admin ClusterRoleBinding (as documented in helmfile.yaml line 287). This is appropriate for the GitOps runner but the same runner set executes all receptor-infra CI jobs. A compromise of any receptor-infra CI workflow (e.g. via a malicious dependency or PR from a fork) would gain cluster-admin access. Principle of least privilege requires separating the GitOps runner (cluster-admin) from the test/lint runner (read-only).",
+      "tasks": [],
+      "severity_history": []
+    },
+    {
+      "id": "MON-04",
+      "severity": "medium",
+      "status": "proposed",
+      "category": "Process Gap",
+      "repo": "receptor-infra",
+      "area": "Loki Storage Alerting",
+      "description": "monitoring/prometheus-rules.yaml has no alert for Loki storage exhaustion. Loki's monitoring namespace PVC is not monitored for approaching capacity. If Loki's disk fills up, log ingestion silently stops — the cluster loses observability at the exact moment it is most needed (during an incident). No alert for loki_ingester_wal_disk_full or kubelet_volume_stats_used_bytes approaching limits.",
+      "tasks": [],
+      "severity_history": []
+    },
+    {
+      "id": "CERT-01",
+      "severity": "medium",
+      "status": "proposed",
+      "category": "Tech Debt",
+      "repo": "receptor-infra",
+      "area": "cert-manager Resource Limits",
+      "description": "git history shows DR-56 raised cert-manager cainjector's resource limits from 100m/128Mi to 500m/256Mi after OOM crash loops. This reactive fix pattern suggests no proactive resource sizing review has been done for other cert-manager controllers (controller, webhook). Nor is there a Prometheus alert for cert-manager component OOM events. The same brittle pattern may recur on the next upgrade.",
+      "tasks": [],
+      "severity_history": []
     }
   ],
   "clarifications": [
@@ -519,31 +574,57 @@
       "phase": 1,
       "name": "Critical Security — Secrets Encryption and Runtime Security",
       "rationale": "Secrets encryption and runtime security (Falco) are the highest-leverage security improvements and address the root cause of cluster brittleness.",
-      "findingIds": ["KCTL-03", "SEC-01", "VAULT-01"]
+      "findingIds": [
+        "KCTL-03",
+        "SEC-01",
+        "VAULT-01"
+      ]
     },
     {
       "phase": 2,
       "name": "Data Durability — etcd Snapshots and Vault Storage",
       "rationale": "Without etcd snapshots and Vault on replicated storage, a single node disk failure is a cluster-ending event. These must be addressed before any further work.",
-      "findingIds": ["KCTL-05", "VAULT-02"]
+      "findingIds": [
+        "KCTL-05",
+        "VAULT-02"
+      ]
     },
     {
       "phase": 3,
       "name": "Security Hardening — API Audit, PSS, Network Policies, Vault TLS",
       "rationale": "Completes the security hardening layer needed to meet CIS benchmark and ISO 27001 controls.",
-      "findingIds": ["KCTL-04", "MON-03", "NET-01", "VAULT-03"]
+      "findingIds": [
+        "KCTL-04",
+        "MON-03",
+        "NET-01",
+        "VAULT-03"
+      ]
     },
     {
       "phase": 4,
       "name": "Resilience — Zot HA, API Load Balancer, Provisioning Reproducibility",
       "rationale": "Improves cluster resilience and eliminates tribal knowledge from the emergency recovery path.",
-      "findingIds": ["STORE-01", "KCTL-06", "KCTL-01", "KCTL-02", "PROV-01"]
+      "findingIds": [
+        "STORE-01",
+        "KCTL-06",
+        "KCTL-01",
+        "KCTL-02",
+        "PROV-01"
+      ]
     },
     {
       "phase": 5,
       "name": "Tech Debt and Documentation",
       "rationale": "Cleans up tech debt, documentation drift, and purpose drift findings that do not carry immediate operational risk.",
-      "findingIds": ["MON-01", "MON-02", "STORE-02", "DRIFT-01", "DOC-01", "DOC-02", "DOC-03"]
+      "findingIds": [
+        "MON-01",
+        "MON-02",
+        "STORE-02",
+        "DRIFT-01",
+        "DOC-01",
+        "DOC-02",
+        "DOC-03"
+      ]
     }
   ],
   "deferred": []
