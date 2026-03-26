@@ -73,6 +73,18 @@ Affects: `receptor-infra` — Runtime Security
 - [ ] Create ADR-012 for Falco: document deployment decision, custom rules rationale, and exception handling for privileged DaemonSets (node-maintenance).
       `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/docs/adr/ADR-012-runtime-security-falco.md`
 
+### AUDIT-01: No --audit-policy-file flag is configured on the k3s API server. No audit policy manifest exists anywhere in the reposit
+
+Affects: `receptor-infra` — API Server Audit Logging
+
+
+- [ ] Create an audit policy manifest at provisioning/audit-policy.yaml defining which API groups and verbs to log. Use a RequestResponse level for secrets, configmaps, and pods; Metadata level for everything else. Keep volumes to prevent unbounded disk growth.
+      `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/provisioning/audit-policy.yaml`
+- [ ] Enable API server audit logging in k3s via the k3s config file on each control-plane node: add --kube-apiserver-arg=audit-policy-file=/var/lib/rancher/k3s/server/audit-policy.yaml and --kube-apiserver-arg=audit-log-path=/var/log/k3s-audit.log to /etc/rancher/k3s/config.yaml. Copy the audit-policy.yaml to each control-plane node. Restart k3s: systemctl restart k3s.
+      `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/provisioning/audit-policy.yaml`
+- [ ] Configure Promtail on each control-plane node to ship /var/log/k3s-audit.log to Loki with label job=k3s-audit. Add a Prometheus alert for audit log parse errors. Document the retention period in docs/security/audit-logging.md and update ISO 27001 SoA A.8.15 to Implemented.
+      `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/docs/security/audit-logging.md`
+
 ## 🟠 High
 
 ### KCTL-01: `provisioning/user-data` join commands are incomplete: missing `--cluster-init` for the first control-plane and correct 
@@ -229,6 +241,26 @@ Affects: `receptor-infra` — DR Test Record
 - [ ] Update the etcd restore command in disaster-recovery.md to use the actual snapshot path. Add a DR test schedule (quarterly) and a verification checklist: backup existence, restore success, service health after restore. Mark ISO 27001 A.8.13 as Implemented in the SoA once verification is documented.
       `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/docs/operations/disaster-recovery.md`
 
+### CLDCFG-01: All active Cloudflare tunnels (receptor-k3s, Enterprise PC, Spaceship PC) have remote_config: true confirmed via API. Th
+
+Affects: `receptor-infra` — Cloudflare Tunnel Config Source
+
+
+- [ ] Export the current Cloudflare tunnel ingress rules from the dashboard via the API: GET /accounts/&#123;id&#125;/cfd_tunnel/&#123;tunnel_id&#125;/configurations. Convert the remote config to a local config.yaml file and mount it in the cloudflared pod. Switch tunnel config_src from cloudflare to local in the Cloudflare dashboard.
+      `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/values/cloudflared-config.yaml`
+- [ ] Update values/cloudflared.yaml to mount the local config.yaml via a ConfigMap. Update cloudflared.yaml to reference the ConfigMap. Commit the full ingress routing rules to receptor-infra so all route changes go through Git review.
+      `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/values/cloudflared.yaml`
+
+### MUTABLE-01: CI pushed mutable :latest tags to three production deployments on 2026-03-25 (commits 1ab8c77, bb4ef08, 298d5fc: update 
+
+Affects: `receptor-infra` — Mutable CI Image Tags
+
+
+- [ ] Fix the CI workflow that pushes :latest tags. In each frontend repo CI (planner-frontend, preferencer-frontend, workforce-frontend) ensure the deploy step updates the deployment.yaml with the SHA-tagged image (sha-SHORTSHA format) not :latest. The receptor-planner backend CI must also pin to the built SHA. Verified: sha-a0fdce7 restored during this audit.
+      `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/infrastructure/`
+- [ ] Add a GITOPS-02 guard: after Renovate or Flux Image Automation is configured (HELM-01, GITOPS-02), add a kubeconform or custom check in CI-01 that rejects any deployment.yaml where image tag matches :latest. This prevents future regressions via policy enforcement rather than convention.
+      `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/.github/workflows/validate-pr.yaml`
+
 ## 🟡 Medium
 
 ### KCTL-06: The k3s join URL is hardcoded to `receptor-ctrl-10` (10.10.0.10). If ctrl-10 is unavailable, new scheduling and kubectl 
@@ -376,6 +408,24 @@ Affects: `receptor-infra` — Namespace ResourceQuota
 - [ ] Add LimitRange defaults to the monitoring and ci-runner namespaces so pods without explicit resource declarations inherit sensible defaults (e.g. 100m CPU / 128Mi memory request, 500m CPU / 512Mi memory limit). This prevents unconstrained pods from consuming cluster resources.
       `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/rbac/resource-quotas.yaml`
 
+### KCTL-07: The cluster runs 3 control-plane nodes (receptor-ctrl-10/11/50) forming an embedded etcd cluster requiring quorum of 2. 
+
+Affects: `receptor-infra` — etcd Quorum Alerting
+
+
+- [ ] Add etcd membership health alerts to monitoring/prometheus-rules.yaml: alert when etcd_server_has_leader == 0 (leader lost) and when etcd cluster member count drops below 3 (degraded quorum). Use runbook_url pointing to a new docs/runbooks/EtcdQuorumDegraded.md runbook.
+      `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/monitoring/prometheus-rules.yaml`
+
+### PROV-02: provisioning/ contains user-data for receptor-work-02 and a macbook template but receptor-ctrl-10/11 and receptor-work-0
+
+Affects: `receptor-infra` — Control Plane Provisioning
+
+
+- [ ] Create provisioning/user-data-control-plane as the canonical cloud-init template for k3s control-plane nodes (receptor-ctrl-10/11/50). Include: k3s install with correct server flags (cluster-init, disable flannel, audit-policy flags from AUDIT-01), SSH key install, Vault unseal SA token mount, Longhorn disk labelling. Reference the existing vm-setup.md to validate completeness.
+      `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/provisioning/user-data-control-plane`
+- [ ] Create provisioning/user-data-worker as the canonical cloud-init template for k3s worker nodes (receptor-work-01/10). Include: k3s agent install pointing at the VIP/load-balanced control-plane endpoint, Longhorn disk labelling, SSH key. Retire the receptor-work-02 specific file after generalising.
+      `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/provisioning/user-data-worker`
+
 ## 🟢 Low
 
 ### MON-02: `AppPodCrashLooping` fires at &#62;3 restarts in 15 minutes only. This misses persistent low-rate crash loops (1–2 restarts 
@@ -420,10 +470,10 @@ Affects: `receptor-infra` — Vault Values Header
 
 | Phase | Finding IDs | Rationale |
 | :---- | :---------- | :-------- |
-| 1 | KCTL-03, SEC-01, VAULT-01 | Secrets encryption and runtime security (Falco) are the highest-leverage security improvements and address the root cause of cluster brittleness. |
+| 1 | KCTL-03, SEC-01, VAULT-01, AUDIT-01 | Secrets encryption and runtime security (Falco) are the highest-leverage security improvements and address the root cause of cluster brittleness. |
 | 2 | KCTL-05, VAULT-02, GITOPS-01 | Without etcd snapshots and Vault on replicated storage, a single node disk failure is a cluster-ending event. These must be addressed before any further work. |
-| 3 | KCTL-04, MON-03, NET-01, VAULT-03, KYVERNO-01, ARC-01, KYVERNO-02, KYVERNO-02, CI-01, CI-02, TFCI-01, SEC-02 | Completes the security hardening layer needed to meet CIS benchmark and ISO 27001 controls. |
-| 4 | STORE-01, KCTL-06, KCTL-01, KCTL-02, PROV-01, ETCD-01, OPS-01, HELM-01, OPS-01, HELM-01, GITOPS-02, RESI-01, DRTE-01, RESC-01 | Improves cluster resilience and eliminates tribal knowledge from the emergency recovery path. |
+| 3 | KCTL-04, MON-03, NET-01, VAULT-03, KYVERNO-01, ARC-01, KYVERNO-02, KYVERNO-02, CI-01, CI-02, TFCI-01, SEC-02, MUTABLE-01, KCTL-07 | Completes the security hardening layer needed to meet CIS benchmark and ISO 27001 controls. |
+| 4 | STORE-01, KCTL-06, KCTL-01, KCTL-02, PROV-01, ETCD-01, OPS-01, HELM-01, OPS-01, HELM-01, GITOPS-02, RESI-01, DRTE-01, RESC-01, CLDCFG-01, PROV-02 | Improves cluster resilience and eliminates tribal knowledge from the emergency recovery path. |
 | 5 | MON-01, MON-02, STORE-02, DRIFT-01, DOC-01, DOC-02, DOC-03, MON-04, CERT-01, LOKI-02, LOKI-03, LOKI-02, LOKI-03 | Cleans up tech debt, documentation drift, and purpose drift findings that do not carry immediate operational risk. |
 
 
@@ -437,6 +487,7 @@ Affects: `receptor-infra` — Vault Values Header
 | KCTL-05 | k3s Backup | `user-data` | Architectural Drift | 🔴 Critical |
 | VAULT-01 | Vault | `ADR-006-vault-unseal.md` | Architectural Drift | 🔴 Critical |
 | SEC-01 | Runtime Security | `helmfile.yaml` | Security | 🔴 Critical |
+| AUDIT-01 | API Server Audit Logging | `audit-policy.yaml` | Security | 🔴 Critical |
 | KCTL-01 | k3s Control Plane | `user-data` | Documentation Gap | 🟠 High |
 | KCTL-02 | k3s Control Plane | `k3s-server-config.yaml.template` | Process Gap | 🟠 High |
 | KCTL-04 | k3s API Audit Log | `audit-policy.yaml` | Security | 🟠 High |
@@ -453,6 +504,8 @@ Affects: `receptor-infra` — Vault Values Header
 | RESI-01 | PodDisruptionBudgets | `pod-disruption-budgets.yaml` | Architectural Drift | 🟠 High |
 | SEC-02 | Container Image Scanning | `validate-pr.yaml` | Security | 🟠 High |
 | DRTE-01 | DR Test Record | `disaster-recovery.md` | Process Gap | 🟠 High |
+| CLDCFG-01 | Cloudflare Tunnel Config Source | `cloudflared-config.yaml` | Architectural Drift | 🟠 High |
+| MUTABLE-01 | Mutable CI Image Tags | `infrastructure` | Security | 🟠 High |
 | KCTL-06 | k3s API Server HA | `user-data` | Architectural Drift | 🟡 Medium |
 | VAULT-03 | Vault TLS | `vault.yaml` | Security | 🟡 Medium |
 | MON-01 | Prometheus Operator | `prometheus-stack.yaml` | Tech Debt | 🟡 Medium |
@@ -470,6 +523,8 @@ Affects: `receptor-infra` — Vault Values Header
 | TFCI-01 | Terraform CI Workflow | `terraform.yaml` | Process Gap | 🟡 Medium |
 | CLOUD-01 | Cloudflared Config Drift | `cloudflared.yaml` | Architectural Drift | 🟡 Medium |
 | RESC-01 | Namespace ResourceQuota | `resource-quotas.yaml` | Architectural Drift | 🟡 Medium |
+| KCTL-07 | etcd Quorum Alerting | `prometheus-rules.yaml` | Process Gap | 🟡 Medium |
+| PROV-02 | Control Plane Provisioning | `user-data-control-plane` | Process Gap | 🟡 Medium |
 | MON-02 | Alert Thresholds | `prometheus-rules.yaml` | Process Gap | 🟢 Low |
 | PROV-01 | Node Bootstrap | `README.md` | Process Gap | 🟢 Low |
 | DOC-02 | Falco ADR | `ADR-012-runtime-security-falco.md` | Documentation Gap | 🟢 Low |

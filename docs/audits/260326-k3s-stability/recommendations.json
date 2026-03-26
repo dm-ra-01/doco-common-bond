@@ -1018,6 +1018,146 @@
         }
       ],
       "severity_history": []
+    },
+    {
+      "id": "AUDIT-01",
+      "severity": "critical",
+      "status": "open",
+      "category": "Security",
+      "repo": "receptor-infra",
+      "area": "API Server Audit Logging",
+      "description": "No --audit-policy-file flag is configured on the k3s API server. No audit policy manifest exists anywhere in the repository. Zero forensic capability: there is no record of who accessed secrets, who ran kubectl delete, or what changed before an incident. k3s v1.34.5 supports audit logging natively via k3s server --kube-apiserver-arg flags. ISO 27001 A.8.15 requires event logging. This compounds DRTE-01 \u2014 a post-mortem cannot be run because there is no audit trail.",
+      "tasks": [
+        {
+          "taskId": "AUDIT-01-T1",
+          "status": "open",
+          "description": "Create an audit policy manifest at provisioning/audit-policy.yaml defining which API groups and verbs to log. Use a RequestResponse level for secrets, configmaps, and pods; Metadata level for everything else. Keep volumes to prevent unbounded disk growth.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/provisioning/audit-policy.yaml",
+          "completedAt": null,
+          "completedBy": null
+        },
+        {
+          "taskId": "AUDIT-01-T2",
+          "status": "open",
+          "description": "Enable API server audit logging in k3s via the k3s config file on each control-plane node: add --kube-apiserver-arg=audit-policy-file=/var/lib/rancher/k3s/server/audit-policy.yaml and --kube-apiserver-arg=audit-log-path=/var/log/k3s-audit.log to /etc/rancher/k3s/config.yaml. Copy the audit-policy.yaml to each control-plane node. Restart k3s: systemctl restart k3s.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/provisioning/audit-policy.yaml",
+          "completedAt": null,
+          "completedBy": null
+        },
+        {
+          "taskId": "AUDIT-01-T3",
+          "status": "open",
+          "description": "Configure Promtail on each control-plane node to ship /var/log/k3s-audit.log to Loki with label job=k3s-audit. Add a Prometheus alert for audit log parse errors. Document the retention period in docs/security/audit-logging.md and update ISO 27001 SoA A.8.15 to Implemented.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/docs/security/audit-logging.md",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "CLDCFG-01",
+      "severity": "high",
+      "status": "open",
+      "category": "Architectural Drift",
+      "repo": "receptor-infra",
+      "area": "Cloudflare Tunnel Config Source",
+      "description": "All active Cloudflare tunnels (receptor-k3s, Enterprise PC, Spaceship PC) have remote_config: true confirmed via API. This means ingress routing rules \u2014 which hostnames map to which backend services \u2014 live only in the Cloudflare dashboard, not in Git. One accidental UI change silently breaks routing with no history, no PR review, and no rollback path. Gold standard: config_src: local with a config.yaml mounted in the cloudflared pod and committed to receptor-infra.",
+      "tasks": [
+        {
+          "taskId": "CLDCFG-01-T1",
+          "status": "open",
+          "description": "Export the current Cloudflare tunnel ingress rules from the dashboard via the API: GET /accounts/{id}/cfd_tunnel/{tunnel_id}/configurations. Convert the remote config to a local config.yaml file and mount it in the cloudflared pod. Switch tunnel config_src from cloudflare to local in the Cloudflare dashboard.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/values/cloudflared-config.yaml",
+          "completedAt": null,
+          "completedBy": null
+        },
+        {
+          "taskId": "CLDCFG-01-T2",
+          "status": "open",
+          "description": "Update values/cloudflared.yaml to mount the local config.yaml via a ConfigMap. Update cloudflared.yaml to reference the ConfigMap. Commit the full ingress routing rules to receptor-infra so all route changes go through Git review.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/values/cloudflared.yaml",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "MUTABLE-01",
+      "severity": "high",
+      "status": "open",
+      "category": "Security",
+      "repo": "receptor-infra",
+      "area": "Mutable CI Image Tags",
+      "description": "CI pushed mutable :latest tags to three production deployments on 2026-03-25 (commits 1ab8c77, bb4ef08, 298d5fc: update planner/workforce/preferencer to latest), overwriting previously pinned SHA tags. The planner-backend was also reverted to latest in infrastructure/receptor-planner-production and staging (restored to sha-a0fdce7 during this audit). With mutable tags the exact code running in production is unknown without inspecting the running container, and rollback requires a new image build rather than a tag pin.",
+      "tasks": [
+        {
+          "taskId": "MUTABLE-01-T1",
+          "status": "open",
+          "description": "Fix the CI workflow that pushes :latest tags. In each frontend repo CI (planner-frontend, preferencer-frontend, workforce-frontend) ensure the deploy step updates the deployment.yaml with the SHA-tagged image (sha-SHORTSHA format) not :latest. The receptor-planner backend CI must also pin to the built SHA. Verified: sha-a0fdce7 restored during this audit.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/infrastructure/",
+          "completedAt": null,
+          "completedBy": null
+        },
+        {
+          "taskId": "MUTABLE-01-T2",
+          "status": "open",
+          "description": "Add a GITOPS-02 guard: after Renovate or Flux Image Automation is configured (HELM-01, GITOPS-02), add a kubeconform or custom check in CI-01 that rejects any deployment.yaml where image tag matches :latest. This prevents future regressions via policy enforcement rather than convention.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/.github/workflows/validate-pr.yaml",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "KCTL-07",
+      "severity": "medium",
+      "status": "open",
+      "category": "Process Gap",
+      "repo": "receptor-infra",
+      "area": "etcd Quorum Alerting",
+      "description": "The cluster runs 3 control-plane nodes (receptor-ctrl-10/11/50) forming an embedded etcd cluster requiring quorum of 2. No Prometheus alert fires if etcd membership drops from 3 to 2 (still quorate but one failure away from total loss). ETCD-01 covers database size; this issue covers membership health. Gold standard: alert on etcd_server_has_leader == 0 and etcd_cluster_member_count < 3.",
+      "tasks": [
+        {
+          "taskId": "KCTL-07-T1",
+          "status": "open",
+          "description": "Add etcd membership health alerts to monitoring/prometheus-rules.yaml: alert when etcd_server_has_leader == 0 (leader lost) and when etcd cluster member count drops below 3 (degraded quorum). Use runbook_url pointing to a new docs/runbooks/EtcdQuorumDegraded.md runbook.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/monitoring/prometheus-rules.yaml",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "PROV-02",
+      "severity": "medium",
+      "status": "open",
+      "category": "Process Gap",
+      "repo": "receptor-infra",
+      "area": "Control Plane Provisioning",
+      "description": "provisioning/ contains user-data for receptor-work-02 and a macbook template but receptor-ctrl-10/11 and receptor-work-01/10 have no cloud-init user-data files. If a control-plane node is lost, the rebuild procedure exists in docs/operations/vm-setup.md as prose but cannot be applied automatically (no cloud-init). Gold standard: a cloud-init user-data file per node class (control-plane, worker) in provisioning/, enabling automated reprovisioning.",
+      "tasks": [
+        {
+          "taskId": "PROV-02-T1",
+          "status": "open",
+          "description": "Create provisioning/user-data-control-plane as the canonical cloud-init template for k3s control-plane nodes (receptor-ctrl-10/11/50). Include: k3s install with correct server flags (cluster-init, disable flannel, audit-policy flags from AUDIT-01), SSH key install, Vault unseal SA token mount, Longhorn disk labelling. Reference the existing vm-setup.md to validate completeness.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/provisioning/user-data-control-plane",
+          "completedAt": null,
+          "completedBy": null
+        },
+        {
+          "taskId": "PROV-02-T2",
+          "status": "open",
+          "description": "Create provisioning/user-data-worker as the canonical cloud-init template for k3s worker nodes (receptor-work-01/10). Include: k3s agent install pointing at the VIP/load-balanced control-plane endpoint, Longhorn disk labelling, SSH key. Retire the receptor-work-02 specific file after generalising.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/provisioning/user-data-worker",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
     }
   ],
   "clarifications": [
@@ -1042,7 +1182,8 @@
       "findingIds": [
         "KCTL-03",
         "SEC-01",
-        "VAULT-01"
+        "VAULT-01",
+        "AUDIT-01"
       ]
     },
     {
@@ -1071,7 +1212,9 @@
         "CI-01",
         "CI-02",
         "TFCI-01",
-        "SEC-02"
+        "SEC-02",
+        "MUTABLE-01",
+        "KCTL-07"
       ]
     },
     {
@@ -1092,7 +1235,9 @@
         "GITOPS-02",
         "RESI-01",
         "DRTE-01",
-        "RESC-01"
+        "RESC-01",
+        "CLDCFG-01",
+        "PROV-02"
       ]
     },
     {

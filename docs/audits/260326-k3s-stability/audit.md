@@ -11,7 +11,7 @@
 
 The Receptor k3s cluster implements several mature patterns (Calico NetworkPolicies, Vault with Azure Workload Identity, Longhorn HA storage, Traefik HA, GitOps via helmfile), but exhibits structural fragility against production gold standards. The high fix-commit density (11 of the last 60 commits are `fix:` patches — 18%) confirms the brittleness. Root causes are architectural: Vault as a SPOF, absent k3s control-plane hardening flags (secrets-encryption, API audit log, etcd snapshots), Falco runtime security disabled, and documentation drift.
 
-**41 findings total: 4 🔴 Critical · 15 🟠 High · 15 🟡 Medium · 4 🟢 Low · 2 🟡 Tech Debt (1 ✅ Complete)**
+**46 findings total: 5 🔴 Critical · 18 🟠 High · 19 🟡 Medium · 4 🟢 Low (1 ✅ Complete)**
 
 | Repository / Area                     | Coverage | Issues Found | Overall     |
 | ------------------------------------- | -------- | ------------ | ----------- |
@@ -227,3 +227,8 @@ The `descheduler.yaml` (`maintenance/descheduler.yaml`, lines 1–13) was design
 | SEC-02     | No Image Scanning            | `.github/workflows/`, `policies/`          | Security            | 🟠 High     |
 | DRTE-01    | DR Never Tested              | `docs/operations/disaster-recovery.md`     | Process Gap         | 🟠 High     |
 | RESC-01    | No Namespace ResourceQuota   | `rbac/resource-quotas.yaml`                | Architectural Drift | 🟡 Medium   |
+| AUDIT-01   | No API Server Audit Logging  | `provisioning/audit-policy.yaml`           | Security            | 🔴 Critical  |
+| CLDCFG-01  | Cloudflare Routes Dashboard  | `values/cloudflared-config.yaml`           | Architectural Drift | 🟠 High     |
+| MUTABLE-01 | CI Pushes Mutable Tags       | `infrastructure/`, `workflows/`            | Security            | 🟠 High     |
+| KCTL-07    | No etcd Quorum Alerting      | `monitoring/prometheus-rules.yaml`         | Process Gap         | 🟡 Medium   |
+| PROV-02    | Partial Node Provisioning    | `provisioning/`                            | Process Gap         | 🟡 Medium   |
