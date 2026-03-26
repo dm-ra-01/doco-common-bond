@@ -1,0 +1,550 @@
+{
+  "$schema": "../../../dev-environment/.agents/schemas/recommendations.schema.json",
+  "auditSlug": "260326-k3s-stability",
+  "title": "k3s Cluster Stability & Gold Standard Audit",
+  "date": "2026-03-26",
+  "scope": "receptor-infra — k3s cluster configuration, Helm values, RBAC, network policies, monitoring, backup strategy, provisioning, and documentation",
+  "auditor": "Ryan Ammendolea",
+  "branch": "audit/260326-k3s-stability",
+  "findings": [
+    {
+      "id": "KCTL-03",
+      "severity": "critical",
+      "status": "open",
+      "category": "Security",
+      "repo": "receptor-infra",
+      "area": "k3s Control Plane",
+      "description": "No `--secrets-encryption` flag on k3s servers. Kubernetes Secrets are stored base64-encoded in etcd without AES-256 at-rest encryption. Anyone with etcd access or a database snapshot can decode all cluster secrets.",
+      "tasks": [
+        {
+          "taskId": "KCTL-03-T1",
+          "status": "open",
+          "description": "Enable secrets encryption on all three control-plane nodes by adding `--secrets-encryption` to the k3s server systemd service args (/etc/rancher/k3s/config.yaml or ExecStart). Requires rolling restart of each control-plane node in sequence.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/provisioning/user-data",
+          "completedAt": null,
+          "completedBy": null
+        },
+        {
+          "taskId": "KCTL-03-T2",
+          "status": "open",
+          "description": "Document the secrets-encryption key rotation procedure in `docs/operations/secrets-encryption.md` and add to the provisioning README.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/docs/operations/secrets-encryption.md",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "KCTL-05",
+      "severity": "critical",
+      "status": "open",
+      "category": "Architectural Drift",
+      "repo": "receptor-infra",
+      "area": "k3s Backup",
+      "description": "No etcd snapshot schedule configured (`--etcd-snapshot-schedule-cron`, `--etcd-snapshot-s3-*`). ADR-004 covers only Postgres pg_dump. A control-plane node loss or etcd corruption requires a full cluster rebuild with no point-in-time restore.",
+      "tasks": [
+        {
+          "taskId": "KCTL-05-T1",
+          "status": "open",
+          "description": "Add `--etcd-snapshot-schedule-cron='0 */6 * * *'` and `--etcd-snapshot-retention=14` to k3s config on all control-plane nodes.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/provisioning/user-data",
+          "completedAt": null,
+          "completedBy": null
+        },
+        {
+          "taskId": "KCTL-05-T2",
+          "status": "open",
+          "description": "Configure external snapshot storage pointing to the existing Azure Blob `k3sbackups71a475f1dae6` container (australiaeast, satisfying APP 8).",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/provisioning/user-data",
+          "completedAt": null,
+          "completedBy": null
+        },
+        {
+          "taskId": "KCTL-05-T3",
+          "status": "open",
+          "description": "Extend ADR-004 to document etcd snapshot strategy and add etcd restore procedure to `docs/operations/incident-response.md`.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/docs/adr/ADR-004-backup-strategy.md",
+          "completedAt": null,
+          "completedBy": null
+        },
+        {
+          "taskId": "KCTL-05-T4",
+          "status": "open",
+          "description": "Add a Prometheus alert for etcd snapshot staleness (alert if last snapshot > 8 hours old) in `monitoring/prometheus-rules.yaml`.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/monitoring/prometheus-rules.yaml",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "VAULT-01",
+      "severity": "critical",
+      "status": "open",
+      "category": "Architectural Drift",
+      "repo": "receptor-infra",
+      "area": "Vault",
+      "description": "Vault is deployed in standalone mode (`standalone.enabled: true`) pinned to a single node (`receptor-ctrl-50`). If this node or pod becomes unavailable, all VSO secret syncs fail, blocking ARC runner auth, Alertmanager webhook delivery, Zot GHCR sync, and Longhorn backup credentials.",
+      "tasks": [
+        {
+          "taskId": "VAULT-01-T1",
+          "status": "open",
+          "description": "Evaluate Vault HA mode with integrated Raft storage across 3 Vault pods, one per control-plane node. Document decision in a new or updated ADR. If HA is deferred, add formal exception to ADR-006 with a PodDisruptionBudget and recovery runbook.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/docs/adr/ADR-006-vault-unseal.md",
+          "completedAt": null,
+          "completedBy": null
+        },
+        {
+          "taskId": "VAULT-01-T2",
+          "status": "open",
+          "description": "Add a critical Prometheus alert: `absent(kube_pod_status_ready{condition='true', namespace='vault'})` for >2 minutes, in `monitoring/prometheus-rules.yaml`.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/monitoring/prometheus-rules.yaml",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "SEC-01",
+      "severity": "critical",
+      "status": "open",
+      "category": "Security",
+      "repo": "receptor-infra",
+      "area": "Runtime Security",
+      "description": "Falco runtime security chart is commented out in helmfile.yaml. Custom rules exist in `falco/falco-rules.yaml` indicating prior intent. No process currently detects privilege escalation, shell spawning, or container escapes. The `node-maintenance` DaemonSet runs with `privileged: true` and `hostPID: true`.",
+      "tasks": [
+        {
+          "taskId": "SEC-01-T1",
+          "status": "open",
+          "description": "Diagnose why Falco was disabled: check git log for the commit that commented it out and any referenced issue.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/helmfile.yaml",
+          "completedAt": null,
+          "completedBy": null
+        },
+        {
+          "taskId": "SEC-01-T2",
+          "status": "open",
+          "description": "Re-enable the Falco Helm release in helmfile.yaml with the existing values/falco.yaml. Add falcosecurity repo to the repositories section.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/helmfile.yaml",
+          "completedAt": null,
+          "completedBy": null
+        },
+        {
+          "taskId": "SEC-01-T3",
+          "status": "open",
+          "description": "Create ADR-012 for Falco: document deployment decision, custom rules rationale, and exception handling for privileged DaemonSets (node-maintenance).",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/docs/adr/ADR-012-runtime-security-falco.md",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "KCTL-01",
+      "severity": "high",
+      "status": "open",
+      "category": "Documentation Gap",
+      "repo": "receptor-infra",
+      "area": "k3s Control Plane",
+      "description": "`provisioning/user-data` join commands are incomplete: missing `--cluster-init` for the first control-plane and correct `--server` flag for subsequent nodes. The embedded etcd bootstrap mode is not codified.",
+      "tasks": [
+        {
+          "taskId": "KCTL-01-T1",
+          "status": "open",
+          "description": "Update the k3s join comment in `provisioning/user-data` to show `--cluster-init` for the first node and `--server https://10.10.0.10:6443` for additional control-plane nodes.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/provisioning/user-data",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "KCTL-02",
+      "severity": "high",
+      "status": "open",
+      "category": "Process Gap",
+      "repo": "receptor-infra",
+      "area": "k3s Control Plane",
+      "description": "No k3s config file (`/etc/rancher/k3s/config.yaml`) is committed to the repository. The `--flannel-backend=none`, `--disable-network-policy`, `--node-ip` Calico flags are in inline comments only. The cluster cannot be reproduced without tribal knowledge.",
+      "tasks": [
+        {
+          "taskId": "KCTL-02-T1",
+          "status": "open",
+          "description": "Commit k3s config templates at `provisioning/k3s-server-config.yaml.template` and `provisioning/k3s-agent-config.yaml.template` including all flags: `--flannel-backend=none`, `--disable-network-policy`, `--node-ip`, `--cluster-init`, `--secrets-encryption`.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/provisioning/k3s-server-config.yaml.template",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "KCTL-04",
+      "severity": "high",
+      "status": "open",
+      "category": "Security",
+      "repo": "receptor-infra",
+      "area": "k3s API Audit Log",
+      "description": "No k3s API server audit logging configured. `docs/security/audit-logging.md` covers only pgaudit (Postgres), not the Kubernetes API server audit trail. Gap against ISO 27001 A.8.15 and CIS Kubernetes Benchmark 3.2.",
+      "tasks": [
+        {
+          "taskId": "KCTL-04-T1",
+          "status": "open",
+          "description": "Create `provisioning/audit-policy.yaml` and add `--kube-apiserver-arg=audit-policy-file=...` and `--kube-apiserver-arg=audit-log-path=...` to k3s server config. Start with Metadata level for all requests.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/provisioning/audit-policy.yaml",
+          "completedAt": null,
+          "completedBy": null
+        },
+        {
+          "taskId": "KCTL-04-T2",
+          "status": "open",
+          "description": "Configure Promtail (Loki) to scrape k3s API audit logs from control-plane nodes and make them queryable in Grafana.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/values/loki.yaml",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "VAULT-02",
+      "severity": "high",
+      "status": "open",
+      "category": "Security",
+      "repo": "receptor-infra",
+      "area": "Vault Storage",
+      "description": "Vault data and audit storage uses `storageClass: local-path`, not Longhorn. Local-path PVs have no replication and are bound to `receptor-ctrl-50`. A disk failure results in permanent Vault data loss.",
+      "tasks": [
+        {
+          "taskId": "VAULT-02-T1",
+          "status": "open",
+          "description": "Migrate Vault data and audit PVCs to `storageClassName: longhorn` with 3-replica replication. Requires a Vault seal → data migration → re-unseal sequence. Document in `docs/operations/vault-pvc-migration.md`.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/values/vault.yaml",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "MON-03",
+      "severity": "high",
+      "status": "open",
+      "category": "Security",
+      "repo": "receptor-infra",
+      "area": "Pod Security Standards",
+      "description": "`rbac/namespaces.yaml` has no `pod-security.kubernetes.io/enforce` labels. Kubernetes Pod Security Standards (PSS) are not enforced. Privileged workloads can be deployed without system-level gating.",
+      "tasks": [
+        {
+          "taskId": "MON-03-T1",
+          "status": "open",
+          "description": "Add PSS labels to all namespaces in `rbac/namespaces.yaml`. Use `baseline` for application namespaces; explicitly grant `privileged` to `kube-system`, `longhorn-system`, `arc-runners` with documented rationale.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/rbac/namespaces.yaml",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "NET-01",
+      "severity": "high",
+      "status": "open",
+      "category": "Security",
+      "repo": "receptor-infra",
+      "area": "Network Policies",
+      "description": "Monitoring namespace egress is `egress: [{}]` (fully open). Inline comment claims Calico GlobalNetworkPolicy restricts monitoring writes to supabase/vault data paths, but no GlobalNetworkPolicy resource exists in the repository — providing false assurance.",
+      "tasks": [
+        {
+          "taskId": "NET-01-T1",
+          "status": "open",
+          "description": "Replace the catch-all `egress: [{}]` with explicit rules: DNS (53), pod CIDR scrape ports, Alertmanager webhook (HTTPS 443). Remove the false-assurance comment about GlobalNetworkPolicy.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/network-policies/network-policies.yaml",
+          "completedAt": null,
+          "completedBy": null
+        },
+        {
+          "taskId": "NET-01-T2",
+          "status": "open",
+          "description": "Either create the Calico GlobalNetworkPolicy that the comment claims exists, or remove the comment. If creating it, add to `network-policies/` and reference it in ADR-005.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/network-policies/network-policies.yaml",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "STORE-01",
+      "severity": "high",
+      "status": "open",
+      "category": "Architectural Drift",
+      "repo": "receptor-infra",
+      "area": "Zot Registry",
+      "description": "Zot registry is a single replica (`replicaCount: 1`) on `local-path` storage. A node failure invalidates all CI runner image caches, causing Docker Hub rate-limit exposure during cache rebuild.",
+      "tasks": [
+        {
+          "taskId": "STORE-01-T1",
+          "status": "open",
+          "description": "Evaluate: (a) increase to 2 replicas with Longhorn RWX storage, or (b) move to purely on-demand pull-through mode with no local persistence. Document decision in ADR or helmfile comment.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/registry/zot-values.yaml",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "KCTL-06",
+      "severity": "medium",
+      "status": "open",
+      "category": "Architectural Drift",
+      "repo": "receptor-infra",
+      "area": "k3s API Server HA",
+      "description": "The k3s join URL is hardcoded to `receptor-ctrl-10` (10.10.0.10). If ctrl-10 is unavailable, new scheduling and kubectl operations fail even though ctrl-11 and ctrl-50 are healthy etcd members.",
+      "tasks": [
+        {
+          "taskId": "KCTL-06-T1",
+          "status": "open",
+          "description": "Add a Cloudflare Tunnel TCP route or HAProxy load balancer distributing port 6443 across all three control-plane IPs. Update provisioning docs and kubectl access documentation to reference the load-balanced endpoint.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/provisioning/user-data",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "VAULT-03",
+      "severity": "medium",
+      "status": "open",
+      "category": "Security",
+      "repo": "receptor-infra",
+      "area": "Vault TLS",
+      "description": "Vault has `global.tlsDisable: true`. Pod-to-VSO and pod-to-client traffic is plain HTTP. A Calico policy misconfiguration or lateral movement exposes Vault tokens in transit.",
+      "tasks": [
+        {
+          "taskId": "VAULT-03-T1",
+          "status": "open",
+          "description": "Enable Vault TLS using a cert-manager Certificate for the `vault.vault.svc` hostname. Update VSO VaultAuth resources to use the HTTPS endpoint. Document in ADR-003.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/values/vault.yaml",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "MON-01",
+      "severity": "medium",
+      "status": "open",
+      "category": "Tech Debt",
+      "repo": "receptor-infra",
+      "area": "Prometheus Operator",
+      "description": "Prometheus Operator admission webhooks disabled (`admissionWebhooks.enabled: false`) due to upgrade timeouts. Malformed PrometheusRule CRs are silently accepted — a broken alert rule simply does not fire.",
+      "tasks": [
+        {
+          "taskId": "MON-01-T1",
+          "status": "open",
+          "description": "Investigate the upgrade timeout root cause. Try increasing `admissionWebhooks.timeoutSeconds`. Re-enable webhooks once the timeout issue is resolved.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/values/prometheus-stack.yaml",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "STORE-02",
+      "severity": "medium",
+      "status": "open",
+      "category": "Security",
+      "repo": "receptor-infra",
+      "area": "Longhorn UI",
+      "description": "Longhorn UI ingress uses plain HTTP entrypoint (`web`, port 80). Storage management operations are unencrypted between Cloudflare edge and Traefik.",
+      "tasks": [
+        {
+          "taskId": "STORE-02-T1",
+          "status": "open",
+          "description": "Switch Longhorn UI ingress annotation to `websecure` entrypoint and add TLS configuration.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/values/longhorn.yaml",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "DOC-01",
+      "severity": "medium",
+      "status": "open",
+      "category": "Documentation Gap",
+      "repo": "receptor-infra",
+      "area": "Documentation Drift",
+      "description": "`docs/security/audit-logging.md` (line 160) references Cloudflare R2 APAC as the 90-day pgaudit log archive destination. ADR-004 documents that R2 APAC was replaced by Azure Blob `australiaeast` for AU data residency compliance. The doc references a superseded backend.",
+      "tasks": [
+        {
+          "taskId": "DOC-01-T1",
+          "status": "open",
+          "description": "Update `docs/security/audit-logging.md` log retention table to reference Azure Blob `k3sbackups71a475f1dae6` (australiaeast), consistent with ADR-004.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/docs/security/audit-logging.md",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "DRIFT-01",
+      "severity": "medium",
+      "status": "open",
+      "category": "Tech Debt",
+      "repo": "receptor-infra",
+      "area": "Descheduler",
+      "description": "The descheduler was designed to re-balance pods after ENTERPRISE node recovery using `RemovePodsViolatingNodeAffinity`. Node-wide affinities have since been removed, making the affinity plugin obsolete. The descheduler CronJob now runs `LowNodeUtilization` every 5 minutes, which may cause unnecessary pod churn on workloads without PodDisruptionBudgets.",
+      "tasks": [
+        {
+          "taskId": "DRIFT-01-T1",
+          "status": "open",
+          "description": "Review whether LowNodeUtilization at 5-minute frequency is still desired. If ENTERPRISE stability is confirmed long-term, increase schedule to every 30 minutes or disable the descheduler. Update DeschedulerPolicy comments to reflect current intent.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/maintenance/descheduler.yaml",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "MON-02",
+      "severity": "low",
+      "status": "open",
+      "category": "Process Gap",
+      "repo": "receptor-infra",
+      "area": "Alert Thresholds",
+      "description": "`AppPodCrashLooping` fires at >3 restarts in 15 minutes only. This misses persistent low-rate crash loops (1–2 restarts per hour) that can degrade services over days.",
+      "tasks": [
+        {
+          "taskId": "MON-02-T1",
+          "status": "open",
+          "description": "Add a complementary slow crash-loop alert: `rate(kube_pod_container_status_restarts_total[1h]) > 0.5` with 30-minute `for` duration and `warning` severity.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/monitoring/prometheus-rules.yaml",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "PROV-01",
+      "severity": "low",
+      "status": "open",
+      "category": "Process Gap",
+      "repo": "receptor-infra",
+      "area": "Node Bootstrap",
+      "description": "The k3s join commands are inline comments without a reproducible installation method. Emergency node replacement requires tribal knowledge of the correct `--flannel-backend=none` and `--disable-network-policy` flags.",
+      "tasks": [
+        {
+          "taskId": "PROV-01-T1",
+          "status": "open",
+          "description": "Create `provisioning/README.md` documenting the exact k3s install command sequence (including all required flags) for both control-plane and worker nodes.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/provisioning/README.md",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "DOC-02",
+      "severity": "low",
+      "status": "open",
+      "category": "Documentation Gap",
+      "repo": "receptor-infra",
+      "area": "Falco ADR",
+      "description": "`rbac/namespaces.yaml` pre-declares the `falco` namespace but no ADR explains why Falco was disabled, what mitigations exist, or when re-enablement is expected.",
+      "tasks": [
+        {
+          "taskId": "DOC-02-T1",
+          "status": "open",
+          "description": "Create `docs/adr/ADR-012-runtime-security-falco.md` explaining the disable decision and timeline for re-enablement, or remove the `falco` namespace declaration if Falco is permanently decommissioned.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/docs/adr/ADR-012-runtime-security-falco.md",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "DOC-03",
+      "severity": "low",
+      "status": "open",
+      "category": "Documentation Gap",
+      "repo": "receptor-infra",
+      "area": "Vault Values Header",
+      "description": "`values/vault.yaml` header reads `# Helm values for hashicorp/vault (v0.28.1)` but `helmfile.yaml` uses `version: '0.32.0'` (upgraded 2026-03-15). Stale comment.",
+      "tasks": [
+        {
+          "taskId": "DOC-03-T1",
+          "status": "open",
+          "description": "Update the comment at line 2 of `values/vault.yaml` to read `v0.32.0`.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/values/vault.yaml",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    }
+  ],
+  "clarifications": [
+    {
+      "item": "Vault HA feasibility",
+      "decision": "Pending human decision. Vault HA (3 pods, integrated Raft) is the gold standard but requires significant migration effort. If chosen, it eliminates VAULT-01 and VAULT-02. If deferred, document as a formal exception in ADR-006 with a PodDisruptionBudget and recovery runbook."
+    },
+    {
+      "item": "k3s secrets-encryption on existing cluster",
+      "decision": "Pending. Enabling --secrets-encryption on an existing cluster requires a rolling restart and re-encryption of all existing secrets. Schedule during a maintenance window. k3s docs warn this can corrupt the cluster if steps are not followed in order."
+    },
+    {
+      "item": "Falco disable reason",
+      "decision": "Pending investigation. Git history must be checked to identify the commit that disabled Falco and any referenced issue before re-enablement is planned."
+    }
+  ],
+  "implementationPhases": [
+    {
+      "phase": 1,
+      "name": "Critical Security — Secrets Encryption and Runtime Security",
+      "rationale": "Secrets encryption and runtime security (Falco) are the highest-leverage security improvements and address the root cause of cluster brittleness.",
+      "findingIds": ["KCTL-03", "SEC-01", "VAULT-01"]
+    },
+    {
+      "phase": 2,
+      "name": "Data Durability — etcd Snapshots and Vault Storage",
+      "rationale": "Without etcd snapshots and Vault on replicated storage, a single node disk failure is a cluster-ending event. These must be addressed before any further work.",
+      "findingIds": ["KCTL-05", "VAULT-02"]
+    },
+    {
+      "phase": 3,
+      "name": "Security Hardening — API Audit, PSS, Network Policies, Vault TLS",
+      "rationale": "Completes the security hardening layer needed to meet CIS benchmark and ISO 27001 controls.",
+      "findingIds": ["KCTL-04", "MON-03", "NET-01", "VAULT-03"]
+    },
+    {
+      "phase": 4,
+      "name": "Resilience — Zot HA, API Load Balancer, Provisioning Reproducibility",
+      "rationale": "Improves cluster resilience and eliminates tribal knowledge from the emergency recovery path.",
+      "findingIds": ["STORE-01", "KCTL-06", "KCTL-01", "KCTL-02", "PROV-01"]
+    },
+    {
+      "phase": 5,
+      "name": "Tech Debt and Documentation",
+      "rationale": "Cleans up tech debt, documentation drift, and purpose drift findings that do not carry immediate operational risk.",
+      "findingIds": ["MON-01", "MON-02", "STORE-02", "DRIFT-01", "DOC-01", "DOC-02", "DOC-03"]
+    }
+  ],
+  "deferred": []
+}

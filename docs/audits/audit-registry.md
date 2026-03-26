@@ -29,6 +29,12 @@ sidebar_position: 1
 
 ## Active Registry
 
+### 🗓️ 2026-03-26
+
+| Slug | Title | Scope | Auditor | Status | NC Raised | Report |
+| :--- | :---- | :---- | :------ | :----- | :-------- | :----- |
+| `260326-k3s-stability` | k3s Cluster Stability & Gold Standard Audit | `receptor-infra` — k3s control plane, Vault, Falco, storage, monitoring, network policies, provisioning, documentation | Ryan Ammendolea | 📋 Findings Issued | — | [audit.md](../audits/260326-k3s-stability/audit.md) · [recommendations.md](../audits/260326-k3s-stability/recommendations.md) |
+
 ### 🗓️ 2026-03-25
 
 | Slug | Title | Scope | Auditor | Status | NC Raised | Report |
