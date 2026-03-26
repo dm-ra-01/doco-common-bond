@@ -140,12 +140,22 @@ Affects: `receptor-infra` — Zot Registry
 Affects: `receptor-infra` — Kyverno Policy
 
 
+- [ ] Decide: (a) add Kyverno to helmfile.yaml to activate the existing ClusterPolicy, or (b) replace with a RBAC-based control (ValidatingWebhookConfiguration or namespace-level ResourceQuota), or (c) delete the orphaned policy and accept the gap. Document decision in ADR or helmfile comment.
+      `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/policies/namespace-isolation.yaml`
+- [ ] If Kyverno is chosen (option a): add the kyverno helm chart to helmfile.yaml with appropriate resource limits and a dedicated kyverno namespace. Verify the ClusterPolicy is active with kubectl get clusterpolicy.
+      `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/helmfile.yaml`
 
-### ARC-01: The arc-runner-receptor-infra runner set uses serviceAccountName: helmfile-deployer, which holds a cluster-admin Cluster
+### ARC-01: The arc-runner-receptor-infra runner set uses serviceAccountName: helmfile-deployer (cluster-admin ClusterRoleBinding) f
 
 Affects: `receptor-infra` — ARC Runner Privilege
 
 
+- [ ] Create a second ARC runner set arc-runner-receptor-infra-sync with serviceAccountName: helmfile-deployer (cluster-admin) and maxRunners: 1. This runner handles only the helmfile sync workflow.
+      `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/helmfile.yaml`
+- [ ] Remove serviceAccountName from the existing arc-runner-receptor-infra runner set (or set it to a read-only SA). Update the cluster-sync GitHub workflow to use runs-on: [self-hosted, receptor-infra-sync] so only the sync runner uses cluster-admin.
+      `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/helmfile.yaml`
+- [ ] Create a minimal ClusterRole for the non-sync runner SA (read pods/nodes/services only) and bind it. Document the two-runner separation in README.md.
+      `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/rbac/namespaces.yaml`
 
 ## 🟡 Medium
 
@@ -202,18 +212,26 @@ Affects: `receptor-infra` — Descheduler
 Affects: `receptor-infra` — etcd Health Monitoring
 
 
+- [ ] Add a Prometheus alert to monitoring/prometheus-rules.yaml: fire warning at &#62;75% of etcd 2GB quota (etcd_mvcc_db_total_size_in_bytes &#62; 1.5e9) and critical at &#62;90% (&#62; 1.8e9). Also alert if etcd_server_health_failures &#62; 0 for &#62;2 minutes.
+      `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/monitoring/prometheus-rules.yaml`
+- [ ] Add etcd defragmentation to the node-maintenance DaemonSet schedule (or a separate CronJob) to reclaim fragmented DB space. Run defrag against each etcd member sequentially, not concurrently.
+      `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/maintenance/node-maintenance.yaml`
 
 ### MON-04: monitoring/prometheus-rules.yaml has no alert for Loki storage exhaustion. Loki's monitoring namespace PVC is not monito
 
 Affects: `receptor-infra` — Loki Storage Alerting
 
 
+- [ ] Add PVC capacity alerts to monitoring/prometheus-rules.yaml: warn when any PVC in the monitoring namespace exceeds 80% capacity (kubelet_volume_stats_used_bytes / kubelet_volume_stats_capacity_bytes &#62; 0.8). Use a namespace selector to cover Loki, Prometheus, and Grafana PVCs.
+      `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/monitoring/prometheus-rules.yaml`
 
 ### CERT-01: git history shows DR-56 raised cert-manager cainjector's resource limits from 100m/128Mi to 500m/256Mi after OOM crash l
 
 Affects: `receptor-infra` — cert-manager Resource Limits
 
 
+- [ ] Review resource requests/limits for cert-manager controller and webhook pods in values/cert-manager.yaml (or equivalent). Benchmark actual usage via kubectl top pods -n cert-manager and set limits to 150% of observed P99. Add a Prometheus alert for OOMKilled events in the cert-manager namespace.
+      `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/values/cert-manager.yaml`
 
 ## 🟢 Low
 
@@ -261,9 +279,9 @@ Affects: `receptor-infra` — Vault Values Header
 | :---- | :---------- | :-------- |
 | 1 | KCTL-03, SEC-01, VAULT-01 | Secrets encryption and runtime security (Falco) are the highest-leverage security improvements and address the root cause of cluster brittleness. |
 | 2 | KCTL-05, VAULT-02 | Without etcd snapshots and Vault on replicated storage, a single node disk failure is a cluster-ending event. These must be addressed before any further work. |
-| 3 | KCTL-04, MON-03, NET-01, VAULT-03 | Completes the security hardening layer needed to meet CIS benchmark and ISO 27001 controls. |
-| 4 | STORE-01, KCTL-06, KCTL-01, KCTL-02, PROV-01 | Improves cluster resilience and eliminates tribal knowledge from the emergency recovery path. |
-| 5 | MON-01, MON-02, STORE-02, DRIFT-01, DOC-01, DOC-02, DOC-03 | Cleans up tech debt, documentation drift, and purpose drift findings that do not carry immediate operational risk. |
+| 3 | KCTL-04, MON-03, NET-01, VAULT-03, KYVERNO-01, ARC-01 | Completes the security hardening layer needed to meet CIS benchmark and ISO 27001 controls. |
+| 4 | STORE-01, KCTL-06, KCTL-01, KCTL-02, PROV-01, ETCD-01 | Improves cluster resilience and eliminates tribal knowledge from the emergency recovery path. |
+| 5 | MON-01, MON-02, STORE-02, DRIFT-01, DOC-01, DOC-02, DOC-03, MON-04, CERT-01 | Cleans up tech debt, documentation drift, and purpose drift findings that do not carry immediate operational risk. |
 
 
 ---
@@ -283,17 +301,17 @@ Affects: `receptor-infra` — Vault Values Header
 | MON-03 | Pod Security Standards | `namespaces.yaml` | Security | 🟠 High |
 | NET-01 | Network Policies | `network-policies.yaml` | Security | 🟠 High |
 | STORE-01 | Zot Registry | `zot-values.yaml` | Architectural Drift | 🟠 High |
-| KYVERNO-01 | Kyverno Policy | `—` | Architectural Drift | 🟠 High |
-| ARC-01 | ARC Runner Privilege | `—` | Security | 🟠 High |
+| KYVERNO-01 | Kyverno Policy | `namespace-isolation.yaml` | Architectural Drift | 🟠 High |
+| ARC-01 | ARC Runner Privilege | `helmfile.yaml` | Security | 🟠 High |
 | KCTL-06 | k3s API Server HA | `user-data` | Architectural Drift | 🟡 Medium |
 | VAULT-03 | Vault TLS | `vault.yaml` | Security | 🟡 Medium |
 | MON-01 | Prometheus Operator | `prometheus-stack.yaml` | Tech Debt | 🟡 Medium |
 | STORE-02 | Longhorn UI | `longhorn.yaml` | Security | 🟡 Medium |
 | DOC-01 | Documentation Drift | `audit-logging.md` | Documentation Gap | 🟡 Medium |
 | DRIFT-01 | Descheduler | `descheduler.yaml` | Tech Debt | 🟡 Medium |
-| ETCD-01 | etcd Health Monitoring | `—` | Process Gap | 🟡 Medium |
-| MON-04 | Loki Storage Alerting | `—` | Process Gap | 🟡 Medium |
-| CERT-01 | cert-manager Resource Limits | `—` | Tech Debt | 🟡 Medium |
+| ETCD-01 | etcd Health Monitoring | `prometheus-rules.yaml` | Process Gap | 🟡 Medium |
+| MON-04 | Loki Storage Alerting | `prometheus-rules.yaml` | Process Gap | 🟡 Medium |
+| CERT-01 | cert-manager Resource Limits | `cert-manager.yaml` | Tech Debt | 🟡 Medium |
 | MON-02 | Alert Thresholds | `prometheus-rules.yaml` | Process Gap | 🟢 Low |
 | PROV-01 | Node Bootstrap | `README.md` | Process Gap | 🟢 Low |
 | DOC-02 | Falco ADR | `ADR-012-runtime-security-falco.md` | Documentation Gap | 🟢 Low |

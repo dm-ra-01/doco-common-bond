@@ -11,7 +11,7 @@
 
 The Receptor k3s cluster implements several mature patterns (Calico NetworkPolicies, Vault with Azure Workload Identity, Longhorn HA storage, Traefik HA, GitOps via helmfile), but exhibits structural fragility against production gold standards. The high fix-commit density (11 of the last 60 commits are `fix:` patches — 18%) confirms the brittleness. Root causes are architectural: Vault as a SPOF, absent k3s control-plane hardening flags (secrets-encryption, API audit log, etcd snapshots), Falco runtime security disabled, and documentation drift.
 
-**21 findings total: 4 🔴 Critical · 6 🟠 High · 5 🟡 Medium · 4 🟢 Low · 2 🟡 Tech Debt**
+**26 findings total: 4 🔴 Critical · 8 🟠 High · 8 🟡 Medium · 4 🟢 Low · 2 🟡 Tech Debt**
 
 | Repository / Area                     | Coverage | Issues Found | Overall     |
 | ------------------------------------- | -------- | ------------ | ----------- |
@@ -207,3 +207,8 @@ The `descheduler.yaml` (`maintenance/descheduler.yaml`, lines 1–13) was design
 | PROV-01    | Node Bootstrap               | `provisioning/user-data`                   | Process Gap         | 🟢 Low      |
 | DOC-02     | Falco ADR Missing            | `rbac/namespaces.yaml`, `docs/adr/`        | Documentation Gap   | 🟢 Low      |
 | DOC-03     | Vault Values Header          | `values/vault.yaml`                        | Documentation Gap   | 🟢 Low      |
+| KYVERNO-01 | Orphaned Kyverno Policy      | `policies/namespace-isolation.yaml`        | Architectural Drift | 🟠 High     |
+| ARC-01     | ARC Runner Privilege         | `helmfile.yaml`                            | Security            | 🟠 High     |
+| ETCD-01    | etcd Size Monitoring         | `monitoring/prometheus-rules.yaml`         | Process Gap         | 🟡 Medium   |
+| MON-04     | Loki Storage Alerting        | `monitoring/prometheus-rules.yaml`         | Process Gap         | 🟡 Medium   |
+| CERT-01    | cert-manager Resource Sizing | `values/cert-manager.yaml`                 | Tech Debt           | 🟡 Medium   |
