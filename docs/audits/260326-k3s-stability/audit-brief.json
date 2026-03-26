@@ -1,7 +1,7 @@
 {
-  "$schema": "../../../dev-environment/.agents/schemas/audit-brief.schema.json",
+  "$schema": "../../../../../dev-environment/.agents/schemas/audit-brief.schema.json",
   "auditSlug": "260326-k3s-stability",
-  "status": "drafting",
+  "status": "implementing",
   "nextAction": "implement",
   "openTaskCount": 74,
   "latestHandover": "Round 5 accepted (5 findings). 46 total findings, 74 open tasks, 1 complete. AUDIT-01 (Critical — no API server audit logging, zero forensic capability), CLDCFG-01 (High — Cloudflare tunnel routing entirely dashboard-managed, not in Git), MUTABLE-01 (High — CI pushed :latest to 3 production deployments on 2026-03-25, sha pins restored during audit), KCTL-07 (Medium — no etcd quorum/membership alerting), PROV-02 (Medium — control-plane cloud-init missing). Iterations complete. Transitioning to findings-issued.",
