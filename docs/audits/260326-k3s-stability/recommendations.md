@@ -32,24 +32,30 @@ Do not edit it directly — edit the JSON source and re-run
 Affects: `receptor-infra` — k3s Control Plane
 
 
-- [ ] Enable secrets encryption on all three control-plane nodes by adding `--secrets-encryption` to the k3s server systemd service args (/etc/rancher/k3s/config.yaml or ExecStart). Requires rolling restart of each control-plane node in sequence.
+- [x] Enable secrets encryption on all three control-plane nodes by adding `--secrets-encryption` to the k3s server systemd service args (/etc/rancher/k3s/config.yaml or ExecStart). Requires rolling restart of each control-plane node in sequence.
       `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/provisioning/user-data`
-- [ ] Document the secrets-encryption key rotation procedure in `docs/operations/secrets-encryption.md` and add to the provisioning README.
+      _(Completed: 2026-03-26T07:19:37Z)_
+- [x] Document the secrets-encryption key rotation procedure in `docs/operations/secrets-encryption.md` and add to the provisioning README.
       `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/docs/operations/secrets-encryption.md`
+      _(Completed: 2026-03-26T07:19:37Z)_
 
 ### KCTL-05: No etcd snapshot schedule configured (`--etcd-snapshot-schedule-cron`, `--etcd-snapshot-s3-*`). ADR-004 covers only Post
 
 Affects: `receptor-infra` — k3s Backup
 
 
-- [ ] Add `--etcd-snapshot-schedule-cron='0 */6 * * *'` and `--etcd-snapshot-retention=14` to k3s config on all control-plane nodes.
+- [x] Add `--etcd-snapshot-schedule-cron='0 */6 * * *'` and `--etcd-snapshot-retention=14` to k3s config on all control-plane nodes.
       `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/provisioning/user-data`
-- [ ] Configure external snapshot storage pointing to the existing Azure Blob `k3sbackups71a475f1dae6` container (australiaeast, satisfying APP 8).
+      _(Completed: 2026-03-26T07:19:37Z)_
+- [x] Configure external snapshot storage pointing to the existing Azure Blob `k3sbackups71a475f1dae6` container (australiaeast, satisfying APP 8).
       `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/provisioning/user-data`
-- [ ] Extend ADR-004 to document etcd snapshot strategy and add etcd restore procedure to `docs/operations/incident-response.md`.
+      _(Completed: 2026-03-26T07:19:37Z)_
+- [x] Extend ADR-004 to document etcd snapshot strategy and add etcd restore procedure to `docs/operations/incident-response.md`.
       `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/docs/adr/ADR-004-backup-strategy.md`
-- [ ] Add a Prometheus alert for etcd snapshot staleness (alert if last snapshot &#62; 8 hours old) in `monitoring/prometheus-rules.yaml`.
+      _(Completed: 2026-03-26T07:19:37Z)_
+- [x] Add a Prometheus alert for etcd snapshot staleness (alert if last snapshot &#62; 8 hours old) in `monitoring/prometheus-rules.yaml`.
       `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/monitoring/prometheus-rules.yaml`
+      _(Completed: 2026-03-26T07:19:37Z)_
 
 ### VAULT-01: Vault is deployed in standalone mode (`standalone.enabled: true`) pinned to a single node (`receptor-ctrl-50`). If this 
 
@@ -92,16 +98,18 @@ Affects: `receptor-infra` — API Server Audit Logging
 Affects: `receptor-infra` — k3s Control Plane
 
 
-- [ ] Update the k3s join comment in `provisioning/user-data` to show `--cluster-init` for the first node and `--server https://10.10.0.10:6443` for additional control-plane nodes.
+- [x] Update the k3s join comment in `provisioning/user-data` to show `--cluster-init` for the first node and `--server https://10.10.0.10:6443` for additional control-plane nodes.
       `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/provisioning/user-data`
+      _(Completed: 2026-03-26T07:19:37Z)_
 
 ### KCTL-02: No k3s config file (`/etc/rancher/k3s/config.yaml`) is committed to the repository. The `--flannel-backend=none`, `--dis
 
 Affects: `receptor-infra` — k3s Control Plane
 
 
-- [ ] Commit k3s config templates at `provisioning/k3s-server-config.yaml.template` and `provisioning/k3s-agent-config.yaml.template` including all flags: `--flannel-backend=none`, `--disable-network-policy`, `--node-ip`, `--cluster-init`, `--secrets-encryption`.
+- [x] Commit k3s config templates at `provisioning/k3s-server-config.yaml.template` and `provisioning/k3s-agent-config.yaml.template` including all flags: `--flannel-backend=none`, `--disable-network-policy`, `--node-ip`, `--cluster-init`, `--secrets-encryption`.
       `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/provisioning/k3s-server-config.yaml.template`
+      _(Completed: 2026-03-26T07:19:37Z)_
 
 ### KCTL-04: No k3s API server audit logging configured. `docs/security/audit-logging.md` covers only pgaudit (Postgres), not the Kub
 
