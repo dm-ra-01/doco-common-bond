@@ -1,10 +1,10 @@
 {
   "$schema": "../../../dev-environment/.agents/schemas/audit-brief.schema.json",
   "auditSlug": "260326-k3s-stability",
-  "status": "drafting",
+  "status": "implementing",
   "nextAction": "implement",
-  "openTaskCount": 66,
-  "latestHandover": "Session 3 complete. Implemented 4 control-plane findings (8 tasks). Secrets encryption and etcd backups are now codified and enforced via `node-maintenance`. Next: focus on Session 2 (Runtime Security and Vault HA).",
+  "openTaskCount": 51,
+  "latestHandover": "Session 4 complete. Implemented Group 1 (Runtime Security & PSS) and Group 2 (Vault Hardening) in `receptor-infra`. Enabled Falco, added PSS labels, restricted monitoring egress, and migrated Vault to HA Raft with Longhorn storage. 11 findings updated (15 tasks completed). Next: focus on Session 5 (Loki Archival and GitOps Drift).",
   "sessionHistory": [
     {
       "session": 1,
@@ -20,6 +20,11 @@
       "session": 3,
       "date": "2026-03-26",
       "summary": "Implemented KCTL-03, KCTL-05, KCTL-01, and KCTL-02 in `receptor-infra`. Enabled secrets encryption and etcd snapshots cluster-wide via `node-maintenance` DaemonSet. 8 tasks completed."
+    },
+    {
+      "session": 4,
+      "date": "2026-03-26",
+      "summary": "Implemented Group 1 (Runtime Security & PSS) and Group 2 (Vault Hardening) in `receptor-infra`. Enabled Falco, added PSS labels, restricted monitoring egress, and migrated Vault to HA Raft with Longhorn storage. Created ADR-012 and ADR-013. 15 tasks completed."
     }
   ]
 }
