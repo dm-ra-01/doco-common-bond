@@ -1,0 +1,729 @@
+{
+  "$schema": "../../../../../dev-environment/.agents/schemas/recommendations.schema.json",
+  "auditSlug": "260325-agentic-platform-engineering",
+  "title": "Agentic Platform Engineering Readiness Audit",
+  "date": "2026-03-25",
+  "scope": "Ecosystem-wide (9 repositories)",
+  "auditor": "Ryan Ammendolea",
+  "branch": "audit/260325-agentic-platform-engineering",
+  "findings": [
+    {
+      "id": "PROC-01",
+      "severity": "critical",
+      "status": "open",
+      "category": "Process Gap",
+      "repo": "all",
+      "area": "Agent Context",
+      "description": "Complete absence of standard AGENTS.md files at repository roots.",
+      "tasks": [
+        {
+          "taskId": "PROC-01-T1",
+          "status": "open",
+          "description": "Create AGENTS.md in dev-environment following the open-standard (build/test/style).",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/dev-environment/AGENTS.md",
+          "completedAt": null,
+          "completedBy": null
+        },
+        {
+          "taskId": "PROC-01-T2",
+          "status": "open",
+          "description": "Propagate AGENTS.md to all 9 repositories as root context files.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/README.md",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "PROC-02",
+      "severity": "high",
+      "status": "open",
+      "category": "Process Gap",
+      "repo": "all",
+      "area": "Agent Context",
+      "description": "Absence of repository-wide copilot-instructions.md files.",
+      "tasks": [
+        {
+          "taskId": "PROC-02-T1",
+          "status": "open",
+          "description": "Create .github/copilot-instructions.md in common-bond to define global architectural guardrails.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/.github/copilot-instructions.md",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "DOC-01",
+      "severity": "medium",
+      "status": "open",
+      "category": "Documentation Gap",
+      "repo": "all",
+      "area": "Agent Context",
+      "description": "Technical documentation is not structured for semantic RAG or LLM context injection.",
+      "tasks": [
+        {
+          "taskId": "DOC-01-T1",
+          "status": "open",
+          "description": "Standardize semantic metadata headers for all engineering documentation.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/README.md",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "DOC-02",
+      "severity": "low",
+      "status": "open",
+      "category": "Documentation Gap",
+      "repo": "all",
+      "area": "Agent Context",
+      "description": "Rudimentary .llm-context.md files lack the depth required for complex platform tasks.",
+      "tasks": [
+        {
+          "taskId": "DOC-02-T1",
+          "status": "open",
+          "description": "Expand .llm-context.md in critical service repos (Planner, Allocator).",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/backend/receptor-planner/.llm-context.md",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "PROC-03",
+      "severity": "medium",
+      "status": "open",
+      "category": "Process Gap",
+      "repo": "all",
+      "area": "Agent Personas",
+      "description": "No standard .github/agents/ directory for specialized task instruction files.",
+      "tasks": [
+        {
+          "taskId": "PROC-03-T1",
+          "status": "open",
+          "description": "Implement .github/agents/ in common-bond and dev-environment using the Microsoft Cluster Doctor pattern.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/.github/agents/README.md",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "ARCH-01",
+      "severity": "high",
+      "status": "open",
+      "category": "Architecture",
+      "repo": "ecosystem",
+      "area": "GitOps Workflows",
+      "description": "No existing standard for agent-authored GitOps PRs for automated remediation.",
+      "tasks": [
+        {
+          "taskId": "ARCH-01-T1",
+          "status": "open",
+          "description": "Propose a design for a 'Cluster Auditor' agent that can generate remediation PRs in documentation/common-bond.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/engineering/agent-remediation.md",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "SEC-01",
+      "severity": "high",
+      "status": "open",
+      "category": "Security",
+      "repo": "all",
+      "area": "Agent Safety",
+      "description": "Lack of 'Permissions & Safety' governance for autonomous agents. (Iterative Improvement Proposal)",
+      "tasks": [
+        {
+          "taskId": "SEC-01-T1",
+          "status": "open",
+          "description": "Establish a Permission and Safety standard for agentic platform tools, defining read-only vs. write-scoped credentials and mandatory 'Human-Explainability' requirements (NIST AI RMF intent justification).",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/about-us/our-technology.md",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "DOC-03",
+      "severity": "medium",
+      "status": "open",
+      "category": "Documentation Gap",
+      "repo": "all",
+      "area": "Agent Context",
+      "description": "Absence of 'Reference Implementation' pointers in documentation for agentic imitation. (Iterative Improvement Proposal)",
+      "tasks": [
+        {
+          "taskId": "DOC-03-T1",
+          "status": "open",
+          "description": "Identify one 'canonical' service for each technology stack (Python, Next.js, Supabase) and tag as reference implementation for AI tool context.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/engineering/reference-implementations.md",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "PROC-04",
+      "severity": "high",
+      "status": "open",
+      "category": "Process Gap",
+      "repo": "all",
+      "area": "Agentic Workflows",
+      "description": "No standard for 'Agentic CI/CD Gates' like AI-driven test healing. (Iterative Improvement Proposal)",
+      "tasks": [
+        {
+          "taskId": "PROC-04-T1",
+          "status": "open",
+          "description": "Prototype a 'Test Healer' workflow integration using Playwright's agentic capabilities in planner-frontend.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/frontend/planner-frontend/.github/workflows/ai-healer.yml",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "TECH-01",
+      "severity": "medium",
+      "status": "open",
+      "category": "Tech Debt",
+      "repo": "all",
+      "area": "Agent Context",
+      "description": "Outdated/Missing openapi.json or schema.sql exports in non-local shared locations. (Iterative Improvement Proposal)",
+      "tasks": [
+        {
+          "taskId": "TECH-01-T1",
+          "status": "open",
+          "description": "Standardize the generation and publishing of OpenAPI specs and SQL schemas for every compute service.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/README.md",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "CROSS-01",
+      "severity": "high",
+      "status": "open",
+      "category": "Consensus",
+      "repo": "all",
+      "area": "Diagnostic Standardization",
+      "description": "Inconsistent error message formatting across repos. (Iterative Improvement Proposal)",
+      "tasks": [
+        {
+          "taskId": "CROSS-01-T1",
+          "status": "open",
+          "description": "Enforce a standardized structured logging (JSON) format across all Python services to improve agentic root cause analysis.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/engineering/logging-standards.md",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "ARCH-02",
+      "severity": "high",
+      "status": "open",
+      "category": "Architecture",
+      "repo": "all",
+      "area": "Agent Interoperability",
+      "description": "Lack of standardized 'MCP (Model Context Protocol)' resource servers for shared services (Supabase, Match, Planner).",
+      "tasks": [
+        {
+          "taskId": "ARCH-02-T1",
+          "status": "open",
+          "description": "Implement MCP Resource Servers for all shared compute and data services to expose schemas, tools, and docs to external agents via the universal connector standard.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/engineering/agent-infrastructure.md",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "OBS-01",
+      "severity": "medium",
+      "status": "open",
+      "category": "Observability",
+      "repo": "all",
+      "area": "Agent Traceability",
+      "description": "No mechanism to distinguish agent-initiated mutations in logs from human actions. (Round 2 Addition)",
+      "tasks": [
+        {
+          "taskId": "OBS-01-T1",
+          "status": "open",
+          "description": "Define a standard template for agent skills and prompt engineering (aligned with .github/agents/ and MCP Tool Schemas).",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/engineering/logging-standards.md",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "DISC-01",
+      "severity": "medium",
+      "status": "open",
+      "category": "Architecture",
+      "repo": "ecosystem",
+      "area": "Agent Discovery",
+      "description": "Lack of a centralized 'Agent Registry' or 'Skill Catalog' (Product Mindset alignment).",
+      "tasks": [
+        {
+          "taskId": "DISC-01-T1",
+          "status": "open",
+          "description": "Create a root-level capabilities.json mapping personas to specific skills and workflows.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/README.md",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "VAL-01",
+      "severity": "high",
+      "status": "open",
+      "category": "Compliance",
+      "repo": "ecosystem",
+      "area": "Agent Validation",
+      "description": "No automated benchmark to verify agent performance against domain-specific problems. (Round 2 Addition)",
+      "tasks": [
+        {
+          "taskId": "VAL-01-T1",
+          "status": "open",
+          "description": "Establish a 'Gold Standard' regression suite using 'LLM-as-a-Judge' models for probabilistic verification of the Planner and Allocator domains.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/compliance/agent-quality.md",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "DOC-04",
+      "severity": "medium",
+      "status": "open",
+      "category": "Documentation Gap",
+      "repo": "all",
+      "area": "Agent Safety",
+      "description": "Lack of structured 'PITFALLS' documentation for AI agents. (Round 2 Addition)",
+      "tasks": [
+        {
+          "taskId": "DOC-04-T1",
+          "status": "open",
+          "description": "Standardize a CONSTRAINTS.md file for every repository specifically for non-obvious AI pitfalls.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/dev-environment/CONSTRAINTS.md",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "SEC-02",
+      "severity": "high",
+      "status": "open",
+      "category": "Security",
+      "repo": "ecosystem",
+      "area": "Agent Safety",
+      "description": "Manual rotation of high-privilege agent credentials. (Round 2 Addition)",
+      "tasks": [
+        {
+          "taskId": "SEC-02-T1",
+          "status": "open",
+          "description": "Define a standard X-Agent-ID header and logging convention for all autonomous tools, normalizing to OpenTelemetry GenAI Semantic Conventions (gen_ai.system, gen_ai.usage).",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/.github/workflows/agent-secret-rotation.yml",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "GOV-01",
+      "severity": "high",
+      "status": "open",
+      "category": "Governance",
+      "repo": "all",
+      "area": "Agent Context",
+      "description": "Lack of machine-readable Change Impact Assessments in PRs. (Round 3 Addition)",
+      "tasks": [
+        {
+          "taskId": "GOV-01-T1",
+          "status": "open",
+          "description": "Implement a 'PR Auditor' workflow to generate automated impact assessments.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/engineering/agent-governance.md",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "TECH-02",
+      "severity": "medium",
+      "status": "open",
+      "category": "Instrumentation",
+      "repo": "all",
+      "area": "Agentic RCA",
+      "description": "Absence of structured 'Intent' metadata in deployments. (Round 3 Addition)",
+      "tasks": [
+        {
+          "taskId": "TECH-02-T1",
+          "status": "open",
+          "description": "Standardize a deploy.intent.json metadata file for all production environments.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/engineering/deployment-standards.md",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "VAL-02",
+      "severity": "high",
+      "status": "open",
+      "category": "Compliance",
+      "repo": "supabase-receptor",
+      "area": "Security Validation",
+      "description": "Manual verification of complex RLS policies. (Round 3 Addition)",
+      "tasks": [
+        {
+          "taskId": "VAL-02-T1",
+          "status": "open",
+          "description": "Implement an 'RLS Auditor' agent persona to provide formal verification of data isolation.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/compliance/agent-security.md",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "DOC-05",
+      "severity": "low",
+      "status": "open",
+      "category": "Architecture",
+      "repo": "ecosystem",
+      "area": "Agent Discovery",
+      "description": "Lack of a dedicated Semantic Search API for agents into Docusaurus. (Round 3 Addition)",
+      "tasks": [
+        {
+          "taskId": "DOC-05-T1",
+          "status": "open",
+          "description": "Expose the Docusaurus internal index via a dedicated Agent Search endpoint.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/README.md",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "ARCH-04",
+      "severity": "medium",
+      "status": "open",
+      "category": "Architecture",
+      "repo": "receptor-infra",
+      "area": "Agent Personas",
+      "description": "Absence of isolated 'Debug Sidecar' agent personas. (Round 3 Addition)",
+      "tasks": [
+        {
+          "taskId": "ARCH-04-T1",
+          "status": "open",
+          "description": "Design a Read-Only Debug Sidecar pattern for Kubernetes diagnostic isolation.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/engineering/agent-infrastructure.md",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "GOV-02",
+      "severity": "medium",
+      "status": "open",
+      "category": "Governance",
+      "repo": "all",
+      "area": "Agent Compliance",
+      "description": "Lack of continuous Agentic Readiness Scoring. (Round 4 Addition)",
+      "tasks": [
+        {
+          "taskId": "GOV-02-T1",
+          "status": "open",
+          "description": "Implement a CI-driven Readiness Score for every repository.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/engineering/agent-governance.md",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "INFRA-02",
+      "severity": "medium",
+      "status": "open",
+      "category": "Observability",
+      "repo": "receptor-infra",
+      "area": "Agent Traceability",
+      "description": "Absence of high-level 'Agent Decision Logs' in Kubernetes. (Round 4 Addition)",
+      "tasks": [
+        {
+          "taskId": "INFRA-02-T1",
+          "status": "open",
+          "description": "Standardize an AgentDecision CRD to record autonomous infrastructure reasoning.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/engineering/agent-infrastructure.md",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "SEC-03",
+      "severity": "high",
+      "status": "open",
+      "category": "Security",
+      "repo": "ecosystem",
+      "area": "Agent Identity",
+      "description": "Lack of Zero-Trust 'Agent-to-Agent' authentication standard. (Round 4 Addition)",
+      "tasks": [
+        {
+          "taskId": "SEC-03-T1",
+          "status": "open",
+          "description": "Adopt a JWT-based 'Agent Identity' standard for secure inter-persona tool calls.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/engineering/agent-infrastructure.md",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "TECH-03",
+      "severity": "high",
+      "status": "open",
+      "category": "Reliability",
+      "repo": "all",
+      "area": "Agent Safety",
+      "description": "Absence of a mandatory 'Dry-Run' and 'Impact Preview' standard for agentic tools. (Round 4 Addition)",
+      "tasks": [
+        {
+          "taskId": "TECH-03-T1",
+          "status": "open",
+          "description": "Mandate enforced --dry-run and JSON-diff impact previews for all mutating skills.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/engineering/agent-infrastructure.md",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "VAL-03",
+      "severity": "high",
+      "status": "open",
+      "category": "Security Validation",
+      "repo": "ecosystem",
+      "area": "Agent Safety",
+      "description": "Vulnerability to prompt injection and malicious tool manipulation. (Round 4 Addition)",
+      "tasks": [
+        {
+          "taskId": "VAL-03-T1",
+          "status": "open",
+          "description": "Integrate an 'Adversarial Tester' agent persona to red-team system prompts in CI/CD.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/compliance/agent-security.md",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "VAL-04",
+      "severity": "medium",
+      "status": "open",
+      "category": "Validation",
+      "repo": "ecosystem",
+      "area": "Agent Testability",
+      "description": "Lack of a standardized sandbox Test Harness for agentic tools. (Round 5 Addition)",
+      "tasks": [
+        {
+          "taskId": "VAL-04-T1",
+          "status": "open",
+          "description": "Implement a 'lib/agent-test-harness' for autonomous tool verification and state-mocking.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/dev-environment/.agents/skills/agent-test-harness/SKILL.md",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "ARCH-05",
+      "severity": "high",
+      "status": "open",
+      "category": "Architecture",
+      "repo": "ecosystem",
+      "area": "Agent Safety",
+      "description": "Risk of runaway agentic processes and resource exhaustion. (Round 5 Addition)",
+      "tasks": [
+        {
+          "taskId": "ARCH-05-T1",
+          "status": "open",
+          "description": "Implement global 'Circuit Breaker' and quota standards for autonomous workflows.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/engineering/agent-infrastructure.md",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "GOV-03",
+      "severity": "critical",
+      "status": "open",
+      "category": "Governance",
+      "repo": "all",
+      "area": "Agent Safety",
+      "description": "Lack of 'Dual-Control' requirement for destructive autonomous operations. (Round 5 Addition)",
+      "tasks": [
+        {
+          "taskId": "GOV-03-T1",
+          "status": "open",
+          "description": "Formalize a DUAL_CONTROL.md standard for mandatory human-in-the-loop gates.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/engineering/agent-governance.md",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "OBS-03",
+      "severity": "medium",
+      "status": "open",
+      "category": "Observability",
+      "repo": "ecosystem",
+      "area": "Agent Alignment",
+      "description": "Absence of 'Semantic Heartbeats' to monitor agentic instruction drift. (Round 5 Addition)",
+      "tasks": [
+        {
+          "taskId": "OBS-03-T1",
+          "status": "open",
+          "description": "Implement a HealthCheck API for agentic personas to monitor logical alignment.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/engineering/logging-standards.md",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "TECH-04",
+      "severity": "high",
+      "status": "open",
+      "category": "Reliability",
+      "repo": "all",
+      "area": "Agent Robustness",
+      "description": "Absence of a mandatory 'Safe Rollback' protocol for autonomous actions. (Round 5 Addition)",
+      "tasks": [
+        {
+          "taskId": "TECH-04-T1",
+          "status": "open",
+          "description": "Mandate the implementation of rollback() methods for all mutating agentic workflows.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/engineering/agent-infrastructure.md",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    }
+  ],
+  "clarifications": [],
+  "implementationPhases": [
+    {
+      "phase": 1,
+      "description": "Foundation: Context & Gold Standards",
+      "rationale": "Establishing AGENTS.md and formalizing the 'Golden Path' benchmarks is the prerequisite for all autonomous operations.",
+      "findingIds": [
+        "PROC-01",
+        "PROC-02",
+        "PROC-03",
+        "DOC-01",
+        "DOC-02"
+      ]
+    },
+    {
+      "phase": 2,
+      "description": "Governance & Identity",
+      "rationale": "Securing agent identities and defining human-in-the-loop gates ensures safe platform operations.",
+      "findingIds": [
+        "SEC-01",
+        "SEC-02",
+        "SEC-03",
+        "GOV-01",
+        "GOV-02",
+        "GOV-03"
+      ]
+    },
+    {
+      "phase": 3,
+      "description": "Observability & Instrumentation",
+      "rationale": "Standardized logs and decision tracking enable root cause analysis of agentic failures.",
+      "findingIds": [
+        "OBS-01",
+        "OBS-03",
+        "TECH-02",
+        "CROSS-01",
+        "INFRA-02"
+      ]
+    },
+    {
+      "phase": 4,
+      "description": "Architecture & Coordination",
+      "rationale": "Contracts and centralized capability registries align specialized agents across repositories.",
+      "findingIds": [
+        "ARCH-01",
+        "ARCH-02",
+        "ARCH-04",
+        "ARCH-05",
+        "DISC-01",
+        "DOC-05"
+      ]
+    },
+    {
+      "phase": 5,
+      "description": "Reliability & Validation",
+      "rationale": "Benchmarks, test harnesses, and rollback protocols provide the final layer of autonomous robustness.",
+      "findingIds": [
+        "VAL-01",
+        "VAL-02",
+        "VAL-03",
+        "VAL-04",
+        "TECH-01",
+        "TECH-03",
+        "TECH-04",
+        "PROC-04",
+        "DOC-04"
+      ]
+    }
+  ],
+  "deferred": []
+}
