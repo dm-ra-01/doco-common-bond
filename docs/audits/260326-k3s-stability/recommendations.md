@@ -538,3 +538,7 @@ Affects: `receptor-infra` — Vault Values Header
 | DOC-02 | Falco ADR | `ADR-012-runtime-security-falco.md` | Documentation Gap | 🟢 Low |
 | DOC-03 | Vault Values Header | `vault.yaml` | Documentation Gap | 🟢 Low |
 
+
+## Session Close — 2026-03-26
+
+**Completed:** KCTL-03, KCTL-05, KCTL-01, KCTL-02 **Remaining:** 42 findings (66 tasks) in `receptor-infra`. Session 2 will focus on SEC-01 (Falco), HA Vault, and Pod Security Standards. **Blocked:** None **PR order note:** standard `receptor-infra` audit branch. **Brief for next agent:** Implemented cluster-wide enforcement of secrets encryption and etcd snapshots via `node-maintenance` DaemonSet. This avoids manual SSH for existing nodes but requires a rolling restart of `k3s` service to take effect (can be triggered by a dummy change to the node-maintenance image or manual restart).
