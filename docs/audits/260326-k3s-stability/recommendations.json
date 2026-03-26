@@ -762,6 +762,130 @@
         }
       ],
       "severity_history": []
+    },
+    {
+      "id": "GITOPS-01",
+      "severity": "high",
+      "status": "open",
+      "category": "Architectural Drift",
+      "repo": "receptor-infra",
+      "area": "GitOps Continuous Reconciliation",
+      "description": "The current helmfile-deployer ARC runner only syncs on push. If someone applies a manual kubectl command or a pod drifts from desired state, the cluster deviates from Git silently until the next push. Flux CD with continuous reconciliation would detect and revert drift within approx 1 minute. This is the primary GitOps gold standard gap \u2014 over 90% of production Kubernetes deployments use a continuous reconciliation operator.",
+      "tasks": [
+        {
+          "taskId": "GITOPS-01-T1",
+          "status": "open",
+          "description": "Evaluate Flux CD bootstrap for receptor-infra. Run: flux install --dry-run to validate cluster compatibility. Document migration plan from helmfile sync to HelmRelease CRDs in a new ADR (ADR-012-gitops-flux).",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/docs/adr/ADR-012-gitops-flux.md",
+          "completedAt": null,
+          "completedBy": null
+        },
+        {
+          "taskId": "GITOPS-01-T2",
+          "status": "open",
+          "description": "Bootstrap Flux CD: flux bootstrap github --owner=Common-Bond --repository=receptor-infra --path=clusters/receptor --personal. Convert each helmfile release to a HelmRelease CR. Set reconcileInterval: 5m to detect and revert drift within 5 minutes.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/clusters/receptor/",
+          "completedAt": null,
+          "completedBy": null
+        },
+        {
+          "taskId": "GITOPS-01-T3",
+          "status": "open",
+          "description": "After Flux bootstrap, disable the ARC runner helmfile sync workflow (or repurpose it to pre-flight validation only). The Flux Source Controller becomes the authoritative sync mechanism.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/helmfile.yaml",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "CI-01",
+      "severity": "high",
+      "status": "open",
+      "category": "Process Gap",
+      "repo": "receptor-infra",
+      "area": "PR Validation Pipeline",
+      "description": "No .github/workflows/ directory exists in receptor-infra. PRs touching helmfile.yaml, values/, network-policies/, and rbac/ are merged without any validation. The 18% fix-commit rate is partly attributable to broken configs reaching the live cluster undetected. Gold standard: helm lint, kubeconform (schema validation against live k3s version), yamllint, and kyverno test run on every PR before merge.",
+      "tasks": [
+        {
+          "taskId": "CI-01-T1",
+          "status": "open",
+          "description": "Create .github/workflows/validate-pr.yaml in receptor-infra. Steps: (1) helm repo add for all chart repos in helmfile.yaml, (2) helm lint for each values file, (3) helm template --dry-run for each release, (4) yamllint on all yaml files, (5) kubeconform for schema validation against k3s v1.29 CRD schema.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/.github/workflows/validate-pr.yaml",
+          "completedAt": null,
+          "completedBy": null
+        },
+        {
+          "taskId": "CI-01-T2",
+          "status": "open",
+          "description": "Add branch protection to receptor-infra main: require status checks from the PR validation workflow before merge. This gates all helmfile and values changes.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/.github/",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "GITOPS-02",
+      "severity": "medium",
+      "status": "open",
+      "category": "Security",
+      "repo": "receptor-infra",
+      "area": "Image Digest Pinning",
+      "description": "Several Helm chart values reference mutable image tags rather than pinned SHA digests. Mutable tags are a supply-chain risk: a compromised or accidental upstream push silently changes running workloads without any Git change. Gold standard is to pin to image@sha256:digest and use Renovate or Flux Image Automation to manage digest bumps via auditable PRs.",
+      "tasks": [
+        {
+          "taskId": "GITOPS-02-T1",
+          "status": "open",
+          "description": "After Flux bootstrap (GITOPS-01), enable Flux Image Automation: flux create image repository and flux create image policy for each workload image. Set update-automation to commit digest-pinned image references to Git automatically via PRs.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/clusters/receptor/image-automation/",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "CI-02",
+      "severity": "medium",
+      "status": "open",
+      "category": "Process Gap",
+      "repo": "receptor-infra",
+      "area": "Pre-commit Validation",
+      "description": "No pre-commit configuration exists in receptor-infra. A developer can commit a syntactically invalid values/ file that only fails during live cluster sync \u2014 typically during an on-call window. helm template --dry-run and yamllint would catch 80% of these errors locally before push. Pre-commit hooks are a zero-cost first line of defence.",
+      "tasks": [
+        {
+          "taskId": "CI-02-T1",
+          "status": "open",
+          "description": "Add a .pre-commit-config.yaml to receptor-infra: hooks for yamllint, helm lint (via a local script), and detect-secrets (for accidental credential commits). Run pre-commit install in the repo README setup instructions.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/.pre-commit-config.yaml",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "TFCI-01",
+      "severity": "medium",
+      "status": "open",
+      "category": "Process Gap",
+      "repo": "receptor-infra",
+      "area": "Terraform CI Workflow",
+      "description": "terraform/ is fully implemented (key-vault, backup-storage, azure-workload-identity modules) with remote state in Azure Blob. However no GitHub Actions CI workflow exists for terraform plan on PR or terraform apply on merge. Changes to Terraform are applied manually. A broken tf change will not be detected until a human runs terraform plan. Gold standard: terraform plan in CI on every PR, terraform apply automated on merge to main.",
+      "tasks": [
+        {
+          "taskId": "TFCI-01-T1",
+          "status": "open",
+          "description": "Create .github/workflows/terraform.yaml: on PR run terraform fmt -check, terraform validate, terraform plan (output as PR comment). On merge to main run terraform apply -auto-approve. Use OIDC federation for Azure authentication \u2014 no static secrets needed (matching the existing use_azuread_auth backend config).",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/.github/workflows/terraform.yaml",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
     }
   ],
   "clarifications": [
@@ -795,7 +919,8 @@
       "rationale": "Without etcd snapshots and Vault on replicated storage, a single node disk failure is a cluster-ending event. These must be addressed before any further work.",
       "findingIds": [
         "KCTL-05",
-        "VAULT-02"
+        "VAULT-02",
+        "GITOPS-01"
       ]
     },
     {
@@ -810,7 +935,10 @@
         "KYVERNO-01",
         "ARC-01",
         "KYVERNO-02",
-        "KYVERNO-02"
+        "KYVERNO-02",
+        "CI-01",
+        "CI-02",
+        "TFCI-01"
       ]
     },
     {
@@ -827,7 +955,8 @@
         "OPS-01",
         "HELM-01",
         "OPS-01",
-        "HELM-01"
+        "HELM-01",
+        "GITOPS-02"
       ]
     },
     {

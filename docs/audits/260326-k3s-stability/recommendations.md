@@ -177,6 +177,28 @@ Affects: `receptor-infra` — Operational Runbooks
 - [ ] Add runbook_url annotations to each alert in monitoring/prometheus-rules.yaml pointing to the corresponding runbook file in GitHub: https://github.com/Common-Bond/receptor-infra/blob/main/docs/runbooks/AlertName.md
       `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/monitoring/prometheus-rules.yaml`
 
+### GITOPS-01: The current helmfile-deployer ARC runner only syncs on push. If someone applies a manual kubectl command or a pod drifts
+
+Affects: `receptor-infra` — GitOps Continuous Reconciliation
+
+
+- [ ] Evaluate Flux CD bootstrap for receptor-infra. Run: flux install --dry-run to validate cluster compatibility. Document migration plan from helmfile sync to HelmRelease CRDs in a new ADR (ADR-012-gitops-flux).
+      `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/docs/adr/ADR-012-gitops-flux.md`
+- [ ] Bootstrap Flux CD: flux bootstrap github --owner=Common-Bond --repository=receptor-infra --path=clusters/receptor --personal. Convert each helmfile release to a HelmRelease CR. Set reconcileInterval: 5m to detect and revert drift within 5 minutes.
+      `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/clusters/receptor/`
+- [ ] After Flux bootstrap, disable the ARC runner helmfile sync workflow (or repurpose it to pre-flight validation only). The Flux Source Controller becomes the authoritative sync mechanism.
+      `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/helmfile.yaml`
+
+### CI-01: No .github/workflows/ directory exists in receptor-infra. PRs touching helmfile.yaml, values/, network-policies/, and rb
+
+Affects: `receptor-infra` — PR Validation Pipeline
+
+
+- [ ] Create .github/workflows/validate-pr.yaml in receptor-infra. Steps: (1) helm repo add for all chart repos in helmfile.yaml, (2) helm lint for each values file, (3) helm template --dry-run for each release, (4) yamllint on all yaml files, (5) kubeconform for schema validation against k3s v1.29 CRD schema.
+      `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/.github/workflows/validate-pr.yaml`
+- [ ] Add branch protection to receptor-infra main: require status checks from the PR validation workflow before merge. This gates all helmfile and values changes.
+      `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/.github/`
+
 ## 🟡 Medium
 
 ### KCTL-06: The k3s join URL is hardcoded to `receptor-ctrl-10` (10.10.0.10). If ctrl-10 is unavailable, new scheduling and kubectl 
@@ -281,6 +303,30 @@ Affects: `receptor-infra` — Loki Memory Limits
 - [ ] In values/loki.yaml, set Loki memory limit to 512Mi (2x current 256Mi) while keeping requests at 256Mi. This gives headroom for cardinality spikes without increasing baseline resource cost. Monitor actual usage via Prometheus for 2 weeks post-change.
       `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/values/loki.yaml`
 
+### GITOPS-02: Several Helm chart values reference mutable image tags rather than pinned SHA digests. Mutable tags are a supply-chain r
+
+Affects: `receptor-infra` — Image Digest Pinning
+
+
+- [ ] After Flux bootstrap (GITOPS-01), enable Flux Image Automation: flux create image repository and flux create image policy for each workload image. Set update-automation to commit digest-pinned image references to Git automatically via PRs.
+      `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/clusters/receptor/image-automation/`
+
+### CI-02: No pre-commit configuration exists in receptor-infra. A developer can commit a syntactically invalid values/ file that o
+
+Affects: `receptor-infra` — Pre-commit Validation
+
+
+- [ ] Add a .pre-commit-config.yaml to receptor-infra: hooks for yamllint, helm lint (via a local script), and detect-secrets (for accidental credential commits). Run pre-commit install in the repo README setup instructions.
+      `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/.pre-commit-config.yaml`
+
+### TFCI-01: terraform/ is fully implemented (key-vault, backup-storage, azure-workload-identity modules) with remote state in Azure 
+
+Affects: `receptor-infra` — Terraform CI Workflow
+
+
+- [ ] Create .github/workflows/terraform.yaml: on PR run terraform fmt -check, terraform validate, terraform plan (output as PR comment). On merge to main run terraform apply -auto-approve. Use OIDC federation for Azure authentication — no static secrets needed (matching the existing use_azuread_auth backend config).
+      `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/.github/workflows/terraform.yaml`
+
 ## 🟢 Low
 
 ### MON-02: `AppPodCrashLooping` fires at &#62;3 restarts in 15 minutes only. This misses persistent low-rate crash loops (1–2 restarts 
@@ -326,9 +372,9 @@ Affects: `receptor-infra` — Vault Values Header
 | Phase | Finding IDs | Rationale |
 | :---- | :---------- | :-------- |
 | 1 | KCTL-03, SEC-01, VAULT-01 | Secrets encryption and runtime security (Falco) are the highest-leverage security improvements and address the root cause of cluster brittleness. |
-| 2 | KCTL-05, VAULT-02 | Without etcd snapshots and Vault on replicated storage, a single node disk failure is a cluster-ending event. These must be addressed before any further work. |
-| 3 | KCTL-04, MON-03, NET-01, VAULT-03, KYVERNO-01, ARC-01, KYVERNO-02, KYVERNO-02 | Completes the security hardening layer needed to meet CIS benchmark and ISO 27001 controls. |
-| 4 | STORE-01, KCTL-06, KCTL-01, KCTL-02, PROV-01, ETCD-01, OPS-01, HELM-01, OPS-01, HELM-01 | Improves cluster resilience and eliminates tribal knowledge from the emergency recovery path. |
+| 2 | KCTL-05, VAULT-02, GITOPS-01 | Without etcd snapshots and Vault on replicated storage, a single node disk failure is a cluster-ending event. These must be addressed before any further work. |
+| 3 | KCTL-04, MON-03, NET-01, VAULT-03, KYVERNO-01, ARC-01, KYVERNO-02, KYVERNO-02, CI-01, CI-02, TFCI-01 | Completes the security hardening layer needed to meet CIS benchmark and ISO 27001 controls. |
+| 4 | STORE-01, KCTL-06, KCTL-01, KCTL-02, PROV-01, ETCD-01, OPS-01, HELM-01, OPS-01, HELM-01, GITOPS-02 | Improves cluster resilience and eliminates tribal knowledge from the emergency recovery path. |
 | 5 | MON-01, MON-02, STORE-02, DRIFT-01, DOC-01, DOC-02, DOC-03, MON-04, CERT-01, LOKI-02, LOKI-03, LOKI-02, LOKI-03 | Cleans up tech debt, documentation drift, and purpose drift findings that do not carry immediate operational risk. |
 
 
@@ -353,6 +399,8 @@ Affects: `receptor-infra` — Vault Values Header
 | ARC-01 | ARC Runner Privilege | `helmfile.yaml` | Security | 🟠 High |
 | KYVERNO-02 | Kyverno Chart Regression | `helmfile.yaml` | Architectural Drift | 🟠 High |
 | OPS-01 | Operational Runbooks | `runbooks` | Process Gap | 🟠 High |
+| GITOPS-01 | GitOps Continuous Reconciliation | `ADR-012-gitops-flux.md` | Architectural Drift | 🟠 High |
+| CI-01 | PR Validation Pipeline | `validate-pr.yaml` | Process Gap | 🟠 High |
 | KCTL-06 | k3s API Server HA | `user-data` | Architectural Drift | 🟡 Medium |
 | VAULT-03 | Vault TLS | `vault.yaml` | Security | 🟡 Medium |
 | MON-01 | Prometheus Operator | `prometheus-stack.yaml` | Tech Debt | 🟡 Medium |
@@ -365,6 +413,9 @@ Affects: `receptor-infra` — Vault Values Header
 | LOKI-02 | Loki Archive Tier | `loki.yaml` | Documentation Gap | 🟡 Medium |
 | HELM-01 | Chart Version Automation | `renovate.json` | Process Gap | 🟡 Medium |
 | LOKI-03 | Loki Memory Limits | `loki.yaml` | Tech Debt | 🟡 Medium |
+| GITOPS-02 | Image Digest Pinning | `image-automation` | Security | 🟡 Medium |
+| CI-02 | Pre-commit Validation | `.pre-commit-config.yaml` | Process Gap | 🟡 Medium |
+| TFCI-01 | Terraform CI Workflow | `terraform.yaml` | Process Gap | 🟡 Medium |
 | MON-02 | Alert Thresholds | `prometheus-rules.yaml` | Process Gap | 🟢 Low |
 | PROV-01 | Node Bootstrap | `README.md` | Process Gap | 🟢 Low |
 | DOC-02 | Falco ADR | `ADR-012-runtime-security-falco.md` | Documentation Gap | 🟢 Low |

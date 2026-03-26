@@ -3,8 +3,8 @@
   "auditSlug": "260326-k3s-stability",
   "status": "drafting",
   "nextAction": "implement",
-  "openTaskCount": 48,
-  "latestHandover": "Round 2 iterative improvements accepted (5 findings). 31 total findings, 48 open tasks. New: KYVERNO-02 (chart regression — values/kyverno.yaml orphaned), OPS-01 (no runbooks, no runbook_url in alerts), LOKI-02 (archive-to-R2 comment drift), HELM-01 (no automated chart updates), LOKI-03 (Loki memory limits == requests). Round 3 IaC/GitOps gap proposals in progress.",
+  "openTaskCount": 56,
+  "latestHandover": "Round 3 accepted (5 findings). 36 total findings, 56 open tasks. New: GITOPS-01 (Flux CD continuous reconciliation), CI-01 (PR validation pipeline — helm lint, kubeconform, yamllint), GITOPS-02 (image digest pinning via Flux Image Automation), CI-02 (pre-commit hooks), TFCI-01 (Terraform CI plan/apply workflow). IaC-01 withdrawn (Terraform fully implemented). Cloudflared single-replica confirmed. No PodDisruptionBudgets. No image scanning. Round 4 critical gaps being compiled.",
   "sessionHistory": [
     {
       "session": 1,

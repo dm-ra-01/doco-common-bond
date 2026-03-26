@@ -11,7 +11,7 @@
 
 The Receptor k3s cluster implements several mature patterns (Calico NetworkPolicies, Vault with Azure Workload Identity, Longhorn HA storage, Traefik HA, GitOps via helmfile), but exhibits structural fragility against production gold standards. The high fix-commit density (11 of the last 60 commits are `fix:` patches — 18%) confirms the brittleness. Root causes are architectural: Vault as a SPOF, absent k3s control-plane hardening flags (secrets-encryption, API audit log, etcd snapshots), Falco runtime security disabled, and documentation drift.
 
-**31 findings total: 4 🔴 Critical · 10 🟠 High · 11 🟡 Medium · 4 🟢 Low · 2 🟡 Tech Debt**
+**36 findings total: 4 🔴 Critical · 12 🟠 High · 14 🟡 Medium · 4 🟢 Low · 2 🟡 Tech Debt**
 
 | Repository / Area                     | Coverage | Issues Found | Overall     |
 | ------------------------------------- | -------- | ------------ | ----------- |
@@ -217,3 +217,8 @@ The `descheduler.yaml` (`maintenance/descheduler.yaml`, lines 1–13) was design
 | LOKI-02    | Loki Archive Tier Drift      | `values/loki.yaml`                         | Documentation Gap   | 🟡 Medium   |
 | HELM-01    | No Automated Chart Updates   | `helmfile.yaml`, `renovate.json`           | Process Gap         | 🟡 Medium   |
 | LOKI-03    | Loki Memory Limits           | `values/loki.yaml`                         | Tech Debt           | 🟡 Medium   |
+| GITOPS-01  | No GitOps Reconciliation     | `helmfile.yaml`, `clusters/`               | Architectural Drift | 🟠 High     |
+| CI-01      | No PR Validation Pipeline    | `.github/workflows/`                       | Process Gap         | 🟠 High     |
+| GITOPS-02  | No Image Digest Pinning      | `values/`                                  | Security            | 🟡 Medium   |
+| CI-02      | No Pre-commit Validation     | `.pre-commit-config.yaml`                  | Process Gap         | 🟡 Medium   |
+| TFCI-01    | No Terraform CI Workflow     | `.github/workflows/terraform.yaml`         | Process Gap         | 🟡 Medium   |
