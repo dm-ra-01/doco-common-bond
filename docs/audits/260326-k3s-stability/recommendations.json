@@ -886,6 +886,138 @@
         }
       ],
       "severity_history": []
+    },
+    {
+      "id": "CLOUD-01",
+      "severity": "medium",
+      "status": "complete",
+      "category": "Architectural Drift",
+      "repo": "receptor-infra",
+      "area": "Cloudflared Config Drift",
+      "description": "values/cloudflared.yaml declared replicaCount: 1 but live cluster confirmed 2 cloudflared pods (connectors e6ef61c1, 4308ddd5) both running v2024.8.2 since 2026-03-13, establishing 8 connections across mel01 mel02 syd01 syd06 syd07. HA was present in practice but not codified in Git. The next helmfile sync would have silently scaled back to 1, removing HA. Fixed: values/cloudflared.yaml updated to replicaCount: 2.",
+      "tasks": [
+        {
+          "taskId": "CLOUD-01-T1",
+          "status": "complete",
+          "description": "Update values/cloudflared.yaml replicaCount from 1 to 2 to codify live HA state confirmed via kubectl. Both connectors (e6ef61c1, 4308ddd5) running v2024.8.2 since 2026-03-13 with 4 connections each to Australian Cloudflare PoPs.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/values/cloudflared.yaml",
+          "completedAt": "2026-03-26T17:29:00+11:00",
+          "completedBy": "Ryan Ammendolea"
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "RESI-01",
+      "severity": "high",
+      "status": "open",
+      "category": "Architectural Drift",
+      "repo": "receptor-infra",
+      "area": "PodDisruptionBudgets",
+      "description": "No PodDisruptionBudget exists anywhere in the repository. The descheduler (maintenance/descheduler.yaml line 14) comments that PodDisruptionBudgets are respected but there are none to respect. During node maintenance or descheduler eviction, Traefik, Vault, Prometheus, Longhorn managers, and Loki can all be simultaneously evicted with no minimum-availability guarantee, causing cascading outages.",
+      "tasks": [
+        {
+          "taskId": "RESI-01-T1",
+          "status": "open",
+          "description": "Create PodDisruptionBudgets for critical workloads: Traefik (minAvailable: 1), Vault (maxUnavailable: 0 in standalone mode), kube-prometheus-stack Alertmanager (minAvailable: 1), Longhorn manager (maxUnavailable: 1). Place PDB manifests in maintenance/pod-disruption-budgets.yaml.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/maintenance/pod-disruption-budgets.yaml",
+          "completedAt": null,
+          "completedBy": null
+        },
+        {
+          "taskId": "RESI-01-T2",
+          "status": "open",
+          "description": "After Vault HA migration (VAULT-01-T2), update Vault PDB to minAvailable: 2 (majority quorum for 3-node HA Raft cluster). Apply PDBs to all workloads with 2+ replicas.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/maintenance/pod-disruption-budgets.yaml",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "SEC-02",
+      "severity": "high",
+      "status": "open",
+      "category": "Security",
+      "repo": "receptor-infra",
+      "area": "Container Image Scanning",
+      "description": "No container image vulnerability scanning exists in any workflow. No Trivy, Grype, or Cosign is configured. No admission controller enforces image signatures. The Zot registry syncs images from GHCR automatically and multiple fix commits around GHCR auth confirm the pipeline is active. A compromised upstream image would be silently deployed with no scan gate.",
+      "tasks": [
+        {
+          "taskId": "SEC-02-T1",
+          "status": "open",
+          "description": "Add Trivy vulnerability scanning to the PR validation workflow (CI-01-T1). Step: trivy image --exit-code 1 --severity CRITICAL,HIGH against each image referenced in values/ files. Block merge if CRITICAL CVEs found. Run on schedule (weekly) for the full image catalogue.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/.github/workflows/validate-pr.yaml",
+          "completedAt": null,
+          "completedBy": null
+        },
+        {
+          "taskId": "SEC-02-T2",
+          "status": "open",
+          "description": "After Kyverno is deployed (KYVERNO-02-T2), add a Kyverno ClusterPolicy to verify image signatures using Cosign for workloads in production namespaces (supabase, vault, monitoring). Start with the registry Zot images that are already pull-through cached.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/policies/",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "DRTE-01",
+      "severity": "high",
+      "status": "open",
+      "category": "Process Gap",
+      "repo": "receptor-infra",
+      "area": "DR Test Record",
+      "description": "docs/operations/disaster-recovery.md defines a 4-hour RTO but contains no record of a test exercise. The etcd restore command uses the placeholder path /path/to/etcd-snapshot.db indicating it has never been run. ADR-004 states ISO 27001 A.8.13 will be marked Implemented once backup is live and verified but no verification record exists. An untested DR plan is not a DR plan.",
+      "tasks": [
+        {
+          "taskId": "DRTE-01-T1",
+          "status": "open",
+          "description": "Schedule and execute a DR tabletop exercise: restore the most recent etcd snapshot to a test control-plane VM, restore a Postgres backup from Azure Blob to a scratch database, and restore Vault from backup. Document the actual restore time and any gaps in docs/operations/disaster-recovery.md.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/docs/operations/disaster-recovery.md",
+          "completedAt": null,
+          "completedBy": null
+        },
+        {
+          "taskId": "DRTE-01-T2",
+          "status": "open",
+          "description": "Update the etcd restore command in disaster-recovery.md to use the actual snapshot path. Add a DR test schedule (quarterly) and a verification checklist: backup existence, restore success, service health after restore. Mark ISO 27001 A.8.13 as Implemented in the SoA once verification is documented.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/docs/operations/disaster-recovery.md",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
+    },
+    {
+      "id": "RESC-01",
+      "severity": "medium",
+      "status": "open",
+      "category": "Architectural Drift",
+      "repo": "receptor-infra",
+      "area": "Namespace ResourceQuota",
+      "description": "No ResourceQuota or LimitRange exists on any namespace. A runaway CI job, Loki cardinality spike, or misbehaving Longhorn replica can consume all cluster CPU and memory, evicting production workloads. No namespace has resource limits defined beyond individual pod requests and limits. Gold standard: ResourceQuota per namespace with LimitRange defaults for pods that do not declare their own resources.",
+      "tasks": [
+        {
+          "taskId": "RESC-01-T1",
+          "status": "open",
+          "description": "Add ResourceQuota manifests to rbac/namespaces.yaml or a new rbac/resource-quotas.yaml for high-risk namespaces: monitoring (Loki, Prometheus), ci-runner, arc-runners. Start conservative: 4 CPU / 8Gi memory per namespace, adjust after observing actual usage via kubectl top.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/rbac/resource-quotas.yaml",
+          "completedAt": null,
+          "completedBy": null
+        },
+        {
+          "taskId": "RESC-01-T2",
+          "status": "open",
+          "description": "Add LimitRange defaults to the monitoring and ci-runner namespaces so pods without explicit resource declarations inherit sensible defaults (e.g. 100m CPU / 128Mi memory request, 500m CPU / 512Mi memory limit). This prevents unconstrained pods from consuming cluster resources.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/rbac/resource-quotas.yaml",
+          "completedAt": null,
+          "completedBy": null
+        }
+      ],
+      "severity_history": []
     }
   ],
   "clarifications": [
@@ -938,7 +1070,8 @@
         "KYVERNO-02",
         "CI-01",
         "CI-02",
-        "TFCI-01"
+        "TFCI-01",
+        "SEC-02"
       ]
     },
     {
@@ -956,7 +1089,10 @@
         "HELM-01",
         "OPS-01",
         "HELM-01",
-        "GITOPS-02"
+        "GITOPS-02",
+        "RESI-01",
+        "DRTE-01",
+        "RESC-01"
       ]
     },
     {

@@ -199,6 +199,36 @@ Affects: `receptor-infra` — PR Validation Pipeline
 - [ ] Add branch protection to receptor-infra main: require status checks from the PR validation workflow before merge. This gates all helmfile and values changes.
       `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/.github/`
 
+### RESI-01: No PodDisruptionBudget exists anywhere in the repository. The descheduler (maintenance/descheduler.yaml line 14) comment
+
+Affects: `receptor-infra` — PodDisruptionBudgets
+
+
+- [ ] Create PodDisruptionBudgets for critical workloads: Traefik (minAvailable: 1), Vault (maxUnavailable: 0 in standalone mode), kube-prometheus-stack Alertmanager (minAvailable: 1), Longhorn manager (maxUnavailable: 1). Place PDB manifests in maintenance/pod-disruption-budgets.yaml.
+      `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/maintenance/pod-disruption-budgets.yaml`
+- [ ] After Vault HA migration (VAULT-01-T2), update Vault PDB to minAvailable: 2 (majority quorum for 3-node HA Raft cluster). Apply PDBs to all workloads with 2+ replicas.
+      `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/maintenance/pod-disruption-budgets.yaml`
+
+### SEC-02: No container image vulnerability scanning exists in any workflow. No Trivy, Grype, or Cosign is configured. No admission
+
+Affects: `receptor-infra` — Container Image Scanning
+
+
+- [ ] Add Trivy vulnerability scanning to the PR validation workflow (CI-01-T1). Step: trivy image --exit-code 1 --severity CRITICAL,HIGH against each image referenced in values/ files. Block merge if CRITICAL CVEs found. Run on schedule (weekly) for the full image catalogue.
+      `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/.github/workflows/validate-pr.yaml`
+- [ ] After Kyverno is deployed (KYVERNO-02-T2), add a Kyverno ClusterPolicy to verify image signatures using Cosign for workloads in production namespaces (supabase, vault, monitoring). Start with the registry Zot images that are already pull-through cached.
+      `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/policies/`
+
+### DRTE-01: docs/operations/disaster-recovery.md defines a 4-hour RTO but contains no record of a test exercise. The etcd restore co
+
+Affects: `receptor-infra` — DR Test Record
+
+
+- [ ] Schedule and execute a DR tabletop exercise: restore the most recent etcd snapshot to a test control-plane VM, restore a Postgres backup from Azure Blob to a scratch database, and restore Vault from backup. Document the actual restore time and any gaps in docs/operations/disaster-recovery.md.
+      `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/docs/operations/disaster-recovery.md`
+- [ ] Update the etcd restore command in disaster-recovery.md to use the actual snapshot path. Add a DR test schedule (quarterly) and a verification checklist: backup existence, restore success, service health after restore. Mark ISO 27001 A.8.13 as Implemented in the SoA once verification is documented.
+      `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/docs/operations/disaster-recovery.md`
+
 ## 🟡 Medium
 
 ### KCTL-06: The k3s join URL is hardcoded to `receptor-ctrl-10` (10.10.0.10). If ctrl-10 is unavailable, new scheduling and kubectl 
@@ -327,6 +357,25 @@ Affects: `receptor-infra` — Terraform CI Workflow
 - [ ] Create .github/workflows/terraform.yaml: on PR run terraform fmt -check, terraform validate, terraform plan (output as PR comment). On merge to main run terraform apply -auto-approve. Use OIDC federation for Azure authentication — no static secrets needed (matching the existing use_azuread_auth backend config).
       `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/.github/workflows/terraform.yaml`
 
+### CLOUD-01: values/cloudflared.yaml declared replicaCount: 1 but live cluster confirmed 2 cloudflared pods (connectors e6ef61c1, 430
+
+Affects: `receptor-infra` — Cloudflared Config Drift
+
+
+- [x] Update values/cloudflared.yaml replicaCount from 1 to 2 to codify live HA state confirmed via kubectl. Both connectors (e6ef61c1, 4308ddd5) running v2024.8.2 since 2026-03-13 with 4 connections each to Australian Cloudflare PoPs.
+      `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/values/cloudflared.yaml`
+      _(Completed: 2026-03-26T17:29:00+11:00)_
+
+### RESC-01: No ResourceQuota or LimitRange exists on any namespace. A runaway CI job, Loki cardinality spike, or misbehaving Longhor
+
+Affects: `receptor-infra` — Namespace ResourceQuota
+
+
+- [ ] Add ResourceQuota manifests to rbac/namespaces.yaml or a new rbac/resource-quotas.yaml for high-risk namespaces: monitoring (Loki, Prometheus), ci-runner, arc-runners. Start conservative: 4 CPU / 8Gi memory per namespace, adjust after observing actual usage via kubectl top.
+      `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/rbac/resource-quotas.yaml`
+- [ ] Add LimitRange defaults to the monitoring and ci-runner namespaces so pods without explicit resource declarations inherit sensible defaults (e.g. 100m CPU / 128Mi memory request, 500m CPU / 512Mi memory limit). This prevents unconstrained pods from consuming cluster resources.
+      `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/rbac/resource-quotas.yaml`
+
 ## 🟢 Low
 
 ### MON-02: `AppPodCrashLooping` fires at &#62;3 restarts in 15 minutes only. This misses persistent low-rate crash loops (1–2 restarts 
@@ -373,8 +422,8 @@ Affects: `receptor-infra` — Vault Values Header
 | :---- | :---------- | :-------- |
 | 1 | KCTL-03, SEC-01, VAULT-01 | Secrets encryption and runtime security (Falco) are the highest-leverage security improvements and address the root cause of cluster brittleness. |
 | 2 | KCTL-05, VAULT-02, GITOPS-01 | Without etcd snapshots and Vault on replicated storage, a single node disk failure is a cluster-ending event. These must be addressed before any further work. |
-| 3 | KCTL-04, MON-03, NET-01, VAULT-03, KYVERNO-01, ARC-01, KYVERNO-02, KYVERNO-02, CI-01, CI-02, TFCI-01 | Completes the security hardening layer needed to meet CIS benchmark and ISO 27001 controls. |
-| 4 | STORE-01, KCTL-06, KCTL-01, KCTL-02, PROV-01, ETCD-01, OPS-01, HELM-01, OPS-01, HELM-01, GITOPS-02 | Improves cluster resilience and eliminates tribal knowledge from the emergency recovery path. |
+| 3 | KCTL-04, MON-03, NET-01, VAULT-03, KYVERNO-01, ARC-01, KYVERNO-02, KYVERNO-02, CI-01, CI-02, TFCI-01, SEC-02 | Completes the security hardening layer needed to meet CIS benchmark and ISO 27001 controls. |
+| 4 | STORE-01, KCTL-06, KCTL-01, KCTL-02, PROV-01, ETCD-01, OPS-01, HELM-01, OPS-01, HELM-01, GITOPS-02, RESI-01, DRTE-01, RESC-01 | Improves cluster resilience and eliminates tribal knowledge from the emergency recovery path. |
 | 5 | MON-01, MON-02, STORE-02, DRIFT-01, DOC-01, DOC-02, DOC-03, MON-04, CERT-01, LOKI-02, LOKI-03, LOKI-02, LOKI-03 | Cleans up tech debt, documentation drift, and purpose drift findings that do not carry immediate operational risk. |
 
 
@@ -401,6 +450,9 @@ Affects: `receptor-infra` — Vault Values Header
 | OPS-01 | Operational Runbooks | `runbooks` | Process Gap | 🟠 High |
 | GITOPS-01 | GitOps Continuous Reconciliation | `ADR-012-gitops-flux.md` | Architectural Drift | 🟠 High |
 | CI-01 | PR Validation Pipeline | `validate-pr.yaml` | Process Gap | 🟠 High |
+| RESI-01 | PodDisruptionBudgets | `pod-disruption-budgets.yaml` | Architectural Drift | 🟠 High |
+| SEC-02 | Container Image Scanning | `validate-pr.yaml` | Security | 🟠 High |
+| DRTE-01 | DR Test Record | `disaster-recovery.md` | Process Gap | 🟠 High |
 | KCTL-06 | k3s API Server HA | `user-data` | Architectural Drift | 🟡 Medium |
 | VAULT-03 | Vault TLS | `vault.yaml` | Security | 🟡 Medium |
 | MON-01 | Prometheus Operator | `prometheus-stack.yaml` | Tech Debt | 🟡 Medium |
@@ -416,6 +468,8 @@ Affects: `receptor-infra` — Vault Values Header
 | GITOPS-02 | Image Digest Pinning | `image-automation` | Security | 🟡 Medium |
 | CI-02 | Pre-commit Validation | `.pre-commit-config.yaml` | Process Gap | 🟡 Medium |
 | TFCI-01 | Terraform CI Workflow | `terraform.yaml` | Process Gap | 🟡 Medium |
+| CLOUD-01 | Cloudflared Config Drift | `cloudflared.yaml` | Architectural Drift | 🟡 Medium |
+| RESC-01 | Namespace ResourceQuota | `resource-quotas.yaml` | Architectural Drift | 🟡 Medium |
 | MON-02 | Alert Thresholds | `prometheus-rules.yaml` | Process Gap | 🟢 Low |
 | PROV-01 | Node Bootstrap | `README.md` | Process Gap | 🟢 Low |
 | DOC-02 | Falco ADR | `ADR-012-runtime-security-falco.md` | Documentation Gap | 🟢 Low |
