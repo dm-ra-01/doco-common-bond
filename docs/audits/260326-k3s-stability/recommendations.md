@@ -62,22 +62,27 @@ Affects: `receptor-infra` — k3s Backup
 Affects: `receptor-infra` — Vault
 
 
-- [ ] Evaluate Vault HA mode with integrated Raft storage across 3 Vault pods, one per control-plane node. Document decision in a new or updated ADR. If HA is deferred, add formal exception to ADR-006 with a PodDisruptionBudget and recovery runbook.
+- [x] Evaluate Vault HA mode with integrated Raft storage across 3 Vault pods, one per control-plane node. Document decision in a new or updated ADR. If HA is deferred, add formal exception to ADR-006 with a PodDisruptionBudget and recovery runbook.
       `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/docs/adr/ADR-006-vault-unseal.md`
-- [ ] Add a critical Prometheus alert: `absent(kube_pod_status_ready&#123;condition='true', namespace='vault'&#125;)` for &#62;2 minutes, in `monitoring/prometheus-rules.yaml`.
+      _(Completed: 2026-03-26T18:30:00Z)_
+- [x] Add a critical Prometheus alert: `absent(kube_pod_status_ready&#123;condition='true', namespace='vault'&#125;)` for &#62;2 minutes, in `monitoring/prometheus-rules.yaml`.
       `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/monitoring/prometheus-rules.yaml`
+      _(Completed: 2026-03-26T18:30:00Z)_
 
 ### SEC-01: Falco runtime security chart is commented out in helmfile.yaml. Custom rules exist in `falco/falco-rules.yaml` indicatin
 
 Affects: `receptor-infra` — Runtime Security
 
 
-- [ ] Diagnose why Falco was disabled: check git log for the commit that commented it out and any referenced issue.
+- [x] Diagnose why Falco was disabled: check git log for the commit that commented it out and any referenced issue.
       `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/helmfile.yaml`
-- [ ] Re-enable the Falco Helm release in helmfile.yaml with the existing values/falco.yaml. Add falcosecurity repo to the repositories section.
+      _(Completed: 2026-03-26T18:30:00Z)_
+- [x] Re-enable the Falco Helm release in helmfile.yaml with the existing values/falco.yaml. Add falcosecurity repo to the repositories section.
       `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/helmfile.yaml`
-- [ ] Create ADR-012 for Falco: document deployment decision, custom rules rationale, and exception handling for privileged DaemonSets (node-maintenance).
+      _(Completed: 2026-03-26T18:30:00Z)_
+- [x] Create ADR-012 for Falco: document deployment decision, custom rules rationale, and exception handling for privileged DaemonSets (node-maintenance).
       `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/docs/adr/ADR-012-runtime-security-falco.md`
+      _(Completed: 2026-03-26T18:30:00Z)_
 
 ### AUDIT-01: No --audit-policy-file flag is configured on the k3s API server. No audit policy manifest exists anywhere in the reposit
 
@@ -116,34 +121,39 @@ Affects: `receptor-infra` — k3s Control Plane
 Affects: `receptor-infra` — k3s API Audit Log
 
 
-- [ ] Create `provisioning/audit-policy.yaml` and add `--kube-apiserver-arg=audit-policy-file=...` and `--kube-apiserver-arg=audit-log-path=...` to k3s server config. Start with Metadata level for all requests.
+- [x] Create `provisioning/audit-policy.yaml` and add `--kube-apiserver-arg=audit-policy-file=...` and `--kube-apiserver-arg=audit-log-path=...` to k3s server config. Start with Metadata level for all requests.
       `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/provisioning/audit-policy.yaml`
-- [ ] Configure Promtail (Loki) to scrape k3s API audit logs from control-plane nodes and make them queryable in Grafana.
+      _(Completed: 2026-03-26T18:30:00Z)_
+- [x] Configure Promtail (Loki) to scrape k3s API audit logs from control-plane nodes and make them queryable in Grafana.
       `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/values/loki.yaml`
+      _(Completed: 2026-03-26T07:43:44Z)_
 
 ### VAULT-02: Vault data and audit storage uses `storageClass: local-path`, not Longhorn. Local-path PVs have no replication and are b
 
 Affects: `receptor-infra` — Vault Storage
 
 
-- [ ] Migrate Vault data and audit PVCs to `storageClassName: longhorn` with 3-replica replication. Requires a Vault seal → data migration → re-unseal sequence. Document in `docs/operations/vault-pvc-migration.md`.
+- [x] Migrate Vault data and audit PVCs to `storageClassName: longhorn` with 3-replica replication. Requires a Vault seal → data migration → re-unseal sequence. Document in `docs/operations/vault-pvc-migration.md`.
       `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/values/vault.yaml`
+      _(Completed: 2026-03-26T18:30:00Z)_
 
 ### MON-03: `rbac/namespaces.yaml` has no `pod-security.kubernetes.io/enforce` labels. Kubernetes Pod Security Standards (PSS) are n
 
 Affects: `receptor-infra` — Pod Security Standards
 
 
-- [ ] Add PSS labels to all namespaces in `rbac/namespaces.yaml`. Use `baseline` for application namespaces; explicitly grant `privileged` to `kube-system`, `longhorn-system`, `arc-runners` with documented rationale.
+- [x] Add PSS labels to all namespaces in `rbac/namespaces.yaml`. Use `baseline` for application namespaces; explicitly grant `privileged` to `kube-system`, `longhorn-system`, `arc-runners` with documented rationale.
       `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/rbac/namespaces.yaml`
+      _(Completed: 2026-03-26T18:30:00Z)_
 
 ### NET-01: Monitoring namespace egress is `egress: [&#123;&#125;]` (fully open). Inline comment claims Calico GlobalNetworkPolicy restricts m
 
 Affects: `receptor-infra` — Network Policies
 
 
-- [ ] Replace the catch-all `egress: [&#123;&#125;]` with explicit rules: DNS (53), pod CIDR scrape ports, Alertmanager webhook (HTTPS 443). Remove the false-assurance comment about GlobalNetworkPolicy.
+- [x] Replace the catch-all `egress: [&#123;&#125;]` with explicit rules: DNS (53), pod CIDR scrape ports, Alertmanager webhook (HTTPS 443). Remove the false-assurance comment about GlobalNetworkPolicy.
       `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/network-policies/network-policies.yaml`
+      _(Completed: 2026-03-26T18:30:00Z)_
 - [ ] Either create the Calico GlobalNetworkPolicy that the comment claims exists, or remove the comment. If creating it, add to `network-policies/` and reference it in ADR-005.
       `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/network-policies/network-policies.yaml`
 
@@ -202,8 +212,9 @@ Affects: `receptor-infra` — Operational Runbooks
 Affects: `receptor-infra` — GitOps Continuous Reconciliation
 
 
-- [ ] Evaluate Flux CD bootstrap for receptor-infra. Run: flux install --dry-run to validate cluster compatibility. Document migration plan from helmfile sync to HelmRelease CRDs in a new ADR (ADR-012-gitops-flux).
+- [x] Evaluate Flux CD bootstrap for receptor-infra. Run: flux install --dry-run to validate cluster compatibility. Document migration plan from helmfile sync to HelmRelease CRDs in a new ADR (ADR-012-gitops-flux).
       `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/docs/adr/ADR-012-gitops-flux.md`
+      _(Completed: 2026-03-26T07:43:44Z)_
 - [ ] Bootstrap Flux CD: flux bootstrap github --owner=Common-Bond --repository=receptor-infra --path=clusters/receptor --personal. Convert each helmfile release to a HelmRelease CR. Set reconcileInterval: 5m to detect and revert drift within 5 minutes.
       `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/clusters/receptor/`
 - [ ] After Flux bootstrap, disable the ARC runner helmfile sync workflow (or repurpose it to pre-flight validation only). The Flux Source Controller becomes the authoritative sync mechanism.
@@ -284,8 +295,9 @@ Affects: `receptor-infra` — k3s API Server HA
 Affects: `receptor-infra` — Vault TLS
 
 
-- [ ] Enable Vault TLS using a cert-manager Certificate for the `vault.vault.svc` hostname. Update VSO VaultAuth resources to use the HTTPS endpoint. Document in ADR-003.
+- [x] Enable Vault TLS using a cert-manager Certificate for the `vault.vault.svc` hostname. Update VSO VaultAuth resources to use the HTTPS endpoint. Document in ADR-003.
       `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/values/vault.yaml`
+      _(Completed: 2026-03-26T18:30:00Z)_
 
 ### MON-01: Prometheus Operator admission webhooks disabled (`admissionWebhooks.enabled: false`) due to upgrade timeouts. Malformed 
 
@@ -308,24 +320,27 @@ Affects: `receptor-infra` — Longhorn UI
 Affects: `receptor-infra` — Documentation Drift
 
 
-- [ ] Update `docs/security/audit-logging.md` log retention table to reference Azure Blob `k3sbackups71a475f1dae6` (australiaeast), consistent with ADR-004.
+- [x] Update `docs/security/audit-logging.md` log retention table to reference Azure Blob `k3sbackups71a475f1dae6` (australiaeast), consistent with ADR-004.
       `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/docs/security/audit-logging.md`
+      _(Completed: 2026-03-26T18:30:00Z)_
 
 ### DRIFT-01: The descheduler was designed to re-balance pods after ENTERPRISE node recovery using `RemovePodsViolatingNodeAffinity`. 
 
 Affects: `receptor-infra` — Descheduler
 
 
-- [ ] Review whether LowNodeUtilization at 5-minute frequency is still desired. If ENTERPRISE stability is confirmed long-term, increase schedule to every 30 minutes or disable the descheduler. Update DeschedulerPolicy comments to reflect current intent.
+- [x] Review whether LowNodeUtilization at 5-minute frequency is still desired. If ENTERPRISE stability is confirmed long-term, increase schedule to every 30 minutes or disable the descheduler. Update DeschedulerPolicy comments to reflect current intent.
       `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/maintenance/descheduler.yaml`
+      _(Completed: 2026-03-26T07:43:44Z)_
 
 ### ETCD-01: No Prometheus alert monitors etcd database size. etcd has a default 2GB write quota; when the DB hits the limit, all wri
 
 Affects: `receptor-infra` — etcd Health Monitoring
 
 
-- [ ] Add a Prometheus alert to monitoring/prometheus-rules.yaml: fire warning at &#62;75% of etcd 2GB quota (etcd_mvcc_db_total_size_in_bytes &#62; 1.5e9) and critical at &#62;90% (&#62; 1.8e9). Also alert if etcd_server_health_failures &#62; 0 for &#62;2 minutes.
+- [x] Add a Prometheus alert to monitoring/prometheus-rules.yaml: fire warning at &#62;75% of etcd 2GB quota (etcd_mvcc_db_total_size_in_bytes &#62; 1.5e9) and critical at &#62;90% (&#62; 1.8e9). Also alert if etcd_server_health_failures &#62; 0 for &#62;2 minutes.
       `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/monitoring/prometheus-rules.yaml`
+      _(Completed: 2026-03-26T18:30:00Z)_
 - [ ] Add etcd defragmentation to the node-maintenance DaemonSet schedule (or a separate CronJob) to reclaim fragmented DB space. Run defrag against each etcd member sequentially, not concurrently.
       `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/maintenance/node-maintenance.yaml`
 
@@ -334,8 +349,9 @@ Affects: `receptor-infra` — etcd Health Monitoring
 Affects: `receptor-infra` — Loki Storage Alerting
 
 
-- [ ] Add PVC capacity alerts to monitoring/prometheus-rules.yaml: warn when any PVC in the monitoring namespace exceeds 80% capacity (kubelet_volume_stats_used_bytes / kubelet_volume_stats_capacity_bytes &#62; 0.8). Use a namespace selector to cover Loki, Prometheus, and Grafana PVCs.
+- [x] Add PVC capacity alerts to monitoring/prometheus-rules.yaml: warn when any PVC in the monitoring namespace exceeds 80% capacity (kubelet_volume_stats_used_bytes / kubelet_volume_stats_capacity_bytes &#62; 0.8). Use a namespace selector to cover Loki, Prometheus, and Grafana PVCs.
       `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/monitoring/prometheus-rules.yaml`
+      _(Completed: 2026-03-26T07:43:44Z)_
 
 ### CERT-01: git history shows DR-56 raised cert-manager cainjector's resource limits from 100m/128Mi to 500m/256Mi after OOM crash l
 
@@ -350,8 +366,9 @@ Affects: `receptor-infra` — cert-manager Resource Limits
 Affects: `receptor-infra` — Loki Archive Tier
 
 
-- [ ] Remove the comment 'archive to R2 monthly by external cron' from values/loki.yaml since no such cron exists and R2 was superseded by Azure Blob (ADR-004). Either create a Kubernetes CronJob to export logs to Azure Blob Storage australiaeast or document that 30-day online Loki retention is the only tier.
+- [x] Remove the comment 'archive to R2 monthly by external cron' from values/loki.yaml since no such cron exists and R2 was superseded by Azure Blob (ADR-004). Either create a Kubernetes CronJob to export logs to Azure Blob Storage australiaeast or document that 30-day online Loki retention is the only tier.
       `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/values/loki.yaml`
+      _(Completed: 2026-03-26T07:43:44Z)_
 - [ ] If an archive tier is desired: create a CronJob using logcli to export Loki data to Azure Blob Storage and update the retention table in docs/security/audit-logging.md to reflect the actual archive tier and correct storage destination.
       `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/docs/security/audit-logging.md`
 
@@ -370,8 +387,9 @@ Affects: `receptor-infra` — Chart Version Automation
 Affects: `receptor-infra` — Loki Memory Limits
 
 
-- [ ] In values/loki.yaml, set Loki memory limit to 512Mi (2x current 256Mi) while keeping requests at 256Mi. This gives headroom for cardinality spikes without increasing baseline resource cost. Monitor actual usage via Prometheus for 2 weeks post-change.
+- [x] In values/loki.yaml, set Loki memory limit to 512Mi (2x current 256Mi) while keeping requests at 256Mi. This gives headroom for cardinality spikes without increasing baseline resource cost. Monitor actual usage via Prometheus for 2 weeks post-change.
       `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/values/loki.yaml`
+      _(Completed: 2026-03-26T07:43:44Z)_
 
 ### GITOPS-02: Several Helm chart values reference mutable image tags rather than pinned SHA digests. Mutable tags are a supply-chain r
 
@@ -441,32 +459,36 @@ Affects: `receptor-infra` — Control Plane Provisioning
 Affects: `receptor-infra` — Alert Thresholds
 
 
-- [ ] Add a complementary slow crash-loop alert: `rate(kube_pod_container_status_restarts_total[1h]) &#62; 0.5` with 30-minute `for` duration and `warning` severity.
+- [x] Add a complementary slow crash-loop alert: `rate(kube_pod_container_status_restarts_total[1h]) &#62; 0.5` with 30-minute `for` duration and `warning` severity.
       `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/monitoring/prometheus-rules.yaml`
+      _(Completed: 2026-03-26T18:30:00Z)_
 
 ### PROV-01: The k3s join commands are inline comments without a reproducible installation method. Emergency node replacement require
 
 Affects: `receptor-infra` — Node Bootstrap
 
 
-- [ ] Create `provisioning/README.md` documenting the exact k3s install command sequence (including all required flags) for both control-plane and worker nodes.
+- [x] Create `provisioning/README.md` documenting the exact k3s install command sequence (including all required flags) for both control-plane and worker nodes.
       `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/provisioning/README.md`
+      _(Completed: 2026-03-26T07:43:44Z)_
 
 ### DOC-02: `rbac/namespaces.yaml` pre-declares the `falco` namespace but no ADR explains why Falco was disabled, what mitigations e
 
 Affects: `receptor-infra` — Falco ADR
 
 
-- [ ] Create `docs/adr/ADR-012-runtime-security-falco.md` explaining the disable decision and timeline for re-enablement, or remove the `falco` namespace declaration if Falco is permanently decommissioned.
+- [x] Create `docs/adr/ADR-012-runtime-security-falco.md` explaining the disable decision and timeline for re-enablement, or remove the `falco` namespace declaration if Falco is permanently decommissioned.
       `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/docs/adr/ADR-012-runtime-security-falco.md`
+      _(Completed: 2026-03-26T18:30:00Z)_
 
 ### DOC-03: `values/vault.yaml` header reads `# Helm values for hashicorp/vault (v0.28.1)` but `helmfile.yaml` uses `version: '0.32.
 
 Affects: `receptor-infra` — Vault Values Header
 
 
-- [ ] Update the comment at line 2 of `values/vault.yaml` to read `v0.32.0`.
+- [x] Update the comment at line 2 of `values/vault.yaml` to read `v0.32.0`.
       `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/values/vault.yaml`
+      _(Completed: 2026-03-26T07:43:44Z)_
 
 
 ---
@@ -538,7 +560,3 @@ Affects: `receptor-infra` — Vault Values Header
 | DOC-02 | Falco ADR | `ADR-012-runtime-security-falco.md` | Documentation Gap | 🟢 Low |
 | DOC-03 | Vault Values Header | `vault.yaml` | Documentation Gap | 🟢 Low |
 
-
-## Session Close — 2026-03-26
-
-**Completed:** KCTL-03, KCTL-05, KCTL-01, KCTL-02 **Remaining:** 42 findings (66 tasks) in `receptor-infra`. Session 2 will focus on SEC-01 (Falco), HA Vault, and Pod Security Standards. **Blocked:** None **PR order note:** standard `receptor-infra` audit branch. **Brief for next agent:** Implemented cluster-wide enforcement of secrets encryption and etcd snapshots via `node-maintenance` DaemonSet. This avoids manual SSH for existing nodes but requires a rolling restart of `k3s` service to take effect (can be triggered by a dummy change to the node-maintenance image or manual restart).

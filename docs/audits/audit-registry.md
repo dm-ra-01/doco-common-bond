@@ -33,7 +33,7 @@ sidebar_position: 1
 
 | Slug | Title | Scope | Auditor | Status | NC Raised | Report |
 | :--- | :---- | :---- | :------ | :----- | :-------- | :----- |
-| `260326-k3s-stability` | k3s Cluster Stability & Gold Standard Audit | `receptor-infra` — k3s control plane, Vault, Falco, storage, monitoring, network policies, provisioning, documentation | Ryan Ammendolea | 🔧 Implementing | 46 findings · 66 open tasks | [audit.md](../audits/260326-k3s-stability/audit.md) · [recommendations.md](../audits/260326-k3s-stability/recommendations.md) |
+| `260326-k3s-stability` | k3s Cluster Stability & Gold Standard Audit | `receptor-infra` — k3s control plane, Vault, Falco, storage, monitoring, network policies, provisioning, documentation | Ryan Ammendolea | 🔄 Implementing | 46 findings · 44 open tasks | [audit.md](../audits/260326-k3s-stability/audit.md) · [recommendations.md](../audits/260326-k3s-stability/recommendations.md) |
 
 ### 🗓️ 2026-03-25
 
@@ -116,17 +116,17 @@ sidebar_position: 1
 ```
 Repository                   Audits   Last Audit
 ─────────────────────────────────────────────────
-supabase-receptor              6       2026-03-25
-backend/match-backend          4       2026-03-25
-backend/receptor-planner       3       2026-03-25
-planner-frontend               7       2026-03-25
-workforce-frontend             6       2026-03-25
-preference-frontend            6       2026-03-25
-website-frontend               2       2026-03-25
-common-bond (ISMS docs + eng)  6       2026-03-25
-receptor-infra                 3       2026-03-25
+supabase-receptor              6       2026-03-26
+backend/match-backend          4       2026-03-26
+backend/receptor-planner       3       2026-03-26
+planner-frontend               7       2026-03-26
+workforce-frontend             6       2026-03-26
+preference-frontend            6       2026-03-26
+website-frontend               2       2026-03-26
+common-bond (ISMS docs + eng)  6       2026-03-26
+receptor-infra                 3       2026-03-26
 ──────────────────────────────────── ─────────
-Total                          23+     2026-03-25
+Total                          23+     2026-03-26
 ```
 
 > **Coverage gaps addressed:** `workforce-frontend`, `preference-frontend`, and
