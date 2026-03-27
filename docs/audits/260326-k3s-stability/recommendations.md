@@ -560,3 +560,15 @@ Affects: `receptor-infra` — Vault Values Header
 | DOC-02 | Falco ADR | `ADR-012-runtime-security-falco.md` | Documentation Gap | 🟢 Low |
 | DOC-03 | Vault Values Header | `vault.yaml` | Documentation Gap | 🟢 Low |
 
+
+## Session Close — 2026-03-28
+
+**Completed:** None formally ticked off in `recommendations.json` — this was a stability remediation session addressing live cluster alerts rather than advancing recommendation tasks directly. Infrastructure fixes committed: monitoring PSS (OBS-01 related), VSO NetworkPolicy (SEC-04 related), Falco rollout, Kyverno cleanup image. Risk R-018 registered in supabase-common-bond governance DB.
+
+**Remaining:** 36 open tasks across 23 findings (all `receptor-infra`). Priority next: AUDIT-01 (audit logging), PROV-02 (control plane provisioning), MUTABLE-01 (mutable image tags), RESI-01 (PodDisruptionBudgets), CI-01 (PR validation pipeline), SEC-02 (container image scanning).
+
+**Blocked:** `supabase-realtime` CrashLoopBackOff — upstream blocker is `supabase-db-0` not ready (Init). Supabase-staging similar. No k3s audit recommendation is directly blocked on this.
+
+**PR order note:** All changes are in `receptor-infra` `audit/260326-k3s-stability` branch only. No cross-repo dependencies for current open tasks.
+
+**Brief for next agent:** Session 11 was a stability pass — it fixed live cluster issues (promtail PSS, VSO egress, Falco, Kyverno stuck upgrade) but did not advance the `recommendations.json` task statuses. Before starting implementation tasks in session 12, run `complete-task.sh` for any tasks that are genuinely done in the cluster but not yet marked in JSON (e.g. the Falco modern_ebpf switch may satisfy SEC-07 tasks). The cluster is now stable enough to resume recommendation implementation. High-value targets: AUDIT-01 (3 open tasks) and MUTABLE-01 (image tag pinning). Note that `KYVERNO-01` and `KYVERNO-02` both show `status: open` with 0 open tasks — these should be reconciled to `complete` at session start.

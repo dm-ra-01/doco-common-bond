@@ -4,7 +4,7 @@
   "status": "implementing",
   "nextAction": "implement",
   "openTaskCount": 36,
-  "latestHandover": "Session 10 complete. Stabilized Vault HA migration to Longhorn and successfully restored the azure-workload-identity-webhook (v1.5.1). Reconciled fundamental structural errors in `values/vault.yaml` (Revision 112). Critical state achieved: `vault-0` is active and unsealed on Longhorn. Current blocker: The newly installed mutation webhook is active and pods are correctly labeled (`azure.workload.identity/use: true`), but the Federated Identity token (`AZURE_FEDERATED_TOKEN_FILE`) is not being injected. This prevents standby pods from unsealing automatically. Next: Inspect webhook logs for mutation decisions and verify RBAC/permissions for cross-namespace patching.",
+  "latestHandover": "Session 11 complete (2026-03-28). Resolved all active Prometheus alerts from the stability check: (1) monitoring namespace upgraded from baseline to privileged PSS — loki-stack-promtail now 5/5 Running across all nodes; (2) allow-vso-egress NetworkPolicy created for vault-secrets-operator namespace, and allow-vault-ingress updated to permit VSO on port 8200 — resolves 'connection reset by peer' VaultStaticSecret sync errors (SEC-04); (3) Falco upgraded with modern_ebpf driver — all 6/6 nodes Running 2/2; (4) Kyverno stuck pending-upgrade rolled back and re-upgraded with bitnami/kubectl:1.31.1 cleanup image; stale CronJob pods purged. All changes committed to audit/260326-k3s-stability branch (receptor-infra commit 5c4368c) and risk R-018 pushed to supabase-common-bond main (b2bb5a8). Remaining blockers: supabase-realtime still CrashLoopBackOff pending supabase-db-0 initialization; supabase-staging DB/REST/analytics awaiting DB init. Next session should focus on implementing remaining open recommendations (AUDIT-01, PROV-02, MUTABLE-01, RESI-01, CI-01, SEC-02).",
   "sessionHistory": [
     {
       "session": 1,
@@ -45,6 +45,12 @@
       "session": 10,
       "date": "2026-03-27",
       "summary": "Stabilized Vault HA migration on Longhorn. Restored azure-workload-identity system webhook and reconciled structural/indentation errors in values/vault.yaml. Confirmed sa-vault annotations and automount settings. 4 tasks completed (VAULT architecture stabilization)."
+    },
+    {
+      "session": 11,
+      "date": "2026-03-28",
+      "summary": "Stability pass and secondary remediation. Fixed monitoring PSS baseline→privileged for promtail (OBS-01), created allow-vso-egress NetworkPolicy for vault-secrets-operator namespace (SEC-04), upgraded Falco with modern_ebpf (all 6/6 nodes green), resolved Kyverno stuck pending-upgrade and purged stale cleanup jobs. R-018 risk (privileged PSS exception) pushed to supabase-common-bond governance DB. No new recommendation tasks formally ticked off — infrastructure stabilization session."
     }
   ]
 }
+
