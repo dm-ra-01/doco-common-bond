@@ -33,13 +33,13 @@ sidebar_position: 1
 
 | Slug | Title | Scope | Auditor | Status | NC Raised | Report |
 | :--- | :---- | :---- | :------ | :----- | :-------- | :----- |
-| `260328-infra-hosting` | Infrastructure Hosting Strategy Audit | Cross-ecosystem — `receptor-infra`, `supabase-receptor`, `documentation/common-bond` (ISMS) | Ryan Ammendolea | 📋 Findings Issued | 13 findings | [audit.md](../audits/260328-infra-hosting/audit.md) · [recommendations.json](../audits/260328-infra-hosting/recommendations.json) |
+| `260328-infra-hosting` | Infrastructure Hosting Strategy Audit | Cross-ecosystem — `receptor-infra`, `supabase-receptor`, `documentation/common-bond` (ISMS) | Ryan Ammendolea | 🔄 Implementing | 13 findings | [audit.md](../audits/260328-infra-hosting/audit.md) · [recommendations.json](../audits/260328-infra-hosting/recommendations.json) |
 
 ### 🗓️ 2026-03-26
 
 | Slug | Title | Scope | Auditor | Status | NC Raised | Report |
 | :--- | :---- | :---- | :------ | :----- | :-------- | :----- |
-| `260326-k3s-stability` | k3s Cluster Stability & Gold Standard Audit | `receptor-infra` — k3s control plane, Vault, Falco, storage, monitoring, network policies, provisioning, documentation | Ryan Ammendolea | 🔧 Implementing | 46 findings · 36 open tasks | [audit.md](../audits/260326-k3s-stability/audit.md) · [recommendations.md](../audits/260326-k3s-stability/recommendations.md) |
+| `260326-k3s-stability` | k3s Cluster Stability & Gold Standard Audit | `receptor-infra` — k3s control plane, Vault, Falco, storage, monitoring, network policies, provisioning, documentation | Ryan Ammendolea | 🟥 Superseded | 46 findings · See 260328 | [audit.md](../audits/260326-k3s-stability/audit.md) · [recommendations.md](../audits/260326-k3s-stability/recommendations.md) |
 
 ### 🗓️ 2026-03-25
 
