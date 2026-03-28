@@ -1,0 +1,20 @@
+{
+  "$schema": "../../../../../dev-environment/.agents/schemas/audit-brief.schema.json",
+  "auditSlug": "260328-infra-hosting",
+  "status": "findings-issued",
+  "nextAction": "implement",
+  "openTaskCount": 7,
+  "latestHandover": "Strategic decision made to retire self-hosted k3s. Migration plan for Supabase Cloud (Sydney) and GCP (Melbourne) issued. 13 findings across infra, security, and CI/CD. Phase 1 focuses on Managed Migration. GitHub-hosted runners and OIDC-based secret management identified as core security improvements.",
+  "sessionHistory": [
+    {
+      "sessionDate": "2026-03-28",
+      "completedFindingIds": [],
+      "summary": "Initial research and strategic pivot toward k3s retirement."
+    },
+    {
+      "sessionDate": "2026-03-28",
+      "completedFindingIds": [],
+      "summary": "Detailed migration planning for GitHub, Secret Management, and cloud hosting regions. Findings refactored and validated."
+    }
+  ]
+}

@@ -1,0 +1,128 @@
+{
+  "$schema": "../../../../../dev-environment/.agents/schemas/recommendations.schema.json",
+  "auditSlug": "260328-infra-hosting",
+  "title": "Infrastructure Hosting Strategy Audit",
+  "date": "2026-03-28",
+  "scope": "Cross-ecosystem — receptor-infra, supabase-receptor, documentation/common-bond (ISMS); all application repos as consumers",
+  "auditor": "Ryan Ammendolea",
+  "branch": "audit/260326-k3s-stability",
+  "findings": [
+    {
+      "id": "HOSTING-16",
+      "severity": "critical",
+      "status": "open",
+      "category": "Growth / Velocity",
+      "repo": "cross-ecosystem",
+      "area": "infrastructure-operations",
+      "description": "The self-hosted k3s stack imposes an unsustainable operational burden. Engineering bandwidth is consumed by low-level cluster maintenance rather than product velocity. The cluster will be retired in favor of managed cloud services.",
+      "tasks": [
+        {
+          "taskId": "HOSTING-16-T1",
+          "status": "open",
+          "description": "Provision Supabase Cloud (Sydney ap-southeast-2) projects for Stage/Prod and initiate migration.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/audits/260328-infra-hosting/planning/migration-planning.md"
+        },
+        {
+          "taskId": "HOSTING-16-T2",
+          "status": "open",
+          "description": "Establish GCP Organization and Projects pinned to Melbourne (australia-southeast2).",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/audits/260328-infra-hosting/planning/migration-planning.md"
+        },
+        {
+          "taskId": "HOSTING-16-T3",
+          "status": "open",
+          "description": "Execute the decommissioning of k3s nodes once primary workloads are migrated to Cloud Run.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/provisioning/README.md"
+        }
+      ]
+    },
+    {
+      "id": "HOSTING-19",
+      "severity": "high",
+      "status": "open",
+      "category": "CI/CD",
+      "repo": "cross-ecosystem",
+      "area": "github-actions",
+      "description": "Current CI/CD relies on self-hosted ARC runners and cluster-local Vault, creating a circular dependency and maintenance overhead.",
+      "tasks": [
+        {
+          "taskId": "HOSTING-19-T1",
+          "status": "open",
+          "description": "Set up GCP Workload Identity Federation for GitHub OIDC to eliminate static secrets.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/audits/260328-infra-hosting/planning/sub-audit-recommendations.json"
+        },
+        {
+          "taskId": "HOSTING-19-T2",
+          "status": "open",
+          "description": "Update all repos to runs-on: ubuntu-latest and standardize on actions/cache.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/frontend/planner-frontend/.github/workflows/ci-resilience.yml"
+        }
+      ]
+    },
+    {
+      "id": "HOSTING-13",
+      "severity": "high",
+      "status": "open",
+      "category": "Process Gap",
+      "repo": "documentation/common-bond",
+      "area": "iso27001-policies",
+      "description": "Missing Cloud Adoption Policy in ISMS to govern the strategic shift to managed providers.",
+      "tasks": [
+        {
+          "taskId": "HOSTING-13-T1",
+          "status": "open",
+          "description": "Create docs/compliance/iso27001/policies/cloud-adoption-policy.md documenting the move to GCP/Supabase.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/compliance/iso27001/policies/cloud-adoption-policy.md"
+        }
+      ]
+    },
+    {
+      "id": "HOSTING-12",
+      "severity": "medium",
+      "status": "open",
+      "category": "Compliance",
+      "repo": "documentation/common-bond",
+      "area": "iso27001-suppliers",
+      "description": "GCP, Supabase, Cloudflare, and GitHub are uncatalogued in the Supplier Security Register.",
+      "tasks": [
+        {
+          "taskId": "HOSTING-12-T1",
+          "status": "open",
+          "description": "Update docs/compliance/iso27001/operations/supplier-register.md with all cloud providers.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/compliance/iso27001/operations/supplier-register.md"
+        }
+      ]
+    }
+  ],
+  "clarifications": [
+    {
+      "item": "Strategic Decision",
+      "decision": "Full retirement of self-hosted k3s in favor of managed Supabase Cloud (Sydney) and GCP Cloud Run (Melbourne)."
+    },
+    {
+      "item": "Secret Management",
+      "decision": "Transition to GCP Secret Manager (Melbourne) using OIDC-based Workload Identity Federation."
+    }
+  ],
+  "implementationPhases": [
+    {
+      "phase": 1,
+      "name": "Managed Migration (Supabase & Compute)",
+      "rationale": "Offloading the highest-maintenance services first to recover engineering velocity.",
+      "findingIds": [
+        "HOSTING-16"
+      ]
+    },
+    {
+      "phase": 2,
+      "name": "CI/CD & Security Refactor",
+      "rationale": "Transitioning to cloud-native secrets and runners to eliminate cluster dependencies.",
+      "findingIds": [
+        "HOSTING-19",
+        "HOSTING-13",
+        "HOSTING-12"
+      ]
+    }
+  ],
+  "deferred": []
+}
