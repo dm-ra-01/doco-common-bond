@@ -27,7 +27,7 @@ graph TD
 
     subgraph Backend ["Backend Services"]
         SB["Supabase (Self-Hosted)"]
-        PLAN_ENG["Planner Engine<br/>(receptor-planner)"]
+        PLAN_ENG["Planner Engine<br/>(planner-backend)"]
         ALLOC["Allocator Engine<br/>(match-backend)"]
     end
 
@@ -62,7 +62,7 @@ graph TD
 | **Public Site**          | Next.js                         | `website-frontend`    |
 | **Legacy Admin**         | Flutter / Dart                  | `rotator_worker`      |
 | **Backend-as-a-Service** | Supabase (self-hosted Docker)   | `supabase-receptor`   |
-| **Planner Engine**       | Python CP-SAT Solver (OR-Tools) | `receptor-planner`    |
+| **Planner Engine**       | Python CP-SAT Solver (OR-Tools) | `planner-backend`    |
 | **Allocator Engine**     | Python MILP Solver              | `match-backend`       |
 
 ### Next.js Application Structure

@@ -39,5 +39,5 @@
 | **Phase 3** | ✅ Done — Added PR merge gate requirement to all `implement-audit-workflow.md` files |
 | **Phase 4** | ✅ Done — Created global audit registry, global cross-ecosystem audit workflow, dedicated workflows for `workforce-frontend` and `preference-frontend` |
 | **Phase 5** | ✅ Done — Added Deno Edge Function audit scope and `deno check` type-safety gate to `supabase-receptor` |
-| **Verification** | Re-audit 2026-03-06. PRs raised across common-bond (#4), preference-frontend (#12), planner-frontend (#13), workforce-frontend (#7), supabase-receptor (#4), receptor-planner (#2) |
+| **Verification** | Re-audit 2026-03-06. PRs raised across common-bond (#4), preference-frontend (#12), planner-frontend (#13), workforce-frontend (#7), supabase-receptor (#4), planner-backend (#2) |
 | **Status** | ✅ Closed |

@@ -176,8 +176,8 @@ Affects: `cross-ecosystem`
 - [x] Fix Frontend CI: add --coverage to integration vitest commands; add codecov-action upload to unit-test jobs.
       `ALL — ci-resilience.yml in planner-frontend, preference-frontend, workforce-frontend`
       _(Completed: 2026-03-25T05:15:00Z)_
-- [x] Fix Backend CI: Install pytest-cov; add --cov=allocator (match-backend) and --cov=tests (receptor-planner); add codecov-action steps.
-      `ALL — ci.yml in match-backend, receptor-planner`
+- [x] Fix Backend CI: Install pytest-cov; add --cov=allocator (match-backend) and --cov=tests (planner-backend); add codecov-action steps.
+      `ALL — ci.yml in match-backend, planner-backend`
       _(Completed: 2026-03-25T05:15:00Z)_
 - [x] Migrate from deprecated 'codecov/test-results-action' to 'codecov/codecov-action@v5' with 'report_type: test_results'. Consolidate coverage and test result uploads across all repos.
       `ALL — Frontend and Backend CI workflows`

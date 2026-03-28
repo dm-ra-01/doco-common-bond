@@ -1,10 +1,10 @@
 {
-  "$schema": "../../../../../dev-environment/.agents/schemas/audit-brief.schema.json",
+  "$schema": "../../../dev-environment/.agents/schemas/audit-brief.schema.json",
   "auditSlug": "260326-k3s-stability",
   "status": "implementing",
   "nextAction": "implement",
-  "openTaskCount": 74,
-  "latestHandover": "Round 5 accepted (5 findings). 46 total findings, 74 open tasks, 1 complete. AUDIT-01 (Critical — no API server audit logging, zero forensic capability), CLDCFG-01 (High — Cloudflare tunnel routing entirely dashboard-managed, not in Git), MUTABLE-01 (High — CI pushed :latest to 3 production deployments on 2026-03-25, sha pins restored during audit), KCTL-07 (Medium — no etcd quorum/membership alerting), PROV-02 (Medium — control-plane cloud-init missing). Iterations complete. Transitioning to findings-issued.",
+  "openTaskCount": 36,
+  "latestHandover": "Session 12 complete (2026-03-28). Resolved critical 48h `supabase-db-0` outage on `receptor-work-01`. Identified root cause as kernel multipathd claiming Longhorn iSCSI devices (IET VIRTUAL-DISK), causing EBUSY on mount. Fixed by repairing ext4 journal on /dev/dm-2 and blacklisting the IET vendor in /etc/multipath.conf. Persisted fix in receptor-infra/provisioning/user-data. Verified supabase-db-0 is 1/1 Running and healthy. User initiated strategic retirement of K3s in favor of Google Cloud/Cloudflare; K3s will be maintained solely for Vault secret migration. 5 critical remediation tasks completed this session.",
   "sessionHistory": [
     {
       "session": 1,
@@ -15,6 +15,46 @@
       "session": 2,
       "date": "2026-03-26",
       "summary": "Round 1 iterative improvements accepted: KYVERNO-01, ARC-01, ETCD-01, MON-04, CERT-01. All updated to open with full task definitions and phased. Total: 26 findings, 39 open tasks."
+    },
+    {
+      "session": 3,
+      "date": "2026-03-26",
+      "summary": "Implemented KCTL-03, KCTL-05, KCTL-01, and KCTL-02 in `receptor-infra`. Enabled secrets encryption and etcd snapshots cluster-wide via `node-maintenance` DaemonSet. 8 tasks completed."
+    },
+    {
+      "session": 4,
+      "date": "2026-03-26",
+      "summary": "Implemented Group 1 (Runtime Security & PSS) and Group 2 (Vault Hardening) in `receptor-infra`. Enabled Falco, added PSS labels, restricted monitoring egress, and migrated Vault to HA Raft with Longhorn storage. Created ADR-012 and ADR-013. 15 tasks completed."
+    },
+    {
+      "session": 5,
+      "date": "2026-03-26",
+      "summary": "Implemented Loki hardening (memory limits, audit scraping), monitoring alerts (PVC capacity), and GitOps transition (ADR-014, Flux evaluation). Created canonical provisioning README. 8 tasks completed."
+    },
+    {
+      "session": 6,
+      "date": "2026-03-26",
+      "summary": "Hardened network security and policy enforcement. Implemented Calico GlobalNetworkPolicy (NET-01-T2), re-enabled Kyverno (KYVERNO-01/02), and split ARC runner sets to isolate cluster-admin sync runner (ARC-01). 8 tasks completed."
+    },
+    {
+      "session": 9,
+      "date": "2026-03-26",
+      "summary": "Resolved critical deployment blockers (Supabase PVC immutability, Vault StatefulSet storage, Loki RO filesystem). Re-enabled Kyverno with fixed cleanup image tags and finalized the privileged ARC runner cutover. Achieved 100% health for core services. 8 tasks completed."
+    },
+    {
+      "session": 10,
+      "date": "2026-03-27",
+      "summary": "Stabilized Vault HA migration on Longhorn. Restored azure-workload-identity system webhook and reconciled structural/indentation errors in values/vault.yaml. Confirmed sa-vault annotations and automount settings. 4 tasks completed (VAULT architecture stabilization)."
+    },
+    {
+      "session": 11,
+      "date": "2026-03-28",
+      "summary": "Stability pass and secondary remediation. Fixed monitoring PSS baseline→privileged for promtail (OBS-01), created allow-vso-egress NetworkPolicy for vault-secrets-operator namespace (SEC-04), upgraded Falco with modern_ebpf (all 6/6 nodes green), resolved Kyverno stuck pending-upgrade and purged stale cleanup jobs. R-018 risk pushed to governance DB."
+    },
+    {
+      "session": 12,
+      "date": "2026-03-28",
+      "summary": "Critical 48h supabase-db-0 outage resolution. Fixed kernel multipath conflict on receptor-work-01, repaired ext4 journal, and blacklisted IET vendor in multipath.conf. Persisted fix in provisioning template. K3s retirement planning initiated."
     }
   ]
 }

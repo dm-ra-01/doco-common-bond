@@ -21,10 +21,10 @@ in this session. All verification gates now pass.
 | :------ | :--- | :------- | :----- |
 | CI-03 | CI-03-T1 | `supabase-receptor/.github/workflows/staging-smoke.yml` — self-hosted runner comment added with trial gate note | ✅ Done |
 | LIFE-02 | LIFE-02-T1 | `match-backend/docs/ADR-010-match-backend-runtime.md` — always-on FastAPI runtime documented; `receptor-infra/infrastructure/match-backend/deployment.yaml` — readiness probe, INTERNAL_API_KEY VSO, resource limits added | ✅ Done |
-| LIFE-03 | LIFE-03-T1 | `receptor-planner/docs/ADR-011-receptor-planner-runtime.md` — runtime model documented | ✅ Done |
+| LIFE-03 | LIFE-03-T1 | `planner-backend/docs/ADR-011-planner-backend-runtime.md` — runtime model documented | ✅ Done |
 | LIFE-04 | LIFE-04-T1 | `documentation/common-bond/docs/operations/rollback-runbook.md` — created covering frontend, backend, and DB migration rollback procedures | ✅ Done |
 | LIFE-05 | LIFE-05-T1 | All `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` references replaced with `NEXT_PUBLIC_SUPABASE_ANON_KEY` across planner-frontend, preference-frontend, workforce-frontend, and receptor-infra deployment manifests. Re-audit found and fixed additional missed files (graphql clients, test utilities) | ✅ Done |
-| LIFE-06 | LIFE-06-T1 | `receptor-planner/.github/dependabot.yml` confirmed pre-existing and correct (pip ecosystem, weekly) | ✅ Done |
+| LIFE-06 | LIFE-06-T1 | `planner-backend/.github/dependabot.yml` confirmed pre-existing and correct (pip ecosystem, weekly) | ✅ Done |
 | LIFE-07 | LIFE-07-T1 | `middleware.ts` nonce-based CSP implemented in all three frontends; `next.config.ts` static CSP block removed | ✅ Done |
 
 ---
@@ -64,7 +64,7 @@ The 1 failure is `test_supabase_end_to_end_integration` — missing `input.xlsx`
 `allocator/tests/integration/data/input.xlsx`. **Pre-existing issue, not introduced by this
 audit.** Unit tests all pass.
 
-### receptor-planner (Python)
+### planner-backend (Python)
 
 ```
 pytest tests/unit/ -q --tb=short
@@ -73,7 +73,7 @@ pytest tests/unit/ -q --tb=short
 
 Tests pass. Coverage at 67% (below the configured 95% threshold). **Pre-existing gap — not
 introduced by this audit.** `planner/api.py` and `planner/supabase_service.py` have low
-coverage; our changes only added docs (`ADR-011-receptor-planner-runtime.md`), not code.
+coverage; our changes only added docs (`ADR-011-planner-backend-runtime.md`), not code.
 
 ### doco-common-bond (Docusaurus)
 
@@ -122,9 +122,9 @@ Both are config/infra files — no test required.
 No source code changes — only `docs/ADR-010-match-backend-runtime.md` added.
 No coverage gap introduced.
 
-### receptor-planner
+### planner-backend
 
-No source code changes — only `docs/ADR-011-receptor-planner-runtime.md` added.
+No source code changes — only `docs/ADR-011-planner-backend-runtime.md` added.
 No coverage gap introduced.
 
 ### receptor-infra

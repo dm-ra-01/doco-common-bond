@@ -33,7 +33,7 @@ This audit evaluates the ecosystem against the **2025 APE Golden Path**. The fol
 For detailed internal baselines and benchmark mapping, see **[GOLD_STANDARDS.md](./GOLD_STANDARDS.md)** and **[BENCHMARK_MAPPING.md](./BENCHMARK_MAPPING.md)**.
 - **Contracts**: `receptor-infra/.agents/infrastructure-contracts.md`
 - **Observation Loops**: `receptor-infra/.github/workflows/helm-upgrade-check.yml`
-- **Machine Discovery**: `receptor-planner/openapi.json`
+- **Machine Discovery**: `planner-backend/openapi.json`
 
 ---
 

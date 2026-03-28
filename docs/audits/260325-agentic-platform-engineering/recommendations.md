@@ -273,7 +273,7 @@ Affects: `all` — Agent Context
 
 
 - [ ] Expand .llm-context.md in critical service repos (Planner, Allocator).
-      `/Users/ryan/development/common_bond/antigravity-environment/backend/receptor-planner/.llm-context.md`
+      `/Users/ryan/development/common_bond/antigravity-environment/backend/planner-backend/.llm-context.md`
 
 ### DOC-05: Lack of a dedicated Semantic Search API for agents into Docusaurus. (Round 3 Addition)
 

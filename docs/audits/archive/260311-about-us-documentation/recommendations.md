@@ -88,7 +88,7 @@ Affects: `doco-common-bond` — docusaurus.config.ts
 Affects: `doco-common-bond` — docs/about-us
 
 
-- [x] Create docs/about-us/our-technology.md as an internal pre-customer-engagement brief: plain-language overview of the full technology stack (Supabase, Cloudflare, OR-Tools/Python match-backend, Next.js frontends, Flutter mobile); include a table of all internal repos with one-line descriptions (supabase-receptor, match-backend/receptor-planner, planner-frontend, workforce-frontend, preference-frontend, documentation); explain the 'why' behind each choice. last_reviewed: 2026-03-11.
+- [x] Create docs/about-us/our-technology.md as an internal pre-customer-engagement brief: plain-language overview of the full technology stack (Supabase, Cloudflare, OR-Tools/Python match-backend, Next.js frontends, Flutter mobile); include a table of all internal repos with one-line descriptions (supabase-receptor, match-backend/planner-backend, planner-frontend, workforce-frontend, preference-frontend, documentation); explain the 'why' behind each choice. last_reviewed: 2026-03-11.
       `/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/about-us/our-technology.md`
       _(Completed: 2026-03-11T11:29:00+11:00)_
 
@@ -151,7 +151,7 @@ Affects: `doco-common-bond` — docs/about-us/who-we-are.md
 Affects: `doco-common-bond` — docs/about-us/our-technology.md
 
 
-- [x] Include a full internal repository table in our-technology.md listing all repos with one-line descriptions: supabase-receptor (Postgres/Auth/RLS/migrations), match-backend/receptor-planner (Python OR-Tools + FastAPI allocation engine), planner-frontend (Next.js job line planning UI), workforce-frontend (Next.js position/team/staff management UI), preference-frontend (Next.js worker preferencing), dev-environment (shared agent infrastructure, scripts, schemas), documentation (all Docusaurus documentation sites). Mark as internal brief only. Satisfied within INFO-04-T1.
+- [x] Include a full internal repository table in our-technology.md listing all repos with one-line descriptions: supabase-receptor (Postgres/Auth/RLS/migrations), match-backend/planner-backend (Python OR-Tools + FastAPI allocation engine), planner-frontend (Next.js job line planning UI), workforce-frontend (Next.js position/team/staff management UI), preference-frontend (Next.js worker preferencing), dev-environment (shared agent infrastructure, scripts, schemas), documentation (all Docusaurus documentation sites). Mark as internal brief only. Satisfied within INFO-04-T1.
       `/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/about-us/our-technology.md`
       _(Completed: 2026-03-11T11:29:00+11:00)_
 

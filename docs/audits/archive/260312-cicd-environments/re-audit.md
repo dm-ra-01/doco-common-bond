@@ -18,7 +18,7 @@ All repositories and infrastructure items in scope per `audit.md`:
 | `preference-frontend` | ✅ | ✅ |
 | `workforce-frontend` | ✅ | ✅ |
 | `match-backend` | ✅ | ✅ |
-| `receptor-planner` | ✅ | ✅ |
+| `planner-backend` | ✅ | ✅ |
 | k3s cluster / infrastructure | — | ✅ (via `receptor-infra`) |
 
 ---
@@ -83,14 +83,14 @@ All repositories and infrastructure items in scope per `audit.md`:
 | **ARCH-02-T0** — health-wait loop | Polls `supabase status -o env` until `PUBLISHABLE_KEY` non-empty (120s max, 5s interval) | ✅ |
 | **CICD-11** — ARC runner | `runs-on: arc-runner-match-backend` | ✅ |
 
-### receptor-planner
+### planner-backend
 
 | Finding | Evidence | Status |
 |:---|:---|:---|
 | **BACK-01-T1** — scoped pytest | `pytest tests/unit/ --tb=short -q --no-cov` — no bare `pytest` | ✅ |
 | **BACK-02** — no JWT placeholder | `SUPABASE_SERVICE_ROLE_KEY: "stub-service-role-key-not-real"` | ✅ |
 | **SEC-01** — permissions | `permissions: contents: read` present | ✅ |
-| **CICD-11** — ARC runner | `runs-on: arc-runner-receptor-planner` | ✅ |
+| **CICD-11** — ARC runner | `runs-on: arc-runner-planner-backend` | ✅ |
 
 ---
 
@@ -103,7 +103,7 @@ All repositories and infrastructure items in scope per `audit.md`:
 | `preference-frontend` | Codecov (upload configured) | **Acceptable** — same pattern as planner; dual-key handling is the primary CI risk and is covered. |
 | `workforce-frontend` | Codecov (upload configured) | **Acceptable** — same pattern as planner and preference. |
 | `match-backend` | pytest (unit + integration) | **Acceptable** — unit tests scoped to `allocator/tests/unit/`; integration tests now enabled via dedicated job. |
-| `receptor-planner` | pytest (unit only) | **Acceptable gap** — no integration tests for receptor-planner, but no live Supabase dependency in this repo's core logic. Scope is correctly limited to `tests/unit/`. |
+| `planner-backend` | pytest (unit only) | **Acceptable gap** — no integration tests for planner-backend, but no live Supabase dependency in this repo's core logic. Scope is correctly limited to `tests/unit/`. |
 
 ---
 

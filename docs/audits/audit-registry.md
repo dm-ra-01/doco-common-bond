@@ -10,7 +10,7 @@ sidebar_position: 1
 > platform. Each entry links to the source `audit.md` and `recommendations.md`
 > where they live inside the relevant repository's `docs/audits/` folder.
 
-**Last Updated:** 2026-03-25 | **Maintained by:** Engineering Leadership
+**Last Updated:** 2026-03-28 | **Maintained by:** Engineering Leadership
 
 ---
 
@@ -29,11 +29,17 @@ sidebar_position: 1
 
 ## Active Registry
 
+### 🗓️ 2026-03-28
+
+| Slug | Title | Scope | Auditor | Status | NC Raised | Report |
+| :--- | :---- | :---- | :------ | :----- | :-------- | :----- |
+| `260328-infra-hosting` | Infrastructure Hosting Strategy Audit | Cross-ecosystem — `receptor-infra`, `supabase-receptor`, `documentation/common-bond` (ISMS) | Ryan Ammendolea | ✅ Closed | 13 findings | [audit.md](../audits/260328-infra-hosting/audit.md) · [recommendations.json](../audits/260328-infra-hosting/recommendations.json) |
+
 ### 🗓️ 2026-03-26
 
 | Slug | Title | Scope | Auditor | Status | NC Raised | Report |
 | :--- | :---- | :---- | :------ | :----- | :-------- | :----- |
-| `260326-k3s-stability` | k3s Cluster Stability & Gold Standard Audit | `receptor-infra` — k3s control plane, Vault, Falco, storage, monitoring, network policies, provisioning, documentation | Ryan Ammendolea | 🔄 Implementing | 46 findings · 74 open tasks | [audit.md](../audits/260326-k3s-stability/audit.md) · [recommendations.json](../audits/260326-k3s-stability/recommendations.json) |
+| `260326-k3s-stability` | k3s Cluster Stability & Gold Standard Audit | `receptor-infra` — k3s control plane, Vault, Falco, storage, monitoring, network policies, provisioning, documentation | Ryan Ammendolea | 🟥 Superseded | 46 findings · See 260328 | [audit.md](../audits/260326-k3s-stability/audit.md) · [recommendations.md](../audits/260326-k3s-stability/recommendations.md) |
 
 ### 🗓️ 2026-03-25
 
@@ -46,7 +52,7 @@ sidebar_position: 1
 
 | Slug | Title | Scope | Auditor | Status | NC Raised | Report |
 | :--- | :---- | :---- | :------ | :----- | :-------- | :----- |
-| `260319-cicd-workflow-health` | CI/CD Workflow Health Audit | Cross-ecosystem — `supabase-receptor`, `planner-frontend`, `preference-frontend`, `workforce-frontend`, `match-backend`, `receptor-planner`, `website-frontend` | Ryan Ammendolea | ✅ Closed | — | [audit.md](../audits/archive/260319-cicd-workflow-health/audit.md) · [recommendations.md](../audits/archive/260319-cicd-workflow-health/recommendations.md) · [re-audit.md](../audits/archive/260319-cicd-workflow-health/re-audit.md) |
+| `260319-cicd-workflow-health` | CI/CD Workflow Health Audit | Cross-ecosystem — `supabase-receptor`, `planner-frontend`, `preference-frontend`, `workforce-frontend`, `match-backend`, `planner-backend`, `website-frontend` | Ryan Ammendolea | ✅ Closed | — | [audit.md](../audits/archive/260319-cicd-workflow-health/audit.md) · [recommendations.md](../audits/archive/260319-cicd-workflow-health/recommendations.md) · [re-audit.md](../audits/archive/260319-cicd-workflow-health/re-audit.md) |
 
 ### 🗓️ 2026-03-16
 
@@ -58,13 +64,13 @@ sidebar_position: 1
 
 | Slug | Title | Scope | Auditor | Status | NC Raised | Report |
 | :--- | :---- | :---- | :------ | :----- | :-------- | :----- |
-| `260312-cicd-environments` | CI/CD Infrastructure & Environment Architecture Audit | `supabase-receptor`, `preference-frontend`, `planner-frontend`, `workforce-frontend`, `match-backend`, `receptor-planner` — cross-ecosystem | Ryan Ammendolea | ✅ Closed | — | [audit.md](../audits/archive/260312-cicd-environments/audit.md) · [recommendations.md](../audits/archive/260312-cicd-environments/recommendations.md) · [re-audit.md](../audits/archive/260312-cicd-environments/re-audit.md) |
+| `260312-cicd-environments` | CI/CD Infrastructure & Environment Architecture Audit | `supabase-receptor`, `preference-frontend`, `planner-frontend`, `workforce-frontend`, `match-backend`, `planner-backend` — cross-ecosystem | Ryan Ammendolea | ✅ Closed | — | [audit.md](../audits/archive/260312-cicd-environments/audit.md) · [recommendations.md](../audits/archive/260312-cicd-environments/recommendations.md) · [re-audit.md](../audits/archive/260312-cicd-environments/re-audit.md) |
 
 ### 🗓️ 2026-03-11
 
 | Slug                            | Title                                 | Scope                                                                                                                                                                | Auditor         | Status      | NC Raised | Report                                                                                                                                                          |
 | :------------------------------ | :------------------------------------ | :------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :-------------- | :---------- | :-------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `260311-testing-efficiency`     | Testing Efficiency & Modularity Audit | `backend/receptor-planner`, `backend/match-backend`, `frontend/planner-frontend`, `frontend/workforce-frontend`, `frontend/preference-frontend`, `supabase-receptor` | Ryan Ammendolea | ✅ Closed       | —         | [audit.md](../audits/archive/260311-testing-efficiency/audit.md) · [recommendations.json](../audits/archive/260311-testing-efficiency/recommendations.json)      |
+| `260311-testing-efficiency`     | Testing Efficiency & Modularity Audit | `backend/planner-backend`, `backend/match-backend`, `frontend/planner-frontend`, `frontend/workforce-frontend`, `frontend/preference-frontend`, `supabase-receptor` | Ryan Ammendolea | ✅ Closed       | —         | [audit.md](../audits/archive/260311-testing-efficiency/audit.md) · [recommendations.json](../audits/archive/260311-testing-efficiency/recommendations.json)      |
 | `260311-about-us-documentation` | About-Us Documentation Audit          | `documentation/common-bond` — `docs/about-us/`, `sidebars.ts`, `docusaurus.config.ts`                                                                                | Ryan Ammendolea | ✅ Closed   | —         | [audit.md](../audits/archive/260311-about-us-documentation/audit.md) · [recommendations.md](../audits/archive/260311-about-us-documentation/recommendations.md) |
 
 ### 🗓️ 2026-03-10
@@ -116,21 +122,21 @@ sidebar_position: 1
 ```
 Repository                   Audits   Last Audit
 ─────────────────────────────────────────────────
-supabase-receptor              6       2026-03-25
-backend/match-backend          4       2026-03-25
-backend/receptor-planner       3       2026-03-25
-planner-frontend               7       2026-03-25
-workforce-frontend             6       2026-03-25
-preference-frontend            6       2026-03-25
-website-frontend               2       2026-03-25
-common-bond (ISMS docs + eng)  6       2026-03-25
-receptor-infra                 3       2026-03-25
+supabase-receptor              6       2026-03-26
+backend/match-backend          4       2026-03-26
+backend/planner-backend       3       2026-03-26
+planner-frontend               7       2026-03-26
+workforce-frontend             6       2026-03-26
+preference-frontend            6       2026-03-26
+website-frontend               2       2026-03-26
+common-bond (ISMS docs + eng)  6       2026-03-26
+receptor-infra                 3       2026-03-26
 ──────────────────────────────────── ─────────
-Total                          23+     2026-03-25
+Total                          23+     2026-03-26
 ```
 
 > **Coverage gaps addressed:** `workforce-frontend`, `preference-frontend`, and
-> `receptor-planner` now have fully operational audit workflows (implemented via
+> `planner-backend` now have fully operational audit workflows (implemented via
 > [REC-14](../audits/archive/260306-audit-process/recommendations.md)).
 
 ---

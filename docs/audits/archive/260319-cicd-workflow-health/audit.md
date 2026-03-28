@@ -1,7 +1,7 @@
 # CI/CD Workflow Health Audit
 
 **Date:** 2026-03-19\
-**Scope:** All Receptor ecosystem repositories with GitHub Actions workflows — `supabase-receptor`, `planner-frontend`, `preference-frontend`, `workforce-frontend`, `match-backend`, `receptor-planner`, `website-frontend`\
+**Scope:** All Receptor ecosystem repositories with GitHub Actions workflows — `supabase-receptor`, `planner-frontend`, `preference-frontend`, `workforce-frontend`, `match-backend`, `planner-backend`, `website-frontend`\
 **Auditor:** Ryan Ammendolea\
 **Standard:** ISO 27001 A.8.25 (Secure development life cycle), A.8.31 (Separation of development, test and production environments), A.8.32 (Change management)
 
@@ -9,7 +9,7 @@
 
 ## Executive Summary
 
-This audit evaluates the current CI/CD setup across all Receptor ecosystem repositories for its ability to execute workflows successfully, promote code through test → staging → production, enable rollback, and securely manage keys. **17 findings** were identified: **5 Critical**, **6 High**, **4 Medium**, **2 Low**. The audit found that all backend/infrastructure deploy workflows (`match-backend`, `receptor-planner`, `supabase-receptor` prod-deploy) have structural defects that will cause failures in production. `staging-smoke.yml` reads from wrong Vault paths for Slack webhooks. The frontend CI workflows are substantially correct but carry a stale env-var reference and a broken cleanup job pattern. `website-frontend` has no CI workflow at all. None of the three Next.js frontend applications have a deploy pipeline.
+This audit evaluates the current CI/CD setup across all Receptor ecosystem repositories for its ability to execute workflows successfully, promote code through test → staging → production, enable rollback, and securely manage keys. **17 findings** were identified: **5 Critical**, **6 High**, **4 Medium**, **2 Low**. The audit found that all backend/infrastructure deploy workflows (`match-backend`, `planner-backend`, `supabase-receptor` prod-deploy) have structural defects that will cause failures in production. `staging-smoke.yml` reads from wrong Vault paths for Slack webhooks. The frontend CI workflows are substantially correct but carry a stale env-var reference and a broken cleanup job pattern. `website-frontend` has no CI workflow at all. None of the three Next.js frontend applications have a deploy pipeline.
 
 | Repository / Area | Coverage | Issues Found | Overall |
 | --- | --- | --- | --- |
@@ -25,7 +25,7 @@ This audit evaluates the current CI/CD setup across all Receptor ecosystem repos
 | `workforce-frontend` — ci.yml | ✅ | 2 | ⚠️ |
 | `workforce-frontend` — deploy.yml | ❌ | 1 | ❌ |
 | `match-backend` — ci.yml + deploy.yml | ✅ | 2 | ❌ |
-| `receptor-planner` — ci.yml + deploy.yml | ✅ | 2 | ❌ |
+| `planner-backend` — ci.yml + deploy.yml | ✅ | 2 | ❌ |
 | `website-frontend` | ❌ | 1 | ❌ |
 
 ---
@@ -121,11 +121,11 @@ This audit evaluates the current CI/CD setup across all Receptor ecosystem repos
 
 **Gaps:**
 
-- `DR-15` — None of the three frontend repositories have a `.github/workflows/deploy.yml`. The deployment target is k3s prod via Cloudflare Tunnel (same GitOps pattern as `match-backend` and `receptor-planner` — build Docker image, push to GHCR, update `receptor-infra` deployment manifest via `sed`). Currently there is no workflow-as-code for environment promotion, no production approval gate, and no automated rollback path for any frontend application. A merge to `main` triggers the CI pipeline but does not deploy — the running production containers will not update until an engineer intervenes manually. Target URLs are defined in §6.1.
+- `DR-15` — None of the three frontend repositories have a `.github/workflows/deploy.yml`. The deployment target is k3s prod via Cloudflare Tunnel (same GitOps pattern as `match-backend` and `planner-backend` — build Docker image, push to GHCR, update `receptor-infra` deployment manifest via `sed`). Currently there is no workflow-as-code for environment promotion, no production approval gate, and no automated rollback path for any frontend application. A merge to `main` triggers the CI pipeline but does not deploy — the running production containers will not update until an engineer intervenes manually. Target URLs are defined in §6.1.
 
 ---
 
-## 3. Backend Repositories (match-backend, receptor-planner)
+## 3. Backend Repositories (match-backend, planner-backend)
 
 ### 3.1 deploy.yml (Both Repos)
 
@@ -137,8 +137,8 @@ This audit evaluates the current CI/CD setup across all Receptor ecosystem repos
 
 **Gaps:**
 
-- `DR-11` — `match-backend/deploy.yml` and `receptor-planner/deploy.yml`: all `actions/checkout@v4`, `docker/login-action@v3`, `docker/metadata-action@v5`, `docker/build-push-action@v5`, and `actions/create-github-app-token@v1` use **mutable version tags**, not SHA pins. This violates SEC-02 (SHA-pinning), creates supply-chain risk, and is inconsistent with all CI workflows. A malicious tag update would silently run untrusted code.
-- `DR-12` — `match-backend/deploy.yml` line 14 and `receptor-planner/deploy.yml` line 14: `runs-on: ubuntu-latest` (GitHub-hosted). These deploy jobs push to GHCR and write to `receptor-infra`. They require no Vault access, so ubuntu-latest is technically correct **for the build**. However, there is no `timeout-minutes` on the `build-and-deploy` job — a hung Docker build will consume the GitHub runner indefinitely. Missing timeout is a CICD-05 non-compliance.
+- `DR-11` — `match-backend/deploy.yml` and `planner-backend/deploy.yml`: all `actions/checkout@v4`, `docker/login-action@v3`, `docker/metadata-action@v5`, `docker/build-push-action@v5`, and `actions/create-github-app-token@v1` use **mutable version tags**, not SHA pins. This violates SEC-02 (SHA-pinning), creates supply-chain risk, and is inconsistent with all CI workflows. A malicious tag update would silently run untrusted code.
+- `DR-12` — `match-backend/deploy.yml` line 14 and `planner-backend/deploy.yml` line 14: `runs-on: ubuntu-latest` (GitHub-hosted). These deploy jobs push to GHCR and write to `receptor-infra`. They require no Vault access, so ubuntu-latest is technically correct **for the build**. However, there is no `timeout-minutes` on the `build-and-deploy` job — a hung Docker build will consume the GitHub runner indefinitely. Missing timeout is a CICD-05 non-compliance.
 
 ---
 
@@ -174,13 +174,13 @@ The following URL scheme is approved as the canonical deployment target for all 
 
 | Service | Production | Staging |
 | --- | --- | --- |
-| Planner frontend | `receptor-planner.commonbond.au` | `receptor-planner-staging.commonbond.au` |
+| Planner frontend | `planner-backend.commonbond.au` | `planner-backend-staging.commonbond.au` |
 | Workforce frontend | `receptor-workforce.commonbond.au` | `receptor-workforce-staging.commonbond.au` |
 | Preferencer frontend | `receptor-preferencer.commonbond.au` | `receptor-preferencer-staging.commonbond.au` |
 | Supabase API (PostgREST) | `receptor-api.commonbond.au` | `receptor-api-staging.commonbond.au` |
 | Supabase Auth function | `receptor-auth.commonbond.au` | `receptor-auth-staging.commonbond.au` |
 | Match orchestrator (middleware) | `receptor-matchsvc.commonbond.au` | `receptor-matchsvc-staging.commonbond.au` |
-| Planner orchestrator | `receptor-planner-orchestrator.commonbond.au` | `receptor-planner-orchestrator-staging.commonbond.au` |
+| Planner orchestrator | `planner-backend-orchestrator.commonbond.au` | `planner-backend-orchestrator-staging.commonbond.au` |
 
 **Pattern:** `receptor-{service}[-staging].commonbond.au`\
 **DNS provider:** Cloudflare (routed via Cloudflare Tunnel to k3s Ingress)\
@@ -200,13 +200,13 @@ The following URL scheme is approved as the canonical deployment target for all 
 | DR-17 | `supabase-receptor` | `staging-smoke.yml` | Process Gap | 🔴 Critical |
 | DR-02 | `supabase-receptor` | `smoke-test/action.yml` | Process Gap | 🟠 High |
 | DR-09 | `planner-frontend`, `preference-frontend`, `workforce-frontend` | `ci.yml` (unit-tests job) | Test Coverage | 🟠 High |
-| DR-11 | `match-backend`, `receptor-planner` | `deploy.yml` | Security | 🟠 High |
+| DR-11 | `match-backend`, `planner-backend` | `deploy.yml` | Security | 🟠 High |
 | DR-14 | All repos | — | Process Gap | 🟠 High |
 | DR-15 | `planner-frontend`, `preference-frontend`, `workforce-frontend` | — | Process Gap | 🟠 High |
 | DR-16 | `supabase-receptor` | `smoke-test/action.yml` | Process Gap | 🟠 High |
 | DR-01 | `supabase-receptor` | `ci.yml` | Process Gap | 🟡 Medium |
 | DR-04 | `supabase-receptor` | `prod-deploy.yml` | Process Gap | 🟡 Medium |
 | DR-07 | `supabase-receptor` | `deploy-function.yml` | Security | 🟡 Medium |
-| DR-12 | `match-backend`, `receptor-planner` | `deploy.yml` | Process Gap | 🟡 Medium |
+| DR-12 | `match-backend`, `planner-backend` | `deploy.yml` | Process Gap | 🟡 Medium |
 | DR-06 | `supabase-receptor` | `deploy-function.yml` | Security | 🟢 Low |
 | DR-08 | `supabase-receptor` | `key-rotation-reminder.yml` | Process Gap | 🟢 Low |

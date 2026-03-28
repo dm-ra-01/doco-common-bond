@@ -79,7 +79,7 @@ Affects: `planner-frontend, workforce-frontend, preference-frontend` — CI unit
 Affects: `match-backend` — allocator/tests/
 
 
-- [x] Restructure allocator/tests/ to match the receptor-planner pattern: create unit/, integration/, and e2e/ subdirectories. Move test_solver.py, test_models.py, test_preferences.py, test_excel_ingestion.py, test_api.py, test_service.py to unit/. Move test_supabase_integration.py to integration/. Update pyproject.toml testpaths accordingly.
+- [x] Restructure allocator/tests/ to match the planner-backend pattern: create unit/, integration/, and e2e/ subdirectories. Move test_solver.py, test_models.py, test_preferences.py, test_excel_ingestion.py, test_api.py, test_service.py to unit/. Move test_supabase_integration.py to integration/. Update pyproject.toml testpaths accordingly.
       `/Users/ryan/development/common_bond/antigravity-environment/backend/match-backend/allocator/tests/`
 
 ### MB-03: test_supabase_end_to_end_integration calls get_supabase_client() and supabase_populator.populate() unconditionally on L1
@@ -149,13 +149,13 @@ Affects: `supabase-receptor` — pgTAP security suite
       `/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/supabase/tests/database/11_security_policies.test.sql`
       _(Completed: 2026-03-11T06:46:25Z)_
 
-### PL-01: receptor-planner/.github/workflows/ci.yml pins Python to 3.9 (L19) but pyproject.toml declares requires-python = '>=3.11
+### PL-01: planner-backend/.github/workflows/ci.yml pins Python to 3.9 (L19) but pyproject.toml declares requires-python = '>=3.11
 
-Affects: `receptor-planner` — CI Python version
+Affects: `planner-backend` — CI Python version
 
 
-- [x] Update receptor-planner CI yml python-version to '3.11' (or '3.12') to align with the pyproject.toml requires-python constraint.
-      `/Users/ryan/development/common_bond/antigravity-environment/backend/receptor-planner/.github/workflows/ci.yml`
+- [x] Update planner-backend CI yml python-version to '3.11' (or '3.12') to align with the pyproject.toml requires-python constraint.
+      `/Users/ryan/development/common_bond/antigravity-environment/backend/planner-backend/.github/workflows/ci.yml`
       _(Completed: 2026-03-11T06:46:25Z)_
 
 ### NEXT-06: preference-frontend's postcodegen npm script (which prepends // @ts-nocheck to gql.ts) is a separate manual step. A deve

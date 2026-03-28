@@ -3,7 +3,7 @@
 **Date:** 2026-03-06\
 **Scope:** All `audit.md` and `implement-audit.md` workflow files across the
 Receptor ecosystem and ICU Survival Guide. Repositories covered:
-`supabase-receptor`, `receptor-planner`, `match-backend`, `planner-frontend`
+`supabase-receptor`, `planner-backend`, `match-backend`, `planner-frontend`
 (also covering `workforce-frontend` and `preference-frontend` via shared
 workflow), `common-bond` (documentation), and `icu-survival` (external — note
 §9).\
@@ -64,7 +64,7 @@ templates that could cause agent confusion.
 
 #### Python backends
 
-| Criterion                       | receptor-planner | match-backend |
+| Criterion                       | planner-backend | match-backend |
 | ------------------------------- | :--------------: | :-----------: |
 | Dedicated audit workflow        |        ✅        |      ✅       |
 | Feature branch enforced (audit) |        ✅        |      ✅       |
@@ -167,7 +167,7 @@ memory beyond commit messages.
 
 There is no workflow covering an audit that spans multiple repositories
 simultaneously (e.g. "audit how authentication is implemented across
-supabase-receptor, receptor-planner, match-backend, and all three frontends").
+supabase-receptor, planner-backend, match-backend, and all three frontends").
 The current six workflow files cover repositories individually and do not
 provide:
 
@@ -210,7 +210,7 @@ aggregating status across all repos.
 
 ### 5.1 Fields on same line vs. backslash-newline format
 
-**Expected format** (supabase-receptor, receptor-planner):
+**Expected format** (supabase-receptor, planner-backend):
 
 ```markdown
 **Audit slug:** `YYMMDD-short-name`\

@@ -171,13 +171,13 @@ Affects: `match-backend` — .github/workflows
 - [ ] Write ADR-010-match-backend-runtime.md: always-on FastAPI/uvicorn HTTP service. Create Dockerfile (FROM python:3.12-slim-bookworm, expose port 8080, ENTRYPOINT uvicorn allocator.main:app). Add build-push.yml targeting GHCR. Create k8s Deployment in receptor-infra with: VSO for INTERNAL_API_KEY injection, liveness probe (GET /healthz), readiness probe (GET /readyz), resource limits (250m CPU, 512Mi memory). Add Traefik IngressRoute for internal-only access (no public exposure). Future: add POST /run webhook endpoint so Supabase Edge Function can trigger a match run on demand without polling.
       `/match-backend/.github/workflows/build-push.yml`
 
-### LIFE-03: receptor-planner CI only runs unit tests. The ci.yml comment defers integration tests indefinitely: 'Integration tests (
+### LIFE-03: planner-backend CI only runs unit tests. The ci.yml comment defers integration tests indefinitely: 'Integration tests (
 
-Affects: `receptor-planner` — .github/workflows
+Affects: `planner-backend` — .github/workflows
 
 
-- [ ] Document receptor-planner runtime model in ADR-011-receptor-planner-runtime.md. Create tests/integration/ with at least one integration test verifying the planner reads from and writes back to schedule_slots in a local Supabase instance. If receptor-planner runs as a container: add a Dockerfile (mirror match-backend pattern) and build-push.yml. Add integration tests to ci.yml mirroring match-backend's BACK-01-T2 pattern.
-      `/receptor-planner/Dockerfile`
+- [ ] Document planner-backend runtime model in ADR-011-planner-backend-runtime.md. Create tests/integration/ with at least one integration test verifying the planner reads from and writes back to schedule_slots in a local Supabase instance. If planner-backend runs as a container: add a Dockerfile (mirror match-backend pattern) and build-push.yml. Add integration tests to ci.yml mirroring match-backend's BACK-01-T2 pattern.
+      `/planner-backend/Dockerfile`
 
 ### LIFE-04: No rollback procedure exists — automated or documented — for any of the five frontend/backend repositories. There are no
 
@@ -303,13 +303,13 @@ Affects: `planner-frontend` — .github/workflows
 - [ ] Add Vault KV paths for each frontend per environment: infrastructure/planner-frontend/staging, infrastructure/planner-frontend/prod (and equivalents for preference/workforce). Each path contains NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY for that environment. Update staging-deploy.yml (LIFE-01-T1) to inject these via the Vault OIDC login step. Ensure next.config.ts runtime env vars are not baked at build time — use NEXT_PUBLIC_ env vars injected at runtime via k8s ConfigMap or Cloudflare Pages variable.
       `/planner-frontend/.github/workflows/staging-deploy.yml`
 
-### LIFE-06: receptor-planner has no dependency management automation: no Renovate Bot (.github/workflows/renovate.yml) unlike the th
+### LIFE-06: planner-backend has no dependency management automation: no Renovate Bot (.github/workflows/renovate.yml) unlike the th
 
-Affects: `receptor-planner` — .github
+Affects: `planner-backend` — .github
 
 
-- [ ] Add .github/dependabot.yml to receptor-planner targeting pip (package-ecosystem: pip, directory: /, schedule: monthly — matching match-backend). Ensure the TMPDIR: /home/runner/pip-tmp workaround in ci.yml is preserved after any pip upgrade that bumps ortools.
-      `/receptor-planner/.github/dependabot.yml`
+- [ ] Add .github/dependabot.yml to planner-backend targeting pip (package-ecosystem: pip, directory: /, schedule: monthly — matching match-backend). Ensure the TMPDIR: /home/runner/pip-tmp workaround in ci.yml is preserved after any pip upgrade that bumps ortools.
+      `/planner-backend/.github/dependabot.yml`
 
 ### LIFE-07: All three Next.js frontend next.config.ts files include script-src: 'unsafe-eval' 'unsafe-inline' in the Content-Securit
 
@@ -347,7 +347,7 @@ Affects: `receptor-infra` — azure
 | 5 | SEC-01, SEC-03, IAC-04, ARM-01 | Apply KV network ACL restriction and key rotation policy via the apply workflow. Add weekly drift detection. Confirm ARM-01 retirement. |
 | 6 | KUBE-01, KUBE-02, ENV-01, KUBE-03, KUBE-04 | Address supabase-kubernetes gaps in priority order: (1) K8S-01 VSO secret injection — blocking for production functionality; (2) K8S-02 resource limits — blocking for cluster stability; (3) ENV-01 test environment — required for CI isolation; (4) K8S-03 pod security contexts — hardening; (5) K8S-04 Falco — runtime monitoring. K8S-01 and K8S-02 may be implemented concurrently. |
 | 7 | NET-01, ARCH-01, CI-03, SPLIT-01, RBAC-01 | supabase-receptor k3s/ infrastructure gaps: (1) NET-01 Vault egress fix — needed for auto-unseal to function; (2) ARCH-01 missing values files — helmfile is not apply-able; (3) CI-03 activate self-hosted runner for staging smoke; (4) SPLIT-01 document or consolidate two-repo helmfile split; (5) RBAC-01 deploy Kyverno to enforce namespace prefix policy. |
-| 8 | LIFE-01, LIFE-02, LIFE-03, LIFE-04, LIFE-05, LIFE-06, LIFE-07 | All five repos lack deployment automation. Priority: (1) LIFE-01 frontend staging deploy — blocks all staging verification; (2) LIFE-04 rollback runbook — prerequisite for any production deploy; (3) LIFE-02/03 backend ADRs — unblock container/deploy strategy decisions; (4) LIFE-05 per-environment Vault secrets; (5) LIFE-07 CSP hardening — security regression in production today; (6) LIFE-06 receptor-planner Dependabot — lowest risk. |
+| 8 | LIFE-01, LIFE-02, LIFE-03, LIFE-04, LIFE-05, LIFE-06, LIFE-07 | All five repos lack deployment automation. Priority: (1) LIFE-01 frontend staging deploy — blocks all staging verification; (2) LIFE-04 rollback runbook — prerequisite for any production deploy; (3) LIFE-02/03 backend ADRs — unblock container/deploy strategy decisions; (4) LIFE-05 per-environment Vault secrets; (5) LIFE-07 CSP hardening — security regression in production today; (6) LIFE-06 planner-backend Dependabot — lowest risk. |
 
 
 ---

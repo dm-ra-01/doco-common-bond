@@ -108,7 +108,7 @@ Each target repository has three thin workflow stubs under `.agents/workflows/`:
 | `website-frontend`    | Next.js, TypeScript        | `audit/YYMMDD-slug` |
 | `supabase-receptor`   | PostgreSQL, Supabase, Deno | `audit/YYMMDD-slug` |
 | `match-backend`       | Python, CP-SAT             | `audit/YYMMDD-slug` |
-| `receptor-planner`    | Python, FastAPI            | `audit/YYMMDD-slug` |
+| `planner-backend`    | Python, FastAPI            | `audit/YYMMDD-slug` |
 | `common-bond`         | Docusaurus                 | `audit/YYMMDD-slug` |
 
 > [!NOTE]

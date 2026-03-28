@@ -48,11 +48,11 @@ All 18 findings have been remediated. Every evidence point below was verified ag
 | EF-02 | Auth function smoke test | `functions/auth/index.test.ts` present; covers basic invocation and error response | ✅ |
 | EF-03 | invalidate-session / force-refresh smoke tests | `invalidate-session/index.test.ts` and `force-refresh-on-role-change/index.test.ts` present | ✅ |
 
-### Python Backend — receptor-planner
+### Python Backend — planner-backend
 
 | Finding | Title | Evidence | Status |
 |---------|-------|---------|---------|
-| PL-01 | Python 3.11 version hygiene | `receptor-planner/.github/workflows/ci.yml` updated; `python:3.11-slim` container matches match-backend | ✅ |
+| PL-01 | Python 3.11 version hygiene | `planner-backend/.github/workflows/ci.yml` updated; `python:3.11-slim` container matches match-backend | ✅ |
 
 ### Cross-cutting
 
@@ -73,7 +73,7 @@ Per `audit-verification-gates` skill, a code coverage assessment was conducted o
 | `preference-frontend` | Vitest `--coverage` present in CI split | Gated |
 | `match-backend` | pytest coverage via `pyproject.toml`; unit-only CI job runs without integration overhead | Partial |
 | `supabase-receptor` | pgTAP coverage implicit via RLS truth matrix tests (`11_security_policies.test.sql`) | Partial |
-| `receptor-planner` | Python 3.11 upgrade; existing coverage gates preserved | Maintained |
+| `planner-backend` | Python 3.11 upgrade; existing coverage gates preserved | Maintained |
 
 No regression in coverage was detected. All new tests run successfully against their respective test tiers.
 
@@ -90,7 +90,7 @@ All changes were implemented on the `audit/260311-testing-efficiency` branch in 
 | `preference-frontend` | [#18](https://github.com/dm-ra-01/preference-frontend/pull/18) | feat(audit): split DB-free unit-tests CI job | Open |
 | `match-backend` | [#4](https://github.com/dm-ra-01/match-backend/pull/4) | feat(audit): add CI pipeline + restructure tests | Open |
 | `supabase-receptor` | [#8](https://github.com/dm-ra-01/supabase-receptor/pull/8) | feat(audit): CI pipeline, Edge Function tests, RLS truth matrix | Open |
-| `receptor-planner` | [#5](https://github.com/dm-ra-01/receptor-planner/pull/5) | feat(audit): add CI pipeline with Python 3.11 | Open |
+| `planner-backend` | [#5](https://github.com/dm-ra-01/planner-backend/pull/5) | feat(audit): add CI pipeline with Python 3.11 | Open |
 | `common-bond` (docs) | pending | audit-brief + recommendations + registry | To be raised |
 
 ---

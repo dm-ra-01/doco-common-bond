@@ -119,7 +119,7 @@ flowchart TD
     style note2 fill:#f8d7da,stroke:#dc3545
 ```
 
-**Fix:** Extend `ISO-01`'s scope to include `match-backend` and `receptor-planner`. The backend repos should use the same `__ci_{GITHUB_RUN_ID}` naming convention. Add a clarification in `recommendations.json` specifying that ISO-01 applies to **all repos that boot Supabase in CI**, not just the three frontends.
+**Fix:** Extend `ISO-01`'s scope to include `match-backend` and `planner-backend`. The backend repos should use the same `__ci_{GITHUB_RUN_ID}` naming convention. Add a clarification in `recommendations.json` specifying that ISO-01 applies to **all repos that boot Supabase in CI**, not just the three frontends.
 
 ---
 
@@ -238,7 +238,7 @@ gantt
     section Batch Migration
     planner-frontend                 :b1, 7, 8
     workforce-frontend               :b2, 7, 8
-    receptor-planner                 :b3, 7, 8
+    planner-backend                 :b3, 7, 8
     supabase-receptor                :b4, 7, 8
     Full rollout verified            :milestone, 8, 0
 ```

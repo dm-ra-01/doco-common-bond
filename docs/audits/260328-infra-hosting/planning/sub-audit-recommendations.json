@@ -1,0 +1,106 @@
+{
+  "$schema": "../../../../../../dev-environment/.agents/schemas/recommendations.schema.json",
+  "auditSlug": "260328-infra-hosting",
+  "title": "Migration Sub-Audit Recommendations",
+  "date": "2026-03-28",
+  "scope": "Migration Strategy — GitHub, Secret Management, Cloud Hosting",
+  "auditor": "Ryan Ammendolea",
+  "findings": [
+    {
+      "id": "MIG-01",
+      "severity": "critical",
+      "status": "open",
+      "category": "Strategy",
+      "repo": "cross-ecosystem",
+      "description": "Immediate migration to Supabase Cloud (Sydney) to eliminate DB/Auth maintenance burden.",
+      "tasks": [
+        {
+          "taskId": "MIG-01-T1",
+          "status": "open",
+          "description": "Create Supabase Cloud projects for Staging and Production in ap-southeast-2.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/audits/260328-infra-hosting/planning/migration-planning.md"
+        }
+      ]
+    },
+    {
+      "id": "MIG-02",
+      "severity": "critical",
+      "status": "open",
+      "category": "Strategy",
+      "repo": "cross-ecosystem",
+      "description": "Adopt GCP Cloud Run for all application compute (Melbourne) to support agentic workflow integration via Vertex AI.",
+      "tasks": [
+        {
+          "taskId": "MIG-02-T1",
+          "status": "open",
+          "description": "Configure GCP Organization and Projects with Melbourne (australia-southeast2) defaults.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/audits/260328-infra-hosting/planning/migration-planning.md"
+        }
+      ]
+    },
+    {
+      "id": "MIG-03",
+      "severity": "high",
+      "status": "open",
+      "category": "Architecture",
+      "repo": "cross-ecosystem",
+      "description": "Consolidate non-critical self-hosted services into a single-node Coolify environment.",
+      "tasks": [
+        {
+          "taskId": "MIG-03-T1",
+          "status": "open",
+          "description": "Provision a single Ubuntu 24.04 VM and install Coolify.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/audits/260328-infra-hosting/planning/migration-planning.md"
+        }
+      ]
+    },
+    {
+      "id": "MIG-04",
+      "severity": "high",
+      "status": "open",
+      "category": "Security",
+      "repo": "cross-ecosystem",
+      "description": "Consolidate secret management into GCP Secret Manager using Workload Identity Federation (OIDC).",
+      "tasks": [
+        {
+          "taskId": "MIG-04-T1",
+          "status": "open",
+          "description": "Set up GCP Workload Identity Pool and Provider for GitHub Actions.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/audits/260328-infra-hosting/planning/sub-audit-recommendations.json"
+        },
+        {
+          "taskId": "MIG-04-T2",
+          "status": "open",
+          "description": "Bulk migrate secrets from Vault KV to GCP Secret Manager.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/audits/260328-infra-hosting/planning/sub-audit-recommendations.json"
+        }
+      ]
+    },
+    {
+      "id": "MIG-05",
+      "severity": "high",
+      "status": "open",
+      "category": "CI/CD",
+      "repo": "cross-ecosystem",
+      "description": "Retire self-hosted ARC runners and transition all workflows to GitHub-hosted runners.",
+      "tasks": [
+        {
+          "taskId": "MIG-05-T1",
+          "status": "open",
+          "description": "Update all .github/workflows to use runs-on: ubuntu-latest and standardize caching.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/frontend/planner-frontend/.github/workflows/ci-resilience.yml"
+        }
+      ]
+    }
+  ],
+  "clarifications": [],
+  "implementationPhases": [
+    {
+      "phase": 1,
+      "name": "Immediate De-risking",
+      "rationale": "High-maintenance k3s components are offloaded first.",
+      "findingIds": ["MIG-01", "MIG-02", "MIG-03"]
+    }
+  ],
+  "deferred": []
+}

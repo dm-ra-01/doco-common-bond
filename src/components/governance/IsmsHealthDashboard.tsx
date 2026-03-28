@@ -101,20 +101,13 @@ export function IsmsHealthDashboard() {
         }
         async function load() {
             try {
-                const [r1, r2, r3, r4] = await Promise.all([
-                    supabase.from('v_risk_treatment_coverage').select('*').single(),
-                    supabase.from('v_soa_completion').select('*').single(),
-                    supabase.from('v_supplier_dpa_status').select('*').single(),
-                    supabase.from('v_nc_closure_rate').select('*').single(),
-                ]);
-                if (r1.error) throw r1.error;
-                if (r2.error) throw r2.error;
-                if (r3.error) throw r3.error;
-                if (r4.error) throw r4.error;
-                setRisk(r1.data as RiskCoverage);
-                setSoa(r2.data as SoaCompletion);
-                setDpa(r3.data as SupplierDpa);
-                setNc(r4.data as NcClosure);
+                const { data, error: rpcError } = await supabase.rpc('rpc_get_isms_health_metrics');
+                if (rpcError) throw rpcError;
+
+                setRisk(data.risk as RiskCoverage);
+                setSoa(data.soa as SoaCompletion);
+                setDpa(data.dpa as SupplierDpa);
+                setNc(data.nc as NcClosure);
             } catch (e) {
                 setError(e instanceof Error ? e.message : String(e));
             } finally {

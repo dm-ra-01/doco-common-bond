@@ -26,12 +26,12 @@ either identical to — or degraded copies of — the canonical versions in
 | `website-frontend`          | ✅       | 0            | Workflows only, no skills or rules — clean |
 | `supabase-receptor`         | ⚠️       | 2            | Duplicate skill + rule-as-skill            |
 | `match-backend`             | ⚠️       | 1            | Duplicate Python skills                    |
-| `receptor-planner`          | ⚠️       | 1            | Duplicate Python skills                    |
+| `planner-backend`          | ⚠️       | 1            | Duplicate Python skills                    |
 | `documentation/common-bond` | ⚠️       | 2            | Local skill copy, no symlink arch          |
 | `frontend/` (monorepo root) | ❌       | 1            | Orphaned non-repo `.agent/` dir            |
 | Cross-cutting (all repos)   | ❌       | 2            | No symlink architecture, no category model |
 
-> **Note:** Initial audit marked `match-backend` and `receptor-planner` as
+> **Note:** Initial audit marked `match-backend` and `planner-backend` as
 > clean. Iterative review revealed both contain `python-design-patterns` and
 > `python-testing-patterns` skill copies.
 
@@ -171,7 +171,7 @@ either identical to — or degraded copies of — the canonical versions in
 
 ---
 
-## 7. `receptor-planner`
+## 7. `planner-backend`
 
 **Strengths:**
 
@@ -184,7 +184,7 @@ either identical to — or degraded copies of — the canonical versions in
 
 - **RP-01** `.agents/skills/` contains `python-design-patterns/` and
   `python-testing-patterns/` — both exist in `dev-environment/.agents/skills/`.
-  Evidence: `find backend/receptor-planner/.agents/skills -type f` returns
+  Evidence: `find backend/planner-backend/.agents/skills -type f` returns
   `python-design-patterns/SKILL.md` and `python-testing-patterns/SKILL.md`.
 
 ---
@@ -263,7 +263,7 @@ either identical to — or degraded copies of — the canonical versions in
 
 5. **Reference implementation:** `website-frontend` is the cleanest repo
    (workflows only, no skill or rules copies). Backend repos (`match-backend`,
-   `receptor-planner`) are structurally clean but contain 2 skill copies each.
+   `planner-backend`) are structurally clean but contain 2 skill copies each.
 
 ---
 
@@ -285,6 +285,6 @@ either identical to — or degraded copies of — the canonical versions in
 | WF-02      | `workforce-frontend`        | `.agents/rules/`                                   | Architectural Drift | 🟡 Medium   |
 | SR-01      | `supabase-receptor`         | `.agents/skills/adversarial-code-review/`          | Architectural Drift | 🟡 Medium   |
 | MB-01      | `match-backend`             | `.agents/skills/python-*` (2 dirs)                 | Architectural Drift | 🟡 Medium   |
-| RP-01      | `receptor-planner`          | `.agents/skills/python-*` (2 dirs)                 | Architectural Drift | 🟡 Medium   |
+| RP-01      | `planner-backend`          | `.agents/skills/python-*` (2 dirs)                 | Architectural Drift | 🟡 Medium   |
 | RISK-01    | all repos                   | transition window                                  | Process Risk        | 🟢 Low      |
 | DEF-01     | `receptor-ecosystem`        | —                                                  | Process Gap         | 🟢 Low      |
