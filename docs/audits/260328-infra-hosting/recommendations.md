@@ -96,3 +96,27 @@ Affects: `documentation/common-bond` — iso27001-suppliers
 | HOSTING-13 | iso27001-policies | `cloud-adoption-policy.md` | Process Gap | 🟠 High |
 | HOSTING-12 | iso27001-suppliers | `supplier-register.md` | Compliance | 🟡 Medium |
 
+
+---
+
+## Session Close: 2026-03-28 (Session 3)
+
+### Completed
+- **GCP Migration Prep:** Established GCP projects and Secret Manager.
+- **Secret Seeding:** Hydrated all production secrets (Supabase, Sentry, API Keys).
+- **Backend Modernization:** Renamed `receptor-planner` to `planner-backend` globally (filesystem and documentation).
+- **CI/CD Alignment:** Modernized `planner-frontend` and `planner-backend` pipelines to use GitHub runners and OIDC/WIF.
+- **Observability:** Integrated Sentry monitoring in `planner-backend`.
+- **Finding HOSTING-19:** Fully implemented and verified.
+
+### Remaining
+- **Phase 2 Compliance:** Create Cloud Adoption Policy and update Supplier Register.
+- **Decommissioning:** Finalize cleanup of k3s resources after Cloud Run stabilization.
+
+### PR Sequencing
+1. `receptor-infra` (audit/260326-k3s-stability) - Infrastructure changes (Applied).
+2. `planner-backend` (main) - CI/CD and API key changes (Pushed).
+3. `planner-frontend` (main) - CI/CD and API URL changes (Pushed).
+
+### Brief for Next Agent
+The infrastructure is ready. The primary remaining work is administrative (ISMS policies) and monitoring the first successful Cloud Run builds. Ensure `planner-api` and `planner-ui` images are successfully pushed to Artifact Registry.
