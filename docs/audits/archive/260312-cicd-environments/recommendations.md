@@ -336,7 +336,7 @@ Affects: `supabase-receptor` — Test data cleanup
 
 ### ISO-01: All three frontend repos share the same TEST_ADMIN_EMAIL / TEST_WORKER_EMAIL GitHub Secrets with no run-ID namespace pre
 
-Affects: `preference-frontend, planner-frontend, workforce-frontend, match-backend, receptor-planner` — Test data isolation
+Affects: `preference-frontend, planner-frontend, workforce-frontend, match-backend, planner-backend` — Test data isolation
 
 
 - [x] Define and document a __test_&#123;GITHUB_RUN_ID&#125; org naming convention. Update all three frontend repos' globalSetup to create test orgs using this prefix, and teardown in globalTeardown.
@@ -345,8 +345,8 @@ Affects: `preference-frontend, planner-frontend, workforce-frontend, match-backe
 - [x] Add an explicit cleanup trigger for the run-ID-scoped test org created in ISO-01-T1. In each frontend repo's ci.yml, add a cleanup job with 'if: always()' that runs after integration-tests: the job calls 'supabase db execute' (or a REST DELETE against the organisations endpoint using SERVICE_ROLE_KEY) to delete any org matching '__ci_&#123;GITHUB_RUN_ID&#125;_%'. This ensures cleanup fires even on test failure or job cancellation. The ENV-04 pg_cron job (DELETE WHERE name LIKE '__ci_%' AND created_at &#60; now() - interval 24h) is the safety net for runner-crash leaked orgs only — it must NOT be treated as the primary cleanup mechanism. Document this two-layer cleanup model (always() job = primary; pg_cron = safety net) in a comment in each ci.yml above the cleanup job definition.
       `/home/ryana/development/common-bond/frontend/preference-frontend/src/__tests__/globalSetup.ts`
       _(Completed: 2026-03-12T22:12:49Z)_
-- [x] [comprehensive_review_3 GAP-2] Extend run-ID test org namespacing to backend repos. match-backend and receptor-planner integration tests (BACK-01) must use the same __ci_&#123;GITHUB_RUN_ID&#125; naming convention as the frontend repos. Update backend CI pytest fixtures or conftest.py to create/use the run-ID-scoped org. Without this, backend and frontend CI jobs sharing a k3s Supabase namespace will collide on test data.
-      `cross-repo (match-backend/conftest.py, receptor-planner/conftest.py)`
+- [x] [comprehensive_review_3 GAP-2] Extend run-ID test org namespacing to backend repos. match-backend and planner-backend integration tests (BACK-01) must use the same __ci_&#123;GITHUB_RUN_ID&#125; naming convention as the frontend repos. Update backend CI pytest fixtures or conftest.py to create/use the run-ID-scoped org. Without this, backend and frontend CI jobs sharing a k3s Supabase namespace will collide on test data.
+      `cross-repo (match-backend/conftest.py, planner-backend/conftest.py)`
       _(Completed: 2026-03-12T22:12:49Z)_
 
 ### ISO-02: seed_acacia.sql and test_user_credentials.json configure a single shared 'Acacia Enterprises' org. There is no mechanism
@@ -369,11 +369,11 @@ Affects: `supabase-receptor` — Promotion runbook
 
 ### BACK-01: match-backend integration tests (test_supabase_integration.py) are skipped in CI via pytest.mark.skipif when stub env va
 
-Affects: `match-backend, receptor-planner` — Backend CI integration test coverage
+Affects: `match-backend, planner-backend` — Backend CI integration test coverage
 
 
-- [x] Add pytest path scoping to receptor-planner ci.yml: replace bare 'pytest' with 'pytest tests/unit/ -m unit' (or equivalent). Add a --co flag dryrun first to enumerate what's currently being collected.
-      `/home/ryana/development/common-bond/backend/receptor-planner/.github/workflows/ci.yml`
+- [x] Add pytest path scoping to planner-backend ci.yml: replace bare 'pytest' with 'pytest tests/unit/ -m unit' (or equivalent). Add a --co flag dryrun first to enumerate what's currently being collected.
+      `/home/ryana/development/common-bond/backend/planner-backend/.github/workflows/ci.yml`
       _(Completed: 2026-03-12T22:47:09Z)_
 - [x] Add an integration-tests job to match-backend ci.yml that boots a Supabase instance (using supabase/setup-cli@v1) and runs pytest allocator/tests/integration/ with real Supabase credentials extracted from supabase status -o env.
       `/home/ryana/development/common-bond/backend/match-backend/.github/workflows/ci.yml`
@@ -381,14 +381,14 @@ Affects: `match-backend, receptor-planner` — Backend CI integration test cover
 
 ### BACK-02: Both backend repos set SUPABASE_SERVICE_ROLE_KEY to a hardcoded decoded JWT placeholder string (eyJhbGciOiJIUzI1NiIsInR5
 
-Affects: `match-backend, receptor-planner` — Hardcoded JWT placeholder in CI
+Affects: `match-backend, planner-backend` — Hardcoded JWT placeholder in CI
 
 
 - [x] Replace the hardcoded JWT placeholder in both ci.yml files with a clearly non-JWT stub value such as 'stub-service-role-key-not-real' that will not trigger credential scanner heuristics.
       `/home/ryana/development/common-bond/backend/match-backend/.github/workflows/ci.yml`
       _(Completed: 2026-03-12T08:40:48Z)_
-- [x] Apply the same stub replacement to receptor-planner ci.yml.
-      `/home/ryana/development/common-bond/backend/receptor-planner/.github/workflows/ci.yml`
+- [x] Apply the same stub replacement to planner-backend ci.yml.
+      `/home/ryana/development/common-bond/backend/planner-backend/.github/workflows/ci.yml`
       _(Completed: 2026-03-12T08:40:48Z)_
 
 ### SEC-01: No frontend or backend ci.yml file includes a top-level 'permissions:' block. Without explicit permissions, workflows in
@@ -591,7 +591,7 @@ Affects: `supabase-receptor` — Vault unseal key security (Azure Key Vault KMS)
 Affects: `cross-ecosystem` — npm and pip dependency caching in CI
 
 
-- [x] Add 'actions/cache' steps to all 3 frontend ci.yml files keyed on 'hashFiles("**/package-lock.json")'. For backend repos (match-backend, receptor-planner) add pip cache steps keyed on 'hashFiles("**/requirements.txt")'. Once running on a self-hosted runner (ARCH-03), switch to a local filesystem cache path (/var/cache/ci/npm, /var/cache/ci/pip) instead of the GitHub-managed cache to eliminate upload/download overhead entirely.
+- [x] Add 'actions/cache' steps to all 3 frontend ci.yml files keyed on 'hashFiles("**/package-lock.json")'. For backend repos (match-backend, planner-backend) add pip cache steps keyed on 'hashFiles("**/requirements.txt")'. Once running on a self-hosted runner (ARCH-03), switch to a local filesystem cache path (/var/cache/ci/npm, /var/cache/ci/pip) instead of the GitHub-managed cache to eliminate upload/download overhead entirely.
       ``
       _(Completed: 2026-03-12T08:40:48Z)_
 

@@ -24,9 +24,11 @@
         },
         {
           "taskId": "HOSTING-16-T2",
-          "status": "open",
+          "status": "complete",
           "description": "Establish GCP Organization and Projects pinned to Melbourne (australia-southeast2).",
-          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/audits/260328-infra-hosting/planning/migration-planning.md"
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/audits/260328-infra-hosting/planning/migration-planning.md",
+          "completedAt": "2026-03-28T07:04:25Z",
+          "completedBy": "b449f158-44ae-45cc-8384-638e723efcef"
         },
         {
           "taskId": "HOSTING-16-T3",
@@ -39,7 +41,7 @@
     {
       "id": "HOSTING-19",
       "severity": "high",
-      "status": "open",
+      "status": "complete",
       "category": "CI/CD",
       "repo": "cross-ecosystem",
       "area": "github-actions",
@@ -47,15 +49,19 @@
       "tasks": [
         {
           "taskId": "HOSTING-19-T1",
-          "status": "open",
+          "status": "complete",
           "description": "Set up GCP Workload Identity Federation for GitHub OIDC to eliminate static secrets.",
-          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/audits/260328-infra-hosting/planning/sub-audit-recommendations.json"
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/audits/260328-infra-hosting/planning/sub-audit-recommendations.json",
+          "completedAt": "2026-03-28T07:04:25Z",
+          "completedBy": "b449f158-44ae-45cc-8384-638e723efcef"
         },
         {
           "taskId": "HOSTING-19-T2",
-          "status": "open",
+          "status": "complete",
           "description": "Update all repos to runs-on: ubuntu-latest and standardize on actions/cache.",
-          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/frontend/planner-frontend/.github/workflows/ci-resilience.yml"
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/frontend/planner-frontend/.github/workflows/ci-resilience.yml",
+          "completedAt": "2026-03-28T07:04:25Z",
+          "completedBy": "b449f158-44ae-45cc-8384-638e723efcef"
         }
       ]
     },

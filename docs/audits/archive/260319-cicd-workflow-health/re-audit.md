@@ -21,10 +21,10 @@
 | DR-08 | 🟢 Low | ✅ Resolved | Resolved via DR-04: canonical Vault-sourced URLs used in all workflows. `key-rotation-reminder.yml` uses `SLACK_DEPLOYMENTS_WEBHOOK_URL` GitHub secret — consistent with platform-runner pattern. |
 | DR-09 | 🟠 High | ✅ Resolved | All 3 frontends: `NEXT_PUBLIC_SUPABASE_ANON_KEY` used in unit-tests and build jobs. Forward-compatibility shim (`NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`) retained for backwards-compat — not a gap. |
 | DR-10 | 🔴 Critical | ✅ Resolved | All 3 frontends `ci.yml`: cleanup steps moved inline into integration-tests job with `if: always()`. Cross-job env propagation issue eliminated. |
-| DR-11 | 🟠 High | ✅ Resolved | `match-backend/deploy.yml` + `receptor-planner/deploy.yml`: all 5 actions SHA-pinned (`checkout@11bd719`, `login-action@c94ce9f`, `metadata-action@c299e40`, `build-push-action@ca052bb`, `create-github-app-token@d72941d`) |
+| DR-11 | 🟠 High | ✅ Resolved | `match-backend/deploy.yml` + `planner-backend/deploy.yml`: all 5 actions SHA-pinned (`checkout@11bd719`, `login-action@c94ce9f`, `metadata-action@c299e40`, `build-push-action@ca052bb`, `create-github-app-token@d72941d`) |
 | DR-12 | 🟡 Medium | ✅ Resolved | `timeout-minutes: 20` added to `build-and-deploy` job in both backend deploy.yml files |
 | DR-13 | 🔴 Critical | ✅ Resolved | `website-frontend/.github/workflows/` now contains `ci.yml`, `deploy.yml`, `rollback.yml`, `secret-scan.yml` |
-| DR-14 | 🟠 High | ✅ Resolved | `rollback.yml` exists in `match-backend`, `receptor-planner`, and `website-frontend`. Supabase DB rollback (migration revert) available via `prod-deploy.yml` dispatch. |
+| DR-14 | 🟠 High | ✅ Resolved | `rollback.yml` exists in `match-backend`, `planner-backend`, and `website-frontend`. Supabase DB rollback (migration revert) available via `prod-deploy.yml` dispatch. |
 | DR-15 | 🟠 High | ⚠️ Formally Deferred | Frontend deployment mechanism unconfirmed — Cloudflare Pages auto-deploys from GitHub may handle this natively. No `deploy.yml` required if Pages integration is active. Deferred pending infrastructure confirmation. |
 | DR-16 | 🟠 High | ✅ Resolved | Same fix as DR-02 (shared `smoke-test/action.yml`). `orgs` table used. |
 | DR-17 | 🔴 Critical | ✅ Resolved | `staging-smoke.yml` lines 69–70: now reads from `secret/infrastructure/slack-incidents-webhook` and `secret/infrastructure/slack-deployments-webhook` — canonical Vault path format. |
@@ -67,7 +67,7 @@ This audit addressed GitHub Actions workflow files only — no application sourc
 | `.github/workflows/ci.yml` | Workflow YAML — integration-tested by CI run itself | ✅ Yes |
 | `.github/workflows/deploy.yml` | Not present — deferred (DR-15) | ✅ Acceptable gap |
 
-### match-backend / receptor-planner
+### match-backend / planner-backend
 
 | File | Gap reason | Acceptable? |
 | :--- | :--------- | :---------- |

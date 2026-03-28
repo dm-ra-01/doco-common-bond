@@ -54,7 +54,7 @@ Affects: `all` — .agents directory architecture
       preference-frontend/.agents -> frontend-nextjs, workforce-frontend/.agents
       -> frontend-nextjs, website-frontend/.agents -> frontend-nextjs,
       supabase-receptor/.agents -> supabase-infrastructure,
-      match-backend/.agents -> backend-python, receptor-planner/.agents ->
+      match-backend/.agents -> backend-python, planner-backend/.agents ->
       backend-python, common-bond/.agents -> docusaurus.
       `/Users/ryan/development/common_bond/antigravity-environment/`
       _(Completed: 2026-03-10T08:24:34Z)_
@@ -223,14 +223,14 @@ Affects: `match-backend` — .agents/skills/
       `/Users/ryan/development/common_bond/antigravity-environment/backend/match-backend/.agents/skills/`
       _(Completed: 2026-03-10T08:24:34Z)_
 
-### RP-01: receptor-planner has local copies of python-design-patterns and python-testing-patterns, both of which exist in dev-envi
+### RP-01: planner-backend has local copies of python-design-patterns and python-testing-patterns, both of which exist in dev-envi
 
-Affects: `receptor-planner` — .agents/skills/
+Affects: `planner-backend` — .agents/skills/
 
-- [x] Delete backend/receptor-planner/.agents/skills/python-design-patterns/ and
-      backend/receptor-planner/.agents/skills/python-testing-patterns/.
+- [x] Delete backend/planner-backend/.agents/skills/python-design-patterns/ and
+      backend/planner-backend/.agents/skills/python-testing-patterns/.
       Addressed by the ARCH-01 symlink to backend-python/ category.
-      `/Users/ryan/development/common_bond/antigravity-environment/backend/receptor-planner/.agents/skills/`
+      `/Users/ryan/development/common_bond/antigravity-environment/backend/planner-backend/.agents/skills/`
       _(Completed: 2026-03-10T08:24:34Z)_
 
 ## 🟢 Low
@@ -264,7 +264,7 @@ Affects: `all` — symlink migration sequence
 - [x] Implementation agent must process all repos in a single category before
       moving to the next. Recommended sequence: (1) frontend-nextjs: planner,
       preference, workforce, website, (2) backend-python: match-backend,
-      receptor-planner, (3) supabase-infrastructure: supabase-receptor, (4)
+      planner-backend, (3) supabase-infrastructure: supabase-receptor, (4)
       docusaurus: common-bond.
       `/Users/ryan/development/common_bond/antigravity-environment/`
       _(Completed: 2026-03-10T08:24:34Z)_

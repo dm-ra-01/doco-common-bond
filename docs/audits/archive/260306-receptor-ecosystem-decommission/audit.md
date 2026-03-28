@@ -181,7 +181,7 @@ longer exist post-decommission.
 
 ## 5. `platform/frontend-apps/` (6 files)
 
-### `frontend-apps/receptor-preferencer.md`, `receptor-planner.md`, `receptor-management.md`
+### `frontend-apps/receptor-preferencer.md`, `planner-backend.md`, `receptor-management.md`
 
 **Disposition: Migrate → respective frontend `docs/` directories**
 
@@ -214,15 +214,15 @@ authoritative design intent lives in KI `preference_frontend_system_design`.
 **Disposition: Archive (6 files, completed dev journal entries)**
 
 Sequential audit/development journal entries documenting the iterative
-development of `receptor-planner`. Valuable as historical artefacts but entirely
+development of `planner-backend`. Valuable as historical artefacts but entirely
 superseded by the current codebase state. If retained, move to
-`backend/receptor-planner/docs/archive/`.
+`backend/planner-backend/docs/archive/`.
 
 ### `job-line-compliance/` (7 files: architecture, api-business-rules, core-logic, data-models, index, planner-instructions, ortools-scheduling-research)
 
-**Disposition: Migrate to `backend/receptor-planner/docs/`**
+**Disposition: Migrate to `backend/planner-backend/docs/`**
 
-These are the authoritative technical reference docs for the `receptor-planner`
+These are the authoritative technical reference docs for the `planner-backend`
 Python service. `ortools-scheduling-research.md` in particular contains unique,
 non-superseded solver design rationale.
 

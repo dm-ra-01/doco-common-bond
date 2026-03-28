@@ -28,7 +28,7 @@ This audit investigates the root causes of persistent CI/CD deployment failures 
 
 **Strengths (verified live):**
 
-- 6 of 7 expected JWT roles exist: `ci-match-backend`, `ci-planner-frontend`, `ci-preference-frontend`, `ci-workforce-frontend`, `ci-receptor-planner`, `ci-supabase-receptor`.
+- 6 of 7 expected JWT roles exist: `ci-match-backend`, `ci-planner-frontend`, `ci-preference-frontend`, `ci-workforce-frontend`, `ci-planner-backend`, `ci-supabase-receptor`.
 - All use correct `bound_audiences: https://vault.commonbond.au`, `bound_claims_type: glob`, and matching `token_policies`.
 - JWT auth is correctly configured with `oidc_discovery_url: https://token.actions.githubusercontent.com`.
 

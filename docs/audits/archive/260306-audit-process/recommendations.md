@@ -6,7 +6,7 @@
 **Feature branch:** `audit/260306-audit-process`\
 **Date:** 2026-03-06\
 **Scope:** All audit and implement-audit workflow files across
-supabase-receptor, receptor-planner, match-backend, planner-frontend,
+supabase-receptor, planner-backend, match-backend, planner-frontend,
 workforce-frontend, preference-frontend, common-bond, and icu-survival
 
 > [!IMPORTANT]
@@ -80,7 +80,7 @@ See `audit.md §2` for full evidence.
   --head audit/YYMMDD-short-name --title "audit(YYMMDD-short-name): implement
   recommendations" --body "Closes audit in docs/audits/YYMMDD-short-name/"`.
 - [x] Apply the same PR creation instruction to
-      `receptor-planner/implement-audit.md` Step 5.
+      `planner-backend/implement-audit.md` Step 5.
 - [x] Apply the same PR creation instruction to
       `match-backend/implement-audit.md` Step 5.
 - [x] Apply the same PR creation instruction to
@@ -97,7 +97,7 @@ See `audit.md §2` for full evidence.
 ### PROC-02 [260306-audit-process]: Create global cross-ecosystem audit workflow
 
 There is no workflow for auditing a concern that spans multiple repositories
-(e.g. authentication architecture across supabase-receptor, receptor-planner,
+(e.g. authentication architecture across supabase-receptor, planner-backend,
 match-backend, and all three frontends). See `audit.md §3`.
 
 - [x] Create `common-bond/.agents/workflows/global-audit.md`. The workflow
@@ -240,7 +240,7 @@ before signoff. See `audit.md §8`.
 
 **Progress (2026-03-06):** A mandatory **re-audit step (Step 6)** has been added
 to all five `implement-audit.md` workflows (`supabase-receptor`,
-`receptor-planner`, `planner-frontend`, `common-bond`, `icu-survival`). When all
+`planner-backend`, `planner-frontend`, `common-bond`, `icu-survival`). When all
 tasks are `[x]` and tests pass, the agent must offer a re-audit — reviewing
 `audit.md`, `recommendations.md`, and the codebase — and produce `re-audit.md`
 and `re-audit-recommendations.md` before any merge can proceed. These files form
@@ -265,7 +265,7 @@ workflows:
   - [ ] The feature branch has been successfully pushed to origin (confirm with
         `git log --oneline origin/audit/YYMMDD-short-name -1`).
   ```
-- [x] Apply to: `supabase-receptor`, `receptor-planner`, `match-backend`,
+- [x] Apply to: `supabase-receptor`, `planner-backend`, `match-backend`,
       `planner-frontend`, `common-bond`, `icu-survival` audit.md files.
 
 ---
@@ -391,7 +391,7 @@ bloated audit.md files)
 **Implemented this session:** PROC-01, PROC-08, PROC-09, PROC-10, PROC-11,
 PROC-12, PROC-13, PROC-14, PROC-15.\
 **Test status:** Docusaurus built without errors. Workflows successfully
-deployed across `common-bond`, `supabase-receptor`, `receptor-planner`,
+deployed across `common-bond`, `supabase-receptor`, `planner-backend`,
 `match-backend`, `planner-frontend`, `workforce-frontend` and
 `preference-frontend`.\
 **Remaining:** PROC-02 (global audit workflow missing creation check in

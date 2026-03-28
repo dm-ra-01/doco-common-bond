@@ -32,7 +32,7 @@ The re-audit confirms that all **13 findings** (1 Critical, 6 High, 4 Medium, 2 
 
 ### 2.2 Reusable Workflows (VD-04, VD-06)
 - **Evidence:** `receptor-infra/.github/workflows/deploy-gitops.yml` created.
-- **Verified:** `deploy.yml` in `planner-frontend`, `preference-frontend`, `workforce-frontend`, `match-backend`, and `receptor-planner` refactored to call the reusable workflow.
+- **Verified:** `deploy.yml` in `planner-frontend`, `preference-frontend`, `workforce-frontend`, `match-backend`, and `planner-backend` refactored to call the reusable workflow.
 
 ### 2.3 Shared Supabase Initialization (VD-07)
 - **Evidence:** `receptor-infra/.github/actions/supabase-start/action.yml` implemented.

@@ -47,7 +47,7 @@ documented across 7 categories.
 **Gaps:**
 
 - No project-level `LICENSE` or `LICENCE` file exists in any of the following
-  repositories: `supabase-receptor`, `match-backend`, `receptor-planner`,
+  repositories: `supabase-receptor`, `match-backend`, `planner-backend`,
   `planner-frontend`, `preference-frontend`, `workforce-frontend`,
   `website-frontend`, `rotator_worker`, `doco-common-bond`. Only `node_modules`
   and `venv` third-party dependency licences are present.

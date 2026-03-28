@@ -9,7 +9,7 @@
 | Audit ID   | Audit Slug                  | Planned / Completed | Scope                                                                                        | Auditor      | Status      |
 | ---------- | --------------------------- | :-----------------: | -------------------------------------------------------------------------------------------- | ------------ | ----------- |
 | IA-2025-01 | (pre-workflow)              |     2025-10-12      | GitHub MFA configuration check                                                               | Ryan A (CEO) | ✅ Complete |
-| IA-2026-T1 | `260228-receptor-planner`   |     2026-02-28      | Receptor Planner Python backend — code quality, security, test coverage                      | Antigravity  | ✅ Complete |
+| IA-2026-T1 | `260228-planner-backend`   |     2026-02-28      | Receptor Planner Python backend — code quality, security, test coverage                      | Antigravity  | ✅ Complete |
 | IA-2026-T2 | `260304-acl`                |     2026-03-04      | Access Control & Authentication — RLS, JWT, RBAC, multi-tenancy (supabase-receptor)         | Antigravity  | ✅ Complete |
 | IA-2026-T3 | `260304-state`              |     2026-03-04      | State management & GraphQL architecture (planner-frontend, preference-frontend)              | Antigravity  | ✅ Complete |
 | IA-2026-T4 | `260305-match-backend`      |     2026-03-05      | Match-backend Python service — auth, DB patterns, orchestration gate, test coverage         | Antigravity  | ✅ Complete |
@@ -69,7 +69,7 @@
 | Field        | Detail |
 |---|---|
 | **Date**     | 2026-03-06 |
-| **Scope**    | All audit and implement-audit workflows across supabase-receptor, receptor-planner, match-backend, planner-frontend, workforce-frontend, preference-frontend, common-bond, icu-survival |
+| **Scope**    | All audit and implement-audit workflows across supabase-receptor, planner-backend, match-backend, planner-frontend, workforce-frontend, preference-frontend, common-bond, icu-survival |
 | **Report**   | `documentation/common-bond/docs/audits/audit-process-audit/audit.md` |
 | **Key findings** | 14 findings; no global audit registry (PROC-03); no PR gate before merge (PROC-01); workforce-frontend and preference-frontend have no audit workflows (PROC-14) |
 | **Evidence for** | ISO 27001 Clause 9.2 (Audit programme), Clause 10.2 (Continual improvement) |

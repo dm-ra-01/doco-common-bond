@@ -6,7 +6,7 @@ sidebar_position: 1
 # Testing Efficiency & Modularity Ecosystem Audit
 
 **Date:** 2026-03-11\
-**Scope:** `backend/receptor-planner`, `backend/match-backend`,
+**Scope:** `backend/planner-backend`, `backend/match-backend`,
 `frontend/planner-frontend`, `frontend/workforce-frontend`,
 `frontend/preference-frontend`, `supabase-receptor` (pgTAP + Edge Functions)\
 **Auditor:** Ryan Ammendolea\
@@ -33,7 +33,7 @@ gate, stale act documentation).
 | `planner-frontend` (Next.js)    | ⚠️ Hybrid | 5            | ⚠️      |
 | `workforce-frontend` (Next.js)  | ⚠️ Hybrid | 4            | ⚠️      |
 | `preference-frontend` (Next.js) | ⚠️ Hybrid | 6            | ⚠️      |
-| `backend/receptor-planner`      | ✅ Good   | 1            | ✅      |
+| `backend/planner-backend`      | ✅ Good   | 1            | ✅      |
 | `backend/match-backend`         | ⚠️ Partial | 5            | ⚠️      |
 | `supabase-receptor` (pgTAP)     | ⚠️ Local  | 2            | ⚠️      |
 | `supabase-receptor` (Functions) | ❌ None   | 1            | ❌      |
@@ -92,7 +92,7 @@ Severity breakdown: 🟠 High: 4 · 🟡 Medium: 8 · 🟢 Low: 6
 
 ---
 
-## 2. Backend / Python — receptor-planner
+## 2. Backend / Python — planner-backend
 
 ### 2.1 Reference Implementation
 
@@ -112,7 +112,7 @@ Severity breakdown: 🟠 High: 4 · 🟡 Medium: 8 · 🟢 Low: 6
 
 **Gaps:**
 
-- **PL-01** [`receptor-planner/.github/workflows/ci.yml` L19] Python version
+- **PL-01** [`planner-backend/.github/workflows/ci.yml` L19] Python version
   pinned to `3.9` but `pyproject.toml` declares `requires-python = ">=3.11"`.
   Mismatched runtimes can mask deprecation warnings or compatibility regressions
   in CI that only appear in production (3.11+). Note: this is a minor hygiene
@@ -217,9 +217,9 @@ external services"). The workforce-frontend and planner-frontend `ci.yml` files
 label the job `Unit Tests (mocked Supabase)` but then immediately start
 Supabase. This creates ambiguity for new contributors and implementation agents.
 
-**6.2 `receptor-planner` is the Reference Implementation for Python Testing**
+**6.2 `planner-backend` is the Reference Implementation for Python Testing**
 
-`receptor-planner` is the only backend service with a proper `unit/`,
+`planner-backend` is the only backend service with a proper `unit/`,
 `integration/`, `e2e/` folder split, a fully mocked conftest, CI running without
 Supabase, and coverage enforcement. It should be adopted as the canonical
 pattern for `match-backend`.
@@ -335,7 +335,7 @@ and approved as additional findings.
 | MB-04      | `match-backend`                                                 | `allocator/tests/integration/` (no live Supabase test)           | Test Coverage     | 🟡 Medium |
 | CROSS-01   | `match-backend`, `supabase-receptor`                            | Cross-service (no pipeline test)                                 | Test Coverage     | 🟡 Medium |
 | DB-02      | `supabase-receptor`                                             | `supabase/tests/database/11_security_policies.test.sql`          | Test Coverage     | 🟢 Low    |
-| PL-01      | `receptor-planner`                                              | `.github/workflows/ci.yml` L19 vs `pyproject.toml`               | Hygiene           | 🟢 Low    |
+| PL-01      | `planner-backend`                                              | `.github/workflows/ci.yml` L19 vs `pyproject.toml`               | Hygiene           | 🟢 Low    |
 | NEXT-06    | `preference-frontend`                                           | `codegen.ts` / `package.json` (postcodegen fragility)            | Hygiene           | 🟢 Low    |
 | NEXT-07    | All three Next.js frontends                                     | `.husky/pre-push` (check ordering)                               | CI Structure      | 🟢 Low    |
 | NEXT-08    | All three Next.js frontends                                     | `vitest.config.ts` (coverage gate)                               | Test Coverage     | 🟢 Low    |

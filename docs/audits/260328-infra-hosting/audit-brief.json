@@ -1,10 +1,10 @@
 {
   "$schema": "../../../../../dev-environment/.agents/schemas/audit-brief.schema.json",
   "auditSlug": "260328-infra-hosting",
-  "status": "findings-issued",
+  "status": "implementing",
   "nextAction": "implement",
-  "openTaskCount": 7,
-  "latestHandover": "Strategic decision made to retire self-hosted k3s. Migration plan for Supabase Cloud (Sydney) and GCP (Melbourne) issued. 13 findings across infra, security, and CI/CD. Phase 1 focuses on Managed Migration. GitHub-hosted runners and OIDC-based secret management identified as core security improvements.",
+  "openTaskCount": 4,
+  "latestHandover": "Successfully completed HOSTING-16-T2 (GCP Project Setup) and HOSTING-19 (OIDC/WIF & CI Modernization). Also implemented global renaming of 'receptor-planner' to 'planner-backend' and integrated Sentry for backend observability. Next actions should focus on Phase 2 compliance tasks (Cloud Adoption Policy and Supplier Register) and finalize the k3s retirement planning.",
   "sessionHistory": [
     {
       "sessionDate": "2026-03-28",
@@ -15,6 +15,11 @@
       "sessionDate": "2026-03-28",
       "completedFindingIds": [],
       "summary": "Detailed migration planning for GitHub, Secret Management, and cloud hosting regions. Findings refactored and validated."
+    },
+    {
+      "sessionDate": "2026-03-28",
+      "completedFindingIds": ["HOSTING-19"],
+      "summary": "Implemented GCP OIDC/WIF for GitHub Actions, modernized CI/CD for planner-frontend and planner-backend, performed global rename to 'planner-backend', and integrated Sentry monitoring."
     }
   ]
 }

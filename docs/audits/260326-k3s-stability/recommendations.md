@@ -275,7 +275,7 @@ Affects: `receptor-infra` — Cloudflare Tunnel Config Source
 Affects: `receptor-infra` — Mutable CI Image Tags
 
 
-- [ ] Fix the CI workflow that pushes :latest tags. In each frontend repo CI (planner-frontend, preferencer-frontend, workforce-frontend) ensure the deploy step updates the deployment.yaml with the SHA-tagged image (sha-SHORTSHA format) not :latest. The receptor-planner backend CI must also pin to the built SHA. Verified: sha-a0fdce7 restored during this audit.
+- [ ] Fix the CI workflow that pushes :latest tags. In each frontend repo CI (planner-frontend, preferencer-frontend, workforce-frontend) ensure the deploy step updates the deployment.yaml with the SHA-tagged image (sha-SHORTSHA format) not :latest. The planner-backend backend CI must also pin to the built SHA. Verified: sha-a0fdce7 restored during this audit.
       `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/infrastructure/`
 - [ ] Add a GITOPS-02 guard: after Renovate or Flux Image Automation is configured (HELM-01, GITOPS-02), add a kubeconform or custom check in CI-01 that rejects any deployment.yaml where image tag matches :latest. This prevents future regressions via policy enforcement rather than convention.
       `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/.github/workflows/validate-pr.yaml`

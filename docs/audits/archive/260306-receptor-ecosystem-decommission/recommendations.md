@@ -65,17 +65,17 @@ three frontends follow.
   - Base path:
     `/Users/ryan/development/common_bond/antigravity-environment/backend/match-backend/docs/`
 
-### REC-05 — Migrate `planner-backend/job-line-compliance/` docs to `receptor-planner`
+### REC-05 — Migrate `planner-backend/job-line-compliance/` docs to `planner-backend`
 
 7 files constitute the authoritative technical reference for the
-`receptor-planner` Python service.
+`planner-backend` Python service.
 
-- [x] `backend/receptor-planner` — Create `docs/` directory and migrate:
+- [x] `backend/planner-backend` — Create `docs/` directory and migrate:
   - `architecture.md`, `api-business-rules.md`, `core-logic.md`,
     `data-models.md`, `index.md`, `planner-instructions.md`,
     `ortools-scheduling-research.md`
   - Base path:
-    `/Users/ryan/development/common_bond/antigravity-environment/backend/receptor-planner/docs/`
+    `/Users/ryan/development/common_bond/antigravity-environment/backend/planner-backend/docs/`
 
 ### REC-06 — Delete `platform/security.md` (stale draft)
 
@@ -149,13 +149,13 @@ ecosystem.
 
 ### REC-12 — Migrate frontend app briefs to respective frontends
 
-`platform/frontend-apps/receptor-preferencer.md`, `receptor-planner.md`,
+`platform/frontend-apps/receptor-preferencer.md`, `planner-backend.md`,
 `receptor-management.md` are product briefs for individual apps.
 
 - [x] `frontend/preference-frontend` — Add `docs/product-brief.md` from
       `receptor-preferencer.md`
 - [x] `frontend/planner-frontend` — Add `docs/product-brief.md` from
-      `receptor-planner.md`
+      `planner-backend.md`
 - [x] `frontend/rotator_worker` — Add `docs/product-brief.md` from
       `receptor-management.md`
 
@@ -173,13 +173,13 @@ ecosystem-level business content.
 
 ### REC-14 — Archive planner dev journal (`planner-audit-1` through `planner-audit-6`)
 
-6 sequential development journal entries for `receptor-planner`. Entirely
+6 sequential development journal entries for `planner-backend`. Entirely
 superseded; valuable only for historical provenance.
 
-- [x] `backend/receptor-planner` — Create `docs/archive/` and place all 6 files
+- [x] `backend/planner-backend` — Create `docs/archive/` and place all 6 files
       there, clearly labelled as development journal artefacts (not current
       docs). Path:
-      `/Users/ryan/development/common_bond/antigravity-environment/backend/receptor-planner/docs/archive/`
+      `/Users/ryan/development/common_bond/antigravity-environment/backend/planner-backend/docs/archive/`
 
 ### REC-15 — Delete internal-systems business planning doc
 
@@ -259,7 +259,7 @@ Priority execution phases for the implementation agent:
 | REC-02 | Architecture → common-bond   | `common-bond/docs/engineering/architecture.md` ✅                             |
 | REC-03 | Gold standards → common-bond | `state-management.md`, `graphql-standard.md` ✅                               |
 | REC-04 | Allocator → match-backend    | 8 files in `match-backend/docs/allocator/` ✅                                 |
-| REC-05 | Planner → receptor-planner   | 7 files in `receptor-planner/docs/job-line-compliance/` ✅                    |
+| REC-05 | Planner → planner-backend   | 7 files in `planner-backend/docs/job-line-compliance/` ✅                    |
 | REC-06 | Delete security.md           | receptor-ecosystem deleted ✅                                                 |
 | REC-07 | Broken links resolved        | Build passes; no new broken links introduced ✅                               |
 | REC-08 | User stories → frontends     | `preference-frontend/docs/user-stories/` (3 files), `planner-frontend` (1) ✅ |
@@ -268,7 +268,7 @@ Priority execution phases for the implementation agent:
 | REC-11 | OR-Tools → match-backend     | `match-backend/docs/ortools-migration-report.md` ✅                           |
 | REC-12 | Product briefs → frontends   | product-brief.md in preference, planner, rotator_worker ✅                    |
 | REC-13 | Landing page → common-bond   | `common-bond/docs/product/landing-page.md` ✅                                 |
-| REC-14 | Archive dev journal          | `receptor-planner/docs/archive/` (6 planner-audit-*.md files) ✅              |
+| REC-14 | Archive dev journal          | `planner-backend/docs/archive/` (6 planner-audit-*.md files) ✅              |
 | REC-15 | Delete internal-systems.md   | receptor-ecosystem deleted ✅                                                 |
 | REC-16 | Delete prompt.md             | receptor-ecosystem deleted ✅                                                 |
 | REC-17 | Archive projects/            | receptor-ecosystem deleted; ortools handled via REC-11 ✅                     |

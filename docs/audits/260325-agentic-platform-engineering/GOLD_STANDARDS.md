@@ -44,7 +44,7 @@ The following files in the Receptor ecosystem are designated as "Gold Standard" 
 - **Why**: Demonstrates a high-quality mapping of human-readable intent to machine-readable Vault paths and tool schemas.
 
 ### 2.2 API Metadata
-- **File**: `receptor-planner/openapi.json`
+- **File**: `planner-backend/openapi.json`
 - **Why**: Provides the definitive machine-readable contract for agentic service consumption.
 
 ### 2.3 Proactive Observation Loops

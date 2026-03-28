@@ -60,7 +60,7 @@ The following repositories are covered by the MyJMO Pty Ltd IP ownership claim:
 | :-------------------- | :------------------------------------------------------------------------------ | :------------------------- |
 | `supabase-receptor`   | [dm-ra-01/supabase-receptor](https://github.com/dm-ra-01/supabase-receptor)     | PostgreSQL, Supabase, Deno |
 | `match-backend`       | [dm-ra-01/match-backend](https://github.com/dm-ra-01/match-backend)             | Python (CP-SAT)            |
-| `receptor-planner`    | [dm-ra-01/receptor-planner](https://github.com/dm-ra-01/receptor-planner)       | Python (FastAPI)           |
+| `planner-backend`    | [dm-ra-01/planner-backend](https://github.com/dm-ra-01/planner-backend)       | Python (FastAPI)           |
 | `planner-frontend`    | [dm-ra-01/planner-frontend](https://github.com/dm-ra-01/planner-frontend)       | Next.js, TypeScript        |
 | `preference-frontend` | [dm-ra-01/preference-frontend](https://github.com/dm-ra-01/preference-frontend) | Next.js, TypeScript        |
 | `workforce-frontend`  | [dm-ra-01/workforce-frontend](https://github.com/dm-ra-01/workforce-frontend)   | Next.js, TypeScript        |

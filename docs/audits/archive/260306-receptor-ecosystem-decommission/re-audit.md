@@ -54,11 +54,11 @@ filesystem. Evidence is cited below.
 
 ---
 
-## REC-05 — Migrate planner-backend docs to `receptor-planner`
+## REC-05 — Migrate planner-backend docs to `planner-backend`
 
 | Check                                                  | Result                                                                                                                                                                         |
 | :----------------------------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `receptor-planner/docs/job-line-compliance/` (7 files) | ✅ All 7 files present: `architecture.md`, `api-business-rules.md`, `core-logic.md`, `data-models.md`, `index.md`, `planner-instructions.md`, `ortools-scheduling-research.md` |
+| `planner-backend/docs/job-line-compliance/` (7 files) | ✅ All 7 files present: `architecture.md`, `api-business-rules.md`, `core-logic.md`, `data-models.md`, `index.md`, `planner-instructions.md`, `ortools-scheduling-research.md` |
 
 ---
 
@@ -135,7 +135,7 @@ filesystem. Evidence is cited below.
 
 | Check                                                        | Result                                                           |
 | :----------------------------------------------------------- | :--------------------------------------------------------------- |
-| `receptor-planner/docs/archive/` (6 files)                   | ✅ `planner-audit-1.md` through `planner-audit-6.md` all present |
+| `planner-backend/docs/archive/` (6 files)                   | ✅ `planner-audit-1.md` through `planner-audit-6.md` all present |
 | `archive/README.md` labelling files as dev journal artefacts | ✅ Confirmed                                                     |
 
 ---

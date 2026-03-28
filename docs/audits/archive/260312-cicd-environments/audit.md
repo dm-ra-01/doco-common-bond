@@ -1,7 +1,7 @@
 # CI/CD Infrastructure & Environment Architecture Audit
 
 **Date:** 2026-03-12\
-**Scope:** All repositories — `supabase-receptor`, `preference-frontend`, `planner-frontend`, `workforce-frontend`, `backend/receptor-planner`, `backend/match-backend`\
+**Scope:** All repositories — `supabase-receptor`, `preference-frontend`, `planner-frontend`, `workforce-frontend`, `backend/planner-backend`, `backend/match-backend`\
 **Auditor:** Ryan Ammendolea\
 **Standard:** ISO 27001 A.8.31 (separation of dev/test/prod), A.8.9 (configuration management), A.8.25 (secure development lifecycle)
 
@@ -18,7 +18,7 @@
 | `workforce-frontend` CI | ⚠️ | 5 | ❌ Non-compliant |
 | `supabase-receptor` CI | ❌ | 3 | ❌ Non-compliant |
 | `match-backend` CI | ⚠️ | 2 | ❌ Non-compliant |
-| `receptor-planner` CI | ❌ | 2 | ❌ Non-compliant |
+| `planner-backend` CI | ❌ | 2 | ❌ Non-compliant |
 | Environment Tiers | ❌ | 4 | ❌ Critical gap |
 | Key Format Migration | ❌ | 1 | 🔴 Critical/Deadline passed |
 | CI/CD Architecture Strategy | ⚠️ | **NEW** | 🟢 Strategic Opportunity |
@@ -141,12 +141,12 @@
 
 **Gaps:**
 - [BACK-01] `match-backend` has no integration test job. `test_supabase_integration.py` is skipped in CI via `pytest.mark.skipif` guard when stub env vars are detected. This means the Supabase-dependent integration tests are never run in CI — they rely entirely on developer discipline to run locally.
-- [BACK-02] Both `match-backend` and `receptor-planner` set `SUPABASE_SERVICE_ROLE_KEY` to a hardcoded placeholder JWT string (`eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwi...`). While this is intentionally non-functional (it triggers the skipif guard), it leaks a test JWT pattern into the repo that could be mistaken for a real credential by static analysis scanners.
+- [BACK-02] Both `match-backend` and `planner-backend` set `SUPABASE_SERVICE_ROLE_KEY` to a hardcoded placeholder JWT string (`eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwi...`). While this is intentionally non-functional (it triggers the skipif guard), it leaks a test JWT pattern into the repo that could be mistaken for a real credential by static analysis scanners.
 
-### 8.2 receptor-planner
+### 8.2 planner-backend
 
 **Gaps:**
-- [BACK-01] `receptor-planner/.github/workflows/ci.yml` runs bare `pytest` with no path scoping. This runs *all* discovered test files including any future integration tests, with stub env vars. There is no `unit` project or `-m unit` selector — any inadvertent integration test addition will run against stub URLs and silently pass or produce misleading failures.
+- [BACK-01] `planner-backend/.github/workflows/ci.yml` runs bare `pytest` with no path scoping. This runs *all* discovered test files including any future integration tests, with stub env vars. There is no `unit` project or `-m unit` selector — any inadvertent integration test addition will run against stub URLs and silently pass or produce misleading failures.
 - [BACK-02] Same hardcoded JWT placeholder in `SUPABASE_SERVICE_ROLE_KEY` as match-backend.
 
 ---
@@ -221,7 +221,7 @@ The available Windows 11 Pro workstation (Intel i7-265KF — 8 P-cores + 12 E-co
 
 1. **Reference implementation exists**: `preference-frontend` CI is the most advanced — dual-key export, `git diff` codegen gate, `tr -d '"'` quote-stripping. It should be the canonical reference for upgrading planner and workforce frontends.
 2. **`supabase-receptor` CI is the thinnest**: Runs `supabase start` with no workdir, no key extraction, no job dependencies, and no CLI pinning.
-3. **`receptor-planner` CI is the weakest overall**: Bare `pytest` with no path scoping, no coverage, and hardcoded JWT stubs. Oldest CI file in the ecosystem.
+3. **`planner-backend` CI is the weakest overall**: Bare `pytest` with no path scoping, no coverage, and hardcoded JWT stubs. Oldest CI file in the ecosystem.
 4. **Kubernetes cluster is the strategic long-term solution**: The available hardware (32 GB DDR5, 20-core i7-265KF, Windows 11 Pro + Hyper-V) makes a k3s cluster viable with comfortable headroom. ARCH-04 resolves CICD-01, ARCH-01, ARCH-02, and ARCH-03 structurally.
 5. **Homelab-as-production is a deliberate architectural choice**: The Windows 11 Pro machine is on the same power grid as a tertiary hospital, served by 500/50 Mbps fibre. Hosting production here until meaningful customer scale is a rational cost decision for a single-operator startup — the operational complexity is correctly offset by the k3s cluster's Vault/YubiKey/Calico/Falco hardening stack.
 6. **SEC-08 (RBAC) and SEC-09 (pgaudit) are elevated**: k3s RBAC defaults expose cluster-admin to all pods; pgaudit is the only tamper-resistant forensic trail for production DDL/DML. Both are High severity — do not defer past Phase 3 and Phase 7 respectively.
@@ -250,8 +250,8 @@ The available Windows 11 Pro workstation (Intel i7-265KF — 8 P-cores + 12 E-co
 | ENV-04 | supabase-receptor | `supabase/` (missing) | Process Gap | 🟡 Medium |
 | ISO-01 | All frontend repos | `ci.yml` (all 3) | Process Gap | 🟡 Medium |
 | ISO-02 | supabase-receptor | `seed_acacia.sql`, `test_user_credentials.json` | Process Gap | 🟡 Medium |
-| BACK-01 | match-backend, receptor-planner | `.github/workflows/ci.yml` (both) | Process Gap | 🟡 Medium |
-| BACK-02 | match-backend, receptor-planner | `.github/workflows/ci.yml` (both) | Security | 🟡 Medium |
+| BACK-01 | match-backend, planner-backend | `.github/workflows/ci.yml` (both) | Process Gap | 🟡 Medium |
+| BACK-02 | match-backend, planner-backend | `.github/workflows/ci.yml` (both) | Security | 🟡 Medium |
 | ARCH-04 | cross-ecosystem | — | Strategic Opportunity | 🟢 Strategic/High-Value |
 | DOC-01 | supabase-receptor | `docs/infrastructure/security/key-management.md` | Documentation Gap | 🟢 Low |
 | DOC-02 | supabase-receptor | `docs/operations/` (missing) | Documentation Gap | 🟡 Medium |

@@ -33,8 +33,9 @@ Affects: `cross-ecosystem` — infrastructure-operations
 
 - [ ] Provision Supabase Cloud (Sydney ap-southeast-2) projects for Stage/Prod and initiate migration.
       `/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/audits/260328-infra-hosting/planning/migration-planning.md`
-- [ ] Establish GCP Organization and Projects pinned to Melbourne (australia-southeast2).
+- [x] Establish GCP Organization and Projects pinned to Melbourne (australia-southeast2).
       `/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/audits/260328-infra-hosting/planning/migration-planning.md`
+      _(Completed: 2026-03-28T07:04:25Z)_
 - [ ] Execute the decommissioning of k3s nodes once primary workloads are migrated to Cloud Run.
       `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/provisioning/README.md`
 
@@ -45,10 +46,12 @@ Affects: `cross-ecosystem` — infrastructure-operations
 Affects: `cross-ecosystem` — github-actions
 
 
-- [ ] Set up GCP Workload Identity Federation for GitHub OIDC to eliminate static secrets.
+- [x] Set up GCP Workload Identity Federation for GitHub OIDC to eliminate static secrets.
       `/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/audits/260328-infra-hosting/planning/sub-audit-recommendations.json`
-- [ ] Update all repos to runs-on: ubuntu-latest and standardize on actions/cache.
+      _(Completed: 2026-03-28T07:04:25Z)_
+- [x] Update all repos to runs-on: ubuntu-latest and standardize on actions/cache.
       `/Users/ryan/development/common_bond/antigravity-environment/frontend/planner-frontend/.github/workflows/ci-resilience.yml`
+      _(Completed: 2026-03-28T07:04:25Z)_
 
 ### HOSTING-13: Missing Cloud Adoption Policy in ISMS to govern the strategic shift to managed providers.
 

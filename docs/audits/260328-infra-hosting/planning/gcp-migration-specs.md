@@ -19,7 +19,7 @@ GCP provides a robust [Google Cloud Provider](https://registry.terraform.io/prov
 
 | Repository | Type | Port | Entrypoint | Cloud Run Service Name |
 | :--- | :--- | :--- | :--- | :--- |
-| `receptor-planner` | Python | 8000 | `uvicorn main:app` | `planner-api` |
+| `planner-backend` | Python | 8000 | `uvicorn main:app` | `planner-api` |
 | `match-backend` | Python | 8000 | `uvicorn main:app` | `match-api` |
 | `planner-frontend` | Next.js | 3000 | `node server.js` | `planner-ui` |
 | `preference-frontend` | Next.js | 3000 | `node server.js` | `preference-ui` |
@@ -28,7 +28,7 @@ GCP provides a robust [Google Cloud Provider](https://registry.terraform.io/prov
 ---
 
 ## 3. Backend Migration (Python/FastAPI)
-*Target: `receptor-planner`, `match-backend`*
+*Target: `planner-backend`, `match-backend`*
 
 ### Cloud Run Configuration
 | Parameter | Value | Rationale |

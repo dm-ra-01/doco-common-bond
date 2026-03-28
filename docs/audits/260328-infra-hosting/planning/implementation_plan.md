@@ -35,7 +35,7 @@ This refined plan formalizes the transition of the Receptor ecosystem from self-
 
 - [x] **Reusable Workflow:** Create `.github/workflows/reusable-gcp-deploy.yml` at the root.
 - [x] **Frontend Ready:** Refactor `planner-frontend` Dockerfile and `deploy.yml`.
-- [ ] **Backend Ready:** Refactor `receptor-planner` deploy workflow to use the reusable template.
+- [ ] **Backend Ready:** Refactor `planner-backend` deploy workflow to use the reusable template.
 - [ ] **Traffic Promotion:** Deploy to Cloud Run Melbourne (`australia-southeast2`) and verify health probes.
 
 ---

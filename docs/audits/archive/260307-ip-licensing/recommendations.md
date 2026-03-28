@@ -45,7 +45,7 @@ granted to any other person.
 
 - [ ] `supabase-receptor` — Add `LICENSE` at repo root
 - [ ] `match-backend` — Add `LICENSE` at repo root
-- [ ] `receptor-planner` — Add `LICENSE` at repo root
+- [ ] `planner-backend` — Add `LICENSE` at repo root
 - [ ] `planner-frontend` — Add `LICENSE` at repo root
 - [ ] `preference-frontend` — Add `LICENSE` at repo root
 - [ ] `workforce-frontend` — Add `LICENSE` at repo root
@@ -124,7 +124,7 @@ This software is the exclusive intellectual property of **MyJMO Pty Ltd** (ABN
       852). Exclusively licensed to Common Bond Pty Ltd._
 - [ ] `match-backend` — Add to `README.md`: _© MyJMO Pty Ltd (ABN 50 648 051
       852). Exclusively licensed to Common Bond Pty Ltd._
-- [ ] `receptor-planner` — Add to `README.md`: _© MyJMO Pty Ltd (ABN 50 648 051
+- [ ] `planner-backend` — Add to `README.md`: _© MyJMO Pty Ltd (ABN 50 648 051
       852). Exclusively licensed to Common Bond Pty Ltd._
 - [ ] `planner-frontend` — Add to `README.md`: _© MyJMO Pty Ltd (ABN 50 648 051
       852). Exclusively licensed to Common Bond Pty Ltd._
@@ -270,7 +270,7 @@ organisation is not dependent on any single personal login.
 - [ ] Create a GitHub Organisation account registered to Common Bond Pty Ltd
 - [ ] Transfer the following repositories from `dm-ra-01` to the new
       organisation:
-  - `supabase-receptor`, `match-backend`, `receptor-planner`
+  - `supabase-receptor`, `match-backend`, `planner-backend`
   - `planner-frontend`, `preference-frontend`, `workforce-frontend`,
     `website-frontend`, `rotator_worker`
   - `doco-common-bond`

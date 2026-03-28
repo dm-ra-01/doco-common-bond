@@ -9,7 +9,7 @@
 
 ## Executive Summary
 
-The audit examined the `receptor-infra` repository, live Azure state, the supabase-kubernetes Helm releases, the `supabase-receptor` k3s/ infrastructure, and the CI/CD pipelines of all five application repositories (planner-frontend, preference-frontend, workforce-frontend, match-backend, receptor-planner) for Infrastructure-as-Code, production-readiness, and lifecycle management coverage. Twenty-nine findings were identified: 3 Critical, 10 High, 14 Medium, and 1 Low (12 are proposed, pending approval). Live `az` and `gh` CLI introspection surfaced discrepancies not visible from the repository alone:
+The audit examined the `receptor-infra` repository, live Azure state, the supabase-kubernetes Helm releases, the `supabase-receptor` k3s/ infrastructure, and the CI/CD pipelines of all five application repositories (planner-frontend, preference-frontend, workforce-frontend, match-backend, planner-backend) for Infrastructure-as-Code, production-readiness, and lifecycle management coverage. Twenty-nine findings were identified: 3 Critical, 10 High, 14 Medium, and 1 Low (12 are proposed, pending approval). Live `az` and `gh` CLI introspection surfaced discrepancies not visible from the repository alone:
 
 - **KUBE-01 (Critical):** `supabase/production/values.yaml` contains unresolved shell placeholders (`${POSTGRES_PASSWORD}`, `${JWT_SECRET}`) — not injected by Helm or VSO. Production Supabase is either non-functional or running with empty credentials.
 - **SEC-02 (Critical):** Vault auto-unseal uses a service principal (`vault-k3s-unseal`) whose client secret is in a manually-created k8s Secret `vault-azure-kms` with no VSO sync (STORE-01). Workload Identity Federation is the preferred resolution.
@@ -37,10 +37,10 @@ The audit examined the `receptor-infra` repository, live Azure state, the supaba
 | **Frontend/Backend Lifecycle** | | | |
 | No deployment workflows (5 repos) | ❌ | 1 | All 5 app repos — CI only, no deploy |
 | No rollback procedure | ❌ | 1 | No runbook, no automation |
-| Backend deploy model undefined | ❌ | 2 | match-backend + receptor-planner |
+| Backend deploy model undefined | ❌ | 2 | match-backend + planner-backend |
 | No per-environment secret scoping | ⚠️ | 1 | Frontend staging/prod Vault paths missing |
 | CSP unsafe-eval in production | ⚠️ | 1 | All 3 Next.js frontends |
-| receptor-planner no Dependabot | ⚠️ | 1 | Only non-automated repo |
+| planner-backend no Dependabot | ⚠️ | 1 | Only non-automated repo |
 
 ---
 
@@ -213,7 +213,7 @@ The audit examined the `receptor-infra` repository, live Azure state, the supaba
 | ARCH-01 ⚑ | `supabase-receptor` — k3s | `k3s/values/` directory missing — helmfile unapply-able | Process Gap | 🔴 High |
 | NET-01 ⚑ | `supabase-receptor` — k3s | `k3s/network-policies/network-policies.yaml` — Vault egress DNS-only, blocks auto-unseal | Security | 🔴 High |
 | LIFE-02 ⚑ | `match-backend` | No image push, no deploy workflow, runtime model undocumented | Process Gap | 🔴 High |
-| LIFE-03 ⚑ | `receptor-planner` | No Dockerfile, no deploy, integration tests deferred with no tracking | Process Gap | 🔴 High |
+| LIFE-03 ⚑ | `planner-backend` | No Dockerfile, no deploy, integration tests deferred with no tracking | Process Gap | 🔴 High |
 | LIFE-04 ⚑ | cross-repo | No rollback procedure — any repo | Process Gap | 🔴 High |
 | IAC-02 | `receptor-infra` — ARM | `azure/backup-storage-account.parameters.json` | Tech Debt | 🟠 Medium |
 | IAC-04 | `receptor-infra` — Azure IaC | *(absent)* | Process Gap | 🟠 Medium |
@@ -227,7 +227,7 @@ The audit examined the `receptor-infra` repository, live Azure state, the supaba
 | CI-03 ⚑ | `supabase-receptor` | `staging-smoke.yml` — silently broken on GitHub-hosted runners | Process Gap | 🟠 Medium |
 | RBAC-01 ⚑ | `supabase-receptor` — k3s | `k3s/rbac/serviceaccounts.yaml` — wildcard verbs, no admission control | Security | 🟠 Medium |
 | LIFE-05 ⚑ | frontend repos | No per-environment Vault secret scoping for staging/prod | Process Gap | 🟠 Medium |
-| LIFE-06 ⚑ | `receptor-planner` | No Dependabot — only non-automated Python repo | Process Gap | 🟠 Medium |
+| LIFE-06 ⚑ | `planner-backend` | No Dependabot — only non-automated Python repo | Process Gap | 🟠 Medium |
 | LIFE-07 ⚑ | frontend repos | `next.config.ts` — `unsafe-eval` CSP in all 3 frontends | Security | 🟠 Medium |
 | ARM-01 | `receptor-infra` — ARM | `azure/backup-storage-account.parameters.json` | Tech Debt | 🟡 Low |
 
@@ -237,7 +237,7 @@ The audit examined the `receptor-infra` repository, live Azure state, the supaba
 
 ## 7. Frontend & Backend Lifecycle Management *(Proposed — Round 3)*
 
-All five application repositories (planner-frontend, preference-frontend, workforce-frontend, match-backend, receptor-planner) have well-structured CI pipelines with unit and integration testing — but **none have any deployment automation**. Merge to `main` has no deployment consequence in any repo.
+All five application repositories (planner-frontend, preference-frontend, workforce-frontend, match-backend, planner-backend) have well-structured CI pipelines with unit and integration testing — but **none have any deployment automation**. Merge to `main` has no deployment consequence in any repo.
 
 ### 7.1 No Deployment Workflows — Any Repo (LIFE-01, LIFE-02, LIFE-03)
 
@@ -245,7 +245,7 @@ All five application repositories (planner-frontend, preference-frontend, workfo
 
 - **LIFE-01 (Critical)** — planner-frontend, preference-frontend, workforce-frontend: no `staging-deploy.yml`, no `prod-deploy.yml`. Three Next.js applications are tested in CI and then not deployed. No staging URL exists for any frontend.
 - **LIFE-02 (High)** — match-backend: Dockerfile exists, CI passes — but no image push workflow, no k8s Deployment or CronJob manifest, and the runtime model (HTTP service vs. batch job) is undocumented.
-- **LIFE-03 (High)** — receptor-planner: no Dockerfile, no deployment workflow, no integration tests (deferred in CI comment with no tracking task), and operational model entirely undocumented.
+- **LIFE-03 (High)** — planner-backend: no Dockerfile, no deployment workflow, no integration tests (deferred in CI comment with no tracking task), and operational model entirely undocumented.
 
 ### 7.2 No Rollback Procedure — Any Repo (LIFE-04)
 
@@ -265,8 +265,8 @@ All five application repositories (planner-frontend, preference-frontend, workfo
 
 - **LIFE-07 (Medium)** — `script-src: 'unsafe-eval' 'unsafe-inline'` is set in `next.config.ts` for all three Next.js frontends. The comment says "tighten with nonces in future" — no ADR, no milestone, no tracking item exists. This defeats XSS protections for all authenticated users.
 
-### 7.5 receptor-planner Dependency Drift (LIFE-06)
+### 7.5 planner-backend Dependency Drift (LIFE-06)
 
 **Gaps:**
 
-- **LIFE-06 (Medium)** — receptor-planner is the only application repo with no automated dependency management: no Renovate Bot (unlike the three frontend repos) and no Dependabot (unlike match-backend). `requirements.txt` pins ortools, scipy, and scientific packages with no automated update tracking.
+- **LIFE-06 (Medium)** — planner-backend is the only application repo with no automated dependency management: no Renovate Bot (unlike the three frontend repos) and no Dependabot (unlike match-backend). `requirements.txt` pins ortools, scipy, and scientific packages with no automated update tracking.

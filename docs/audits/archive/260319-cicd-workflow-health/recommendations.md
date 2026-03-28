@@ -84,14 +84,14 @@ Affects: `planner-frontend, preference-frontend, workforce-frontend` — .github
 - [ ] Same rename for workforce-frontend ci.yml unit-tests and build jobs.
       `/Users/ryan/development/common_bond/antigravity-environment/frontend/workforce-frontend/.github/workflows/ci.yml`
 
-### DR-11: deploy.yml files in match-backend and receptor-planner use mutable action version tags (SEC-02)
+### DR-11: deploy.yml files in match-backend and planner-backend use mutable action version tags (SEC-02)
 
-Affects: `match-backend, receptor-planner` — .github/workflows/deploy.yml
+Affects: `match-backend, planner-backend` — .github/workflows/deploy.yml
 
 - [ ] For match-backend/deploy.yml: Pin actions/checkout, docker/login-action, docker/metadata-action, docker/build-push-action, and actions/create-github-app-token to their current commit SHAs.
       `/Users/ryan/development/common_bond/antigravity-environment/backend/match-backend/.github/workflows/deploy.yml`
-- [ ] Same SHA-pin updates for receptor-planner/deploy.yml.
-      `/Users/ryan/development/common_bond/antigravity-environment/backend/receptor-planner/.github/workflows/deploy.yml`
+- [ ] Same SHA-pin updates for planner-backend/deploy.yml.
+      `/Users/ryan/development/common_bond/antigravity-environment/backend/planner-backend/.github/workflows/deploy.yml`
 
 ### DR-14: No automated rollback workflow exists in any repository
 
@@ -99,8 +99,8 @@ Affects: `all` — .github/workflows/
 
 - [ ] Create rollback.yml for match-backend: workflow_dispatch with 'rollback-tag' input that checks out receptor-infra, updates deployment.yaml image tag, and pushes.
       `/Users/ryan/development/common_bond/antigravity-environment/backend/match-backend/.github/workflows/rollback.yml`
-- [ ] Create rollback.yml for receptor-planner with same pattern.
-      `/Users/ryan/development/common_bond/antigravity-environment/backend/receptor-planner/.github/workflows/rollback.yml`
+- [ ] Create rollback.yml for planner-backend with same pattern.
+      `/Users/ryan/development/common_bond/antigravity-environment/backend/planner-backend/.github/workflows/rollback.yml`
 - [ ] Create rollback.yml for supabase-receptor DB with target migration version input, gated on production environment approval.
       `/Users/ryan/development/common_bond/antigravity-environment/supabase-receptor/.github/workflows/rollback.yml`
 
@@ -143,9 +143,9 @@ Affects: `supabase-receptor` — .github/workflows/deploy-function.yml
 
 ### DR-12: deploy.yml build-and-deploy job has no timeout-minutes (CICD-05)
 
-Affects: `match-backend, receptor-planner` — .github/workflows/deploy.yml
+Affects: `match-backend, planner-backend` — .github/workflows/deploy.yml
 
-- [ ] Add timeout-minutes: 20 to the build-and-deploy job in match-backend/deploy.yml and receptor-planner/deploy.yml.
+- [ ] Add timeout-minutes: 20 to the build-and-deploy job in match-backend/deploy.yml and planner-backend/deploy.yml.
       `/Users/ryan/development/common_bond/antigravity-environment/backend/match-backend/.github/workflows/deploy.yml`
 
 ## 🟢 Low
@@ -224,7 +224,7 @@ Affects: `supabase-receptor` — .github/workflows/key-rotation-reminder.yml
 - DR-09: NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY → NEXT_PUBLIC_SUPABASE_ANON_KEY rename in CI stubs
 - DR-32: Remove test credentials from unit-tests job env block (credentials only needed in integration-tests)
 
-**Phase 3 (session 3):** DR-11, DR-12, DR-24, DR-25, DR-27 — match-backend + receptor-planner deploy hardening
+**Phase 3 (session 3):** DR-11, DR-12, DR-24, DR-25, DR-27 — match-backend + planner-backend deploy hardening
 
 **PRs to raise:** planner-frontend, preference-frontend, workforce-frontend → main (after DR-09/32 complete)
 
@@ -281,7 +281,7 @@ Affects: `supabase-receptor` — .github/workflows/key-rotation-reminder.yml
 | DR-06 | `actions/checkout` SHA-pinned; `denoland/setup-deno@v2` residual risk accepted (Deno publishes immutable signed releases) |
 | DR-07 | `deploy-function.yml` permissions confirmed at workflow + job level |
 | DR-13 | `website-frontend` now has `ci.yml`, `deploy.yml`, `rollback.yml`, `secret-scan.yml` confirmed in code |
-| DR-14 | `rollback.yml` confirmed in `match-backend`, `receptor-planner`, and `website-frontend` |
+| DR-14 | `rollback.yml` confirmed in `match-backend`, `planner-backend`, and `website-frontend` |
 | DR-17 | `staging-smoke.yml` Vault paths confirmed as canonical (`slack-incidents-webhook`, `slack-deployments-webhook`) |
 
 **Remaining (formally deferred):**

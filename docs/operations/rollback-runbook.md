@@ -6,7 +6,7 @@
 
 This runbook covers rollback procedures for all five application services
 in the Receptor ecosystem: `planner-frontend`, `preference-frontend`,
-`workforce-frontend`, `match-backend`, and `receptor-planner`.
+`workforce-frontend`, `match-backend`, and `planner-backend`.
 
 > **Pre-requisite:** `kubectl` with a valid kubeconfig. Run all commands with
 > the `KUBECONFIG` env var set, e.g. `KUBECONFIG=/path/to/kubeconfig kubectl ...`
@@ -46,14 +46,14 @@ kubectl set image deployment/planner-frontend \
 
 ---
 
-## 2. Backend Rollback (match-backend / receptor-planner)
+## 2. Backend Rollback (match-backend / planner-backend)
 
 Both backends run as always-on FastAPI Deployments (see ADR-010, ADR-011).
 
 ```bash
 # Roll back to the previous ReplicaSet
 kubectl rollout undo deployment/match-backend -n match-staging
-kubectl rollout undo deployment/receptor-planner -n planner-staging
+kubectl rollout undo deployment/planner-backend -n planner-staging
 
 # Verify liveness
 kubectl rollout status deployment/match-backend -n match-staging
@@ -126,4 +126,4 @@ Until that alert is in place:
 - `supabase-receptor/docs/operations/incident-response.md` — P1/P2/P3 tiers
 - `supabase-receptor/docs/operations/promotion-runbook.md` — staging → production
 - `match-backend/docs/ADR-010-match-backend-runtime.md`
-- `receptor-planner/docs/ADR-011-receptor-planner-runtime.md`
+- `planner-backend/docs/ADR-011-planner-backend-runtime.md`
