@@ -5,12 +5,12 @@
   "date": "2026-03-28",
   "scope": "Cross-ecosystem — receptor-infra, supabase-receptor, documentation/common-bond (ISMS); all application repos as consumers",
   "auditor": "Ryan Ammendolea",
-  "branch": "audit/260326-k3s-stability",
+  "branch": "audit/260328-infra-hosting",
   "findings": [
     {
       "id": "HOSTING-16",
       "severity": "critical",
-      "status": "open",
+      "status": "complete",
       "category": "Growth / Velocity",
       "repo": "cross-ecosystem",
       "area": "infrastructure-operations",
@@ -18,9 +18,11 @@
       "tasks": [
         {
           "taskId": "HOSTING-16-T1",
-          "status": "open",
+          "status": "complete",
           "description": "Provision Supabase Cloud (Sydney ap-southeast-2) projects for Stage/Prod and initiate migration.",
-          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/audits/260328-infra-hosting/planning/migration-planning.md"
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/audits/260328-infra-hosting/planning/migration-planning.md",
+          "completedAt": "2026-03-28T07:42:41Z",
+          "completedBy": "d35b33da-9315-497f-9ed8-653118941a56"
         },
         {
           "taskId": "HOSTING-16-T2",
@@ -32,9 +34,11 @@
         },
         {
           "taskId": "HOSTING-16-T3",
-          "status": "open",
+          "status": "complete",
           "description": "Execute the decommissioning of k3s nodes once primary workloads are migrated to Cloud Run.",
-          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/provisioning/README.md"
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/provisioning/README.md",
+          "completedAt": "2026-03-28T07:43:29Z",
+          "completedBy": "d35b33da-9315-497f-9ed8-653118941a56"
         }
       ]
     },
@@ -62,13 +66,21 @@
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/frontend/planner-frontend/.github/workflows/ci-resilience.yml",
           "completedAt": "2026-03-28T07:04:25Z",
           "completedBy": "b449f158-44ae-45cc-8384-638e723efcef"
+        },
+        {
+          "taskId": "HOSTING-19-T3",
+          "status": "complete",
+          "description": "Enforce a 20-minute maximum timeout on all GitHub Actions runners cross-ecosystem to prevent hung processes.",
+          "targetFile": "cross-ecosystem — .github/workflows/*.yml",
+          "completedAt": "2026-03-28T07:42:41Z",
+          "completedBy": "d35b33da-9315-497f-9ed8-653118941a56"
         }
       ]
     },
     {
       "id": "HOSTING-13",
       "severity": "high",
-      "status": "open",
+      "status": "complete",
       "category": "Process Gap",
       "repo": "documentation/common-bond",
       "area": "iso27001-policies",
@@ -76,16 +88,18 @@
       "tasks": [
         {
           "taskId": "HOSTING-13-T1",
-          "status": "open",
+          "status": "complete",
           "description": "Create docs/compliance/iso27001/policies/cloud-adoption-policy.md documenting the move to GCP/Supabase.",
-          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/compliance/iso27001/policies/cloud-adoption-policy.md"
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/compliance/iso27001/policies/cloud-adoption-policy.md",
+          "completedAt": "2026-03-28T07:42:41Z",
+          "completedBy": "d35b33da-9315-497f-9ed8-653118941a56"
         }
       ]
     },
     {
       "id": "HOSTING-12",
       "severity": "medium",
-      "status": "open",
+      "status": "complete",
       "category": "Compliance",
       "repo": "documentation/common-bond",
       "area": "iso27001-suppliers",
@@ -93,9 +107,49 @@
       "tasks": [
         {
           "taskId": "HOSTING-12-T1",
-          "status": "open",
+          "status": "complete",
           "description": "Update docs/compliance/iso27001/operations/supplier-register.md with all cloud providers.",
-          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/compliance/iso27001/operations/supplier-register.md"
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/compliance/iso27001/operations/supplier-register.md",
+          "completedAt": "2026-03-28T07:42:41Z",
+          "completedBy": "d35b33da-9315-497f-9ed8-653118941a56"
+        }
+      ]
+    },
+    {
+      "id": "HOSTING-18",
+      "severity": "low",
+      "status": "complete",
+      "category": "Runner Resilience",
+      "repo": "cross-ecosystem",
+      "area": "github-actions",
+      "description": "Cross-ecosystem CI/CD hardening to prevent hung runners. All workflows must have a maximum job-level timeout.",
+      "tasks": [
+        {
+          "taskId": "HOSTING-18-T1",
+          "status": "complete",
+          "description": "Enforce 'timeout-minutes: 20' across all GitHub Actions workflows in all repositories.",
+          "targetFile": "**/ .github/workflows/*.yml",
+          "completedAt": "2026-03-28T07:13:21Z",
+          "completedBy": "7ebe8119-13c0-4d14-b6fa-53ba767f5e36"
+        }
+      ]
+    },
+    {
+      "id": "HOSTING-20",
+      "severity": "critical",
+      "status": "complete",
+      "category": "Infrastructure Blocker",
+      "repo": "google-cloud",
+      "area": "iam-identity",
+      "description": "GCP OIDC authentication for GitHub Actions was blocked across the ecosystem due to a missing IAM role binding. The identity pool principal lacked 'iam.serviceAccounts.getAccessToken' on the 'github-deployer' service account.",
+      "tasks": [
+        {
+          "taskId": "HOSTING-20-T1",
+          "status": "complete",
+          "description": "Refactor Foundation Terraform to grant 'roles/iam.serviceAccountTokenCreator' to specific repository principalSets.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/terraform/gcp/modules/foundation/main.tf",
+          "completedAt": "2026-03-28T07:26:40Z",
+          "completedBy": "7ebe8119-13c0-4d14-b6fa-53ba767f5e36"
         }
       ]
     }
@@ -126,7 +180,8 @@
       "findingIds": [
         "HOSTING-19",
         "HOSTING-13",
-        "HOSTING-12"
+        "HOSTING-12",
+        "HOSTING-20"
       ]
     }
   ],

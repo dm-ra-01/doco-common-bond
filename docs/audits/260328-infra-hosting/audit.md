@@ -92,13 +92,14 @@ By migrating to GCP and Supabase Cloud, Receptor inherits physical and environme
 | Finding ID  | Area / Component               | Finding Description                                  | Severity       |
 | ----------- | ------------------------------ | ---------------------------------------------------- | -------------- |
 | HOSTING-16  | Strategy                       | **Operational Velocity Exhaustion (k3s Overhead)**   | 🔴 Critical    |
-| HOSTING-19  | CI/CD                          | **Circular CI Dependency (ARC/Vault requirement)**   | 🟠 High        |
+| HOSTING-19  | CI/CD                          | **Circular CI Dependency (Vault requirement)**      | 🟠 High        |
+| HOSTING-18  | CI/CD                          | **CI Runner Resilience (20min max timeouts)**       | 🟢 Low         |
 | HOSTING-07  | Supabase                       | **Lack of Commercial SLA (Community Chart)**         | 🟠 High        |
 | HOSTING-11  | Compliance                     | **BCP/PITR Discrepancy (Unvalidated Backups)**       | 🟠 High        |
 | HOSTING-13  | Governance                     | **Missing Cloud Adoption Policy**                    | 🟠 High        |
 | HOSTING-12  | Suppliers                      | **Uncatalogued Suppliers (GitHub/GCP/Supabase)**     | 🟡 Medium      |
 | HOSTING-06  | Isolation                      | **Prod/Staging Co-location in k3s**                  | 🟡 Medium      |
-| HOSTING-20  | Secret Mgmt                    | **Vault RAFT Quorum Instability**                    | 🟡 Medium      |
+| HOSTING-20  | Secret Mgmt                    | **GCP OIDC IAM Permission Gap**                     | 🔴 Critical    |
 | HOSTING-14  | Privacy                        | **Missing Data Flow Map (Residency Transparency)**   | 🟡 Medium      |
 | HOSTING-05  | Ingress                        | **Cloudflare Metadata Exposure Risk**                | 🟡 Medium      |
 | HOSTING-10  | IaC                            | **Plaintext IDs in Terraform Defaults**              | 🟢 Low         |

@@ -2,7 +2,7 @@
 
 # Recommendations — Infrastructure Hosting Strategy Audit
 
-**Branch:** `audit/260326-k3s-stability`\
+**Branch:** `audit/260328-infra-hosting`\
 **Auditor:** Ryan Ammendolea\
 **Date:** 2026-03-28
 
@@ -31,13 +31,24 @@ Do not edit it directly — edit the JSON source and re-run
 Affects: `cross-ecosystem` — infrastructure-operations
 
 
-- [ ] Provision Supabase Cloud (Sydney ap-southeast-2) projects for Stage/Prod and initiate migration.
+- [x] Provision Supabase Cloud (Sydney ap-southeast-2) projects for Stage/Prod and initiate migration.
       `/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/audits/260328-infra-hosting/planning/migration-planning.md`
+      _(Completed: 2026-03-28T07:42:41Z)_
 - [x] Establish GCP Organization and Projects pinned to Melbourne (australia-southeast2).
       `/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/audits/260328-infra-hosting/planning/migration-planning.md`
       _(Completed: 2026-03-28T07:04:25Z)_
-- [ ] Execute the decommissioning of k3s nodes once primary workloads are migrated to Cloud Run.
+- [x] Execute the decommissioning of k3s nodes once primary workloads are migrated to Cloud Run.
       `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/provisioning/README.md`
+      _(Completed: 2026-03-28T07:43:29Z)_
+
+### HOSTING-20: GCP OIDC authentication for GitHub Actions was blocked across the ecosystem due to a missing IAM role binding. The ident
+
+Affects: `google-cloud` — iam-identity
+
+
+- [x] Refactor Foundation Terraform to grant 'roles/iam.serviceAccountTokenCreator' to specific repository principalSets.
+      `/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/terraform/gcp/modules/foundation/main.tf`
+      _(Completed: 2026-03-28T07:26:40Z)_
 
 ## 🟠 High
 
@@ -52,14 +63,18 @@ Affects: `cross-ecosystem` — github-actions
 - [x] Update all repos to runs-on: ubuntu-latest and standardize on actions/cache.
       `/Users/ryan/development/common_bond/antigravity-environment/frontend/planner-frontend/.github/workflows/ci-resilience.yml`
       _(Completed: 2026-03-28T07:04:25Z)_
+- [x] Enforce a 20-minute maximum timeout on all GitHub Actions runners cross-ecosystem to prevent hung processes.
+      `cross-ecosystem — .github/workflows/*.yml`
+      _(Completed: 2026-03-28T07:42:41Z)_
 
 ### HOSTING-13: Missing Cloud Adoption Policy in ISMS to govern the strategic shift to managed providers.
 
 Affects: `documentation/common-bond` — iso27001-policies
 
 
-- [ ] Create docs/compliance/iso27001/policies/cloud-adoption-policy.md documenting the move to GCP/Supabase.
+- [x] Create docs/compliance/iso27001/policies/cloud-adoption-policy.md documenting the move to GCP/Supabase.
       `/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/compliance/iso27001/policies/cloud-adoption-policy.md`
+      _(Completed: 2026-03-28T07:42:41Z)_
 
 ## 🟡 Medium
 
@@ -68,8 +83,20 @@ Affects: `documentation/common-bond` — iso27001-policies
 Affects: `documentation/common-bond` — iso27001-suppliers
 
 
-- [ ] Update docs/compliance/iso27001/operations/supplier-register.md with all cloud providers.
+- [x] Update docs/compliance/iso27001/operations/supplier-register.md with all cloud providers.
       `/Users/ryan/development/common_bond/antigravity-environment/documentation/common-bond/docs/compliance/iso27001/operations/supplier-register.md`
+      _(Completed: 2026-03-28T07:42:41Z)_
+
+## 🟢 Low
+
+### HOSTING-18: Cross-ecosystem CI/CD hardening to prevent hung runners. All workflows must have a maximum job-level timeout.
+
+Affects: `cross-ecosystem` — github-actions
+
+
+- [x] Enforce 'timeout-minutes: 20' across all GitHub Actions workflows in all repositories.
+      `**/ .github/workflows/*.yml`
+      _(Completed: 2026-03-28T07:13:21Z)_
 
 
 ---
@@ -82,7 +109,7 @@ Affects: `documentation/common-bond` — iso27001-suppliers
 | Phase | Finding IDs | Rationale |
 | :---- | :---------- | :-------- |
 | 1 | HOSTING-16 | Offloading the highest-maintenance services first to recover engineering velocity. |
-| 2 | HOSTING-19, HOSTING-13, HOSTING-12 | Transitioning to cloud-native secrets and runners to eliminate cluster dependencies. |
+| 2 | HOSTING-19, HOSTING-13, HOSTING-12, HOSTING-20 | Transitioning to cloud-native secrets and runners to eliminate cluster dependencies. |
 
 
 ---
@@ -92,31 +119,9 @@ Affects: `documentation/common-bond` — iso27001-suppliers
 | Finding ID | Area | File | Category | Severity |
 | :--------- | :--- | :--- | :------- | :------- |
 | HOSTING-16 | infrastructure-operations | `migration-planning.md` | Growth / Velocity | 🔴 Critical |
+| HOSTING-20 | iam-identity | `main.tf` | Infrastructure Blocker | 🔴 Critical |
 | HOSTING-19 | github-actions | `sub-audit-recommendations.json` | CI/CD | 🟠 High |
 | HOSTING-13 | iso27001-policies | `cloud-adoption-policy.md` | Process Gap | 🟠 High |
 | HOSTING-12 | iso27001-suppliers | `supplier-register.md` | Compliance | 🟡 Medium |
+| HOSTING-18 | github-actions | `*.yml` | Runner Resilience | 🟢 Low |
 
-
----
-
-## Session Close: 2026-03-28 (Session 3)
-
-### Completed
-- **GCP Migration Prep:** Established GCP projects and Secret Manager.
-- **Secret Seeding:** Hydrated all production secrets (Supabase, Sentry, API Keys).
-- **Backend Modernization:** Renamed `receptor-planner` to `planner-backend` globally (filesystem and documentation).
-- **CI/CD Alignment:** Modernized `planner-frontend` and `planner-backend` pipelines to use GitHub runners and OIDC/WIF.
-- **Observability:** Integrated Sentry monitoring in `planner-backend`.
-- **Finding HOSTING-19:** Fully implemented and verified.
-
-### Remaining
-- **Phase 2 Compliance:** Create Cloud Adoption Policy and update Supplier Register.
-- **Decommissioning:** Finalize cleanup of k3s resources after Cloud Run stabilization.
-
-### PR Sequencing
-1. `receptor-infra` (audit/260326-k3s-stability) - Infrastructure changes (Applied).
-2. `planner-backend` (main) - CI/CD and API key changes (Pushed).
-3. `planner-frontend` (main) - CI/CD and API URL changes (Pushed).
-
-### Brief for Next Agent
-The infrastructure is ready. The primary remaining work is administrative (ISMS policies) and monitoring the first successful Cloud Run builds. Ensure `planner-api` and `planner-ui` images are successfully pushed to Artifact Registry.
