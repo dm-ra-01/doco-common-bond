@@ -33,7 +33,7 @@ sidebar_position: 1
 
 | Slug                   | Title                                 | Scope                                                                                       | Auditor         | Status    | NC Raised   | Report                                                                                                                                                                                        |
 | :--------------------- | :------------------------------------ | :------------------------------------------------------------------------------------------ | :-------------- | :-------- | :---------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `260328-infra-hosting` | Infrastructure Hosting Strategy Audit | Cross-ecosystem — `receptor-infra`, `supabase-receptor`, `documentation/common-bond` (ISMS) | Ryan Ammendolea | ✅ Closed | 13 findings | [audit.md](../audits/260328-infra-hosting/audit.md) · [recommendations.json](../audits/260328-infra-hosting/recommendations.json) · [re-audit.md](../audits/260328-infra-hosting/re-audit.md) |
+| `260328-infra-hosting` | Infrastructure Hosting Strategy Audit | Cross-ecosystem — `receptor-infra`, `supabase-receptor`, `documentation/common-bond` (ISMS) | Ryan Ammendolea | ✅ Closed | 13 findings | [audit.md](../audits/archive/260328-infra-hosting/audit.md) · [recommendations.json](../audits/archive/260328-infra-hosting/recommendations.json) · [re-audit.md](../audits/archive/260328-infra-hosting/re-audit.md) |
 
 ### 🗓️ 2026-03-26
 
