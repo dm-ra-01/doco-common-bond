@@ -628,15 +628,15 @@
       "severity": "high",
       "status": "open",
       "category": "Process Gap",
-      "repo": "receptor-planner",
+      "repo": "planner-backend",
       "area": ".github/workflows",
-      "description": "receptor-planner CI only runs unit tests. The ci.yml comment defers integration tests indefinitely: 'Integration tests (if added later) live in tests/integration/' \u2014 with no tracking task, unlike match-backend which has BACK-01-T2. receptor-planner also has no Dockerfile, no container image strategy, and no deployment workflow. It is unknown how the planner service is invoked in staging/production \u2014 whether as a long-running process, a cronjob, or an on-demand CLI call from the arc-runner.",
+      "description": "planner-backend CI only runs unit tests. The ci.yml comment defers integration tests indefinitely: 'Integration tests (if added later) live in tests/integration/' \u2014 with no tracking task, unlike match-backend which has BACK-01-T2. planner-backend also has no Dockerfile, no container image strategy, and no deployment workflow. It is unknown how the planner service is invoked in staging/production \u2014 whether as a long-running process, a cronjob, or an on-demand CLI call from the arc-runner.",
       "tasks": [
         {
           "taskId": "LIFE-03-T1",
           "status": "open",
-          "description": "Document receptor-planner runtime model in ADR-011-receptor-planner-runtime.md. Create tests/integration/ with at least one integration test verifying the planner reads from and writes back to schedule_slots in a local Supabase instance. If receptor-planner runs as a container: add a Dockerfile (mirror match-backend pattern) and build-push.yml. Add integration tests to ci.yml mirroring match-backend's BACK-01-T2 pattern.",
-          "targetFile": "/receptor-planner/Dockerfile",
+          "description": "Document planner-backend runtime model in ADR-011-planner-backend-runtime.md. Create tests/integration/ with at least one integration test verifying the planner reads from and writes back to schedule_slots in a local Supabase instance. If planner-backend runs as a container: add a Dockerfile (mirror match-backend pattern) and build-push.yml. Add integration tests to ci.yml mirroring match-backend's BACK-01-T2 pattern.",
+          "targetFile": "/planner-backend/Dockerfile",
           "completedAt": null,
           "completedBy": null
         }
@@ -688,15 +688,15 @@
       "severity": "medium",
       "status": "open",
       "category": "Process Gap",
-      "repo": "receptor-planner",
+      "repo": "planner-backend",
       "area": ".github",
-      "description": "receptor-planner has no dependency management automation: no Renovate Bot (.github/workflows/renovate.yml) unlike the three frontend repos, and no Dependabot (.github/dependabot.yml) unlike match-backend. requirements.txt includes ortools (~200 MB), scipy, and other scientific packages pinned without automated update tracking. Untracked dependency drift exposes security vulnerabilities and silent incompatibilities when the k3s node Python version advances.",
+      "description": "planner-backend has no dependency management automation: no Renovate Bot (.github/workflows/renovate.yml) unlike the three frontend repos, and no Dependabot (.github/dependabot.yml) unlike match-backend. requirements.txt includes ortools (~200 MB), scipy, and other scientific packages pinned without automated update tracking. Untracked dependency drift exposes security vulnerabilities and silent incompatibilities when the k3s node Python version advances.",
       "tasks": [
         {
           "taskId": "LIFE-06-T1",
           "status": "open",
-          "description": "Add .github/dependabot.yml to receptor-planner targeting pip (package-ecosystem: pip, directory: /, schedule: monthly \u2014 matching match-backend). Ensure the TMPDIR: /home/runner/pip-tmp workaround in ci.yml is preserved after any pip upgrade that bumps ortools.",
-          "targetFile": "/receptor-planner/.github/dependabot.yml",
+          "description": "Add .github/dependabot.yml to planner-backend targeting pip (package-ecosystem: pip, directory: /, schedule: monthly \u2014 matching match-backend). Ensure the TMPDIR: /home/runner/pip-tmp workaround in ci.yml is preserved after any pip upgrade that bumps ortools.",
+          "targetFile": "/planner-backend/.github/dependabot.yml",
           "completedAt": null,
           "completedBy": null
         }
@@ -870,7 +870,7 @@
         "LIFE-06",
         "LIFE-07"
       ],
-      "rationale": "All five repos lack deployment automation. Priority: (1) LIFE-01 frontend staging deploy \u2014 blocks all staging verification; (2) LIFE-04 rollback runbook \u2014 prerequisite for any production deploy; (3) LIFE-02/03 backend ADRs \u2014 unblock container/deploy strategy decisions; (4) LIFE-05 per-environment Vault secrets; (5) LIFE-07 CSP hardening \u2014 security regression in production today; (6) LIFE-06 receptor-planner Dependabot \u2014 lowest risk."
+      "rationale": "All five repos lack deployment automation. Priority: (1) LIFE-01 frontend staging deploy \u2014 blocks all staging verification; (2) LIFE-04 rollback runbook \u2014 prerequisite for any production deploy; (3) LIFE-02/03 backend ADRs \u2014 unblock container/deploy strategy decisions; (4) LIFE-05 per-environment Vault secrets; (5) LIFE-07 CSP hardening \u2014 security regression in production today; (6) LIFE-06 planner-backend Dependabot \u2014 lowest risk."
     }
   ],
   "deferred": []

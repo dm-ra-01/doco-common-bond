@@ -110,7 +110,7 @@
         "ENV-10-T1",
         "ENV-10-T2"
       ],
-      "summary": "Phase 5 (CI Pipeline Hardening) completed. 9 tasks marked complete across 6 repos. Changes: CGEN-01/02 codegen gate now uses git diff instead of --check; CICD-04 --workdir supabase/ added; BACK-02 JWT stubs replaced; CICD-05 timeouts on all jobs; CICD-07 npm/pip cache; ENV-10 deploy-function.yml + edge-function-deployment.md. preference-frontend included for CICD-05/07. 4 new audit branches: planner-frontend, workforce-frontend, preference-frontend, match-backend, receptor-planner all pushed."
+      "summary": "Phase 5 (CI Pipeline Hardening) completed. 9 tasks marked complete across 6 repos. Changes: CGEN-01/02 codegen gate now uses git diff instead of --check; CICD-04 --workdir supabase/ added; BACK-02 JWT stubs replaced; CICD-05 timeouts on all jobs; CICD-07 npm/pip cache; ENV-10 deploy-function.yml + edge-function-deployment.md. preference-frontend included for CICD-05/07. 4 new audit branches: planner-frontend, workforce-frontend, preference-frontend, match-backend, planner-backend all pushed."
     },
     {
       "date": "2026-03-12",
@@ -213,7 +213,7 @@
         "CICD-09-T1"
       ],
       "openTaskCountAfter": 22,
-      "summary": "Session 11 (Phase 8 Gate 8A+8B). 10 tasks completed. Gate 8A/8B close-outs confirmed already implemented: --ci/--teardown/--force in setup scripts, seed files already split, test_cleanup.sql + pg_cron live, __test_* convention in testing-guide.md. New code: BACK-01-T1 (receptor-planner pytest scoped), BACK-01-T2 (match-backend integration-tests job with Supabase boot), DOC-06-T1 (ONBOARDING.md), CICD-09-T1 (supabase-start composite action with health poll + masked key outputs). All 3 repos pushed. Open tasks: 22."
+      "summary": "Session 11 (Phase 8 Gate 8A+8B). 10 tasks completed. Gate 8A/8B close-outs confirmed already implemented: --ci/--teardown/--force in setup scripts, seed files already split, test_cleanup.sql + pg_cron live, __test_* convention in testing-guide.md. New code: BACK-01-T1 (planner-backend pytest scoped), BACK-01-T2 (match-backend integration-tests job with Supabase boot), DOC-06-T1 (ONBOARDING.md), CICD-09-T1 (supabase-start composite action with health poll + masked key outputs). All 3 repos pushed. Open tasks: 22."
     },
     {
       "date": "2026-03-13",
@@ -347,7 +347,7 @@
       "completedFindingIds": [],
       "completedTaskIds": [],
       "openTaskCountAfter": 2,
-      "summary": "Session 25 (2026-03-15): ARC fully operational and verified. Fixed ARC dispatch routing (bare runs-on label \u2014 self-hosted array was routing to traditional pool). Fixed pip ENOSPC from 6 concurrent heavy installs (TMPDIR redirect). Engine bug fixed in receptor-planner: engine.py was returning SUCCESS+data:[] when allow_partial_filling=True and all capacity=0 \u2014 now returns INFEASIBLE. CI green on receptor-planner audit branch (950c737). Security review: no credentials in git, /tmp script cleaned from ctrl-01."
+      "summary": "Session 25 (2026-03-15): ARC fully operational and verified. Fixed ARC dispatch routing (bare runs-on label \u2014 self-hosted array was routing to traditional pool). Fixed pip ENOSPC from 6 concurrent heavy installs (TMPDIR redirect). Engine bug fixed in planner-backend: engine.py was returning SUCCESS+data:[] when allow_partial_filling=True and all capacity=0 \u2014 now returns INFEASIBLE. CI green on planner-backend audit branch (950c737). Security review: no credentials in git, /tmp script cleaned from ctrl-01."
     },
     {
       "date": "2026-03-15",

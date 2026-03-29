@@ -1092,12 +1092,12 @@
       "category": "Security",
       "repo": "receptor-infra",
       "area": "Mutable CI Image Tags",
-      "description": "CI pushed mutable :latest tags to three production deployments on 2026-03-25 (commits 1ab8c77, bb4ef08, 298d5fc: update planner/workforce/preferencer to latest), overwriting previously pinned SHA tags. The planner-backend was also reverted to latest in infrastructure/receptor-planner-production and staging (restored to sha-a0fdce7 during this audit). With mutable tags the exact code running in production is unknown without inspecting the running container, and rollback requires a new image build rather than a tag pin.",
+      "description": "CI pushed mutable :latest tags to three production deployments on 2026-03-25 (commits 1ab8c77, bb4ef08, 298d5fc: update planner/workforce/preferencer to latest), overwriting previously pinned SHA tags. The planner-backend was also reverted to latest in infrastructure/planner-backend-production and staging (restored to sha-a0fdce7 during this audit). With mutable tags the exact code running in production is unknown without inspecting the running container, and rollback requires a new image build rather than a tag pin.",
       "tasks": [
         {
           "taskId": "MUTABLE-01-T1",
           "status": "open",
-          "description": "Fix the CI workflow that pushes :latest tags. In each frontend repo CI (planner-frontend, preferencer-frontend, workforce-frontend) ensure the deploy step updates the deployment.yaml with the SHA-tagged image (sha-SHORTSHA format) not :latest. The receptor-planner backend CI must also pin to the built SHA. Verified: sha-a0fdce7 restored during this audit.",
+          "description": "Fix the CI workflow that pushes :latest tags. In each frontend repo CI (planner-frontend, preferencer-frontend, workforce-frontend) ensure the deploy step updates the deployment.yaml with the SHA-tagged image (sha-SHORTSHA format) not :latest. The planner-backend backend CI must also pin to the built SHA. Verified: sha-a0fdce7 restored during this audit.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/receptor-infra/infrastructure/",
           "completedAt": null,
           "completedBy": null

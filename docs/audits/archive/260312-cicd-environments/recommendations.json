@@ -3,7 +3,7 @@
   "auditSlug": "260312-cicd-environments",
   "title": "CI/CD Infrastructure & Environment Architecture Audit",
   "date": "2026-03-12",
-  "scope": "All repositories — preference-frontend, planner-frontend, workforce-frontend, supabase-receptor, backend/receptor-planner, backend/match-backend",
+  "scope": "All repositories — preference-frontend, planner-frontend, workforce-frontend, supabase-receptor, backend/planner-backend, backend/match-backend",
   "auditor": "Ryan Ammendolea",
   "branch": "audit/260312-cicd-environments",
   "findings": [
@@ -76,7 +76,7 @@
           "targetFile": "/home/ryana/development/common-bond/supabase-receptor/docs/operations/vm-setup.md",
           "completedBy": "agent-session-21",
           "completedDate": "2026-03-14",
-          "completionNote": "Superseded: 6 self-hosted GitHub Actions runners deployed as k3s Deployments (planner-frontend, workforce-frontend, preference-frontend, receptor-planner, match-backend, github-runner). All ephemeral with dedicated runner tokens. Image pinned to SHA digest."
+          "completionNote": "Superseded: 6 self-hosted GitHub Actions runners deployed as k3s Deployments (planner-frontend, workforce-frontend, preference-frontend, planner-backend, match-backend, github-runner). All ephemeral with dedicated runner tokens. Image pinned to SHA digest."
         },
         {
           "taskId": "CICD-01-T3",
@@ -439,7 +439,7 @@
       "severity": "medium",
       "status": "complete",
       "category": "Process Gap",
-      "repo": "preference-frontend, planner-frontend, workforce-frontend, match-backend, receptor-planner",
+      "repo": "preference-frontend, planner-frontend, workforce-frontend, match-backend, planner-backend",
       "area": "Test data isolation",
       "description": "All three frontend repos share the same TEST_ADMIN_EMAIL / TEST_WORKER_EMAIL GitHub Secrets with no run-ID namespace prefix. Concurrent CI runs from different branches on a shared Supabase instance could create or modify the same test organisation, causing flaky cross-branch test interference.",
       "tasks": [
@@ -462,8 +462,8 @@
         {
           "taskId": "ISO-01-T3",
           "status": "complete",
-          "description": "[comprehensive_review_3 GAP-2] Extend run-ID test org namespacing to backend repos. match-backend and receptor-planner integration tests (BACK-01) must use the same __ci_{GITHUB_RUN_ID} naming convention as the frontend repos. Update backend CI pytest fixtures or conftest.py to create/use the run-ID-scoped org. Without this, backend and frontend CI jobs sharing a k3s Supabase namespace will collide on test data.",
-          "targetFile": "cross-repo (match-backend/conftest.py, receptor-planner/conftest.py)",
+          "description": "[comprehensive_review_3 GAP-2] Extend run-ID test org namespacing to backend repos. match-backend and planner-backend integration tests (BACK-01) must use the same __ci_{GITHUB_RUN_ID} naming convention as the frontend repos. Update backend CI pytest fixtures or conftest.py to create/use the run-ID-scoped org. Without this, backend and frontend CI jobs sharing a k3s Supabase namespace will collide on test data.",
+          "targetFile": "cross-repo (match-backend/conftest.py, planner-backend/conftest.py)",
           "completedAt": "2026-03-12T22:12:49Z",
           "completedBy": "session-7-260312"
         }
@@ -535,15 +535,15 @@
       "severity": "medium",
       "status": "complete",
       "category": "Process Gap",
-      "repo": "match-backend, receptor-planner",
+      "repo": "match-backend, planner-backend",
       "area": "Backend CI integration test coverage",
-      "description": "match-backend integration tests (test_supabase_integration.py) are skipped in CI via pytest.mark.skipif when stub env vars are detected and are never run in CI. receptor-planner runs bare pytest with no path scoping — no unit/integration tier separation exists, meaning all tests run against stub URLs with misleading pass/fail results.",
+      "description": "match-backend integration tests (test_supabase_integration.py) are skipped in CI via pytest.mark.skipif when stub env vars are detected and are never run in CI. planner-backend runs bare pytest with no path scoping — no unit/integration tier separation exists, meaning all tests run against stub URLs with misleading pass/fail results.",
       "tasks": [
         {
           "taskId": "BACK-01-T1",
           "status": "complete",
-          "description": "Add pytest path scoping to receptor-planner ci.yml: replace bare 'pytest' with 'pytest tests/unit/ -m unit' (or equivalent). Add a --co flag dryrun first to enumerate what's currently being collected.",
-          "targetFile": "/home/ryana/development/common-bond/backend/receptor-planner/.github/workflows/ci.yml",
+          "description": "Add pytest path scoping to planner-backend ci.yml: replace bare 'pytest' with 'pytest tests/unit/ -m unit' (or equivalent). Add a --co flag dryrun first to enumerate what's currently being collected.",
+          "targetFile": "/home/ryana/development/common-bond/backend/planner-backend/.github/workflows/ci.yml",
           "completedAt": "2026-03-12T22:47:09Z",
           "completedBy": "session-8-260313"
         },
@@ -563,7 +563,7 @@
       "severity": "medium",
       "status": "complete",
       "category": "Security",
-      "repo": "match-backend, receptor-planner",
+      "repo": "match-backend, planner-backend",
       "area": "Hardcoded JWT placeholder in CI",
       "description": "Both backend repos set SUPABASE_SERVICE_ROLE_KEY to a hardcoded decoded JWT placeholder string (eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...) in their ci.yml. While intentionally non-functional, this leaks a JWT pattern into the repository that secret scanners (GitGuardian, GitHub secret scanning) may flag as a credential leak.",
       "tasks": [
@@ -578,8 +578,8 @@
         {
           "taskId": "BACK-02-T2",
           "status": "complete",
-          "description": "Apply the same stub replacement to receptor-planner ci.yml.",
-          "targetFile": "/home/ryana/development/common-bond/backend/receptor-planner/.github/workflows/ci.yml",
+          "description": "Apply the same stub replacement to planner-backend ci.yml.",
+          "targetFile": "/home/ryana/development/common-bond/backend/planner-backend/.github/workflows/ci.yml",
           "completedAt": "2026-03-12T08:40:48Z",
           "completedBy": "session-5-260312"
         }
@@ -1249,7 +1249,7 @@
         {
           "taskId": "CICD-07-T1",
           "status": "complete",
-          "description": "Add 'actions/cache' steps to all 3 frontend ci.yml files keyed on 'hashFiles(\"**/package-lock.json\")'. For backend repos (match-backend, receptor-planner) add pip cache steps keyed on 'hashFiles(\"**/requirements.txt\")'. Once running on a self-hosted runner (ARCH-03), switch to a local filesystem cache path (/var/cache/ci/npm, /var/cache/ci/pip) instead of the GitHub-managed cache to eliminate upload/download overhead entirely.",
+          "description": "Add 'actions/cache' steps to all 3 frontend ci.yml files keyed on 'hashFiles(\"**/package-lock.json\")'. For backend repos (match-backend, planner-backend) add pip cache steps keyed on 'hashFiles(\"**/requirements.txt\")'. Once running on a self-hosted runner (ARCH-03), switch to a local filesystem cache path (/var/cache/ci/npm, /var/cache/ci/pip) instead of the GitHub-managed cache to eliminate upload/download overhead entirely.",
           "targetFile": "",
           "completedAt": "2026-03-12T08:40:48Z",
           "completedBy": "session-5-260312"

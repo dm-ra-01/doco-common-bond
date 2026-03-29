@@ -37,9 +37,9 @@ sidebar_position: 1
 
 ### 🗓️ 2026-03-26
 
-| Slug                   | Title                                       | Scope                                                                                                                  | Auditor         | Status        | NC Raised                | Report                                                                                                                        |
-| :--------------------- | :------------------------------------------ | :--------------------------------------------------------------------------------------------------------------------- | :-------------- | :------------ | :----------------------- | :---------------------------------------------------------------------------------------------------------------------------- |
-| `260326-k3s-stability` | k3s Cluster Stability & Gold Standard Audit | `receptor-infra` — k3s control plane, Vault, Falco, storage, monitoring, network policies, provisioning, documentation | Ryan Ammendolea | 🟥 Superseded | 46 findings · See 260328 | [audit.md](../audits/260326-k3s-stability/audit.md) · [recommendations.md](../audits/260326-k3s-stability/recommendations.md) |
+| Slug                   | Title                                       | Scope                                                                                                                  | Auditor         | Status        | NC Raised                | Report                                                                                                                                        |
+| :--------------------- | :------------------------------------------ | :--------------------------------------------------------------------------------------------------------------------- | :-------------- | :------------ | :----------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------- |
+| `260326-k3s-stability` | k3s Cluster Stability & Gold Standard Audit | `receptor-infra` — k3s control plane, Vault, Falco, storage, monitoring, network policies, provisioning, documentation | Ryan Ammendolea | 🟥 Superseded | 46 findings · See 260328 | [audit.md](../audits/archive/260326-k3s-stability/audit.md) · [recommendations.md](../audits/archive/260326-k3s-stability/recommendations.md) |
 
 ### 🗓️ 2026-03-25
 
