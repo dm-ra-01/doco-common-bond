@@ -14,7 +14,7 @@
       "category": "Security",
       "repo": "receptor-infra",
       "area": "Vault JWT roles",
-      "description": "1 of 7 expected JWT roles is missing: ci-website-frontend. The other 6 (ci-match-backend, ci-planner-frontend, ci-preference-frontend, ci-workforce-frontend, ci-receptor-planner, ci-supabase-receptor) exist with correct bound_claims and policies. Verified via live Vault interrogation.",
+      "description": "1 of 7 expected JWT roles is missing: ci-website-frontend. The other 6 (ci-match-backend, ci-planner-frontend, ci-preference-frontend, ci-workforce-frontend, ci-planner-backend, ci-supabase-receptor) exist with correct bound_claims and policies. Verified via live Vault interrogation.",
       "tasks": [
         {
           "taskId": "VD-01-T1",
@@ -336,8 +336,8 @@
         {
           "taskId": "VD-13-T2",
           "status": "complete",
-          "description": "Fix Backend CI: Install pytest-cov; add --cov=allocator (match-backend) and --cov=tests (receptor-planner); add codecov-action steps.",
-          "targetFile": "ALL — ci.yml in match-backend, receptor-planner",
+          "description": "Fix Backend CI: Install pytest-cov; add --cov=allocator (match-backend) and --cov=tests (planner-backend); add codecov-action steps.",
+          "targetFile": "ALL — ci.yml in match-backend, planner-backend",
           "completedAt": "2026-03-25T05:15:00Z",
           "completedBy": "fe6ed9aa"
         },

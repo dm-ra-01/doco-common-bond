@@ -4,7 +4,7 @@
   "status": "findings-issued",
   "nextAction": "implement",
   "openTaskCount": 32,
-  "latestHandover": "Initial audit complete with deeper ecosystem scan. 11 findings across 9 repositories. Reference implementations identified in receptor-infra and receptor-planner. Ready for Phase 1 implementation (AGENTS.md propagation).",
+  "latestHandover": "Initial audit complete with deeper ecosystem scan. 11 findings across 9 repositories. Reference implementations identified in receptor-infra and planner-backend. Ready for Phase 1 implementation (AGENTS.md propagation).",
   "sessionHistory": [
     {
       "sessionDate": "2026-03-25",

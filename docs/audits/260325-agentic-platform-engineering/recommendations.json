@@ -88,7 +88,7 @@
           "taskId": "DOC-02-T1",
           "status": "open",
           "description": "Expand .llm-context.md in critical service repos (Planner, Allocator).",
-          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/backend/receptor-planner/.llm-context.md",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/backend/planner-backend/.llm-context.md",
           "completedAt": null,
           "completedBy": null
         }

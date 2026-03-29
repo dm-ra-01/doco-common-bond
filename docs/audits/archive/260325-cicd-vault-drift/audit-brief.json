@@ -10,7 +10,7 @@
       "date": "2026-03-25",
       "sessionId": "61c5cfa4-s1",
       "completedFindingIds": ["VD-01", "VD-02", "VD-03", "VD-04", "VD-05", "VD-11"],
-      "summary": "Live Vault interrogation, created ci-website-frontend role+policy, fixed ci-supabase-receptor policy mount path, codified all roles/policies as IaC in receptor-infra/vault/, standardised all deploy.yml to Option A path format, migrated receptor-planner to ARC runner + Vault OIDC."
+      "summary": "Live Vault interrogation, created ci-website-frontend role+policy, fixed ci-supabase-receptor policy mount path, codified all roles/policies as IaC in receptor-infra/vault/, standardised all deploy.yml to Option A path format, migrated planner-backend to ARC runner + Vault OIDC."
     },
     {
       "date": "2026-03-25",

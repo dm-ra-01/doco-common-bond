@@ -43,7 +43,7 @@
         {
           "taskId": "ARCH-01-T4",
           "status": "complete",
-          "description": "Create symlinks: planner-frontend/.agents -> frontend-nextjs, preference-frontend/.agents -> frontend-nextjs, workforce-frontend/.agents -> frontend-nextjs, website-frontend/.agents -> frontend-nextjs, supabase-receptor/.agents -> supabase-infrastructure, match-backend/.agents -> backend-python, receptor-planner/.agents -> backend-python, common-bond/.agents -> docusaurus.",
+          "description": "Create symlinks: planner-frontend/.agents -> frontend-nextjs, preference-frontend/.agents -> frontend-nextjs, workforce-frontend/.agents -> frontend-nextjs, website-frontend/.agents -> frontend-nextjs, supabase-receptor/.agents -> supabase-infrastructure, match-backend/.agents -> backend-python, planner-backend/.agents -> backend-python, common-bond/.agents -> docusaurus.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/",
           "completedAt": "2026-03-10T08:24:34Z",
           "completedBy": "session-cd5313c3"
@@ -384,15 +384,15 @@
       "severity": "medium",
       "status": "complete",
       "category": "Architectural Drift",
-      "repo": "receptor-planner",
+      "repo": "planner-backend",
       "area": ".agents/skills/",
-      "description": "receptor-planner has local copies of python-design-patterns and python-testing-patterns, both of which exist in dev-environment/.agents/skills/. Discovered in iterative review \u2014 missed in initial audit. Evidence: find backend/receptor-planner/.agents/skills -type f returns SKILL.md for both.",
+      "description": "planner-backend has local copies of python-design-patterns and python-testing-patterns, both of which exist in dev-environment/.agents/skills/. Discovered in iterative review \u2014 missed in initial audit. Evidence: find backend/planner-backend/.agents/skills -type f returns SKILL.md for both.",
       "tasks": [
         {
           "taskId": "RP-01-T1",
           "status": "complete",
-          "description": "Delete backend/receptor-planner/.agents/skills/python-design-patterns/ and backend/receptor-planner/.agents/skills/python-testing-patterns/. Addressed by the ARCH-01 symlink to backend-python/ category.",
-          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/backend/receptor-planner/.agents/skills/",
+          "description": "Delete backend/planner-backend/.agents/skills/python-design-patterns/ and backend/planner-backend/.agents/skills/python-testing-patterns/. Addressed by the ARCH-01 symlink to backend-python/ category.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/backend/planner-backend/.agents/skills/",
           "completedAt": "2026-03-10T08:24:34Z",
           "completedBy": "session-cd5313c3"
         }
@@ -411,7 +411,7 @@
         {
           "taskId": "RISK-01-T1",
           "status": "complete",
-          "description": "Implementation agent must process all repos in a single category before moving to the next. Recommended sequence: (1) frontend-nextjs: planner, preference, workforce, website, (2) backend-python: match-backend, receptor-planner, (3) supabase-infrastructure: supabase-receptor, (4) docusaurus: common-bond.",
+          "description": "Implementation agent must process all repos in a single category before moving to the next. Recommended sequence: (1) frontend-nextjs: planner, preference, workforce, website, (2) backend-python: match-backend, planner-backend, (3) supabase-infrastructure: supabase-receptor, (4) docusaurus: common-bond.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/",
           "completedAt": "2026-03-10T08:24:34Z",
           "completedBy": "session-cd5313c3"

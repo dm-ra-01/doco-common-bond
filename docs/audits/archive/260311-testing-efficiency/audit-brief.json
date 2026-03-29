@@ -32,7 +32,7 @@
         "DB-02-T1",
         "PL-01-T1"
       ],
-      "notes": "supabase-receptor: CI workflow (DB-01), planner-orchestration handler export + test rewrite (EF-01), smoke tests for invalidate-session + force-refresh-on-role-change (EF-01-T3), RLS truth matrix expanded (DB-02). receptor-planner: Python 3.9→3.11 (PL-01). Also fixed pre-existing done→complete status normalisation. All 0 open tasks remain."
+      "notes": "supabase-receptor: CI workflow (DB-01), planner-orchestration handler export + test rewrite (EF-01), smoke tests for invalidate-session + force-refresh-on-role-change (EF-01-T3), RLS truth matrix expanded (DB-02). planner-backend: Python 3.9→3.11 (PL-01). Also fixed pre-existing done→complete status normalisation. All 0 open tasks remain."
     },
     {
       "session": 3,
@@ -44,7 +44,7 @@
       "session": 5,
       "date": "2026-03-11",
       "completedTasks": [],
-      "notes": "Re-audit complete. All 18 findings verified across 6 repos. PRs raised: planner-frontend #19, workforce-frontend #13, preference-frontend #18, match-backend #4, supabase-receptor #8, receptor-planner #5. re-audit.md written. Registry updated to Closed. Supabase dual-write performed. Audit ready for merge and archive."
+      "notes": "Re-audit complete. All 18 findings verified across 6 repos. PRs raised: planner-frontend #19, workforce-frontend #13, preference-frontend #18, match-backend #4, supabase-receptor #8, planner-backend #5. re-audit.md written. Registry updated to Closed. Supabase dual-write performed. Audit ready for merge and archive."
     },
     {
       "session": 4,

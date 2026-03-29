@@ -3,7 +3,7 @@
   "auditSlug": "260311-testing-efficiency",
   "title": "Testing Efficiency & Modularity Ecosystem Audit",
   "date": "2026-03-11",
-  "scope": "backend/receptor-planner, backend/match-backend, frontend/planner-frontend, frontend/workforce-frontend, frontend/preference-frontend, supabase-receptor (pgTAP + Edge Functions)",
+  "scope": "backend/planner-backend, backend/match-backend, frontend/planner-frontend, frontend/workforce-frontend, frontend/preference-frontend, supabase-receptor (pgTAP + Edge Functions)",
   "auditor": "Ryan Ammendolea",
   "branch": "audit/260311-testing-efficiency",
   "findings": [
@@ -103,7 +103,7 @@
         {
           "taskId": "MB-02-T1",
           "status": "complete",
-          "description": "Restructure allocator/tests/ to match the receptor-planner pattern: create unit/, integration/, and e2e/ subdirectories. Move test_solver.py, test_models.py, test_preferences.py, test_excel_ingestion.py, test_api.py, test_service.py to unit/. Move test_supabase_integration.py to integration/. Update pyproject.toml testpaths accordingly.",
+          "description": "Restructure allocator/tests/ to match the planner-backend pattern: create unit/, integration/, and e2e/ subdirectories. Move test_solver.py, test_models.py, test_preferences.py, test_excel_ingestion.py, test_api.py, test_service.py to unit/. Move test_supabase_integration.py to integration/. Update pyproject.toml testpaths accordingly.",
           "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/backend/match-backend/allocator/tests/"
         }
       ],
@@ -208,15 +208,15 @@
       "severity": "low",
       "status": "complete",
       "category": "Hygiene",
-      "repo": "receptor-planner",
+      "repo": "planner-backend",
       "area": "CI Python version",
-      "description": "receptor-planner/.github/workflows/ci.yml pins Python to 3.9 (L19) but pyproject.toml declares requires-python = '>=3.11'. Mismatched runtimes can mask deprecation warnings or behaviours that only appear in the production-aligned Python version.",
+      "description": "planner-backend/.github/workflows/ci.yml pins Python to 3.9 (L19) but pyproject.toml declares requires-python = '>=3.11'. Mismatched runtimes can mask deprecation warnings or behaviours that only appear in the production-aligned Python version.",
       "tasks": [
         {
           "taskId": "PL-01-T1",
           "status": "complete",
-          "description": "Update receptor-planner CI yml python-version to '3.11' (or '3.12') to align with the pyproject.toml requires-python constraint.",
-          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/backend/receptor-planner/.github/workflows/ci.yml",
+          "description": "Update planner-backend CI yml python-version to '3.11' (or '3.12') to align with the pyproject.toml requires-python constraint.",
+          "targetFile": "/Users/ryan/development/common_bond/antigravity-environment/backend/planner-backend/.github/workflows/ci.yml",
           "completedAt": "2026-03-11T06:46:25Z",
           "completedBy": "d37dabc4-8d32-4905-a278-fbf14d48dcac"
         }

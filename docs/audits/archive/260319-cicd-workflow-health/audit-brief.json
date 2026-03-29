@@ -3,7 +3,7 @@
   "status": "implementing",
   "nextAction": "implement",
   "openTaskCount": 7,
-  "latestHandover": "Phase 3 complete (2026-03-19). match-backend + receptor-planner: DR-11 (5 actions SHA-pinned), DR-12 (timeout-minutes: 20). DR-25 (supabase stop) applied to match-backend only (receptor-planner ci.yml is unit-tests only). DR-24 and DR-27 formally deferred: Vault OIDC requires network routing decision for ubuntu-latest runners; staging/production split requires receptor-infra namespace decision. Remaining open: DR-06, DR-07, DR-08 (supabase-receptor deploy-function hardening — previously tracked, still open in Phase 7/8). Phase 4 items next.",
+  "latestHandover": "Phase 3 complete (2026-03-19). match-backend + planner-backend: DR-11 (5 actions SHA-pinned), DR-12 (timeout-minutes: 20). DR-25 (supabase stop) applied to match-backend only (planner-backend ci.yml is unit-tests only). DR-24 and DR-27 formally deferred: Vault OIDC requires network routing decision for ubuntu-latest runners; staging/production split requires receptor-infra namespace decision. Remaining open: DR-06, DR-07, DR-08 (supabase-receptor deploy-function hardening — previously tracked, still open in Phase 7/8). Phase 4 items next.",
   "sessionHistory": []
 }
 
